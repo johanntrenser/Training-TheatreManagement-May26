@@ -43,5 +43,3 @@ public:
     void setUserType(Enums::UserType type);
     void setStatus(Enums::UserStatus status);
 };
-
-

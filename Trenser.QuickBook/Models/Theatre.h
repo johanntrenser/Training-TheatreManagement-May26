@@ -1,3 +1,13 @@
+/*
+ * File: Theatre.h
+ * Description: Defines the Theatre class, which represents a cinema theatre.
+ *              Stores details such as theatre ID, name, city, address,
+ *              contact information, owner, status, and associated screens
+ *              and movies.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
+
 #pragma once
 #include <string>
 #include <vector>

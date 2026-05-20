@@ -1,3 +1,12 @@
+/*
+ * File: Screen.h
+ * Description: Defines the Screen class, which represents a cinema screen
+ *              inside a theatre. Stores details such as screen ID, theatre,
+ *              name, seating grid, and status.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
+
 #pragma once
 #include <string>
 #include <vector>
@@ -39,5 +48,3 @@ public:
     void setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid);
     void setScreenStatus(int screenStatus);
 };
-
-
