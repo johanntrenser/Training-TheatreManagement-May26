@@ -1,3 +1,13 @@
+/*
+ * File: Enums.h
+ * Description: Declares various enumerations used throughout the system,
+ *              including statuses for theatres, movies, shows, screens,
+ *              bookings, payments, notifications, users, seats, and refunds.
+ *              Also provides utility functions to convert between enum values
+ *              and their corresponding string representations.
+ * Author: Trenser
+ * Created: 20 May 2026
+ */
 #pragma once
 #include <string>
 
