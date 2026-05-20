@@ -1,5 +1,12 @@
 #include "Validator.h"
 
+/*
+	 * Function: isPhoneNumberValid
+	 * Description: Validates whether the given string represents a valid phone number.
+	 * Parameters:
+	 *   - phone: String containing the phone number to validate.
+	 * Returns: True if the phone number is valid, false otherwise.
+	 */
 bool util::isPhoneNumberValid(const std::string& phoneNumber) {
 	if (phoneNumber.size() != 10)
 	{
@@ -13,6 +20,13 @@ bool util::isPhoneNumberValid(const std::string& phoneNumber) {
 	);
 }
 
+/*
+	 * Function: isEmailValid
+	 * Description: Validates whether the given string represents a valid email address.
+	 * Parameters:
+	 *   - email: String containing the email address to validate.
+	 * Returns: True if the email address is valid, false otherwise.
+	 */
 bool util::isEmailValid(const std::string& email) {
 	size_t index = email.find('@');
 	if (index == std::string::npos) return false;

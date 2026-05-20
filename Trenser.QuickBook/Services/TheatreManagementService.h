@@ -1,3 +1,13 @@
+/*
+ * File: TheatreManagementService.h
+ * Description: Declares the TheatreManagementService class, which provides
+ *              functionality for managing theatres within the system.
+ *              This service handles operations such as adding, updating,
+ *              activating/deactivating theatres, associating movies, and
+ *              retrieving theatre details and lists.
+ * Author: Trenser
+ * Created: 20 May 2026
+ */
 #pragma once
 #include <string>
 #include <vector>

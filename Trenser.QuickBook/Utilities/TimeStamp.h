@@ -1,3 +1,12 @@
+/*
+ * File: Timestamp.h
+ * Description: Declares the Timestamp class, which provides functionality
+ *              for representing and manipulating time values. Includes
+ *              methods for converting to/from strings, calculating durations,
+ *              retrieving date values, and performing comparison operations.
+ * Author: Trenser
+ * Created: 20 May 2026
+ */
 #pragma once
 #include <ctime>
 #include <string>
