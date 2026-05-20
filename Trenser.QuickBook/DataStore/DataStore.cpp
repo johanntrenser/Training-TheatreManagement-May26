@@ -8,8 +8,26 @@
  * Created: 20 May 2026
  */
 #include "DataStore.h"
+#include <sstream>
+using namespace std;
 
- /*
+/*
+ * Function: DataStore::getUsers
+ * Description: Retrieves the collection of users stored in the DataStore.
+ * Returns:
+ *    A constant reference to the map of user IDs to User pointers.
+ */
+const std::map<string, User*>& DataStore::getUsers() const
+{
+    return m_users;
+}
+
+void DataStore::addUser(User* user)
+{
+    m_users[user->getUserId()] = user;
+}
+
+/*
   * Function: DataStore::getInstance
   * Description: Provides access to the singleton instance of the DataStore class.
   *              Ensures only one instance exists throughout the application.

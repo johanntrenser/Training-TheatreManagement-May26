@@ -5,14 +5,15 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
-#include "UserInterface.h"
+#include <iostream>
 #include <stdexcept>
 #include <string>
-using namespace::std;
+using namespace std;
 #include "InputHelper.h"
 #include "OutputHelper.h"
 #include "Enums.h"
 #include "Validator.h"
+#include "UserInterface.h"
 
 /*
  * Function: run
@@ -34,14 +35,14 @@ void UserInterface::run()
 			util::clear();
 			cout << "Quick Book - Theatre Management System\n1. Login\n2. Register\n3. Exit\nEnter Your Choice: ";
 			util::readValue(choice);
-			if (!handleOperation)
+			if (!handleOperation(choice))
 			{
 				isMenuActive = false;
 			}
 		}
 		catch (const runtime_error& e)
 		{
-			cout << "Runtime "
+			cout << "Runtime Exception: " << e.what();
 		}
 		catch (const exception& e)
 		{
@@ -75,7 +76,7 @@ bool UserInterface::handleOperation(int choice)
 		return false;
 	default:
 		cout << "Enter a valid choice!" << endl;
-		util::pressEnter;
+		util::pressEnter();
 	}
 	return true;
 }
@@ -133,7 +134,7 @@ void UserInterface::login()
 		break;
 	}
 	}
-	m_controller->logout();
+	//m_controller->logout();
 };
 
 /*
@@ -174,3 +175,82 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner" << endl;
 }
+#include "InputHelper.h"
+#include "Enums.h"
+#include "Validator.h"
+using namespace std;
+
+void UserInterface::registerUser()
+{
+    string userName, email, password, phoneNumber;
+    Enums::UserType userType = Enums::UserType::CUSTOMER;
+    int choice;
+    userTypesMenu();
+    util::readValue(choice);
+    switch (choice)
+    {
+    case 1:
+        userType = Enums::UserType::CUSTOMER;
+        break;
+    case 2:
+        userType = Enums::UserType::THEATRE_OWNER;
+    default:
+        cout << "Invalid Choice. Please Try again!" << endl;
+        return;
+    }
+    handleUserDetailsInput(userName, email, password, phoneNumber);
+    if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+    {
+        cout << "User registered successfully!" << endl;
+    }
+    else
+    {
+        cout << "User could not be registered!" << endl;
+    }
+}
+
+void UserInterface::userTypesMenu()
+{
+    cout << "-------------------User Type List-------------------" << std::endl;
+    cout << "1. Customer" << std::endl;
+    cout << "2. Theatre Owner" << std::endl;
+    cout << "Enter a choice: " << std::endl;
+}
+
+void UserInterface::handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber)
+{
+    bool isEmailUnique = false;
+    bool isPhoneNumberUnique = false;
+    cout << "Enter user name: ";
+    util::readValue(userName);
+    cout << "Enter email: ";
+    util::readValue(email);
+    util::isEmailValid(email);
+    while (!isEmailUnique)
+    {
+        cout << "Email already exists!. Please enter again: ";
+        util::readValue(email);
+        util::isEmailValid(email);
+        if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
+        {
+            isEmailUnique = true;
+        }
+    }
+    cout << "Enter password: ";
+    util::readValue(password);
+    util::isPasswordValid(password);
+    cout << "Enter phone number: ";
+    util::readValue(phoneNumber);
+    util::isPhoneNumberValid(phoneNumber);
+    while (!isPhoneNumberUnique)
+    {
+        cout << "Phone number already exists!. Please enter again: ";
+        util::readValue(phoneNumber);
+        util::isPhoneNumberValid(phoneNumber);
+        if (m_controller->isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
+        {
+            isPhoneNumberUnique = true;
+        }
+    }
+}
+

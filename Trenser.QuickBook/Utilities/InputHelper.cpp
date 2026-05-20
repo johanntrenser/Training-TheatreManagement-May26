@@ -7,7 +7,7 @@
      *   - str: Reference to the string variable where the input will be stored.
      * Returns: None
      */
-void util::readString(std::string& value)
+void util::readValue(std::string& value)
 {
     getline(std::cin >> std::ws, value);
 }

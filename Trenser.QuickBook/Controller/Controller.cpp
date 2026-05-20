@@ -83,6 +83,33 @@ Controller::Controller(AuthenticationManagementService* authService,
 {
 }
 
+Enums::ProcessStatus Controller::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
+{
+    if (m_authenticationManagementService->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+Enums::ProcessStatus Controller::isEmailUnique(const std::string& email)
+{
+    if (m_authenticationManagementService->isEmailIdUnique(email))
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+Enums::ProcessStatus Controller::isPhoneNumberUnique(const std::string& phoneNumber)
+{
+    if (m_authenticationManagementService->isPhoneNumberUnique(phoneNumber))
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
 /*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
@@ -97,7 +124,7 @@ Controller::Controller(AuthenticationManagementService* authService,
  */
 pair<Enums::LoginStatus, Enums::UserType> Controller::login(string email, string password)
 {
-    m_authenticationManagementService->login(email, password);
+    return m_authenticationManagementService->login(email, password);
 }
 
 /*

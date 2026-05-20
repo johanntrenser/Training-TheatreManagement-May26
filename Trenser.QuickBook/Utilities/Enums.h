@@ -102,6 +102,13 @@ namespace Enums {
         DEBIT_CARD
     };
 
+    //Represent the Result of Process Execution.
+    enum class ProcessStatus
+    {
+        FAILED,
+        SUCCESS
+    };
+
     enum class LoginStatus
     {
         USER_NOT_FOUND,

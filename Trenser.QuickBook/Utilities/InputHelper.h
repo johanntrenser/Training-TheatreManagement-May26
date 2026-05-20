@@ -39,6 +39,6 @@ namespace util
 		}
 	}
 
-	void readString(std::string&);
+	void readValue(std::string& value);
 	void pressEnter();
 }

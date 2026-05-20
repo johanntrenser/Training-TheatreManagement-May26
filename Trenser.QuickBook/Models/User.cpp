@@ -42,7 +42,7 @@ User::User(const std::string& userId,
     const std::string& userName,
     const std::string& email,
     const std::string& password,
-    long int phoneNumber,
+    const std::string& phoneNumber,
     Enums::UserType userType)
     : m_userId(userId),
     m_userName(userName),
@@ -103,7 +103,7 @@ const std::string& User::getPassword() const
  * Returns:
  *    long int - Phone number
  */
-long int User::getPhoneNumber() const
+const std::string& User::getPhoneNumber() const
 {
     return m_phoneNumber;
 }
@@ -185,7 +185,7 @@ void User::setPassword(const std::string& password)
  *    long int phoneNumber - New phone number
  * Returns: None
  */
-void User::setPhoneNumber(long int phoneNumber)
+void User::setPhoneNumber(const std::string& phoneNumber)
 {
     m_phoneNumber = phoneNumber;
 }

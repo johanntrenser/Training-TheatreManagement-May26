@@ -20,4 +20,6 @@ public:
 	void adminMenu();
 	void theatreOwnerMenu();
 	void customerMenu();
+	void userTypesMenu();
+	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
 };
