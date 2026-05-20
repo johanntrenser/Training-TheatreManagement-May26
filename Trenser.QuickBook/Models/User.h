@@ -17,7 +17,7 @@ private:
     std::string m_userName;
     std::string m_email;
     std::string m_password;
-    long int m_phoneNumber;
+    std::string m_phoneNumber;
     Enums::UserType m_userType; 
     Enums::UserStatus m_status;  
 public:
@@ -26,20 +26,20 @@ public:
         const std::string& userName,
         const std::string& email,
         const std::string& password,
-        long int phoneNumber,
+        const std::string& phoneNumber,
         Enums::UserType type);
     const std::string& getUserId() const;
     const std::string& getUserName() const;
     const std::string& getEmail() const;
     const std::string& getPassword() const;
-    long int getPhoneNumber() const;
+    const std::string& getPhoneNumber() const;
     Enums::UserType getUserType() const;
     Enums::UserStatus getStatus() const;
     void setUserId(const std::string& userId);
     void setUserName(const std::string& userName);
     void setEmail(const std::string& email);
     void setPassword(const std::string& password);
-    void setPhoneNumber(long int phoneNumber);
+    void setPhoneNumber(const std::string& phoneNumber);
     void setUserType(Enums::UserType type);
     void setStatus(Enums::UserStatus status);
 };

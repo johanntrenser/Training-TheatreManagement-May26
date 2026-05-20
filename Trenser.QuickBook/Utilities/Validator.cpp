@@ -24,7 +24,7 @@
   * Returns:
   *    None
   */
-inline void isPasswordValid(std::string& value) 
+void util::isPasswordValid(std::string& value) 
 {
     bool isPasswordValid = false;
     bool hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
@@ -80,7 +80,7 @@ inline void isPasswordValid(std::string& value)
  * Returns:
  *    None
  */
-inline void isEmailValid(std::string& value)
+void util::isEmailValid(std::string& value)
 {
     bool isValidEmail = false;
     std::regex emailPattern(R"(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)");
@@ -107,7 +107,7 @@ inline void isEmailValid(std::string& value)
  * Returns:
  *    None
  */
-inline void isPhoneNumberValid(std::string& value)
+void util::isPhoneNumberValid(std::string& value)
 {
     bool isValidPhoneNumber = false;
     std::regex phoneNumberPattern(R"(^[0-9]{10}$)");

@@ -7,13 +7,16 @@
  * Created: 20 May 2026
  */
 #pragma once
-#include<string>
-#include<algorithm>
-#include<cctype>
+#include <string>
+#include <algorithm>
+#include <cctype>
+#include <map>
+#include "User.h"
+#include "DataStore.h"
 
 namespace util
 {
-	bool isPhoneNumberValid(const std::string&);
-	bool isEmailValid(const std::string&);
-	bool isPasswordValid(const std::string&);
+	void isPhoneNumberValid(std::string&);
+	void isEmailValid(std::string&);
+	void isPasswordValid(std::string&);
 }

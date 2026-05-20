@@ -19,7 +19,10 @@ public:
     AuthenticationManagementService();
     std::pair<Enums::LoginStatus, Enums::UserType> login(const std::string& email, const std::string& password);
     void logout();
-    void registerUser();
+    Enums::ProcessStatus registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType);
+    const std::string generateUserId();
+    bool isPhoneNumberUnique(const std::string&);
+    bool isEmailIdUnique(const std::string&);
     ~AuthenticationManagementService() = default;
 };
 

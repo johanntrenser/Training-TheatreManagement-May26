@@ -1,4 +1,8 @@
+#include <sstream>
+#include <iomanip>
 #include "AuthenticationManagementService.h"
+#include "Factory.h"
+#include "DataStore.h"
 
 /*
  * Function: AuthenticationManagementService
@@ -59,13 +63,65 @@ void AuthenticationManagementService::logout()
 {
 }
 
-/*
- * Function: registerUser
- * Description: Registers a new user in the system by storing their credentials
- *              and initializing their profile in the DataStore.
- * Parameters: None
- * Returns: None
- */
-void AuthenticationManagementService::registerUser()
+Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
 {
+    User* user = Factory::getObject<User>(generateUserId(), userName, email, password, phoneNumber, userType);
+	if (user != nullptr)
+	{
+		m_dataStore.addUser(user);
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+const std::string AuthenticationManagementService::generateUserId()
+{
+	const std::map<std::string, User*>& users = m_dataStore.getUsers();
+	int idNumber = static_cast<int>(users.size()) + 1;
+	std::ostringstream buffer;
+	buffer << "US" << std::setw(3) << std::setfill('0') << idNumber;
+	return buffer.str();
+}
+
+/*
+ * Function: DataStore::isPhoneNumberUnique
+ * Description: Checks whether the given phone number is unique among all users.
+ * Parameters:
+ *    phoneNumber - The phone number string to validate.
+ * Returns:
+ *    true if the phone number does not exist in the DataStore, false otherwise.
+ */
+bool AuthenticationManagementService::isPhoneNumberUnique(const std::string& phoneNumber)
+{
+	const std::map<std::string, User*> users = m_dataStore.getUsers();
+	for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+	{
+		if ((iterator->second)->getPhoneNumber() == phoneNumber)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+/*
+ * Function: DataStore::isEmailIdUnique
+ * Description: Checks whether the given email address is unique among all users.
+ * Parameters:
+ *    email - The email string to validate.
+ * Returns:
+ *    true if the email does not exist in the DataStore, false otherwise.
+ */
+bool AuthenticationManagementService::isEmailIdUnique(const std::string& email)
+{
+	const std::map<std::string, User*> users = m_dataStore.getUsers();
+	for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+	{
+		if ((iterator->second)->getEmail() == email)
+		{
+			return false;
+		}
+	}
+	return true;
 }
