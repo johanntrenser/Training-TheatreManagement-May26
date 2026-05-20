@@ -21,3 +21,16 @@ DataStore& DataStore::getInstance()
     static DataStore instance;
     return instance;
 }
+
+/*
+ * Function: DataStore::setAuthenticatedUser
+ * Description: Sets the currently authenticated user in the DataStore.
+ * Parameters:
+ *    user - Pointer to the User object representing the authenticated user
+ * Returns:
+ *    None
+ */
+void DataStore::setAuthenticatedUser(User* user)
+{
+    m_currentUser = user;
+}
