@@ -9,6 +9,7 @@
  * Created: 20 May 2026
  */
 #include "Controller.h"
+using namespace::std;
 
  /*
   * Function: Controller::Controller
@@ -80,6 +81,23 @@ Controller::Controller(AuthenticationManagementService* authService,
     m_seatManagementService(seatService),
     m_refundManagementService(refundService)
 {
+}
+
+/*
+ * Function: login
+ * Description: Passes the login process to the AuthenticationManagementService.
+ * Parameters:
+ *    email (string) - The email address of the user attempting to log in
+ *    password (string) - The password associated with the given email
+ * Returns:
+ *    A pair containing:
+ *      enum - LoginStatus indicating the result of the login attempt
+ *      enum - UserType of the authenticated user if login is successful,
+ *             otherwise USER_NOT_FOUND
+ */
+pair<Enums::LoginStatus, Enums::UserType> Controller::login(string email, string password)
+{
+    m_authenticationManagementService->login(email, password);
 }
 
 /*

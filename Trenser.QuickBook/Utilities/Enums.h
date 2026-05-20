@@ -70,7 +70,8 @@ namespace Enums {
     {
         ADMIN,
         CUSTOMER,
-        THEATRE_OWNER
+        THEATRE_OWNER,
+        USER_NOT_FOUND
     };
 
     enum class UserStatus
@@ -99,6 +100,13 @@ namespace Enums {
         UPI,
         CREDIT_CARD,
         DEBIT_CARD
+    };
+
+    enum class LoginStatus
+    {
+        USER_NOT_FOUND,
+        INVALID_PASSWORD,
+        USER_FOUND
     };
 
     inline std::string getTheatreStatusString(TheatreStatus status)

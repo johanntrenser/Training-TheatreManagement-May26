@@ -15,4 +15,5 @@ namespace util
 {
 	bool isPhoneNumberValid(const std::string&);
 	bool isEmailValid(const std::string&);
+	bool isPasswordValid(const std::string&);
 }

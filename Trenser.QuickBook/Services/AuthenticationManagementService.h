@@ -17,7 +17,7 @@ private:
     DataStore& m_dataStore;
 public:
     AuthenticationManagementService();
-    void login(const std::string& email, const std::string& password);
+    std::pair<Enums::LoginStatus, Enums::UserType> login(const std::string& email, const std::string& password);
     void logout();
     void registerUser();
     ~AuthenticationManagementService() = default;
