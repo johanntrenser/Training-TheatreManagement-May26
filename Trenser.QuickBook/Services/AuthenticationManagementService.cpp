@@ -13,15 +13,40 @@ AuthenticationManagementService::AuthenticationManagementService() :
 }
 
 /*
- * Function: login
- * Description: Authenticates a user by verifying their email and password.
+ * Function: AuthenticationManagementService::login
+ * Description: To authenticate a user based on provided email and password.
  * Parameters:
- *   - email: User's email address used for login.
- *   - password: User's password for authentication.
- * Returns: None
+ *    email - The email address of the user attempting to log in
+ *    password - The password associated with the given email
+ * Returns:
+ *    A pair containing:
+ *     enum - LoginStatus indicating the result of the login attempt
+ *     enum - UserType of the authenticated user if login is successful,
+ *        otherwise USER_NOT_FOUND
  */
-void AuthenticationManagementService::login(const std::string& email, const std::string& password)
+std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::login(const std::string& email, const std::string& password)
 {
+    const std::map<std::string, User*>& users = m_dataStore.getUsers();
+    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+    {
+        if (iterator->second->getEmail() == email)
+        {
+            if (iterator->second->getPassword() == password)
+            {
+                if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
+                {
+                    m_dataStore.setAuthenticatedUser(iterator->second);
+                    return std::make_pair(Enums::LoginStatus::USER_FOUND, iterator->second->getUserType());
+                }
+                else
+                {
+                    return std::make_pair(Enums::LoginStatus::USER_NOT_FOUND, Enums::UserType::USER_NOT_FOUND);
+                }
+            }
+            return std::make_pair(Enums::LoginStatus::INVALID_PASSWORD, Enums::UserType::USER_NOT_FOUND);
+        } 
+    }
+    return std::make_pair(Enums::LoginStatus::USER_NOT_FOUND, Enums::UserType::USER_NOT_FOUND);
 }
 
 /*

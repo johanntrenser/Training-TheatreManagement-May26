@@ -45,4 +45,5 @@ public:
 	DataStore(const DataStore&) = delete;
 	DataStore& operator=(const DataStore&) = delete;
 	static DataStore& getInstance();
+	void setAuthenticatedUser(User* user);
 };
