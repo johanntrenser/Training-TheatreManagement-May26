@@ -12,7 +12,7 @@ class UserInterface
 private:
 	Controller* m_controller;
 public:
-	UserInterface() : m_controller(new Controller()) {};
+	UserInterface();
 	void run();
 	bool handleOperation(int choice);
 	void login();
@@ -21,5 +21,10 @@ public:
 	void theatreOwnerMenu();
 	void customerMenu();
 	void userTypesMenu();
+	void handleAdminMenuOperation();
+	void handleCustomerMenuOperation();
+	void handleTheatreOwnerMenuOperation();
+	void getUniqueEmail(std::string& email);
+	void getUniquePhoneNumber(std::string& phoneNumber);
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
 };
