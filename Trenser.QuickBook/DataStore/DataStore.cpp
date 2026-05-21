@@ -19,9 +19,18 @@ using namespace std;
  */
 const std::map<string, User*>& DataStore::getUsers() const
 {
-    return m_users;
+        return m_users;
 }
 
+/*
+ * Function: DataStore::addUser
+ * Description: Adds a new user to the DataStore by inserting the user object
+ *              into the internal map keyed by the user's unique ID.
+ * Parameters:
+ *    user (User*) - Pointer to the User object to be added
+ * Returns:
+ *    None
+ */
 void DataStore::addUser(User* user)
 {
     m_users[user->getUserId()] = user;

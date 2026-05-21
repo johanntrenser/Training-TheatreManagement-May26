@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File: UserInterface.cpp
  * Description: Implements the UserInterface class responsible for handling
  *              user interactions with the Quick Book - Theatre Management System.
@@ -14,6 +14,33 @@ using namespace std;
 #include "Enums.h"
 #include "Validator.h"
 #include "UserInterface.h"
+
+/*
+ * Function: UserInterface::UserInterface
+ * Description: Default constructor. Initializes the UserInterface by creating
+ *              a new Controller instance and wiring it with all required
+ *              management services including authentication, user, theatre,
+ *              movie, show, booking, payment, ticket, notification, log,
+ *              screen, seat, and refund management.
+ * Parameters: None
+ * Returns: None
+ */
+UserInterface::UserInterface()
+{
+	m_controller = new Controller(new AuthenticationManagementService(),
+		new UserManagementService(),
+		new TheatreManagementService(),
+		new MovieManagementService(),
+		new ShowManagementService(),
+		new BookingManagementService(),
+		new PaymentManagementService(),
+		new TicketManagementService(),
+		new NotificationManagementService(),
+		new LogManagementService(),
+		new ScreenManagementService(),
+		new SeatManagementService(),
+		new RefundManagementService());
+}
 
 /*
  * Function: run
@@ -120,21 +147,21 @@ void UserInterface::login()
 	{
 	case Enums::UserType::ADMIN:
 	{
-		adminMenu();
+		handleAdminMenuOperation();
 		break;
 	}
 	case Enums::UserType::THEATRE_OWNER:
 	{
-		theatreOwnerMenu();
+		handleTheatreOwnerMenuOperation();
 		break;
 	}
 	case Enums::UserType::CUSTOMER:
 	{
-		customerMenu();
+		handleCustomerMenuOperation();
 		break;
 	}
 	}
-	//m_controller->logout();
+	m_controller->logout();
 };
 
 /*
@@ -147,7 +174,10 @@ void UserInterface::login()
  */
 void UserInterface::adminMenu()
 {
-	cout << "Admin Menu" << endl;
+		cout << "Admin Menu" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Exit" << endl;
+		cout << "Enter an option: ";
 }
 
 /*
@@ -161,6 +191,9 @@ void UserInterface::adminMenu()
 void UserInterface::customerMenu()
 {
 	cout << "Customer Menu" << endl;
+	cout << "------------------------" << endl;
+	cout << "1. Exit" << endl;
+	cout << "Enter an option: ";
 }
 
 /*
@@ -173,13 +206,21 @@ void UserInterface::customerMenu()
   */
 void UserInterface::theatreOwnerMenu()
 {
-	cout << "Theatre Owner" << endl;
+	cout << "Theatre Owner Menu" << endl;
+	cout << "------------------------" << endl;
+	cout << "1. Exit" << endl;
+	cout << "Enter an option: ";
 }
-#include "InputHelper.h"
-#include "Enums.h"
-#include "Validator.h"
-using namespace std;
 
+/*
+ * Function: registerUser
+ * Description: Prompts the user to select a user type, collects user details,
+ *              and registers the user through the Controller.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::registerUser()
 {
     string userName, email, password, phoneNumber;
@@ -202,12 +243,26 @@ void UserInterface::registerUser()
     if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
     {
         cout << "User registered successfully!" << endl;
+		util::pressEnter();
+		util::clear();
     }
     else
     {
         cout << "User could not be registered!" << endl;
+		util::pressEnter();
+		util::clear();
     }
 }
+
+/*
+ * Function: userTypesMenu
+ * Description: Displays the available user types for registration and prompts
+ *              the user to make a selection.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 
 void UserInterface::userTypesMenu()
 {
@@ -217,40 +272,150 @@ void UserInterface::userTypesMenu()
     cout << "Enter a choice: " << std::endl;
 }
 
+void UserInterface::handleAdminMenuOperation()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		adminMenu();
+		util::readValue(choice);
+		switch (choice)
+		{
+		case 1:
+			isMenuActive = false;
+			break;
+		default:
+			cout << "Invalid choice. Please try again!" << endl;
+			util::pressEnter();
+			util::clear();
+			break;
+		}
+	}
+}
+
+void UserInterface::handleCustomerMenuOperation()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		customerMenu();
+		util::readValue(choice);
+		switch (choice)
+		{
+		case 1:
+			isMenuActive = false;
+			break;
+		default:
+			cout << "Invalid choice. Please try again!" << endl;
+			util::pressEnter();
+			util::clear();
+			break;
+		}
+	}
+}
+
+void UserInterface::handleTheatreOwnerMenuOperation()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		theatreOwnerMenu();
+		util::readValue(choice);
+		switch (choice)
+		{
+		case 1:
+			isMenuActive = false;
+			break;
+		default:
+			cout << "Invalid choice. Please try again!" << endl;
+			util::pressEnter();
+			util::clear();
+			break;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::getUniqueEmail
+ * Description: Ensures that the provided email address is unique by validating
+ *              against existing users in the system. Prompts the user to re‑enter
+ *              the email until a unique and valid address is provided.
+ * Parameters:
+ *    email (std::string&) - Reference to the variable storing the user's email
+ * Returns:
+ *    None
+ */
+void UserInterface::getUniqueEmail(std::string& email)
+{
+	bool isEmailUnique = (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS) ? true : false;
+	while (!isEmailUnique)
+	{
+		cout << "Email already exists!. Please enter again: ";
+		util::readValue(email);
+		util::isEmailValid(email);
+		if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
+		{
+			isEmailUnique = true;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::getUniquePhoneNumber
+ * Description: Ensures that the provided phone number is unique by validating
+ *              against existing users in the system. Prompts the user to re‑enter
+ *              the phone number until a unique and valid number is provided.
+ * Parameters:
+ *    phoneNumber (std::string&) - Reference to the variable storing the user's phone number
+ * Returns:
+ *    None
+ */
+void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
+{
+	bool isPhoneNumberUnique = (m_controller->isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS) ? true : false;
+	while (!isPhoneNumberUnique)
+	{
+		cout << "Phone number already exists!. Please enter again: ";
+		util::readValue(phoneNumber);
+		util::isPhoneNumberValid(phoneNumber);
+		if (m_controller->isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
+		{
+			isPhoneNumberUnique = true;
+		}
+	}
+}
+
+/*
+ * Function: handleUserDetailsInput
+ * Description: Collects and validates user details including username, email,
+ *              password, and phone number. Ensures uniqueness of email and
+ *              phone number before proceeding with registration.
+ * Parameters:
+ *    userName (string&) - Reference to the variable storing the user's name
+ *    email (string&) - Reference to the variable storing the user's email
+ *    password (string&) - Reference to the variable storing the user's password
+ *    phoneNumber (string&) - Reference to the variable storing the user's phone number
+ * Returns:
+ *    None
+ */
 void UserInterface::handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber)
 {
-    bool isEmailUnique = false;
-    bool isPhoneNumberUnique = false;
     cout << "Enter user name: ";
     util::readValue(userName);
     cout << "Enter email: ";
     util::readValue(email);
     util::isEmailValid(email);
-    while (!isEmailUnique)
-    {
-        cout << "Email already exists!. Please enter again: ";
-        util::readValue(email);
-        util::isEmailValid(email);
-        if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
-        {
-            isEmailUnique = true;
-        }
-    }
+	getUniqueEmail(email);
     cout << "Enter password: ";
     util::readValue(password);
     util::isPasswordValid(password);
     cout << "Enter phone number: ";
     util::readValue(phoneNumber);
     util::isPhoneNumberValid(phoneNumber);
-    while (!isPhoneNumberUnique)
-    {
-        cout << "Phone number already exists!. Please enter again: ";
-        util::readValue(phoneNumber);
-        util::isPhoneNumberValid(phoneNumber);
-        if (m_controller->isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
-        {
-            isPhoneNumberUnique = true;
-        }
-    }
+	getUniquePhoneNumber(phoneNumber);
 }
+
 
