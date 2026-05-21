@@ -61,8 +61,22 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
  */
 void AuthenticationManagementService::logout()
 {
+	m_dataStore.setAuthenticatedUser(nullptr);
 }
 
+/*
+ * Function: AuthenticationManagementService::registerUser
+ * Description: Registers a new user by creating a User object through the Factory
+ *              and adding it to the DataStore.
+ * Parameters:
+ *    userName (const std::string&) - The name of the user
+ *    email (const std::string&) - The email address of the user
+ *    password (const std::string&) - The password for the user
+ *    phoneNumber (const std::string&) - The phone number of the user
+ *    userType (Enums::UserType) - The type of user (Customer, Theatre Owner, Admin)
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the user is registered, FAILED otherwise
+ */
 Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
 {
     User* user = Factory::getObject<User>(generateUserId(), userName, email, password, phoneNumber, userType);
@@ -74,6 +88,15 @@ Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::st
 	return Enums::ProcessStatus::FAILED;
 }
 
+/*
+ * Function: AuthenticationManagementService::generateUserId
+ * Description: Generates a unique user ID based on the current number of users
+ *              in the DataStore. IDs are formatted as "US" followed by a
+ *              zero-padded number (e.g., US001, US002).
+ * Parameters: None
+ * Returns:
+ *    std::string - The generated unique user ID
+ */
 const std::string AuthenticationManagementService::generateUserId()
 {
 	const std::map<std::string, User*>& users = m_dataStore.getUsers();
@@ -116,11 +139,14 @@ bool AuthenticationManagementService::isPhoneNumberUnique(const std::string& pho
 bool AuthenticationManagementService::isEmailIdUnique(const std::string& email)
 {
 	const std::map<std::string, User*> users = m_dataStore.getUsers();
-	for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+	if (!users.empty())
 	{
-		if ((iterator->second)->getEmail() == email)
+		for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
 		{
-			return false;
+			if ((iterator->second)->getEmail() == email)
+			{
+				return false;
+			}
 		}
 	}
 	return true;

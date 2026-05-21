@@ -4,8 +4,11 @@
     Created: 20 May 2026
 */
 #include <iostream>
+#include "UserInterface.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    UserInterface ui = UserInterface();
+    ui.run();
+    return 0;
 }
