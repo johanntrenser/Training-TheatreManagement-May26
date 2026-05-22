@@ -340,6 +340,20 @@ Enums::ProcessStatus Controller::setMovieDeactivate(const std::string& movieId)
 }
 
 /*
+ * Function: Controller::setMovieActivate
+ * Description: Activates a movie in the system by delegating the request to the MovieManagementService.
+ * Parameters:
+ *    movieId - Unique identifier of the movie to activate
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was successfully activated,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setMovieActivate(const std::string& movieId)
+{
+    return m_movieManagementService->setMovieActive(movieId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

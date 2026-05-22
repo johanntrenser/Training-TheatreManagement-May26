@@ -43,4 +43,5 @@ public:
 	void changeMovieDuration(std::string& movieId, int& duration, const Movie*& currentMovie);
 	void displayAllMovies();
 	void DeactivateMovie();
+	void activateMovie();
 };
