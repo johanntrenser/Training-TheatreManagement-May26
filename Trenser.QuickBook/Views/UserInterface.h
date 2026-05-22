@@ -7,7 +7,6 @@
  */
 #pragma once
 #include "Controller.h"
-#include <string>
 class UserInterface
 {
 private:
@@ -32,7 +31,7 @@ public:
 	Enums::ProcessStatus handleMovieDetailsInput(const std::string& title, const std::string& language, const std::string& genre, const int duration);
 	void updateMovie();
 	void displayMovie(const std::vector<const Movie*>& movies);
-	const std::vector<std::string>& getMovieIdFromList(const std::vector<const Movie*>& movies);
+	const std::vector<std::string> getMovieIdFromList(const std::vector<const Movie*>& movies);
 	Enums::ProcessStatus checkMovieIdIsValid(std::string movieId, std::vector<std::string> movieIdList);
 	void displayCurrentMovieDetails(std::string& movieId, const std::vector<const Movie*>& movies);
 	const Movie* getCurrentMovie(std::string& movieId, const std::vector<const Movie*>& movies);

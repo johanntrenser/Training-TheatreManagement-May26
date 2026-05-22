@@ -5,7 +5,6 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
-#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <iomanip> 
@@ -563,7 +562,7 @@ void UserInterface::updateMovie()
 void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
 {
 	cout << "\n-------------------------------------------------------------\n";
-	cout << left << setw(30) << "ID"
+	cout << left << setw(10) << "ID"
 		<< setw(10) << "Title"
 		<< setw(10) << "Language"
 		<< setw(10) << "Genre"
@@ -574,9 +573,9 @@ void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
 		if (*iterator)
 		{
 			cout << left << setw(10) << (*iterator)->getMovieId()
-				<< setw(20) << (*iterator)->getTitle()
-				<< setw(15) << (*iterator)->getLanguage()
-				<< setw(15) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getTitle()
+				<< setw(10) << (*iterator)->getLanguage()
+				<< setw(10) << (*iterator)->getGenre()
 				<< setw(10) << (*iterator)->getDuration()
 				<< endl;
 		}
@@ -591,7 +590,7 @@ void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
  * Returns:
  *    A vector of strings containing movie IDs
  */
-const std::vector<std::string>& UserInterface::getMovieIdFromList(const std::vector<const Movie*>& movies)
+const std::vector<std::string> UserInterface::getMovieIdFromList(const std::vector<const Movie*>& movies)
 {
 	vector<string> movieIds;
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
@@ -644,7 +643,7 @@ Enums::ProcessStatus UserInterface::checkMovieIdIsValid(string movieId, const st
 void UserInterface::displayCurrentMovieDetails(string& movieId, const std::vector<const Movie*>& movies)
 {
 	cout << "\n-------------------------------------------------------------\n";
-	cout << left << setw(30) << "ID"
+	cout << left << setw(10) << "ID"
 		<< setw(10) << "Title"
 		<< setw(10) << "Language"
 		<< setw(10) << "Genre"
@@ -655,9 +654,9 @@ void UserInterface::displayCurrentMovieDetails(string& movieId, const std::vecto
 		if ((*iterator)->getMovieId() == movieId)
 		{
 			cout << left << setw(10) << (*iterator)->getMovieId()
-				<< setw(20) << (*iterator)->getTitle()
-				<< setw(15) << (*iterator)->getLanguage()
-				<< setw(15) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getTitle()
+				<< setw(10) << (*iterator)->getLanguage()
+				<< setw(10) << (*iterator)->getGenre()
 				<< setw(10) << (*iterator)->getDuration()
 				<< endl;
 		}
@@ -872,7 +871,7 @@ void UserInterface::addMovie()
  */
 void UserInterface::displayAllMovies()
 {
-	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	if (!(movies.empty()))
 	{
 		displayMovie(movies);
@@ -908,7 +907,7 @@ void UserInterface::deactivateMovie()
 		{
 			if (m_controller->setMovieDeactivate(movieId) == Enums::ProcessStatus::SUCCESS)
 			{
-				cout << "\nMovie status has changed to Activate!.";
+				cout << "\nMovie status has changed to Deactivate!.";
 			}
 			else
 			{
@@ -940,7 +939,7 @@ void UserInterface::activateMovie()
 	string title, movieId;
 	cout << "\nEnter the movie title: ";
 	util::readValue(title);
-	const std::vector<const Movie*> movies = m_controller->searchMovieByTitle(title);
+	const std::vector<const Movie*> movies = m_controller->searchDeactivatedMovieByTitle(title);
 	if (!movies.empty())
 	{
 		displayMovie(movies);

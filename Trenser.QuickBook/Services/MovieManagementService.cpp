@@ -12,7 +12,6 @@
 #include <map>
 #include "MovieManagementService.h"
 #include "Factory.h"
-
 /*
  * Function: MovieManagementService::MovieManagementService
  * Description: Constructs a MovieManagementService object and initializes the DataStore instance.
@@ -99,7 +98,7 @@ Enums::ProcessStatus MovieManagementService::isMovieUniqueInSystem(const std::st
  * Returns:
  *    A vector of constant Movie pointers representing the matching movies
  */
-const std::vector<const Movie*>& MovieManagementService::searchMovieByTitle(const std::string& title)
+const std::vector<const Movie*> MovieManagementService::searchMovieByTitle(const std::string& title)
 {
 	std::vector<const Movie*> resultantMovies;
 	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
@@ -217,7 +216,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDurationByID(const std::str
  * Returns:
  *    A vector of constant Movie pointers representing all active movies
  */
-const std::vector<const Movie*>& MovieManagementService::getAllActiveMovies()
+std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
 {
 	std::vector<const Movie*> allActiveMovies;
 	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
@@ -276,4 +275,26 @@ Enums::ProcessStatus MovieManagementService::setMovieActive(const std::string& m
 		}
 	}
 	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: MovieManagementService::searchDeactivatedMovieByTitle
+ * Description: Searches for movies in the DataStore that match the given title and are marked as INACTIVE.
+ * Parameters:
+ *    title - Title of the movie to search for
+ * Returns:
+ *    A vector of constant Movie pointers representing the matching deactivated movies
+ */
+const std::vector<const Movie*> MovieManagementService::searchDeactivatedMovieByTitle(const std::string& title)
+{
+	std::vector<const Movie*> resultantMovies;
+	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getTitle() == title && (iterator->second)->getStatus() == Enums::MovieStatus::INACTIVE)
+		{
+			resultantMovies.push_back(iterator->second);
+		}
+	}
+	return resultantMovies;
 }
