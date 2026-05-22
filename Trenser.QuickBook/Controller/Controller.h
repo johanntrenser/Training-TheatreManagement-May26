@@ -66,6 +66,7 @@ public:
 	Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
 	Enums::ProcessStatus setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
 	Enums::ProcessStatus setAuthenticatedUserUserName(const std::string& userName);
+	Enums::ProcessStatus deactivateUser(const std::string& userId);
 	~Controller();
 };
 

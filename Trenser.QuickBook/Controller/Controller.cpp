@@ -260,6 +260,20 @@ Enums::ProcessStatus Controller::setAuthenticatedUserPhoneNumber(const std::stri
 }
 
 /*
+ * Function: deactivateUser
+ * Description: Passes the deactivation of a user account to the UserManagementService.
+ * Parameters:
+ *    userId - The unique identifier of the user to be deactivated
+ * Returns:
+ *    enum - SUCCESS if activation succeeds,
+ *    enum - FAILED otherwise
+ */
+Enums::ProcessStatus Controller::deactivateUser(const std::string& userId)
+{
+    return m_userManagementService->deactivateUser(userId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
