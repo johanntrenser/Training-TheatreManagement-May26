@@ -253,3 +253,27 @@ Enums::ProcessStatus MovieManagementService::setMovieDeactive(const std::string&
 	}
 	return Enums::ProcessStatus::FAILED;
 }
+
+/*
+ * Function: MovieManagementService::setMovieActive
+ * Description: Activates a movie by searching the datastore for the given movieId
+ *              and updating its status to Enums::MovieStatus::ACTIVE if found.
+ * Parameters:
+ *    movieId - Unique identifier of the movie to activate
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was found and activated,
+ *    Enums::ProcessStatus::FAILED if the movieId does not exist in the datastore
+ */
+Enums::ProcessStatus MovieManagementService::setMovieActive(const std::string& movieId)
+{
+	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getMovieId() == movieId)
+		{
+			(iterator->second)->setStatus(Enums::MovieStatus::ACTIVE);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
