@@ -53,5 +53,4 @@ public:
 	void setAuthenticatedUserEmail(const std::string& email);
 	void setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
 	void setAuthenticatedUserName(const std::string& userName);
-	User* const getAuthenticatedUser() const;
 };

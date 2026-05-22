@@ -17,60 +17,6 @@ UserManagementService::UserManagementService()
 {
 }
 
-
-/*
-     * Function: viewAllUsers
-     * Description: Retrieves a list of all users in the system.
-     * Parameters: None
-     * Returns: Vector of User pointers representing all users.
-     */
-std::vector<User*> UserManagementService::viewAllUsers() const
-{
-    return {};
-}
-
-/*
-     * Function: updateUserDetails
-     * Description: Updates the details of an existing user.
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     *   - name: Updated full name of the user.
-     *   - email: Updated email address.
-     *   - phone: Updated contact phone number.
-     * Returns: True if the details are successfully updated, false otherwise.
-     */
-bool UserManagementService::updateUserDetails(const std::string& userId,
-    const std::string& name,
-    const std::string& email,
-    long int phone)
-{
-    return true;
-}
-
-/*
-     * Function: viewProfile
-     * Description: Retrieves the profile details of a specific user.
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     * Returns: Pointer to the User object containing profile details, or nullptr if not found.
-     */
-User* UserManagementService::viewProfile(const std::string& userId) const
-{
-    return nullptr;
-}
-
-/*
-     * Function: viewUserStatus
-     * Description: Retrieves the current status of a user (active/inactive).
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     * Returns: Integer representing the user status (enum placeholder).
-     */
-int UserManagementService::viewUserStatus(const std::string& userId) const
-{
-    return 0; // placeholder enum value
-}
-
 /*
  * Function: generateUserId
  * Description: Generates a unique user ID based on the current number of users
@@ -120,7 +66,7 @@ Enums::ProcessStatus UserManagementService::createUser(const std::string& userNa
     * Parameters: None
     * Returns: Vector of User pointers representing all active users.
     */
-const std::vector<const User*>& UserManagementService::getActiveUsers() const
+const std::vector<const User*> UserManagementService::getActiveUsers() const
 {
     std::vector<const User*> constUsers;
     if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::ADMIN)
@@ -129,6 +75,30 @@ const std::vector<const User*>& UserManagementService::getActiveUsers() const
         for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
         {
             constUsers.push_back(iterator->second);
+        }
+        return constUsers;
+    }
+    return constUsers;
+}
+
+/*
+    * Function: getInactiveUsers
+    * Description: Retrieves a list of all inactive users in the system.
+    * Parameters: None
+    * Returns: Vector of User pointers representing all inactiveUsers users.
+    */
+const std::vector<const User*> UserManagementService::getInactiveUsers() const
+{
+    std::vector<const User*> constUsers;
+    if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::ADMIN)
+    {
+        const std::map<std::string, User*> users = m_dataStore.getUsers();
+        for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+        {
+            if (iterator->second->getStatus() == Enums::UserStatus::INACTIVE)
+            {
+                constUsers.push_back(iterator->second);
+            }
         }
         return constUsers;
     }
@@ -209,7 +179,7 @@ Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& us
 }
 
 /*
-     * Function: rectivateUser
+     * Function: reactivateUser
      * Description: Reactivates a previously deactivated user.
      * Parameters:
      *   - userId: Unique identifier of the user.
@@ -245,6 +215,8 @@ const User* const UserManagementService::getAuthenticatedUser()
 {
     return m_dataStore.getAuthenticatedUser();
 }
+
+/*
  * Function: changePassword
  * Description: Validates the current password of the authenticated user and,
  *              if it matches, updates the password to the new value.
@@ -265,17 +237,6 @@ Enums::ProcessStatus UserManagementService::changePassword(const std::string& cu
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;
-}
-     * Function: changePassword
-     * Description: Changes the password of a specific user.
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     *   - newPassword: New password to be set.
-     * Returns: None
-     */
-void UserManagementService::changePassword(const std::string& userId,
-    const std::string& newPassword)
-{
 }
 
 /*

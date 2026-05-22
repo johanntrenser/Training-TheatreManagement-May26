@@ -204,9 +204,22 @@ Enums::ProcessStatus Controller::createUser(const std::string& userName, const s
  * Returns:
  *    A vector of const User* pointers representing active users
  */
-const std::vector<const User*>& Controller::getActiveUsers() const
+const std::vector<const User*> Controller::getActiveUsers() const
 {
     return m_userManagementService->getActiveUsers();
+}
+
+/*
+ * Function: getInactiveUsers
+ * Description: Retrieves a list of all inactive users from the UserManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of const User* pointers representing inactive users
+ */
+const std::vector<const User*> Controller::getInactiveUsers()
+{
+    return m_userManagementService->getInactiveUsers();
 }
 
 /*
@@ -274,7 +287,7 @@ Enums::ProcessStatus Controller::deactivateUser(const std::string& userId)
 }
 
 /*
- * Function: activateUser
+ * Function: reactivateUser
  * Description: Delegates the activation of a user account to the UserManagementService.
  * Parameters:
  *    userId - The unique identifier of the user to be activated

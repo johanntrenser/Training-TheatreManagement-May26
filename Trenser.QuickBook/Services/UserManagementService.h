@@ -20,29 +20,17 @@ private:
     DataStore& m_dataStore;
 public:
     UserManagementService();
-
-    std::vector<User*> viewAllUsers() const;
-
-    bool updateUserDetails(const std::string& userId,
-        const std::string& name,
-        const std::string& email,
-        long int phone);
-
-    User* viewProfile(const std::string& userId) const;
-    int viewUserStatus(const std::string& userId) const; // enum placeholder
-
     const std::string generateUserId();
     Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
-    const std::vector<const User*>& getActiveUsers() const;
-
+    const std::vector<const User*> getActiveUsers() const;
+    const std::vector<const User*> getInactiveUsers() const;
     Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
     Enums::ProcessStatus setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
     Enums::ProcessStatus setAuthenticatedUserUserName(const std::string& userName);
     Enums::ProcessStatus deactivateUser(const std::string& userId);
     Enums::ProcessStatus reactivateUser(const std::string& userId);
     Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
-    void changePassword(const std::string& userId,
-        const std::string& newPassword);
     Enums::UserStatus getUserStatus(const std::string& userId);
+    const User* const getAuthenticatedUser();
 };
 

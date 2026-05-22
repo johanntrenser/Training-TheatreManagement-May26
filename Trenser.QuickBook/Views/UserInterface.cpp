@@ -177,7 +177,7 @@ void UserInterface::adminMenu()
 {
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
-		cout << "1. Exit" << endl;
+		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout" << endl;
 		cout << "Enter an option: ";
 }
 
@@ -193,7 +193,7 @@ void UserInterface::customerMenu()
 {
 	cout << "Customer Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Exit" << endl;
+	cout << "1. Update User Details\n2. View Profile\n3. Change Password\n4. Logout" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -209,7 +209,7 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Exit" << endl;
+	cout << "1. Update User Details\n2. View Profile\n3. Change Password\n4. Logout" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -265,7 +265,6 @@ void UserInterface::registerUser()
  * Returns:
  *    None
  */
-
 void UserInterface::userTypesMenu()
 {
     cout << "-------------------User Type List-------------------" << std::endl;
@@ -274,6 +273,14 @@ void UserInterface::userTypesMenu()
     cout << "Enter a choice: " << std::endl;
 }
 
+/*
+ * Function: UserInterface::handleAdminMenuOperation
+ * Description: Handles the admin menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleAdminMenuOperation()
 {
 	bool isMenuActive = true;
@@ -285,6 +292,30 @@ void UserInterface::handleAdminMenuOperation()
 		switch (choice)
 		{
 		case 1:
+			createUser();
+			break;
+		case 2:
+			viewAllUsers();
+			break;
+		case 3:
+			updateUserDetails();
+			break;
+		case 4:
+			deactivateUser();
+			break;
+		case 5:
+			reactivateUser();
+			break;
+		case 6:
+			viewProfile();
+			break;
+		case 7:
+			viewUserStatus();
+			break;
+		case 8:
+			changePassword();
+			break;
+		case 9:
 			isMenuActive = false;
 			break;
 		default:
@@ -296,6 +327,14 @@ void UserInterface::handleAdminMenuOperation()
 	}
 }
 
+/*
+ * Function: UserInterface::handleCustomerMenuOperation
+ * Description: Handles the customer menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleCustomerMenuOperation()
 {
 	bool isMenuActive = true;
@@ -307,6 +346,15 @@ void UserInterface::handleCustomerMenuOperation()
 		switch (choice)
 		{
 		case 1:
+			updateUserDetails();
+			break;
+		case 2:
+			viewProfile();
+			break;
+		case 3:
+			changePassword();
+			break;
+		case 4:
 			isMenuActive = false;
 			break;
 		default:
@@ -318,6 +366,14 @@ void UserInterface::handleCustomerMenuOperation()
 	}
 }
 
+/*
+ * Function: UserInterface::handleTheatreOwnerMenuOperation
+ * Description: Handles the theatre owner menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleTheatreOwnerMenuOperation()
 {
 	bool isMenuActive = true;
@@ -329,6 +385,15 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		switch (choice)
 		{
 		case 1:
+			updateUserDetails();
+			break;
+		case 2:
+			viewProfile();
+			break;
+		case 3:
+			changePassword();
+			break;
+		case 4:
 			isMenuActive = false;
 			break;
 		default:
@@ -479,6 +544,7 @@ void UserInterface::userTypesAdminMenu()
 	cout << "3. Admin" << std::endl;
 	cout << "Enter a choice: " << std::endl;
 }
+
 /*
  * Function: UserInterface::updateUserDetails
  * Description: Provides a menu for the authenticated user to update
@@ -554,9 +620,6 @@ void UserInterface::updateUserDetailsMenu()
 	cout << "1. User Name\n2. Email\n3. Phone Number\n4. Exit\nEnter Your Choice: ";
 }
 
-void UserInterface::viewProfile()
-{
-}
 /*
  * Function: UserInterface::deactivateUser
  * Description: Displays all users, prompts the Admin to enter a User ID,
@@ -583,8 +646,45 @@ void UserInterface::deactivateUser()
 		cout << "Invalid User Id, Try again!" << endl;
 	}
 }
+
 /*
- * Function: UserInterface::activateUser
+ * Function: UserInterface::viewInactiveUsers
+ * Description: Retrieves all inactive users from the Controller and displays
+ *              them in a tabular format on the console.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewInactiveUsers()
+{
+	const vector<const User*> users = m_controller->getInactiveUsers();
+	if (users.empty())
+	{
+		cout << "No users found!" << endl;
+	}
+	std::cout << std::left
+		<< std::setw(10) << "User ID"
+		<< std::setw(20) << "Name"
+		<< std::setw(25) << "Email"
+		<< std::setw(15) << "Password"
+		<< std::setw(15) << "Role"
+		<< std::endl;
+	std::cout << std::string(100, '-') << std::endl;
+	for (const User* const user : users)
+	{
+		std::cout << std::left
+			<< std::setw(10) << user->getUserId()
+			<< std::setw(20) << user->getUserName()
+			<< std::setw(25) << user->getEmail()
+			<< std::setw(15) << user->getPassword()
+			<< std::setw(15) << Enums::getUserTypeString(user->getUserType())
+			<< std::endl;
+	}
+}
+
+/*
+ * Function: UserInterface::reactivateUser
  * Description: Displays all inactive users, prompts the Admin to enter a User ID,
  *              and to activate the selected user. Provides feedback on
  *              whether the activation was successful or failed.
@@ -650,8 +750,7 @@ void UserInterface::viewAllUsers()
 		}
 	}
 }
-void UserInterface::viewInactiveUsers()
-{}
+
 /*
  * Function: UserInterface::viewProfile
  * Description: Retrieves the currently authenticated user from the Controller

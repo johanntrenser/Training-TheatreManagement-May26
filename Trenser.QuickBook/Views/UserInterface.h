@@ -34,8 +34,8 @@ public:
 	void viewProfile();
 	void updateUserDetailsMenu();
 	void deactivateUser();
-	void reactivateUser();
 	void viewInactiveUsers();
+	void reactivateUser();
 	void changePassword();
 	void viewUserStatus();
 };
