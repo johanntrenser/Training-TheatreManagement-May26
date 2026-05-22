@@ -353,6 +353,15 @@ Enums::ProcessStatus Controller::setMovieActivate(const std::string& movieId)
     return m_movieManagementService->setMovieActive(movieId);
 }
 
+/*
+ * Function: Controller::searchDeactivatedMovieByTitle
+ * Description: Searches for movies in the system that match the given title and are marked as INACTIVE.
+ *              Delegates the search request to the MovieManagementService.
+ * Parameters:
+ *    title - Title of the movie to search for
+ * Returns:
+ *    A vector of constant Movie pointers representing the matching deactivated movies
+ */
 const std::vector<const Movie*> Controller::searchDeactivatedMovieByTitle(const std::string& title)
 {
     return m_movieManagementService->searchDeactivatedMovieByTitle(title);
