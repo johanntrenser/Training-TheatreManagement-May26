@@ -48,4 +48,6 @@ public:
 	DataStore& operator=(const DataStore&) = delete;
 	static DataStore& getInstance();
 	void setAuthenticatedUser(User* user);
+	const std::map<std::string, Movie*>& getMovies() const;
+	void addMovieToSystem(Movie* movie);
 };

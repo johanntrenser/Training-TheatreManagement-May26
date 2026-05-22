@@ -27,4 +27,6 @@ public:
 	void getUniqueEmail(std::string& email);
 	void getUniquePhoneNumber(std::string& phoneNumber);
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
+	void addMovie();
+	Enums::ProcessStatus handleMovieDetailsInput(const std::string& title, const std::string& language, const std::string& genre, const int duration);
 };
