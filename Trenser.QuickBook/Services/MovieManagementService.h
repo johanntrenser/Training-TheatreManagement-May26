@@ -15,7 +15,7 @@ private:
 	DataStore& m_dataStore;
 public:
 	MovieManagementService();
-	Enums::ProcessStatus addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const size_t duration);
+	Enums::ProcessStatus addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);
 	const std::string generateMovieId();
 	Enums::ProcessStatus isMovieUniqueInSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);
 };
