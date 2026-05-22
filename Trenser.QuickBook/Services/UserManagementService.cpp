@@ -1,4 +1,8 @@
+#include <map>
+#include <iomanip>
+#include <sstream>
 #include "UserManagementService.h"
+#include "Factory.h"
 
 /*
      * Function: UserManagementService
@@ -9,28 +13,9 @@
      * Returns: None
      */
 UserManagementService::UserManagementService()
-{
-}
+    : m_dataStore(DataStore::getInstance())
+{}
 
-/*
-     * Function: createUser
-     * Description: Creates a new user with the provided details.
-     * Parameters:
-     *   - name: Full name of the user.
-     *   - username: Unique username for login.
-     *   - email: Email address of the user.
-     *   - phone: Contact phone number.
-     *   - password: Password for authentication.
-     * Returns: True if the user is successfully created, false otherwise.
-     */
-bool UserManagementService::createUser(const std::string& name,
-    const std::string& username,
-    const std::string& email,
-    long int phone,
-    const std::string& password)
-{
-    return true;
-}
 
 /*
      * Function: deactivateUser
@@ -120,4 +105,47 @@ int UserManagementService::viewUserStatus(const std::string& userId) const
 void UserManagementService::changePassword(const std::string& userId,
     const std::string& newPassword)
 {
+}
+
+/*
+ * Function: generateUserId
+ * Description: Generates a unique user ID based on the current number of users
+ *              in the DataStore. IDs are formatted as "US" followed by a
+ *              zero-padded number (e.g., US001, US002).
+ * Parameters: None
+ * Returns:
+ *    std::string - The generated unique user ID
+ */
+const std::string UserManagementService::generateUserId()
+{
+    const std::map<std::string, User*>& users = m_dataStore.getUsers();
+    int idNumber = static_cast<int>(users.size()) + 1;
+    std::ostringstream buffer;
+    buffer << "US" << std::setw(3) << std::setfill('0') << idNumber;
+    return buffer.str();
+}
+
+/*
+ * Function: createUser
+ * Description: Passes the Admin driven user registration process to the
+ *              UserManagementService.
+ * Parameters:
+ *    userName   - The name of the user to be registered
+ *    email      - The email address of the user
+ *    password   - The password for the user account
+ *    phoneNumber- The phone number of the user
+ *    userType(enum)   - The role of the user (Customer, Theatre Owner, or Admin)
+ * Returns:
+ *    ProcessStatus::SUCCESS if registration is successful,
+ *    ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus UserManagementService::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
+{
+    User* user = Factory::getObject<User>(generateUserId(), userName, email, password, phoneNumber, userType);
+    if (user != nullptr)
+    {
+        m_dataStore.addUser(user);
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
 }

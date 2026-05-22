@@ -419,4 +419,63 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
 	getUniquePhoneNumber(phoneNumber);
 }
 
+/*
+ * Function: registerUserByAdmin
+ * Description: Allows an Admin to register a new user directly by selecting
+ *              the role (Customer, Theatre Owner, or Admin) and entering
+ *              user details.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::createUser()
+{
+	string userName, email, password, phoneNumber;
+	Enums::UserType userType = Enums::UserType::CUSTOMER;
+	int choice;
+	userTypesAdminMenu();
+	util::readValue(choice);
+	switch (choice)
+	{
+	case 1:
+		userType = Enums::UserType::CUSTOMER;
+		break;
+	case 2:
+		userType = Enums::UserType::THEATRE_OWNER;
+		break;
+	case 3:
+		userType = Enums::UserType::ADMIN;
+	default:
+		cout << "Invalid Choice. Please Try again!" << endl;
+		return;
+	}
+	handleUserDetailsInput(userName, email, password, phoneNumber);
+	if (m_controller->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "User registered successfully!" << endl;
+	}
+	else
+	{
+		cout << "User could not be registered!" << endl;
+	}
+}
+
+/*
+ * Function: userTypesAdminMenu
+ * Description: Displays the list of available user types (Customer, Theatre Owner,
+ *              Admin) for Admin registration.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::userTypesAdminMenu()
+{
+	cout << "-------------------User Type List-------------------" << std::endl;
+	cout << "1. Customer" << std::endl;
+	cout << "2. Theatre Owner" << std::endl;
+	cout << "3. Admin" << std::endl;
+	cout << "Enter a choice: " << std::endl;
+}
 
