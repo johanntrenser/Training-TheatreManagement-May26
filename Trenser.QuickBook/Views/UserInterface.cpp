@@ -235,6 +235,7 @@ void UserInterface::registerUser()
         break;
     case 2:
         userType = Enums::UserType::THEATRE_OWNER;
+		break;
     default:
         cout << "Invalid Choice. Please Try again!" << endl;
         return;
