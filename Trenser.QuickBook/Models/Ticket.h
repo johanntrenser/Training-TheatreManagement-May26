@@ -1,3 +1,12 @@
+/*
+ * File: Ticket.h
+ * Description: Defines the Ticket class, which represents a booked ticket
+ *              in the system. Stores details such as ticket ID, associated
+ *              payment, and customer information.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
+
 #pragma once
 #include "User.h"
 #include "Payment.h"

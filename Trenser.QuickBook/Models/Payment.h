@@ -1,3 +1,12 @@
+/*
+ * File: Payment.h
+ * Description: Defines the Payment class, which represents a payment
+ *              transaction for a booking. Stores details such as payment ID,
+ *              associated booking, amount, payment method, status, and timestamp.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
+
 #pragma once
 #include <string>
 #include "Booking.h"

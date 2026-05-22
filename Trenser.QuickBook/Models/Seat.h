@@ -1,3 +1,12 @@
+/*
+ * File: Seat.h
+ * Description: Defines the Seat class, which represents an individual seat
+ *              in a cinema screen. Stores details such as seat ID, screen,
+ *              row, column, type, status, and booking state.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
+
 #pragma once
 #include <string>
 
@@ -37,6 +46,3 @@ public:
     void setSeatStatus(int seatStatus);
     void setBookingStatus(int bookingStatus);
 };
-
-
-

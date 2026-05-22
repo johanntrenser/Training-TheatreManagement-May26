@@ -1,3 +1,13 @@
+/*
+ * File: Enums.h
+ * Description: Declares various enumerations used throughout the system,
+ *              including statuses for theatres, movies, shows, screens,
+ *              bookings, payments, notifications, users, seats, and refunds.
+ *              Also provides utility functions to convert between enum values
+ *              and their corresponding string representations.
+ * Author: Trenser
+ * Created: 20 May 2026
+ */
 #pragma once
 #include <string>
 
@@ -60,7 +70,8 @@ namespace Enums {
     {
         ADMIN,
         CUSTOMER,
-        THEATRE_OWNER
+        THEATRE_OWNER,
+        USER_NOT_FOUND
     };
 
     enum class UserStatus
@@ -89,6 +100,20 @@ namespace Enums {
         UPI,
         CREDIT_CARD,
         DEBIT_CARD
+    };
+
+    //Represent the Result of Process Execution.
+    enum class ProcessStatus
+    {
+        FAILED,
+        SUCCESS
+    };
+
+    enum class LoginStatus
+    {
+        USER_NOT_FOUND,
+        INVALID_PASSWORD,
+        USER_FOUND
     };
 
     inline std::string getTheatreStatusString(TheatreStatus status)

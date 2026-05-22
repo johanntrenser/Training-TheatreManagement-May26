@@ -9,6 +9,8 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <string>
+#include <utility>
 #include "AuthenticationManagementService.h"
 #include "UserManagementService.h"
 #include "TheatreManagementService.h"
@@ -54,6 +56,11 @@ public:
 		ScreenManagementService* screenService,
 		SeatManagementService* seatService,
 		RefundManagementService* refundService);
+	std::pair<Enums::LoginStatus, Enums::UserType> login(std::string email, std::string password);
+	Enums::ProcessStatus registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType);
+	Enums::ProcessStatus isEmailUnique(const std::string& email);
+	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
+	void logout();
 	~Controller();
 };
 

@@ -42,7 +42,10 @@ private:
 	std::map<std::string, Theatre*> m_theatre;
 	std::map<std::string, Ticket*> m_ticket;
 public:
+	const std::map<std::string, User*>& getUsers() const;
+	void addUser(User* user);
 	DataStore(const DataStore&) = delete;
 	DataStore& operator=(const DataStore&) = delete;
 	static DataStore& getInstance();
+	void setAuthenticatedUser(User* user);
 };

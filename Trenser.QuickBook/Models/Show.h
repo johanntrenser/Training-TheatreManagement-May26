@@ -1,3 +1,11 @@
+/*
+ * File: Show.h
+ * Description: Defines the Show class, which represents a scheduled movie show
+ *              in a theatre screen. Stores details such as show ID, associated
+ *              movie, screen, start/end times, seat availability, and status.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
 #pragma once
 #include <string>
 #include <ctime>
@@ -40,6 +48,3 @@ public:
     void setSeatAvailability(ShowSeatAvailability* seatAvailability);
     void setShowStatus(int showStatus);
 };
-
-
-

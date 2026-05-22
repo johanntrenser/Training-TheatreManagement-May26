@@ -1,3 +1,13 @@
+/*
+ * File: UserManagementService.h
+ * Description: Declares the UserManagementService class, which provides
+ *              functionality for managing users within the system.
+ *              This service handles operations such as creating, updating,
+ *              deactivating/reactivating users, viewing user profiles,
+ *              changing passwords, and retrieving user lists.
+ * Author: Trenser
+ * Created: 20 May 2026
+ */
 #pragma once
 #include <string>
 #include <vector>

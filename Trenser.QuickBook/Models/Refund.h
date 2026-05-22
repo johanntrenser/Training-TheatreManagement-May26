@@ -1,3 +1,12 @@
+/*
+ * File: Refund.h
+ * Description: Defines the Refund class, which represents a refund
+ *              transaction for a cancelled ticket. Stores details such
+ *              as refund ID, associated ticket, refund amount, timestamp,
+ *              and status.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
 #pragma once
 #include <string>
 #include "Ticket.h"

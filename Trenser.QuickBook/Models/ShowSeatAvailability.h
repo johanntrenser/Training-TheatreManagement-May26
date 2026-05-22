@@ -1,3 +1,13 @@
+/*
+ * File: ShowSeatAvailability.h
+ * Description: Defines the ShowSeatAvailability class, which manages seat
+ *              availability for a specific show. Stores details such as
+ *              availability ID, associated show, and a map of seat IDs to
+ *              seat objects.
+ * Author: Entire Team
+ * Created: 20-May-2026
+ */
+
 #pragma once
 #include <map>
 #include "Seat.h"
@@ -20,4 +30,3 @@ public:
 	void setShow(Show* show);
 	void setSeatAvailabilityMap(std::map<std::string, Seat*>& seatAvailabilityMap);
 };
-

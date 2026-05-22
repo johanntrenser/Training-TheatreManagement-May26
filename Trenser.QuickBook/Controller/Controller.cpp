@@ -9,6 +9,7 @@
  * Created: 20 May 2026
  */
 #include "Controller.h"
+using namespace::std;
 
  /*
   * Function: Controller::Controller
@@ -80,6 +81,94 @@ Controller::Controller(AuthenticationManagementService* authService,
     m_seatManagementService(seatService),
     m_refundManagementService(refundService)
 {
+}
+
+/*
+ * Function: Controller::registerUser
+ * Description: Registers a new user by delegating the operation to the
+ *              AuthenticationManagementService. Returns the process status
+ *              indicating success or failure.
+ * Parameters:
+ *    userName (const std::string&) - The name of the user
+ *    email (const std::string&) - The email address of the user
+ *    password (const std::string&) - The password for the user
+ *    phoneNumber (const std::string&) - The phone number of the user
+ *    userType (Enums::UserType) - The type of user (Customer, Theatre Owner, Admin)
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the user is registered, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
+{
+    if (m_authenticationManagementService->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: Controller::isEmailUnique
+ * Description: Validates whether the provided email address is unique by
+ *              checking against existing users in the AuthenticationManagementService.
+ * Parameters:
+ *    email (const std::string&) - The email address to validate
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the email is unique, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isEmailUnique(const std::string& email)
+{
+    if (m_authenticationManagementService->isEmailIdUnique(email))
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: Controller::isPhoneNumberUnique
+ * Description: Validates whether the provided phone number is unique by
+ *              checking against existing users in the AuthenticationManagementService.
+ * Parameters:
+ *    phoneNumber (const std::string&) - The phone number to validate
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the phone number is unique, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isPhoneNumberUnique(const std::string& phoneNumber)
+{
+    if (m_authenticationManagementService->isPhoneNumberUnique(phoneNumber))
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: login
+ * Description: Passes the login process to the AuthenticationManagementService.
+ * Parameters:
+ *    email (string) - The email address of the user attempting to log in
+ *    password (string) - The password associated with the given email
+ * Returns:
+ *    A pair containing:
+ *      enum - LoginStatus indicating the result of the login attempt
+ *      enum - UserType of the authenticated user if login is successful,
+ *             otherwise USER_NOT_FOUND
+ */
+pair<Enums::LoginStatus, Enums::UserType> Controller::login(string email, string password)
+{
+    return m_authenticationManagementService->login(email, password);
+}
+
+/*
+ * Function: Controller::logout
+ * Description: Logs out the currently authenticated user by delegating the
+ *              operation to the AuthenticationManagementService.
+ * Parameters: None
+ * Returns: None
+ */
+void Controller::logout()
+{
+    m_authenticationManagementService->logout();
 }
 
 /*
