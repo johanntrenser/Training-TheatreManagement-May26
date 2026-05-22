@@ -14,7 +14,8 @@
   */
 Log::Log()
     : m_logId(""),
-    m_description("")
+    m_description(""),
+    m_logType(Enums::LogType::UNKNOWN)
 {}
 
 /*
@@ -27,9 +28,11 @@ Log::Log()
  * Returns: None
  */
 Log::Log(const std::string& logId,
-    const std::string& description)
+    const std::string& description,
+    const Enums::LogType logType)
     : m_logId(logId),
-    m_description(description)
+    m_description(description),
+    m_logType(logType)
 {}
 
 /*
@@ -54,6 +57,16 @@ const std::string& Log::getDescription() const
     return m_description;
 }
 
+const Enums::LogType Log::getLogType() const
+{
+    return m_logType;
+}
+
+const util::Timestamp& Log::getTimestamp() const
+{
+    return m_timestamp;
+}
+
 /*
  * Function: Log::setLogId
  * Description: Updates the log ID.
@@ -76,4 +89,14 @@ void Log::setLogId(const std::string& id)
 void Log::setDescription(const std::string& description)
 {
     m_description = description;
+}
+
+void Log::setLogType(const Enums::LogType logType)
+{
+    m_logType = logType;
+}
+
+void Log::setTimestamp(const util::Timestamp& timestamp)
+{
+    m_timestamp = timestamp;
 }
