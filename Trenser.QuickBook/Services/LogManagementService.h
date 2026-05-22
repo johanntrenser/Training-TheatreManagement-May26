@@ -16,5 +16,7 @@ private:
 	DataStore& m_dataStore;
 public:
 	LogManagementService();
+	const std::string generateLogId();
+	void addLog(const std::string& description, const Enums::LogType logType);
 };
 
