@@ -10,7 +10,7 @@
  */
 #include "Controller.h"
 using namespace::std;
-
+#include<iostream>
  /*
   * Function: Controller::Controller
   * Description: Default constructor. Initializes all management service
@@ -202,7 +202,7 @@ Enums::ProcessStatus Controller::isMovieUnique(const std::string& title, const s
  * Returns:
  *    A vector of constant Movie pointers representing the matching movies
  */
-const std::vector<const Movie*>& Controller::searchMovieByTitle(std::string& title)
+const std::vector<const Movie*> Controller::searchMovieByTitle(std::string& title)
 {
     return m_movieManagementService->searchMovieByTitle(title);
 }
@@ -519,7 +519,7 @@ std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& 
  * Returns:
  *    A vector of constant Movie pointers representing all active movies
  */
-const std::vector<const Movie*>& Controller::getAllActiveMovies()
+std::vector<const Movie*> Controller::getAllActiveMovies()
 {
     return m_movieManagementService->getAllActiveMovies();
 }
@@ -552,6 +552,10 @@ Enums::ProcessStatus Controller::setMovieActivate(const std::string& movieId)
     return m_movieManagementService->setMovieActive(movieId);
 }
 
+const std::vector<const Movie*> Controller::searchDeactivatedMovieByTitle(const std::string& title)
+{
+    return m_movieManagementService->searchDeactivatedMovieByTitle(title);
+}
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
