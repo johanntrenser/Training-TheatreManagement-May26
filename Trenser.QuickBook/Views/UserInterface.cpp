@@ -700,3 +700,33 @@ void UserInterface::changePassword()
 		cout << "Password does not match." << endl;
 	}
 }
+/*
+ * Function: UserInterface::viewUserStatus
+ * Description: Prompts the user to enter a User ID and retrieves the status
+ *              of the specified user from the Controller. Displays whether
+ *              the user is Active, Inactive, or not found.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewUserStatus()
+{
+	string userId;
+	cout << "Enter User ID: ";
+	util::readValue(userId);
+	Enums::UserStatus status = m_controller->getUserStatus(userId);
+	if (status == Enums::UserStatus::ACTIVE)
+	{
+		cout << "User is Active" << endl;
+	}
+	else if (status == Enums::UserStatus::INACTIVE)
+	{
+		cout << "User is Inactive" << endl;
+	}
+	else
+	{
+		cout << "User not found!" << endl;
+		util::pressEnter();
+	}
+}

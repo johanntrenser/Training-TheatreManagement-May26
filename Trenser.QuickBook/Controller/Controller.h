@@ -70,6 +70,7 @@ public:
 	Enums::ProcessStatus reactivateUser(const std::string& userId);
 	const User* const getAuthenticatedUser();
 	Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
+	Enums::UserStatus getUserStatus(const std::string& userId);
 	~Controller();
 };
 
