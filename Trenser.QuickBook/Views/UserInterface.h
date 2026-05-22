@@ -58,4 +58,5 @@ public:
 	void displayAllMovies();
 	void DeactivateMovie();
 	void activateMovie();
+	void searchMovie();
 };
