@@ -210,6 +210,56 @@ const std::vector<const User*>& Controller::getActiveUsers() const
 }
 
 /*
+ * Function: setAuthenticatedUserUserName
+ * Description: Updates the username of the currently authenticated user.
+ * Parameters:
+ *    username - The new username to be set
+ * Returns:
+ *    SUCCESS if the update succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setAuthenticatedUserUserName(const std::string& username)
+{
+    return m_userManagementService->setAuthenticatedUserUserName(username);
+}
+
+/*
+ * Function: setAuthenticatedUserEmail
+ * Description: Updates the email of the currently authenticated user after verifying uniqueness.
+ * Parameters:
+ *    email - The new email to be set
+ * Returns:
+ *    SUCCESS if the update succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setAuthenticatedUserEmail(const std::string& email)
+{
+    if (isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
+    {
+        return m_userManagementService->setAuthenticatedUserEmail(email);
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: setAuthenticatedUserPhoneNumber
+ * Description: Updates the phone number of the currently authenticated user after verifying uniqueness.
+ * Parameters:
+ *    phoneNumber - The new phone number to be set
+ * Returns:
+ *    SUCCESS if the update succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
+{
+    if (isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
+    {
+        return m_userManagementService->setAuthenticatedUserPhoneNumber(phoneNumber);
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

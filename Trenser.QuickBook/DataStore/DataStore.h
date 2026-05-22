@@ -49,4 +49,7 @@ public:
 	static DataStore& getInstance();
 	void setAuthenticatedUser(User* user);
 	const Enums::UserType getAuthenticatedUserType() const;
+	void setAuthenticatedUserEmail(const std::string& email);
+	void setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
+	void setAuthenticatedUserName(const std::string& userName);
 };

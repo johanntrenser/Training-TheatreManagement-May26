@@ -74,3 +74,42 @@ const Enums::UserType DataStore::getAuthenticatedUserType() const
 {
     return m_currentUser->getUserType();
 }
+
+/*
+ * Function: setAuthenticatedUserName
+ * Description: Updates the username of the currently authenticated user.
+ * Parameters:
+ *    username - The new username to be set
+ * Returns:
+ *    None
+ */
+void DataStore::setAuthenticatedUserName(const std::string& username)
+{
+    m_currentUser->setUserName(username);
+}
+
+/*
+ * Function: setAuthenticatedUserEmail
+ * Description: Updates the email address of the currently authenticated user.
+ * Parameters:
+ *    email - The new email address to be set
+ * Returns:
+ *    None
+ */
+void DataStore::setAuthenticatedUserEmail(const std::string& email)
+{
+    m_currentUser->setEmail(email);
+}
+
+/*
+ * Function: setAuthenticatedUserPhoneNumber
+ * Description: Updates the phone number of the currently authenticated user.
+ * Parameters:
+ *    phoneNumber - The new phone number to be set
+ * Returns:
+ *    None
+ */
+void DataStore::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
+{
+    m_currentUser->setPhoneNumber(phoneNumber);
+}
