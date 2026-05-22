@@ -311,7 +311,7 @@ void UserInterface::handleAdminMenuOperation()
 			displayAllMovies();
 			break;
 		case 4:
-			DeactivateMovie();
+			deactivateMovie();
 			break;
 		case 5:
 			activateMovie();
@@ -892,7 +892,7 @@ void UserInterface::displayAllMovies()
  * Returns:
  *    None
  */
-void UserInterface::DeactivateMovie()
+void UserInterface::deactivateMovie()
 {
 	string title, movieId;
 	cout << "\nEnter the movie title: ";
