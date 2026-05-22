@@ -1403,7 +1403,7 @@ void UserInterface::displayAllMovies()
  * Returns:
  *    None
  */
-void UserInterface::DeactivateMovie()
+void UserInterface::deactivateMovie()
 {
 	string title, movieId;
 	cout << "\nEnter the movie title: ";
