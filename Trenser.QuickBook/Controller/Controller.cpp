@@ -274,6 +274,20 @@ Enums::ProcessStatus Controller::deactivateUser(const std::string& userId)
 }
 
 /*
+ * Function: activateUser
+ * Description: Delegates the activation of a user account to the UserManagementService.
+ * Parameters:
+ *    userId - The unique identifier of the user to be activated
+ * Returns:
+ *    enum - SUCCESS if activation succeeds,
+ *    enum - FAILED otherwise
+ */
+Enums::ProcessStatus Controller::reactivateUser(const std::string& userId)
+{
+    return m_userManagementService->reactivateUser(userId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

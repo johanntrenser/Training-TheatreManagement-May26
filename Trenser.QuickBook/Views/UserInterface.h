@@ -34,4 +34,6 @@ public:
 	void viewProfile();
 	void updateUserDetailsMenu();
 	void deactivateUser();
+	void reactivateUser();
+	void viewInactiveUsers();
 };

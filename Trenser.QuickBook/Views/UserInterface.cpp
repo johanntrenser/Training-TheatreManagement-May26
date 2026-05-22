@@ -583,6 +583,32 @@ void UserInterface::deactivateUser()
 		cout << "Invalid User Id, Try again!" << endl;
 	}
 }
+/*
+ * Function: UserInterface::activateUser
+ * Description: Displays all inactive users, prompts the Admin to enter a User ID,
+ *              and to activate the selected user. Provides feedback on
+ *              whether the activation was successful or failed.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::reactivateUser()
+{
+	string userId;
+	viewInactiveUsers();
+	cout << "Enter the User ID: ";
+	util::readValue(userId);
+	Enums::ProcessStatus result = m_controller->reactivateUser(userId);
+	if (result == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "USER " << userId << " activated successfully" << endl;
+	}
+	else
+	{
+		cout << "Invalid User Id, Try again!" << endl;
+	}
+}
 
 /*
  * Function: UserInterface::viewAllUsers
@@ -624,3 +650,5 @@ void UserInterface::viewAllUsers()
 		}
 	}
 }
+void UserInterface::viewInactiveUsers()
+{}
