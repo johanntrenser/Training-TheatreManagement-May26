@@ -557,6 +557,32 @@ void UserInterface::updateUserDetailsMenu()
 void UserInterface::viewProfile()
 {
 }
+/*
+ * Function: UserInterface::deactivateUser
+ * Description: Displays all users, prompts the Admin to enter a User ID,
+ *              and attempts to deactivate the selected user. Provides feedback on
+ *              whether the deactivation was successful or failed.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::deactivateUser()
+{
+	string userId;
+	viewAllUsers();
+	cout << "Enter the User ID: ";
+	util::readValue(userId);
+	Enums::ProcessStatus result = m_controller->deactivateUser(userId);
+	if (result == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "USER " << userId << " deactivated successfully" << endl;
+	}
+	else
+	{
+		cout << "Invalid User Id, Try again!" << endl;
+	}
+}
 
 /*
  * Function: UserInterface::viewAllUsers

@@ -26,7 +26,6 @@ public:
         long int phone,
         const std::string& password);
 
-    bool deactivateUser(const std::string& userId);
     bool reactivateUser(const std::string& userId);
 
     std::vector<User*> viewAllUsers() const;
@@ -48,5 +47,6 @@ public:
     Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
     Enums::ProcessStatus setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
     Enums::ProcessStatus setAuthenticatedUserUserName(const std::string& userName);
+    Enums::ProcessStatus deactivateUser(const std::string& userId);
 };
 

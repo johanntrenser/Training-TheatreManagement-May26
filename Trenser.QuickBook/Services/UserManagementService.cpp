@@ -19,18 +19,6 @@ UserManagementService::UserManagementService()
 
 
 /*
-     * Function: deactivateUser
-     * Description: Deactivates an active user, making them unable to log in.
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     * Returns: True if the user is successfully deactivated, false otherwise.
-     */
-bool UserManagementService::deactivateUser(const std::string& userId)
-{
-    return true;
-}
-
-/*
      * Function: reactivateUser
      * Description: Reactivates a previously deactivated user.
      * Parameters:
@@ -215,4 +203,32 @@ Enums::ProcessStatus UserManagementService::setAuthenticatedUserPhoneNumber(cons
 {
     m_dataStore.setAuthenticatedUserPhoneNumber(phoneNumber);
     return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: deactivateUser
+ * Description: Iterates through the user records in the data store to locate
+ *              the user with the specified ID and returns the user status (ACTIVE/INACTIVE).
+ * Parameters:
+ *    userId - The unique identifier of the user to be deactivated
+ * Returns:
+ *    enum - SUCCESS if the user was found and deactivated,
+ *    enum - FAILED if the user was not found or already inactive
+ */
+Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& userId)
+{
+    std::map<std::string, User*> users = m_dataStore.getUsers();
+    for (std::map<std::string, User*>::iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+    {
+        if (iterator->second->getUserId() == userId)
+        {
+            if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
+            {
+                iterator->second->setStatus(Enums::UserStatus::INACTIVE);
+                return Enums::ProcessStatus::SUCCESS;
+            }
+            return Enums::ProcessStatus::FAILED;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
 }
