@@ -117,6 +117,13 @@ namespace Enums {
         USER_FOUND
     };
 
+    enum class LogType
+    {
+        SYSTEM_ACTIVITY,
+        ERROR,
+        UNKNOWN
+    };
+
     inline std::string getTheatreStatusString(TheatreStatus status)
     {
         switch (status)
@@ -491,6 +498,38 @@ namespace Enums {
             return RefundStatus::FAILED;
         }
         return RefundStatus::FAILED;
+    }
+
+    inline std::string getLogTypeString(LogType type)
+    {
+        switch (type)
+        {
+        case LogType::SYSTEM_ACTIVITY:
+            return "SYSTEM_ACTIVITY";
+        case LogType::ERROR:
+            return "ERROR";
+        case LogType::UNKNOWN:
+            return "UNKNOWN";
+        default:
+            return "UNKNOWN";
+        }
+    }
+
+    inline LogType getLogType(const std::string& input)
+    {
+        if (input == "SYSTEM_ACTIVITY")
+        {
+            return LogType::SYSTEM_ACTIVITY;
+        }
+        if (input == "ERROR")
+        {
+            return LogType::ERROR;
+        }
+        if (input == "UNKNOWN")
+        {
+            return LogType::UNKNOWN;
+        }
+        return LogType::UNKNOWN;
     }
 }
 

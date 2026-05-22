@@ -11,3 +11,5 @@ LogManagementService::LogManagementService() :
     m_dataStore(DataStore::getInstance())
 {
 }
+
+
