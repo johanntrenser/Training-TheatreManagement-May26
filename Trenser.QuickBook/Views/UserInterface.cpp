@@ -179,6 +179,7 @@ void UserInterface::adminMenu()
 		cout << "------------------------" << endl;
 		cout << "1. Add Movie" << endl;
 		cout << "2. Updated Movie Details" << endl;
+		cout << "3. List all Movies" << endl;
 		cout << "0. Exit "<< endl;
 		cout << "Enter an option: ";
 }
@@ -302,6 +303,9 @@ void UserInterface::handleAdminMenuOperation()
 			break;
 		case 2:
 			updateMovie();
+			break;
+		case 3:
+			displayAllMovies();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -805,6 +809,8 @@ void UserInterface::changeMovieDuration(string& movieId, int& duration, const Mo
 		return;
 	}
 }
+
+
 /*
  * Function: UserInterface::addMovie
  * Description: Collects movie details from the user, validates uniqueness, and adds the movie to the system.
@@ -840,5 +846,27 @@ void UserInterface::addMovie()
 	else
 	{
 		cout << "\nThe movie already exists!. Please try another. \n";
+	}
+}
+
+/*
+ * Function: UserInterface::displayAllMovies
+ * Description: Retrieves and displays all active movies in the system. If no active movies exist,
+ *              informs the user accordingly.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::displayAllMovies()
+{
+	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	if (!(movies.empty()))
+	{
+		displayMovie(movies);
+	}
+	else
+	{
+		cout << "\nNo current movies!.";
 	}
 }
