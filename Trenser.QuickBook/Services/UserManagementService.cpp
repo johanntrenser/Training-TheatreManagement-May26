@@ -245,3 +245,24 @@ const User* const UserManagementService::getAuthenticatedUser()
 {
     return m_dataStore.getAuthenticatedUser();
 }
+ * Function: changePassword
+ * Description: Validates the current password of the authenticated user and,
+ *              if it matches, updates the password to the new value.
+ * Parameters:
+ *    currentPassword (string) - The current password entered by the user
+ *    newPassword (string)    - The new password to be set
+ * Returns:
+ *    enum - SUCCESS if the password change succeeds,
+ *    enum - FAILED if the current password does not match
+ */
+Enums::ProcessStatus UserManagementService::changePassword(const std::string& currentPassword, const std::string& newPassword)
+{
+    User* const authenticatedUser = m_dataStore.getAuthenticatedUser();
+    std::string authenticatedUserPassword = authenticatedUser->getPassword();
+    if (currentPassword == authenticatedUserPassword)
+    {
+        authenticatedUser->setPassword(newPassword);
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
