@@ -30,4 +30,7 @@ public:
 	void createUser();
 	void userTypesAdminMenu();
 	void viewAllUsers();
+	void updateUserDetails();
+	void viewProfile();
+	void updateUserDetailsMenu();
 };

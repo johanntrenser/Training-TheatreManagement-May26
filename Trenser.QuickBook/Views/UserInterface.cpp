@@ -479,6 +479,84 @@ void UserInterface::userTypesAdminMenu()
 	cout << "3. Admin" << std::endl;
 	cout << "Enter a choice: " << std::endl;
 }
+/*
+ * Function: UserInterface::updateUserDetails
+ * Description: Provides a menu for the authenticated user to update
+ *              their details (username, email, phone number). Prompts the user
+ *              for each field individually, validates input, and passes the
+ *              update request to the Controller.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::updateUserDetails()
+{
+	bool condition = true;
+	while (condition)
+	{
+		int choice;
+		string input;
+		Enums::ProcessStatus result = Enums::ProcessStatus::FAILED;
+		viewProfile();
+		updateUserDetailsMenu();
+		util::readValue(choice);
+		switch (choice)
+		{
+		case 1:
+			cout << "Enter username: ";
+			util::readValue(input);
+			result = m_controller->setAuthenticatedUserUserName(input);
+			break;
+		case 2:
+			cout << "Enter email: ";
+			util::readValue(input);
+			result = m_controller->setAuthenticatedUserEmail(input);
+			break;
+		case 3:
+			cout << "Enter phoneNumber: ";
+			util::readValue(input);
+			result = m_controller->setAuthenticatedUserPhoneNumber(input);
+			break;
+		case 4:
+			condition = false;
+			break;
+		default:
+			cout << "Enter a valid option!" << endl;
+			break;
+		}
+		if (choice >= 1 && choice <= 3)
+		{
+			if (result == Enums::ProcessStatus::SUCCESS)
+			{
+				cout << "user Details Updated Successfully" << endl;
+			}
+			else
+			{
+				cout << "failed, could not update user details!" << endl;
+			}
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::updateUserDetailsMenu
+ * Description: Displays the update user details menu options (username, email,
+ *              phone number, exit) and prompts the user to select an option.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::updateUserDetailsMenu()
+{
+	cout << "<--- User Details Menu---->" << endl;
+	cout << "1. User Name\n2. Email\n3. Phone Number\n4. Exit\nEnter Your Choice: ";
+}
+
+void UserInterface::viewProfile()
+{
+}
 
 /*
  * Function: UserInterface::viewAllUsers

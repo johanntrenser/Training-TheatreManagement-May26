@@ -14,7 +14,8 @@
      */
 UserManagementService::UserManagementService()
     : m_dataStore(DataStore::getInstance())
-{}
+{
+}
 
 
 /*
@@ -169,4 +170,49 @@ const std::vector<const User*>& UserManagementService::getActiveUsers() const
         return constUsers;
     }
     return constUsers;
+}
+
+/*
+ * Function: setAuthenticatedUserUserName
+ * Description: Updates the username of the currently authenticated user in the data store.
+ * Parameters:
+ *    username - The new username to be set
+ * Returns:
+ *    enum - ProcessStatus if the update succeeds,
+ *    enum - ProcessStatus otherwise
+ */
+Enums::ProcessStatus UserManagementService::setAuthenticatedUserUserName(const std::string& username)
+{
+    m_dataStore.setAuthenticatedUserName(username);
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: setAuthenticatedUserEmail
+ * Description: Updates the email of the currently authenticated user in the data store.
+ * Parameters:
+ *    email - The new email to be set
+ * Returns:
+ *    enum - ProcessStatus if the update succeeds,
+ *    enum - ProcessStatus otherwise
+ */
+Enums::ProcessStatus UserManagementService::setAuthenticatedUserEmail(const std::string& email)
+{
+    m_dataStore.setAuthenticatedUserEmail(email);
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: setAuthenticatedUserPhoneNumber
+ * Description: Updates the phone number of the currently authenticated user in the data store.
+ * Parameters:
+ *    phoneNumber - The new phone number to be set
+ * Returns:
+ *    enum - ProcessStatus if the update succeeds,
+ *    enum - ProcessStatus otherwise
+ */
+Enums::ProcessStatus UserManagementService::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
+{
+    m_dataStore.setAuthenticatedUserPhoneNumber(phoneNumber);
+    return Enums::ProcessStatus::FAILED;
 }
