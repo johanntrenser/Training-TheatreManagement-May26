@@ -214,5 +214,5 @@ Enums::ProcessStatus UserManagementService::setAuthenticatedUserEmail(const std:
 Enums::ProcessStatus UserManagementService::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
 {
     m_dataStore.setAuthenticatedUserPhoneNumber(phoneNumber);
-    return Enums::ProcessStatus::FAILED;
+    return Enums::ProcessStatus::SUCCESS;
 }
