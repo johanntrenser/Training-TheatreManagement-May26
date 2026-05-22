@@ -177,7 +177,7 @@ void UserInterface::adminMenu()
 {
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
-		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout\n10. Add Movie\n11. Update Movie Details\n12. List All Movies" << endl;
+		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout\n10. Add Movie\n11. Update Movie Details\n12. List All Movies\n13. Deactivate Movie" << endl;
 		cout << "Enter an option: ";
 }
 
@@ -328,6 +328,9 @@ void UserInterface::handleAdminMenuOperation()
 			break;
 		case 12:
 			displayAllMovies();
+			break;
+		case 13:
+			DeactivateMovie();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -751,6 +754,7 @@ void UserInterface::viewInactiveUsers()
 	util::pressEnter();
 	util::clear();
 }
+
 /*
  * Function: UserInterface::handleMovieDetailsInput
  * Description: Validates whether the provided movie details represent a unique movie in the system.
@@ -1381,5 +1385,48 @@ void UserInterface::displayAllMovies()
 	else
 	{
 		cout << "\nNo current movies!.";
+	}
+}
+
+/*
+ * Function: UserInterface::DeactivateMovie
+ * Description: Allows the user to deactivate a movie in the system by searching with its title,
+ *              validating the movie ID, and updating its status to INACTIVE through the Controller.
+ * Parameters:
+ *    None (reads input directly from the user)
+ * Returns:
+ *    None
+ */
+void UserInterface::DeactivateMovie()
+{
+	string title, movieId;
+	cout << "\nEnter the movie title: ";
+	util::readValue(title);
+	const std::vector<const Movie*> movies = m_controller->searchMovieByTitle(title);
+	if (!movies.empty())
+	{
+		displayMovie(movies);
+		const vector<string> movieIdList = getMovieIdFromList(movies);
+		cout << "\nEnter the Movie ID: ";
+		util::readValue(movieId);
+		if (checkMovieIdIsValid(movieId, movieIdList) == Enums::ProcessStatus::SUCCESS)
+		{
+			if (m_controller->setMovieDeactivate(movieId) == Enums::ProcessStatus::SUCCESS)
+			{
+				cout << "\nMovie status has changed to Activate!.";
+			}
+			else
+			{
+				cout << "\nCan't change the movie status!.";
+			}
+		}
+		else
+		{
+			cout << "\nEnter valid Movie Id from list!";
+		}
+	}
+	else
+	{
+		cout << "\nNo movies with " << title << " name!.";
 	}
 }
