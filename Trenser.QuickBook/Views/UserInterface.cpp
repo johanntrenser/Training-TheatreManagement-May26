@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <iomanip>
 using namespace std;
 #include "InputHelper.h"
 #include "OutputHelper.h"
@@ -479,3 +480,43 @@ void UserInterface::userTypesAdminMenu()
 	cout << "Enter a choice: " << std::endl;
 }
 
+/*
+ * Function: UserInterface::viewAllUsers
+ * Description: Displays all registered users on the console.
+ *              Shows user details including User ID, Name, Email, Password,
+ *              Role, and Status.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewAllUsers()
+{
+	const vector<const User*>& users = m_controller->getActiveUsers();
+	if (users.empty())
+	{
+		cout << "No users found!" << endl;
+	}
+	else
+	{
+		std::cout << std::left
+			<< std::setw(10) << "Index"
+			<< std::setw(10) << "User ID"
+			<< std::setw(20) << "Name"
+			<< std::setw(25) << "Email"
+			<< std::setw(15) << "Password"
+			<< std::setw(15) << "Role"
+			<< std::endl;
+		std::cout << std::string(100, '-') << std::endl;
+		for (vector<const User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+		{
+			std::cout << std::left
+				<< std::setw(10) << (*iterator)->getUserId()
+				<< std::setw(20) << (*iterator)->getUserName()
+				<< std::setw(25) << (*iterator)->getEmail()
+				<< std::setw(15) << (*iterator)->getPassword()
+				<< std::setw(15) << Enums::getUserTypeString((*iterator)->getUserType())
+				<< std::endl;
+		}
+	}
+}

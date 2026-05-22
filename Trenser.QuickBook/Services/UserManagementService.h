@@ -43,5 +43,7 @@ public:
         const std::string& newPassword);
     const std::string generateUserId();
     Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
+    const std::vector<const User*>& getActiveUsers() const;
+
 };
 

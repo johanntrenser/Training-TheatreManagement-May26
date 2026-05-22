@@ -149,3 +149,24 @@ Enums::ProcessStatus UserManagementService::createUser(const std::string& userNa
     }
     return Enums::ProcessStatus::FAILED;
 }
+
+/*
+    * Function: getActiveUsers
+    * Description: Retrieves a list of all active users in the system.
+    * Parameters: None
+    * Returns: Vector of User pointers representing all active users.
+    */
+const std::vector<const User*>& UserManagementService::getActiveUsers() const
+{
+    std::vector<const User*> constUsers;
+    if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::ADMIN)
+    {
+        const std::map<std::string, User*> users = m_dataStore.getUsers();
+        for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+        {
+            constUsers.push_back(iterator->second);
+        }
+        return constUsers;
+    }
+    return constUsers;
+}
