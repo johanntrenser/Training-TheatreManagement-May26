@@ -182,6 +182,7 @@ void UserInterface::adminMenu()
 		cout << "3. List all Movies" << endl;
 		cout << "4. Deactivate movie" << endl;
 		cout << "5. Reactivate movie" << endl;
+		cout << "6. Search movie" << endl;
 		cout << "0. Exit "<< endl;
 		cout << "Enter an option: ";
 }
@@ -314,6 +315,9 @@ void UserInterface::handleAdminMenuOperation()
 			break;
 		case 5:
 			activateMovie();
+			break;
+		case 6:
+			searchMovie();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -962,5 +966,29 @@ void UserInterface::activateMovie()
 	else
 	{
 		cout << "\nNo movies with " << title << " name!.";
+	}
+}
+
+/*
+ * Function: UserInterface::searchMovie
+ * Description: Allows the user to search for movies by title. Prompts the user
+ *              to enter a movie title, retrieves matching movies from the
+ *              Controller, and displays the results if found.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::searchMovie()
+{
+	std::string title;
+	cout << "\nEnter the movie title: ";
+	util::readValue(title);
+	const std::vector<const Movie*> movies = m_controller->searchMovieByTitle(title);
+	if (!movies.empty())
+	{
+		displayMovie(movies);
+	}
+	else
+	{
+		cout << "No movie exists with name " << title << endl;
 	}
 }
