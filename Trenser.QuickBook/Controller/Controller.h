@@ -62,7 +62,11 @@ public:
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	Enums::ProcessStatus addMovie(const std::string& title, const std::string& language, const std::string& genre, const int duration);
 	Enums::ProcessStatus isMovieUnique(const std::string& title, const std::string& language, const std::string& genre, const int duration);
+	const std::vector<const Movie*>& searchMovieByTitle(std::string& title);
+	Enums::ProcessStatus setMovieTitle(const std::string& movieId, const std::string& title);
+	Enums::ProcessStatus setMovieLanguage(const std::string& movieId, const std::string& language);
+	Enums::ProcessStatus setMovieGenre(const std::string& movieId, const std::string& genre);
+	Enums::ProcessStatus setMovieDuration(const std::string& movieId, const int& duration);
 	void logout();
 	~Controller();
 };
-

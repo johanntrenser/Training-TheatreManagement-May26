@@ -90,3 +90,121 @@ Enums::ProcessStatus MovieManagementService::isMovieUniqueInSystem(const std::st
 	}
 	return Enums::ProcessStatus::SUCCESS;
 }
+
+/*
+ * Function: MovieManagementService::searchMovieByTitle
+ * Description: Searches for movies in the DataStore that match the given title and are marked as ACTIVE.
+ * Parameters:
+ *    title - Title of the movie to search for
+ * Returns:
+ *    A vector of constant Movie pointers representing the matching movies
+ */
+const std::vector<const Movie*>& MovieManagementService::searchMovieByTitle(const std::string& title)
+{
+	std::vector<const Movie*> resultantMovies;
+	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getTitle() == title && (iterator->second)->getStatus() == Enums::MovieStatus::ACTIVE)
+		{
+			resultantMovies.push_back(iterator->second);
+		}
+	}
+	return resultantMovies;
+}
+
+/*
+ * Function: MovieManagementService::setMovieTitle
+ * Description: Updates the title of a movie identified by its unique movie ID.
+ * Parameters:
+ *    movieId - Unique identifier of the movie
+ *    title   - New title to set for the movie
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the update was successful,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus MovieManagementService::setMovieTitle(const std::string& movieId, const std::string& title)
+{
+	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getMovieId() == movieId)
+		{
+			(iterator->second)->setTitle(title);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: MovieManagementService::setMovieLanguage
+ * Description: Updates the language of a movie identified by its unique movie ID.
+ * Parameters:
+ *    movieId  - Unique identifier of the movie
+ *    language - New language to set for the movie
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the update was successful,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus MovieManagementService::setMovieLanguage(const std::string& movieId, const std::string& language)
+{
+	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getMovieId() == movieId)
+		{
+			(iterator->second)->setLanguage(language);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: MovieManagementService::setMovieGenre
+ * Description: Updates the genre of a movie identified by its unique movie ID.
+ * Parameters:
+ *    movieId - Unique identifier of the movie
+ *    genre   - New genre to set for the movie
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the update was successful,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus MovieManagementService::setMovieGenre(const std::string& movieId, const std::string& genre)
+{
+	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getMovieId() == movieId)
+		{
+			(iterator->second)->setGenre(genre);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: MovieManagementService::setMovieDuration
+ * Description: Updates the duration of a movie identified by its unique movie ID.
+ * Parameters:
+ *    movieId  - Unique identifier of the movie
+ *    duration - New duration (in minutes) to set for the movie
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the update was successful,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus MovieManagementService::setMovieDuration(const std::string& movieId, const int& duration)
+{
+	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getMovieId() == movieId)
+		{
+			(iterator->second)->setDuration(duration);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
