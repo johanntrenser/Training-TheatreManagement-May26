@@ -323,6 +323,9 @@ void UserInterface::handleAdminMenuOperation()
 		case 10:
 			addMovie();
 			break;
+		case 11:
+			updateMovie();
+			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
 			util::pressEnter();
