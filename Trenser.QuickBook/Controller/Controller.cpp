@@ -197,6 +197,19 @@ Enums::ProcessStatus Controller::createUser(const std::string& userName, const s
 }
 
 /*
+ * Function: getActiveUsers
+ * Description: Retrieves a list of all active users from the UserManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of const User* pointers representing active users
+ */
+const std::vector<const User*> Controller::getActiveUsers() const
+{
+    return m_userManagementService->getActiveUsers();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

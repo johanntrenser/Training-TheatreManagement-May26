@@ -29,4 +29,5 @@ public:
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
 	void createUser();
 	void userTypesAdminMenu();
+	void viewAllUsers();
 };

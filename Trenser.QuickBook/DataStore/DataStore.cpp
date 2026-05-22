@@ -61,3 +61,16 @@ void DataStore::setAuthenticatedUser(User* user)
 {
     m_currentUser = user;
 }
+
+/*
+ * Function: getAuthenticatedUserType
+ * Description: Retrieves the user type of the currently authenticated user.
+ * Parameters:
+ *    None
+ * Returns:
+ *    UserType enum representing the role of the authenticated user
+ */
+Enums::UserType DataStore::getAuthenticatedUserType()
+{
+    return m_currentUser->getUserType();
+}
