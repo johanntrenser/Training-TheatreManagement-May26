@@ -316,6 +316,21 @@ Enums::ProcessStatus Controller::changePassword(const std::string& currentPasswo
 }
 
 /*
+ * Function: getUserStatus
+ * Description: Retrieves the status (Active/Inactive) of a user by their ID.
+ * Parameters:
+ *    userId - The unique identifier of the user
+ * Returns:
+ *    ACTIVE if the user is active,
+ *    INACTIVE if the user is inactive,
+ *    or another appropriate status if not found
+ */
+Enums::UserStatus Controller::getUserStatus(const std::string& userId)
+{
+    return m_userManagementService->getUserStatus(userId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

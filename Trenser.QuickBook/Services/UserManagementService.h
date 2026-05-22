@@ -41,5 +41,8 @@ public:
     Enums::ProcessStatus deactivateUser(const std::string& userId);
     Enums::ProcessStatus reactivateUser(const std::string& userId);
     Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
+    void changePassword(const std::string& userId,
+        const std::string& newPassword);
+    Enums::UserStatus getUserStatus(const std::string& userId);
 };
 
