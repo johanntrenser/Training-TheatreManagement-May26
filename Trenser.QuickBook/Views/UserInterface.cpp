@@ -851,14 +851,13 @@ void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
 	cout << "-------------------------------------------------------------\n";
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
-		const Movie* movie = *iterator;
-		if (movie)
+		if (*iterator)
 		{
-			cout << left << setw(10) << movie->getMovieId()
-				<< setw(20) << movie->getTitle()
-				<< setw(15) << movie->getLanguage()
-				<< setw(15) << movie->getGenre()
-				<< setw(10) << movie->getDuration()
+			cout << left << setw(10) << (*iterator)->getMovieId()
+				<< setw(20) << (*iterator)->getTitle()
+				<< setw(15) << (*iterator)->getLanguage()
+				<< setw(15) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getDuration()
 				<< endl;
 		}
 	}
@@ -933,14 +932,13 @@ void UserInterface::displayCurrentMovieDetails(string& movieId, const std::vecto
 	cout << "-------------------------------------------------------------\n";
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
-		const Movie* movie = *iterator;
-		if (movie->getMovieId() == movieId)
+		if ((*iterator)->getMovieId() == movieId)
 		{
-			cout << left << setw(10) << movie->getMovieId()
-				<< setw(20) << movie->getTitle()
-				<< setw(15) << movie->getLanguage()
-				<< setw(15) << movie->getGenre()
-				<< setw(10) << movie->getDuration()
+			cout << left << setw(10) << (*iterator)->getMovieId()
+				<< setw(20) << (*iterator)->getTitle()
+				<< setw(15) << (*iterator)->getLanguage()
+				<< setw(15) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getDuration()
 				<< endl;
 		}
 	}
@@ -959,10 +957,9 @@ const Movie* UserInterface::getCurrentMovie(string& movieId, const std::vector<c
 {
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
-		const Movie* movie = *iterator;
-		if (movie->getMovieId() == movieId)
+		if ((*iterator)->getMovieId() == movieId)
 		{
-			return movie;
+			return *iterator;
 		}
 	}
 }
@@ -999,7 +996,7 @@ void UserInterface::changeMovieTitle(string& movieId, string& title, const Movie
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(title, currentMovie->getLanguage(), currentMovie->getGenre(), currentMovie->getDuration()))
 	{
-		if (m_controller->setMovieTitle(movieId, title) == Enums::ProcessStatus::SUCCESS)
+		if (m_controller->setMovieTitleByID(movieId, title) == Enums::ProcessStatus::SUCCESS)
 		{
 			cout << "\nTitle has been updated!.";
 		}
@@ -1029,7 +1026,7 @@ void UserInterface::changeMovieLanguage(string& movieId, string& language, const
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(currentMovie->getTitle(), language, currentMovie->getGenre(), currentMovie->getDuration()))
 	{
-		if ((m_controller->setMovieLanguage(movieId, language) == Enums::ProcessStatus::SUCCESS))
+		if ((m_controller->setMovieLanguageByID(movieId, language) == Enums::ProcessStatus::SUCCESS))
 		{
 			cout << "\nLanguage has been updated!.";
 		}
@@ -1059,7 +1056,7 @@ void UserInterface::changeMovieGenre(string& movieId, string& genre, const Movie
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(currentMovie->getTitle(), currentMovie->getLanguage(), genre, currentMovie->getDuration()))
 	{
-		if ((m_controller->setMovieGenre(movieId, genre) == Enums::ProcessStatus::SUCCESS))
+		if ((m_controller->setMovieGenreByID(movieId, genre) == Enums::ProcessStatus::SUCCESS))
 		{
 			cout << "\nGenre has been updated!.";
 		}
@@ -1089,7 +1086,7 @@ void UserInterface::changeMovieDuration(string& movieId, int& duration, const Mo
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(currentMovie->getTitle(), currentMovie->getLanguage(), currentMovie->getGenre(), duration))
 	{
-		if ((m_controller->setMovieDuration(movieId, duration) == Enums::ProcessStatus::SUCCESS))
+		if ((m_controller->setMovieDurationByID(movieId, duration) == Enums::ProcessStatus::SUCCESS))
 		{
 			cout << "\nDuration has been updated!.";
 		}

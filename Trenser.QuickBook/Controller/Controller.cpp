@@ -195,7 +195,7 @@ Enums::ProcessStatus Controller::isMovieUnique(const std::string& title, const s
 }
 
 /*
- * Function: Controller::searchMovieByTitle
+ * Function: Controller::searchMovieByTitleById
  * Description: Searches for movies in the system that match the given title.
  * Parameters:
  *    title - Title of the movie to search for
@@ -208,7 +208,7 @@ const std::vector<const Movie*>& Controller::searchMovieByTitle(std::string& tit
 }
 
 /*
- * Function: Controller::setMovieTitle
+ * Function: Controller::setMovieTitleById
  * Description: Updates the title of a movie identified by its unique movie ID.
  * Parameters:
  *    movieId - Unique identifier of the movie
@@ -217,9 +217,9 @@ const std::vector<const Movie*>& Controller::searchMovieByTitle(std::string& tit
  *    Enums::ProcessStatus::SUCCESS if the update was successful,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieTitle(const std::string& movieId, const std::string& title)
+Enums::ProcessStatus Controller::setMovieTitleByID(const std::string& movieId, const std::string& title)
 {
-    if (m_movieManagementService->setMovieTitle(movieId, title) == Enums::ProcessStatus::SUCCESS)
+    if (m_movieManagementService->setMovieTitleByID(movieId, title) == Enums::ProcessStatus::SUCCESS)
     {
         return Enums::ProcessStatus::SUCCESS;
     }
@@ -230,7 +230,7 @@ Enums::ProcessStatus Controller::setMovieTitle(const std::string& movieId, const
 }
 
 /*
- * Function: Controller::setMovieLanguage
+ * Function: Controller::setMovieLanguageById
  * Description: Updates the language of a movie identified by its unique movie ID.
  * Parameters:
  *    movieId  - Unique identifier of the movie
@@ -239,9 +239,9 @@ Enums::ProcessStatus Controller::setMovieTitle(const std::string& movieId, const
  *    Enums::ProcessStatus::SUCCESS if the update was successful,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieLanguage(const std::string& movieId, const std::string& language)
+Enums::ProcessStatus Controller::setMovieLanguageByID(const std::string& movieId, const std::string& language)
 {
-    if (m_movieManagementService->setMovieLanguage(movieId, language) == Enums::ProcessStatus::SUCCESS)
+    if (m_movieManagementService->setMovieLanguageByID(movieId, language) == Enums::ProcessStatus::SUCCESS)
     {
         return Enums::ProcessStatus::SUCCESS;
     }
@@ -252,7 +252,7 @@ Enums::ProcessStatus Controller::setMovieLanguage(const std::string& movieId, co
 }
 
 /*
- * Function: Controller::setMovieGenre
+ * Function: Controller::setMovieGenreById
  * Description: Updates the genre of a movie identified by its unique movie ID.
  * Parameters:
  *    movieId - Unique identifier of the movie
@@ -261,9 +261,9 @@ Enums::ProcessStatus Controller::setMovieLanguage(const std::string& movieId, co
  *    Enums::ProcessStatus::SUCCESS if the update was successful,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieGenre(const std::string& movieId, const std::string& genre)
+Enums::ProcessStatus Controller::setMovieGenreByID(const std::string& movieId, const std::string& genre)
 {
-    if (m_movieManagementService->setMovieGenre(movieId, genre) == Enums::ProcessStatus::SUCCESS)
+    if (m_movieManagementService->setMovieGenreByID(movieId, genre) == Enums::ProcessStatus::SUCCESS)
     {
         return Enums::ProcessStatus::SUCCESS;
     }
@@ -283,9 +283,9 @@ Enums::ProcessStatus Controller::setMovieGenre(const std::string& movieId, const
  *    Enums::ProcessStatus::SUCCESS if the update was successful,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieDuration(const std::string& movieId, const int& duration)
+Enums::ProcessStatus Controller::setMovieDurationByID(const std::string& movieId, const int& duration)
 {
-    if (m_movieManagementService->setMovieDuration(movieId, duration) == Enums::ProcessStatus::SUCCESS)
+    if (m_movieManagementService->setMovieDurationByID(movieId, duration) == Enums::ProcessStatus::SUCCESS)
     {
         return Enums::ProcessStatus::SUCCESS;
     }
