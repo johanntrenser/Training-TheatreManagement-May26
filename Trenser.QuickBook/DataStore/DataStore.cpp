@@ -113,3 +113,16 @@ void DataStore::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
 {
     m_currentUser->setPhoneNumber(phoneNumber);
 }
+
+/*
+ * Function: getAuthenticatedUser
+ * Description: Retrieves the currently authenticated user object.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A pointer to the authenticated User object, or nullptr if no user is authenticated
+ */
+User* const DataStore::getAuthenticatedUser() const
+{
+    return m_currentUser;
+}

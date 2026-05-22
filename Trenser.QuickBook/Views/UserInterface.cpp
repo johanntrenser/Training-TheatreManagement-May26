@@ -652,3 +652,20 @@ void UserInterface::viewAllUsers()
 }
 void UserInterface::viewInactiveUsers()
 {}
+/*
+ * Function: UserInterface::viewProfile
+ * Description: Retrieves the currently authenticated user from the Controller
+ *              and displays their profile details.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewProfile()
+{
+	const User* const currentUser = m_controller->getAuthenticatedUser();
+	cout << "User Id: " << currentUser->getUserId() << endl;
+	cout << "Name : " << currentUser->getUserName() << endl;
+	cout << "Email: " << currentUser->getEmail() << endl;
+	cout << "Phone Number: " << currentUser->getUserId() << endl;
+}
