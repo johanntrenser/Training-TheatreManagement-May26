@@ -18,4 +18,9 @@ public:
 	Enums::ProcessStatus addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);
 	const std::string generateMovieId();
 	Enums::ProcessStatus isMovieUniqueInSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);
+	const std::vector<const Movie*>& searchMovieByTitle(const std::string& title);
+	Enums::ProcessStatus setMovieTitle(const std::string& movieId, const std::string& title);
+	Enums::ProcessStatus setMovieLanguage(const std::string& movieId, const std::string& language);
+	Enums::ProcessStatus setMovieGenre(const std::string& movieId, const std::string& genre);
+	Enums::ProcessStatus setMovieDuration(const std::string& movieId, const int& duration);
 };
