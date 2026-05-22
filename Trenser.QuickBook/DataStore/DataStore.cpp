@@ -162,3 +162,29 @@ std::map<std::string, Notification*>& DataStore::getNotifications()
 {
     return m_notifications;
 }
+
+/*
+ * Function: DataStore::getMovies
+ * Description: Retrieves the collection of movies stored in the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Constant reference to a map of movie IDs to Movie pointers
+ */
+const std::map<string, Movie*>& DataStore::getMovies() const
+{
+    return m_movie;
+}
+
+/*
+ * Function: DataStore::addMovieToSystem
+ * Description: Adds a new movie to the DataStore, indexed by its unique movie ID.
+ * Parameters:
+ *    movie - Pointer to the Movie object to be added
+ * Returns:
+ *    None
+ */
+void DataStore::addMovieToSystem(Movie* movie)
+{
+    m_movie[movie->getMovieId()] = movie;
+}

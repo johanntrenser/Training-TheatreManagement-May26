@@ -742,6 +742,60 @@ void UserInterface::viewInactiveUsers()
 	util::pressEnter();
 	util::clear();
 }
+/*
+ * Function: UserInterface::handleMovieDetailsInput
+ * Description: Validates whether the provided movie details represent a unique movie in the system.
+ * Parameters:
+ *    title    - Title of the movie
+ *    language - Language of the movie
+ *    genre    - Genre of the movie
+ *    duration - Duration of the movie in minutes
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie is unique,
+ *    Enums::ProcessStatus::FAILED if a duplicate exists
+ */
+Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& title, const std::string& language, const std::string& genre, const int duration)
+{
+	return m_controller->isMovieUnique(title, language, genre, duration);
+}
+
+/*
+ * Function: UserInterface::addMovie
+ * Description: Collects movie details from the user, validates uniqueness, and adds the movie to the system.
+ * Parameters:
+ *    None (reads input directly from the user)
+ * Returns:
+ *    None
+ */
+void UserInterface::addMovie()
+{
+	string title, language, genre;
+	int duration;
+	cout << "\nEnter the Movie Title: ";
+	util::readValue(title);
+	cout << "\nLanguage             : ";
+	util::readValue(language);
+	cout << "\nGenre                :";
+	util::readValue(genre);
+	cout << "\nDuration(in minutes) :";
+	util::readValue(duration);
+	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(title, language, genre, duration))
+	{
+		if (m_controller->addMovie(title, language, genre, duration) == Enums::ProcessStatus::SUCCESS)
+		{
+			cout << "Movie Successfully Added";
+		}
+		else
+		{
+			cout << "Movie could not be Add!" << endl;
+		}
+	}
+	else
+	{
+		cout << "\nThe movie already exists!. Please try another. \n";
+	}
+}
+
 
 /*
  * Function: UserInterface::reactivateUser

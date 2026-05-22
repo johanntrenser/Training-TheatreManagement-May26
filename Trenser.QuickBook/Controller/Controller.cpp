@@ -157,6 +157,44 @@ const std::vector<const Log*> Controller::getLogsByType(const Enums::LogType log
 }
 
 /*
+ * Function: Controller::addMovie
+ * Description: Adds a new movie to the system through the MovieManagementService.
+ * Parameters:
+ *    title    - Title of the movie
+ *    language - Language of the movie
+ *    genre    - Genre of the movie
+ *    duration - Duration of the movie in minutes
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was added successfully,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus Controller::addMovie(const std::string& title, const std::string& language, const std::string& genre, const int duration)
+{
+    if (m_movieManagementService->addMovieToSystem(title, language, genre, duration) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: Controller::isMovieUnique
+ * Description: Verifies whether a movie with the given attributes already exists in the system.
+ * Parameters:
+ *    title    - Title of the movie
+ *    language - Language of the movie
+ *    genre    - Genre of the movie
+ *    duration - Duration of the movie in minutes
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie is unique,
+ *    Enums::ProcessStatus::FAILED if a duplicate exists
+ */
+Enums::ProcessStatus Controller::isMovieUnique(const std::string& title, const std::string& language, const std::string& genre, const int duration)
+{
+    return m_movieManagementService->isMovieUniqueInSystem(title, language, genre, duration);
+}
+
+/*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
  * Parameters:
