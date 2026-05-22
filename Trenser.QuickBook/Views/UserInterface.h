@@ -36,4 +36,5 @@ public:
 	void deactivateUser();
 	void reactivateUser();
 	void viewInactiveUsers();
+	void changePassword();
 };

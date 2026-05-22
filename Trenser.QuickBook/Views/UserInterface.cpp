@@ -669,3 +669,34 @@ void UserInterface::viewProfile()
 	cout << "Email: " << currentUser->getEmail() << endl;
 	cout << "Phone Number: " << currentUser->getUserId() << endl;
 }
+/*
+ * Function: UserInterface::changePassword
+ * Description: Prompts the currently authenticated user to change their password.
+ *              Requests the current password and a new password from the user,
+ *              validates the new password, and pass the change request to
+ *              the Controller. Provides feedback on whether the password change
+ *              was successful or failed due to a mismatch.
+ * Parameters:
+ *    currentPassword (string) - The current password entered by the user
+ *    newPassword (string)    - The new password entered by the user
+ * Returns:
+ *    None
+ */
+void UserInterface::changePassword()
+{
+	string currentPassword, newPassword;
+	cout << "Enter the current password: ";
+	util::readValue(currentPassword);
+	cout << "Enter the new Password: ";
+	util::readValue(newPassword);
+	util::isPasswordValid(newPassword);
+	Enums::ProcessStatus result = m_controller->changePassword(currentPassword, newPassword);
+	if (result == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Password changed successfully." << endl;
+	}
+	else
+	{
+		cout << "Password does not match." << endl;
+	}
+}

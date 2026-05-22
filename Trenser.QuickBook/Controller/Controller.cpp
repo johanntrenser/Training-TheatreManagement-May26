@@ -301,6 +301,21 @@ const User* const Controller::getAuthenticatedUser()
 }
 
 /*
+ * Function: changePassword
+ * Description: Delegates the password change request to the UserManagementService.
+ * Parameters:
+ *    currentPassword - The current password entered by the user
+ *    newPassword     - The new password to be set
+ * Returns:
+ *    SUCCESS if the password change succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::changePassword(const std::string& currentPassword, const std::string& newPassword)
+{
+    return m_userManagementService->changePassword(currentPassword, newPassword);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
