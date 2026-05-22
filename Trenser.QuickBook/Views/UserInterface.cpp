@@ -492,7 +492,7 @@ void UserInterface::userTypesAdminMenu()
  */
 void UserInterface::viewAllUsers()
 {
-	const vector<const User*> users = m_controller->getActiveUsers();
+	const vector<const User*>& users = m_controller->getActiveUsers();
 	if (users.empty())
 	{
 		cout << "No users found!" << endl;
@@ -508,14 +508,14 @@ void UserInterface::viewAllUsers()
 			<< std::setw(15) << "Role"
 			<< std::endl;
 		std::cout << std::string(100, '-') << std::endl;
-		for (const User* const user : users)
+		for (vector<const User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
 		{
 			std::cout << std::left
-				<< std::setw(10) << user->getUserId()
-				<< std::setw(20) << user->getUserName()
-				<< std::setw(25) << user->getEmail()
-				<< std::setw(15) << user->getPassword()
-				<< std::setw(15) << Enums::getUserTypeString(user->getUserType())
+				<< std::setw(10) << (*iterator)->getUserId()
+				<< std::setw(20) << (*iterator)->getUserName()
+				<< std::setw(25) << (*iterator)->getEmail()
+				<< std::setw(15) << (*iterator)->getPassword()
+				<< std::setw(15) << Enums::getUserTypeString((*iterator)->getUserType())
 				<< std::endl;
 		}
 	}

@@ -48,5 +48,5 @@ public:
 	DataStore& operator=(const DataStore&) = delete;
 	static DataStore& getInstance();
 	void setAuthenticatedUser(User* user);
-	Enums::UserType getAuthenticatedUserType();
+	const Enums::UserType getAuthenticatedUserType() const;
 };

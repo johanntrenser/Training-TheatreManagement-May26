@@ -204,7 +204,7 @@ Enums::ProcessStatus Controller::createUser(const std::string& userName, const s
  * Returns:
  *    A vector of const User* pointers representing active users
  */
-const std::vector<const User*> Controller::getActiveUsers() const
+const std::vector<const User*>& Controller::getActiveUsers() const
 {
     return m_userManagementService->getActiveUsers();
 }

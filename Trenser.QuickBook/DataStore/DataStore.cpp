@@ -70,7 +70,7 @@ void DataStore::setAuthenticatedUser(User* user)
  * Returns:
  *    UserType enum representing the role of the authenticated user
  */
-Enums::UserType DataStore::getAuthenticatedUserType()
+const Enums::UserType DataStore::getAuthenticatedUserType() const
 {
     return m_currentUser->getUserType();
 }

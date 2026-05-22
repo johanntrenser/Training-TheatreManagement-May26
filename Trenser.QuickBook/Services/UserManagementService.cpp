@@ -156,7 +156,7 @@ Enums::ProcessStatus UserManagementService::createUser(const std::string& userNa
     * Parameters: None
     * Returns: Vector of User pointers representing all active users.
     */
-const std::vector<const User*> UserManagementService::getActiveUsers() const
+const std::vector<const User*>& UserManagementService::getActiveUsers() const
 {
     std::vector<const User*> constUsers;
     if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::ADMIN)
