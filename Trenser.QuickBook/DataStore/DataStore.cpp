@@ -173,7 +173,7 @@ std::map<std::string, Notification*>& DataStore::getNotifications()
  */
 const std::map<string, Movie*>& DataStore::getMovies() const
 {
-    return m_movie;
+    return m_movies;
 }
 
 /*
@@ -186,5 +186,5 @@ const std::map<string, Movie*>& DataStore::getMovies() const
  */
 void DataStore::addMovieToSystem(Movie* movie)
 {
-    m_movie[movie->getMovieId()] = movie;
+    m_movies[movie->getMovieId()] = movie;
 }

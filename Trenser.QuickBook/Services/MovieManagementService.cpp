@@ -55,7 +55,7 @@ const std::string MovieManagementService::generateMovieId()
  *    Enums::ProcessStatus::SUCCESS if the movie was added successfully,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus MovieManagementService::addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const size_t duration)
+Enums::ProcessStatus MovieManagementService::addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration)
 {
 	Movie* movie = Factory::getObject<Movie>(generateMovieId(), title, language, genre, duration);
 	if (movie != nullptr)
