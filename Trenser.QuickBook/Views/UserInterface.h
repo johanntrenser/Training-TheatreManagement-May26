@@ -55,4 +55,5 @@ public:
 	void changeMovieLanguage(std::string& movieId, std::string& Language, const Movie*& currentMovie);
 	void changeMovieGenre(std::string& movieId, std::string& genre, const Movie*& currentMovie);
 	void changeMovieDuration(std::string& movieId, int& duration, const Movie*& currentMovie);
+	void displayAllMovies();
 };

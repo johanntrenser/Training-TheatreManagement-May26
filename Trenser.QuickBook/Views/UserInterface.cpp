@@ -177,7 +177,7 @@ void UserInterface::adminMenu()
 {
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
-		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout\n10. Add Movie\n11. Update Movie Details" << endl;
+		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout\n10. Add Movie\n11. Update Movie Details\n12. List All Movies" << endl;
 		cout << "Enter an option: ";
 }
 
@@ -325,6 +325,9 @@ void UserInterface::handleAdminMenuOperation()
 			break;
 		case 11:
 			updateMovie();
+			break;
+		case 12:
+			displayAllMovies();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -1101,6 +1104,8 @@ void UserInterface::changeMovieDuration(string& movieId, int& duration, const Mo
 		return;
 	}
 }
+
+
 /*
  * Function: UserInterface::addMovie
  * Description: Collects movie details from the user, validates uniqueness, and adds the movie to the system.
@@ -1354,4 +1359,27 @@ void UserInterface::viewUserStatus()
 	}
 	util::pressEnter();
 	util::clear();
+}
+}
+
+/*
+ * Function: UserInterface::displayAllMovies
+ * Description: Retrieves and displays all active movies in the system. If no active movies exist,
+ *              informs the user accordingly.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::displayAllMovies()
+{
+	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	if (!(movies.empty()))
+	{
+		displayMovie(movies);
+	}
+	else
+	{
+		cout << "\nNo current movies!.";
+	}
 }

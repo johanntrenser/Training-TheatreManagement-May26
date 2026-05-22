@@ -68,6 +68,7 @@ public:
 	Enums::ProcessStatus setMovieLanguageByID(const std::string& movieId, const std::string& language);
 	Enums::ProcessStatus setMovieGenreByID(const std::string& movieId, const std::string& genre);
 	Enums::ProcessStatus setMovieDurationByID(const std::string& movieId, const int& duration);
+	const std::vector<const Movie*>& getAllActiveMovies();
 	void logout();
 	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	const std::vector<const User*> getActiveUsers() const;

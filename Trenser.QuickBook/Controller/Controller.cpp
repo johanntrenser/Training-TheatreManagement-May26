@@ -295,6 +295,7 @@ Enums::ProcessStatus Controller::setMovieDurationByID(const std::string& movieId
     }
 }
 
+
 /*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
@@ -507,6 +508,20 @@ Enums::UserStatus Controller::getUserStatus(const std::string& userId)
 std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& remainingUnreadCount)
 {
     return m_notificationManagementService->getUnreadNotifications(batchSize, remainingUnreadCount);
+}
+
+/*
+ * Function: Controller::getAllActiveMovies
+ * Description: Retrieves all movies currently marked as ACTIVE in the system by delegating
+ *              the request to the MovieManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of constant Movie pointers representing all active movies
+ */
+const std::vector<const Movie*>& Controller::getAllActiveMovies()
+{
+    return m_movieManagementService->getAllActiveMovies();
 }
 
 /*

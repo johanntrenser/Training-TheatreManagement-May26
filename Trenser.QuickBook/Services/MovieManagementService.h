@@ -23,4 +23,5 @@ public:
 	Enums::ProcessStatus setMovieLanguageByID(const std::string& movieId, const std::string& language);
 	Enums::ProcessStatus setMovieGenreByID(const std::string& movieId, const std::string& genre);
 	Enums::ProcessStatus setMovieDurationByID(const std::string& movieId, const int& duration);
+	const std::vector<const Movie*>& getAllActiveMovies();
 };
