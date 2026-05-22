@@ -99,6 +99,33 @@ void util::isEmailValid(std::string& value)
 }
 
 /*
+ * Function: util::isMovieDurationValid
+ * Description: Validates and enforces that the entered movie duration falls within the acceptable range.
+ *              If the duration is invalid, repeatedly prompts the user until a valid value is provided.
+ * Parameters:
+ *    value - Reference to an integer representing the movie duration in minutes
+ * Returns:
+ *    None (the validated duration is updated directly through the reference parameter)
+ */
+void util::isMovieDurationValid(int& value)
+{
+    bool isValidDuration = false;
+    if ((60 <= value) && (value <= 300))
+    {
+        isValidDuration = true;
+    }
+    while (!isValidDuration) {
+        std::cout << "\nInvalid Movie duration. Please enter a duration between 60 and 300 minitues: \n";
+        util::readValue(value);
+        if ((60 <= value) && (value <= 300))
+        {
+            std::cout << "Movie Duration accepted.\n";
+            isValidDuration = true;
+        }
+    }
+}
+
+/*
  * Function: isPhoneNumberValid
  * Description: Validates a phone number against a regex pattern.
  *              A valid phone number must contain exactly 10 digits.

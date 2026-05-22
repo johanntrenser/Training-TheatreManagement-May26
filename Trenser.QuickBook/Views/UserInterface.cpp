@@ -177,7 +177,7 @@ void UserInterface::adminMenu()
 {
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
-		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout" << endl;
+		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout\n10. Add Movie" << endl;
 		cout << "Enter an option: ";
 }
 
@@ -759,18 +759,6 @@ Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& t
 	return m_controller->isMovieUnique(title, language, genre, duration);
 }
 
-bool UserInterface::isMoviDurationValid(const int duration)
-{
-	if ((60 <= duration) && (duration <= 300))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 /*
  * Function: UserInterface::addMovie
  * Description: Collects movie details from the user, validates uniqueness, and adds the movie to the system.
@@ -791,6 +779,7 @@ void UserInterface::addMovie()
 	util::readValue(genre);
 	cout << "\nDuration(in minutes) :";
 	util::readValue(duration);
+	util::isMovieDurationValid(duration);
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(title, language, genre, duration))
 	{
 		if (m_controller->addMovie(title, language, genre, duration) == Enums::ProcessStatus::SUCCESS)
