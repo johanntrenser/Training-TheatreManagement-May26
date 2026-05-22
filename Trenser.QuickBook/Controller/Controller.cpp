@@ -172,7 +172,7 @@ void Controller::logout()
 }
 
 /*
- * Function: registerUserByAdmin
+ * Function: createUser
  * Description: Delegates the Admin-driven user registration process to the
  *              UserManagementService. Attempts to register a new user with
  *              the provided details and role. Returns the outcome of the
@@ -187,7 +187,7 @@ void Controller::logout()
  *    enum - SUCCESS if registration is successful,
  *    enum - FAILED otherwise
  */
-Enums::ProcessStatus Controller::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
+Enums::ProcessStatus Controller::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
     if (m_userManagementService->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
     {

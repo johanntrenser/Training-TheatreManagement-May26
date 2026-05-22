@@ -139,7 +139,7 @@ const std::string UserManagementService::generateUserId()
  *    ProcessStatus::SUCCESS if registration is successful,
  *    ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus UserManagementService::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
+Enums::ProcessStatus UserManagementService::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
     User* user = Factory::getObject<User>(generateUserId(), userName, email, password, phoneNumber, userType);
     if (user != nullptr)

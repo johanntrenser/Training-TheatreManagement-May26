@@ -420,7 +420,7 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
 }
 
 /*
- * Function: registerUserByAdmin
+ * Function: createUser
  * Description: Allows an Admin to register a new user directly by selecting
  *              the role (Customer, Theatre Owner, or Admin) and entering
  *              user details.
