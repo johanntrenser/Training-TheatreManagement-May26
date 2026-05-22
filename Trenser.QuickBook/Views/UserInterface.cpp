@@ -460,6 +460,18 @@ Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& t
 	return m_controller->isMovieUnique(title, language, genre, duration);
 }
 
+bool UserInterface::isMoviDurationValid(const int duration)
+{
+	if ((60 <= duration) && (duration <= 300))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 /*
  * Function: UserInterface::addMovie
  * Description: Collects movie details from the user, validates uniqueness, and adds the movie to the system.
@@ -488,7 +500,7 @@ void UserInterface::addMovie()
 		}
 		else
 		{
-			cout << "Movie could not be Add!" << endl;
+			cout << "Movie could not be added!" << endl;
 		}
 	}
 	else
