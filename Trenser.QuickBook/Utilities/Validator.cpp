@@ -85,14 +85,14 @@ void util::isEmailValid(std::string& value)
     bool isValidEmail = false;
     std::regex emailPattern(R"(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)");
     if (std::regex_match(value, emailPattern)) {
-        std::cout << "Email address accepted.\n";
+        std::cout << "Email address format accepted.\n";
         return;
     }
     while (!isValidEmail) {
         std::cout << "Invalid email address. Please enter a valid format such as example@domain.com.\n";
         util::readValue(value);
         if (std::regex_match(value, emailPattern)) {
-            std::cout << "Email address accepted.\n";
+            std::cout << "Email address format accepted.\n";
             isValidEmail = true;
         }
     }
@@ -112,7 +112,7 @@ void util::isPhoneNumberValid(std::string& value)
     bool isValidPhoneNumber = false;
     std::regex phoneNumberPattern(R"(^[0-9]{10}$)");
     if (std::regex_match(value, phoneNumberPattern)) {
-        std::cout << "Phone Number accepted.\n";
+        std::cout << "Phone Number format accepted.\n";
         return;
     }
     while (!isValidPhoneNumber)
@@ -120,7 +120,7 @@ void util::isPhoneNumberValid(std::string& value)
         std::cout << "Invalid phone number. Phone number should be of 10 digits.\n";
         util::readValue(value);
         if (std::regex_match(value, phoneNumberPattern)) {
-            std::cout << "Phone Number accepted.\n";
+            std::cout << "Phone Number format accepted.\n";
             isValidPhoneNumber = true;
         }
     }
