@@ -19,18 +19,6 @@ UserManagementService::UserManagementService()
 
 
 /*
-     * Function: reactivateUser
-     * Description: Reactivates a previously deactivated user.
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     * Returns: True if the user is successfully reactivated, false otherwise.
-     */
-bool UserManagementService::reactivateUser(const std::string& userId)
-{
-    return true;
-}
-
-/*
      * Function: viewAllUsers
      * Description: Retrieves a list of all users in the system.
      * Parameters: None
@@ -81,19 +69,6 @@ User* UserManagementService::viewProfile(const std::string& userId) const
 int UserManagementService::viewUserStatus(const std::string& userId) const
 {
     return 0; // placeholder enum value
-}
-
-/*
-     * Function: changePassword
-     * Description: Changes the password of a specific user.
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     *   - newPassword: New password to be set.
-     * Returns: None
-     */
-void UserManagementService::changePassword(const std::string& userId,
-    const std::string& newPassword)
-{
 }
 
 /*
@@ -225,6 +200,31 @@ Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& us
             if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
             {
                 iterator->second->setStatus(Enums::UserStatus::INACTIVE);
+                return Enums::ProcessStatus::SUCCESS;
+            }
+            return Enums::ProcessStatus::FAILED;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+     * Function: rectivateUser
+     * Description: Reactivates a previously deactivated user.
+     * Parameters:
+     *   - userId: Unique identifier of the user.
+     * Returns: enum SUCCESS if the user is successfully reactivated, FAILURE otherwise.
+     */
+Enums::ProcessStatus UserManagementService::reactivateUser(const std::string& userId)
+{
+    std::map<std::string, User*> users = m_dataStore.getUsers();
+    for (std::map<std::string, User*>::iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+    {
+        if (iterator->second->getUserId() == userId)
+        {
+            if (iterator->second->getStatus() == Enums::UserStatus::INACTIVE)
+            {
+                iterator->second->setStatus(Enums::UserStatus::ACTIVE);
                 return Enums::ProcessStatus::SUCCESS;
             }
             return Enums::ProcessStatus::FAILED;
