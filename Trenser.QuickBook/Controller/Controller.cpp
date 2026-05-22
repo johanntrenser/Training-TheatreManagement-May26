@@ -172,6 +172,31 @@ void Controller::logout()
 }
 
 /*
+ * Function: createUser
+ * Description: Delegates the Admin-driven user registration process to the
+ *              UserManagementService. Attempts to register a new user with
+ *              the provided details and role. Returns the outcome of the
+ *              registration attempt.
+ * Parameters:
+ *    userName   - The name of the user to be registered
+ *    email      - The email address of the user
+ *    password   - The password for the user account
+ *    phoneNumber- The phone number of the user
+ *    userType   - The role of the user
+ * Returns:
+ *    enum - SUCCESS if registration is successful,
+ *    enum - FAILED otherwise
+ */
+Enums::ProcessStatus Controller::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
+{
+    if (m_userManagementService->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

@@ -12,9 +12,12 @@
 #include <string>
 #include <vector>
 #include "User.h"
+#include "DataStore.h"
 
 class UserManagementService
 {
+private:
+    DataStore& m_dataStore;
 public:
     UserManagementService();
     bool createUser(const std::string& name,
@@ -38,5 +41,7 @@ public:
 
     void changePassword(const std::string& userId,
         const std::string& newPassword);
+    const std::string generateUserId();
+    Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 };
 
