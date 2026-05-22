@@ -176,7 +176,8 @@ void UserInterface::adminMenu()
 {
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
-		cout << "1. Exit" << endl;
+		cout << "1. Add Movie" << endl;
+		cout << "0. Exit "<< endl;
 		cout << "Enter an option: ";
 }
 
@@ -273,6 +274,14 @@ void UserInterface::userTypesMenu()
     cout << "Enter a choice: " << std::endl;
 }
 
+/*
+ * Function: UserInterface::handleAdminMenuOperation
+ * Description: Handles the admin menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleAdminMenuOperation()
 {
 	bool isMenuActive = true;
@@ -283,8 +292,11 @@ void UserInterface::handleAdminMenuOperation()
 		util::readValue(choice);
 		switch (choice)
 		{
-		case 1:
+		case 0:
 			isMenuActive = false;
+			break;
+		case 1:
+			addMovie();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -295,6 +307,14 @@ void UserInterface::handleAdminMenuOperation()
 	}
 }
 
+/*
+ * Function: UserInterface::handleCustomerMenuOperation
+ * Description: Handles the customer menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleCustomerMenuOperation()
 {
 	bool isMenuActive = true;
@@ -317,6 +337,14 @@ void UserInterface::handleCustomerMenuOperation()
 	}
 }
 
+/*
+ * Function: UserInterface::handleTheatreOwnerMenuOperation
+ * Description: Handles the theatre owner menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleTheatreOwnerMenuOperation()
 {
 	bool isMenuActive = true;
@@ -417,6 +445,61 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
     util::readValue(phoneNumber);
     util::isPhoneNumberValid(phoneNumber);
 	getUniquePhoneNumber(phoneNumber);
+}
+
+/*
+ * Function: UserInterface::handleMovieDetailsInput
+ * Description: Validates whether the provided movie details represent a unique movie in the system.
+ * Parameters:
+ *    title    - Title of the movie
+ *    language - Language of the movie
+ *    genre    - Genre of the movie
+ *    duration - Duration of the movie in minutes
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie is unique,
+ *    Enums::ProcessStatus::FAILED if a duplicate exists
+ */
+Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& title, const std::string& language, const std::string& genre, const int duration)
+{
+	return m_controller->isMovieUnique(title, language, genre, duration);
+}
+
+/*
+ * Function: UserInterface::addMovie
+ * Description: Collects movie details from the user, validates uniqueness, and adds the movie to the system.
+ * Parameters:
+ *    None (reads input directly from the user)
+ * Returns:
+ *    None
+ */
+void UserInterface::addMovie()
+{
+	string title, language, genre;
+	int duration;
+	cout << "\nEnter the Movie Title: ";
+	util::readValue(title);
+	cout << "\nLanguage             : ";
+	util::readValue(language);
+	cout << "\nGenre                :";
+	util::readValue(genre);
+	cout << "\nDuration(in minutes) :";
+	util::readValue(duration);
+	util::isMovieDurationValid(duration);
+	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(title, language, genre, duration))
+	{
+		if (m_controller->addMovie(title, language, genre, duration) == Enums::ProcessStatus::SUCCESS)
+		{
+			cout << "Movie Successfully Added";
+		}
+		else
+		{
+			cout << "Movie could not be added!" << endl;
+		}
+	}
+	else
+	{
+		cout << "\nThe movie already exists!. Please try another. \n";
+	}
 }
 
 
