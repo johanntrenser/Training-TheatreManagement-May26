@@ -230,3 +230,26 @@ const std::vector<const Movie*>& MovieManagementService::getAllActiveMovies()
 	}
 	return allActiveMovies;
 }
+
+/*
+ * Function: MovieManagementService::setMovieDeactive
+ * Description: Deactivates a movie in the system by updating its status to INACTIVE.
+ * Parameters:
+ *    movieId - Unique identifier of the movie to deactivate
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was successfully deactivated,
+ *    Enums::ProcessStatus::FAILED if the movie ID was not found
+ */
+Enums::ProcessStatus MovieManagementService::setMovieDeactive(const std::string& movieId)
+{
+	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getMovieId() == movieId)
+		{
+			(iterator->second)->setStatus(Enums::MovieStatus::INACTIVE);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}

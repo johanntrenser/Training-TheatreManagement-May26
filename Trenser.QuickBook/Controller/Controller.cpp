@@ -326,6 +326,20 @@ const std::vector<const Movie*>& Controller::getAllActiveMovies()
 }
 
 /*
+ * Function: Controller::setMovieDeactivate
+ * Description: Deactivates a movie in the system by delegating the request to the MovieManagementService.
+ * Parameters:
+ *    movieId - Unique identifier of the movie to deactivate
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was successfully deactivated,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setMovieDeactivate(const std::string& movieId)
+{
+    return m_movieManagementService->setMovieDeactive(movieId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

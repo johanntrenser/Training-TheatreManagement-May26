@@ -68,6 +68,7 @@ public:
 	Enums::ProcessStatus setMovieGenreByID(const std::string& movieId, const std::string& genre);
 	Enums::ProcessStatus setMovieDurationByID(const std::string& movieId, const int& duration);
 	const std::vector<const Movie*>& getAllActiveMovies();
+	Enums::ProcessStatus setMovieDeactivate(const std::string& movieId);
 	void logout();
 	~Controller();
 };
