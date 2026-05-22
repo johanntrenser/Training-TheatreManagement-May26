@@ -232,3 +232,16 @@ Enums::ProcessStatus UserManagementService::reactivateUser(const std::string& us
     }
     return Enums::ProcessStatus::FAILED;
 }
+
+/*
+ * Function: getAuthenticatedUser
+ * Description: Retrieves the currently authenticated user from the data store.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A pointer to the authenticated User object if one exists,
+ */
+const User* const UserManagementService::getAuthenticatedUser()
+{
+    return m_dataStore.getAuthenticatedUser();
+}

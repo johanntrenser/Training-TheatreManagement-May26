@@ -288,6 +288,19 @@ Enums::ProcessStatus Controller::reactivateUser(const std::string& userId)
 }
 
 /*
+ * Function: getAuthenticatedUser
+ * Description: Retrieves the currently authenticated user from the UserManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A pointer to the authenticated User object, or nullptr if no user is authenticated
+ */
+const User* const Controller::getAuthenticatedUser()
+{
+    return m_userManagementService->getAuthenticatedUser();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
