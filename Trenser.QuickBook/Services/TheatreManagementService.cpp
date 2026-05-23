@@ -148,3 +148,29 @@ Theatre* TheatreManagementService::searchByTheatreName(const std::string& name) 
 {
     return nullptr;
 }
+
+/*
+ * Function: TheatreManagementService::getCurrentOwnerTheatres
+ * Description: Retrieves all theatres owned by the currently authenticated user.
+ *              Iterates through the datastore of theatres and collects those
+ *              associated with the authenticated user account.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers representing the theatres owned by the
+ *    current authenticated user. Returns an empty vector if no theatres
+ *    are found for the user.
+ */
+const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheatres()
+{
+    std::vector<const Theatre*> ownerTheatres;
+    const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner() == authenticatedUser))
+        {
+            ownerTheatres.push_back(iterator->second);
+        }
+    }
+    return ownerTheatres;
+}

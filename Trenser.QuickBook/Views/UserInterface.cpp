@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include<iomanip>
 using namespace std;
 #include "InputHelper.h"
 #include "OutputHelper.h"
@@ -208,7 +209,8 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Exit" << endl;
+	cout << "1. View Theatre Details" << endl;
+	cout << "0. Exit" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -327,8 +329,11 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		util::readValue(choice);
 		switch (choice)
 		{
-		case 1:
+		case 0:
 			isMenuActive = false;
+			break;
+		case 1:
+			viewTheatreDetails();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -419,4 +424,65 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
 	getUniquePhoneNumber(phoneNumber);
 }
 
+/*
+ * Function: UserInterface::viewTheatreDetails
+ * Description: Retrieves and displays details of theatres owned by the current user.
+ *              Queries the Controller for theatres associated with the current owner
+ *              and presents their information if available. If no theatres are found,
+ *              informs the user accordingly.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::viewTheatreDetails()
+{
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
+	}
+}
 
+/*
+ * Function: UserInterface::displayTheatreDetails
+ * Description: Displays detailed information about a list of theatres in a
+ *              formatted tabular view. Outputs theatre attributes such as
+ *              ID, name, city, address, contact phone, and current status.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres
+ *               whose details are to be displayed.
+ * Returns: None
+ */
+void UserInterface::displayTheatreDetails(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n--------------------------------------------------------------------------------------------------\n";
+
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< setw(15) << "Status"
+		<< endl;
+
+	cout << "--------------------------------------------------------------------------------------------------\n";
+
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left
+				<< setw(15) << (*iterator)->getTheatreId()
+				<< setw(20) << (*iterator)->getName()
+				<< setw(15) << (*iterator)->getCity()
+				<< setw(25) << (*iterator)->getAddress()
+				<< setw(15) << (*iterator)->getContactPhone()
+				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
+				<< endl;
+		}
+	}
+}

@@ -29,5 +29,6 @@ public:
     std::vector<Theatre*> listAllTheatres() const;
     std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
     Theatre* searchByTheatreName(const std::string& name) const;
+    const std::vector<const Theatre*> getCurrentOwnerTheatres();
 };
 
