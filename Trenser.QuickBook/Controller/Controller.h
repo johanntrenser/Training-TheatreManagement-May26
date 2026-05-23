@@ -88,5 +88,6 @@ public:
 	std::vector<const Movie*> getAllInactiveMovies();
 	Enums::ProcessStatus updateSeatLayout(Screen* screen, const int rows, const int columns);
 	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
+	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
 	~Controller();
 };

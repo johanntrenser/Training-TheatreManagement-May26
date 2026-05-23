@@ -1679,3 +1679,24 @@ bool UserInterface::displayAllInactiveMovies()
 	displayMovie(movies);
 	return true;
 }
+/*
+ * Function: deactivateSeat
+ * Description: Deactivates a specific seat in the given screen and shows result.
+ * Parameters:
+ *    Screen* - Target screen
+ *    seatId (string) - Identifier of the seat
+ * Returns:
+ *    None
+ */
+void UserInterface::deactivateSeat(Screen* screen, const std::string& seatId)
+{
+	Enums::ProcessStatus status = m_controller->deactivateSeat(screen, seatId);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Seat Number " << seatId << " Deactivated!" << endl;
+	}
+	else
+	{
+		cout << "Failure! Seat could not be deactivated." << endl;
+	}
+}

@@ -96,3 +96,61 @@ const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(cons
 {
 	return screen->getSeatGrid();
 }
+
+/*
+ * Function: SeatManagementService::deactivateSeat
+ * Description: Attempts to block a seat in the given screen if conditions allow.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    ProcessStatus::SUCCESS if seat blocked, FAILED otherwise
+ */
+Enums::ProcessStatus SeatManagementService::deactivateSeat(Screen* screen, const std::string& seatId)
+{
+	if (!screen)
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
+	std::map<std::string, Show*>& shows = m_dataStore.getShowsForUpdation();
+	bool status = true;
+	for (std::map<std::string, Show*>::iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	{
+		if (iterator->second->getScreen()->getScreenId() == screen->getScreenId())
+		{
+			if (iterator->second->getShowStatus() != Enums::ShowStatus::RUNNING
+				&& iterator->second->getShowStatus() != Enums::ShowStatus::SCHEDULED)
+			{
+				ShowSeatAvailability* showSeatAvailability = iterator->second->getSeatAvailability();
+				const std::map<std::string, Seat*>& seatAvailabilityMap = showSeatAvailability->getSeatAvailabilityMap();
+				for (std::map<std::string, Seat*>::const_iterator seatIterator = seatAvailabilityMap.begin(); seatIterator != seatAvailabilityMap.end(); ++seatIterator)
+				{
+					if (seatIterator->second->getSeatId() == seatId
+						&& seatIterator->second->getSeatStatus() != Enums::SeatStatus::AVAILABLE)
+					{
+						status = false;
+					}
+				}
+			}
+		}
+	}
+	if (status == false)
+	{
+		std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGridForUpdation();
+		for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
+		{
+			for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
+			{
+				if ((*seatIterator)->getSeatId() == seatId)
+				{
+					if ((*seatIterator)->getSeatStatus() == Enums::SeatStatus::AVAILABLE)
+					{
+						(*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
+						return Enums::ProcessStatus::SUCCESS;
+					}
+				}
+			}
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
