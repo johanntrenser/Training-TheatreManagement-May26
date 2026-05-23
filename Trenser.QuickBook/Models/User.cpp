@@ -19,7 +19,7 @@ User::User()
     m_userName(""),
     m_email(""),
     m_password(""),
-    m_phoneNumber(0),
+    m_phoneNumber(""),
     m_userType(Enums::UserType::CUSTOMER),
     m_status(Enums::UserStatus::ACTIVE)
 {}

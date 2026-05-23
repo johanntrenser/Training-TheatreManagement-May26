@@ -29,4 +29,7 @@ public:
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
 	void viewTheatreDetails();
 	void displayTheatreDetails(const std::vector<const Theatre*>& theatres);
+	void searchTheatre();
+	void  displayTheatresForAdmin(const std::vector<const Theatre*>& theatres);
+	void  displayTheatresForUsers(const std::vector<const Theatre*>& theatres);
 };

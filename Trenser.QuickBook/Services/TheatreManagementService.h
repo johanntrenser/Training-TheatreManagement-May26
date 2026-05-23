@@ -28,7 +28,8 @@ public:
     int viewTheatreStatus(const std::string& theatreId) const; // enum placeholder
     std::vector<Theatre*> listAllTheatres() const;
     std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
-    Theatre* searchByTheatreName(const std::string& name) const;
+    const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
     const std::vector<const Theatre*> getCurrentOwnerTheatres();
+    const User* getAuthenticatedUser() const;
 };
 
