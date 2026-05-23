@@ -30,8 +30,12 @@ public:
 	void viewTheatreDetails();
 	void displayTheatreDetails(const std::vector<const Theatre*>& theatres);
 	void searchTheatre();
-	void displayTheatresForAdmin(const std::vector<const Theatre*>& theatres);
-	void displayTheatresForUsers(const std::vector<const Theatre*>& theatres);
+	void  displayTheatresForAdmin(const std::vector<const Theatre*>& theatres);
+	void  displayTheatresForUsers(const std::vector<const Theatre*>& theatres);
+	void addTheatre();
+	void getUniqueTheatrePhoneNumber(std::string& phoneNumber);
+	void getUniqueTheatreEmail(std::string& email);
+	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	void listAllTheatres();
 	void displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status);
 };

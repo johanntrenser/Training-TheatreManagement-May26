@@ -19,7 +19,6 @@ class TheatreManagementService
     DataStore& m_dataStore;
 public:
     TheatreManagementService();
-    bool addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phone, const std::string& email);
     bool updateTheatreDetails(const std::string& theatreId, const std::string& name, const std::string& address, const std::string& phone, const std::string& email);
     bool reactivateTheatre(const std::string& theatreId);
     bool deactivateTheatre(const std::string& theatreId);
@@ -31,6 +30,11 @@ public:
     const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
     const std::vector<const Theatre*> getCurrentOwnerTheatres();
     const User* getAuthenticatedUser() const;
+    Enums::ProcessStatus isTheatrePhoneNumberUnique(const std::string& phoneNumber);
+    Enums::ProcessStatus isTheatreEmailUnique(const std::string& email);
+    Enums::ProcessStatus addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
+    const std::string generateTheatreId();
+    Enums::ProcessStatus isTheatreUniqueInSystem(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
     const std::vector<const Theatre*> getAllTheatres();
 };
 

@@ -63,6 +63,10 @@ public:
 	const std::vector<const Theatre*> getCurrentOwnerTheatres();
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
 	const User* getAuthenticatedUser() const;
+	Enums::ProcessStatus isTheatrePhoneNumberUnique(const std::string& phoneNumber);
+	Enums::ProcessStatus isTheatreEmailUnique(const std::string& email);
+	Enums::ProcessStatus addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
+	Enums::ProcessStatus isTheatreUnique(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	const std::vector<const Theatre*> getAllTheatres();
 	void logout();
 	~Controller();
