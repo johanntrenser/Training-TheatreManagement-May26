@@ -60,11 +60,23 @@ const std::string& Log::getDescription() const
     return m_description;
 }
 
+/*
+ * Function: Log::getLogType
+ * Description: Retrieves the log type.
+ * Returns:
+ *    const Enums::LogType - Log type enumeration value
+ */
 const Enums::LogType Log::getLogType() const
 {
     return m_logType;
 }
 
+/*
+ * Function: Log::getTimestamp
+ * Description: Retrieves the timestamp of the log entry.
+ * Returns:
+ *    const util::Timestamp& - Timestamp object
+ */
 const util::Timestamp& Log::getTimestamp() const
 {
     return m_timestamp;
@@ -94,16 +106,36 @@ void Log::setDescription(const std::string& description)
     m_description = description;
 }
 
+/*
+ * Function: Log::setLogType
+ * Description: Updates the log type.
+ * Parameters:
+ *    const Enums::LogType logType - New log type
+ * Returns: None
+ */
 void Log::setLogType(const Enums::LogType logType)
 {
     m_logType = logType;
 }
 
+/*
+ * Function: Log::setTimestamp
+ * Description: Updates the timestamp of the log entry.
+ * Parameters:
+ *    const util::Timestamp& timestamp - New timestamp
+ * Returns: None
+ */
 void Log::setTimestamp(const util::Timestamp& timestamp)
 {
     m_timestamp = timestamp;
 }
 
+/*
+ * Function: Log::toString
+ * Description: Converts the log entry to a formatted string representation.
+ * Returns:
+ *    std::string - String containing timestamp, log type, ID, and description
+ */
 std::string Log::toString()
 {
     std::ostringstream buffer;
