@@ -3103,3 +3103,4 @@ void UserInterface::reactivateTheatreByAdmin()
 		cout << "No theatres found for current owner" << endl;
 	}
 }
+

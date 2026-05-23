@@ -659,3 +659,4 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
     }
     return Enums::ProcessStatus::FAILED;
 }
+
