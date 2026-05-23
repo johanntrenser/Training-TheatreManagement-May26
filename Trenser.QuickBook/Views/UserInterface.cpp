@@ -497,8 +497,8 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 			changePassword();
 			break;
 		case 13:
-			m_controller->logout();   
-			isMenuActive = false;  
+			m_controller->logout();
+			isMenuActive = false;
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -2351,7 +2351,7 @@ Enums::ProcessStatus UserInterface::validateMovieId(const std::string& movieId, 
 const std::vector<std::string> UserInterface::getMovieIds(const std::vector<const Movie*>& movies)
 {
 	std::vector<std::string> movieIds;
-	for (std::vector<const Movie*>::const_iterator iterator =movies.begin(); iterator != movies.end(); ++iterator)
+	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		movieIds.push_back((*iterator)->getMovieId());
 	}
@@ -2393,10 +2393,10 @@ Enums::ProcessStatus UserInterface::validateTheatreId(const std::string& theatre
  * Returns:
  *    A vector of strings containing the IDs of the provided theatres.
  */
-const std::vector<std::string> UserInterface::getTheatreIds(const std::vector<const Theatre*>&theatres)
+const std::vector<std::string> UserInterface::getTheatreIds(const std::vector<const Theatre*>& theatres)
 {
 	std::vector<std::string> theatreIds;
-	for (std::vector<const Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		theatreIds.push_back((*iterator)->getTheatreId());
 	}
@@ -2422,7 +2422,7 @@ void UserInterface::displayOwnerTheatres(const std::vector<const Theatre*>& thea
 		<< setw(15) << "City"
 		<< endl;
 	cout << "-------------------------------------------------------------\n";
-	for (std::vector<const Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		cout << left
 			<< setw(15) << (*iterator)->getTheatreId()
@@ -2646,7 +2646,7 @@ Enums::ProcessStatus UserInterface::isValidTheatreID(const std::string& theatreI
 {
 	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
-		if ((*iterator)->getTheatreId()==theatreId)
+		if ((*iterator)->getTheatreId() == theatreId)
 		{
 			return Enums::ProcessStatus::SUCCESS;
 		}
@@ -2697,19 +2697,19 @@ void UserInterface::updateTheatre()
 			{
 				displayEditTheatreMenu();
 				util::readValue(choice);
-				if (choice == 1) 
+				if (choice == 1)
 				{
 					cout << "\nEnter the new name: ";
 					util::readValue(name);
-					changeTheatreName(theatreId, name,theatre);
+					changeTheatreName(theatreId, name, theatre);
 				}
-				else if (choice == 2) 
+				else if (choice == 2)
 				{
 					cout << "\nEnter the new city: ";
 					util::readValue(city);
 					changeTheatreCity(theatreId, city, theatre);
 				}
-				else if (choice == 3) 
+				else if (choice == 3)
 				{
 					cout << "\nEnter the new address: ";
 					util::readValue(address);
@@ -2717,7 +2717,7 @@ void UserInterface::updateTheatre()
 				}
 				else if (choice == 4)
 				{
-					cout << "\nEnter the new phone number: "; 
+					cout << "\nEnter the new phone number: ";
 					util::readValue(phoneNumber);
 					util::isPhoneNumberValid(phoneNumber);
 					getUniqueTheatrePhoneNumber(phoneNumber);
@@ -2728,7 +2728,7 @@ void UserInterface::updateTheatre()
 					cout << "\nEnter the new email: ";
 					util::isEmailValid(email);
 					getUniqueTheatreEmail(email);
-					changeTheatreEmail(theatreId, email,theatre);
+					changeTheatreEmail(theatreId, email, theatre);
 				}
 				else
 				{
@@ -2933,8 +2933,8 @@ void UserInterface::validateTheatreRequest()
 {
 	std::string theatreId;
 	int choice;
-	const std::vector<const Theatre*> pendingTheatres=m_controller->getPendingTheatres();
-	if(!pendingTheatres.empty())
+	const std::vector<const Theatre*> pendingTheatres = m_controller->getPendingTheatres();
+	if (!pendingTheatres.empty())
 	{
 		displayTheatreDetails(pendingTheatres);
 		cout << "\nEnter the theatre Id, which you want to validate: ";
@@ -3323,7 +3323,7 @@ void UserInterface::addShow()
 	* Returns :
 	*bool - True if a valid screen ID is selected, false otherwise
 */
-bool UserInterface::getScreenId(const std::vector<const Screen*>&screens, std::string & screenId)
+bool UserInterface::getScreenId(const std::vector<const Screen*>& screens, std::string& screenId)
 {
 	std::vector<std::string> screenIds;
 	cout << "\nAvaiable Screens\n-----------------------------" << endl;
@@ -3721,7 +3721,7 @@ void UserInterface::viewTicketDetails(const std::vector<const Ticket*>& tickets)
 	{
 		cout << std::setw(15) << "Customer Name";
 	}
-		cout << std::setw(12) << "Payment ID"
+	cout << std::setw(12) << "Payment ID"
 		<< std::setw(10) << "Amount"
 		<< std::setw(12) << "Booking ID"
 		<< std::setw(12) << "Status"
@@ -3862,7 +3862,7 @@ void UserInterface::displayPaymentStatus(const std::string& paymentId)
 	Enums::PaymentMethod paymentMethod;
 	Enums::PaymentStatus paymentStatus;
 	std::string paymentDate;
-	if (m_controller->viewPaymentStatus(paymentId,bookingId,amount,paymentMethod,paymentStatus,paymentDate) == Enums::ProcessStatus::FAILED)
+	if (m_controller->viewPaymentStatus(paymentId, bookingId, amount, paymentMethod, paymentStatus, paymentDate) == Enums::ProcessStatus::FAILED)
 	{
 		std::cout << "\nPayment not found!";
 		return;
@@ -3885,7 +3885,7 @@ void UserInterface::displayPaymentStatus(const std::string& paymentId)
 void UserInterface::viewPaymentStatus()
 {
 	std::string paymentId;
-	cout<<"\nEnter payment Id: ";
+	cout << "\nEnter payment Id: ";
 	util::readValue(paymentId);
 	displayPaymentStatus(paymentId);
 }
@@ -3934,23 +3934,5 @@ void UserInterface::selectPaymentMethod(const std::string& bookingId, double amo
 	else
 	{
 		std::cout << "Payment failed.\n";
-	}
-}
-
-	cout << "--------------------------------------------------------------------------------------------------\n";
-
-	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
-	{
-		if (*iterator)
-		{
-			cout << left
-				<< setw(15) << (*iterator)->getTheatreId()
-				<< setw(20) << (*iterator)->getName()
-				<< setw(15) << (*iterator)->getCity()
-				<< setw(25) << (*iterator)->getAddress()
-				<< setw(15) << (*iterator)->getContactPhone()
-				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
-				<< endl;
-		}
 	}
 }
