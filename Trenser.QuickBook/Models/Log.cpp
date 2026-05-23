@@ -5,7 +5,9 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
+#include <sstream>
 #include "Log.h"
+#include "TimeStamp.h"
 
  /*
   * Function: Log::Log
@@ -14,7 +16,8 @@
   */
 Log::Log()
     : m_logId(""),
-    m_description("")
+    m_description(""),
+    m_logType(Enums::LogType::UNKNOWN)
 {}
 
 /*
@@ -27,9 +30,12 @@ Log::Log()
  * Returns: None
  */
 Log::Log(const std::string& logId,
-    const std::string& description)
+    const std::string& description,
+    const Enums::LogType logType)
     : m_logId(logId),
-    m_description(description)
+    m_description(description),
+    m_logType(logType),
+    m_timestamp(util::Timestamp())
 {}
 
 /*
@@ -52,6 +58,16 @@ const std::string& Log::getLogId() const
 const std::string& Log::getDescription() const
 {
     return m_description;
+}
+
+const Enums::LogType Log::getLogType() const
+{
+    return m_logType;
+}
+
+const util::Timestamp& Log::getTimestamp() const
+{
+    return m_timestamp;
 }
 
 /*
@@ -77,3 +93,24 @@ void Log::setDescription(const std::string& description)
 {
     m_description = description;
 }
+
+void Log::setLogType(const Enums::LogType logType)
+{
+    m_logType = logType;
+}
+
+void Log::setTimestamp(const util::Timestamp& timestamp)
+{
+    m_timestamp = timestamp;
+}
+
+std::string Log::toString()
+{
+    std::ostringstream buffer;
+    buffer << "<" << m_timestamp.toString() << "> ";
+    buffer << Enums::getLogTypeString(m_logType) << ": ";
+    buffer << m_logId << " - ";
+    buffer << m_description << std::endl;
+    return buffer.str();
+}
+
