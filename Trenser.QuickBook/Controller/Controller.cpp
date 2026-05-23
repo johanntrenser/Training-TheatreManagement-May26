@@ -470,6 +470,107 @@ Enums::ProcessStatus Controller::isTheatreUnique(const std::string& name, const 
 {
     return m_theatreManagementService->isTheatreUniqueInSystem(name, city, address, phoneNumber, email);
 }
+
+/*
+ * Function: Controller::getAllTheatres
+ * Description: Retrieves all theatres from the TheatreManagementService.
+ *              Acts as a delegation layer to access the complete list of
+ *              theatres stored in the system.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers representing all theatres available
+ *    in the datastore. Returns an empty vector if no theatres exist.
+ */
+const std::vector<const Theatre*> Controller::getAllTheatres()
+{
+    return m_theatreManagementService->getAllTheatres();
+}
+
+/*
+ * Function: Controller::setTheatreNameById
+ * Description: Updates the name of a theatre using the given theatre ID.
+ *              Delegates the theatre name update operation to the
+ *              TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    name      - New name to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre name update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreNameById(const std::string& theatreId, const std::string& name)
+{
+    return m_theatreManagementService->setTheatreNameById(theatreId, name);
+}
+
+/*
+ * Function: Controller::setTheatreCityById
+ * Description: Updates the city of a theatre using the given theatre ID.
+ *              Delegates the theatre city update operation to the
+ *              TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    city      - New city to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre city update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreCityById(const std::string& theatreId, const std::string& city)
+{
+    return m_theatreManagementService->setTheatreCityById(theatreId, city);
+}
+
+/*
+ * Function: Controller::setTheatreAddressById
+ * Description: Updates the address of a theatre using the given theatre ID.
+ *              Delegates the theatre address update operation to the
+ *              TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    address   - New address to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre address update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreAddressById(const std::string& theatreId, const std::string& address)
+{
+    return m_theatreManagementService->setTheatreAddressById(theatreId, address);
+}
+
+/*
+ * Function: Controller::setTheatrePhoneNumberById
+ * Description: Updates the phone number of a theatre using the given
+ *              theatre ID. Delegates the theatre phone number update
+ *              operation to the TheatreManagementService.
+ * Parameters:
+ *    theatreId   - Unique identifier of the theatre.
+ *    phoneNumber - New phone number to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre phone number update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber)
+{
+    return m_theatreManagementService->setTheatrePhoneNumberById(theatreId, phoneNumber);
+}
+
+/*
+ * Function: Controller::setTheatreEmailById
+ * Description: Updates the email address of a theatre using the given
+ *              theatre ID. Delegates the theatre email update operation
+ *              to the TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    email     - New email address to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre email update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreEmailById(const std::string& theatreId, const std::string& email)
+{
+    return m_theatreManagementService->setTheatreEmailById(theatreId, email);
+}
+
 /*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the

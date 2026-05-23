@@ -239,6 +239,7 @@ void UserInterface::theatreOwnerMenu()
 	cout << " 4.  Logout" << endl;
 	cout << "------------------------" << endl;
 	cout << "1. View Theatre Details" << endl;
+	cout << "3. Update Theatre Details" << endl;
 	cout << "0. Exit" << endl;
 	cout << "Enter an option: ";
 }
@@ -455,6 +456,9 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 			break;
 		case 2:
 			viewTheatreDetails();
+			break;
+		case 3:
+			updateTheatre();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -2328,6 +2332,7 @@ void UserInterface::addTheatre()
 	else
 	{
 		cout << "\nTheatre already exist!.";
+		return;
 	}
 }
 
@@ -2377,6 +2382,293 @@ void UserInterface::getUniqueTheatreEmail(std::string& email)
 		if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
 		{
 			isEmailUnique = true;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::isValidTheatreID
+ * Description: Checks whether the given theatre ID exists in the provided
+ *              collection of theatres.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre to validate.
+ *    theatres  - Vector containing theatre objects to search.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre ID exists.
+ *    ProcessStatus::FAILED if the theatre ID is not found.
+ */
+Enums::ProcessStatus UserInterface::isValidTheatreID(const std::string& theatreId, const std::vector<const Theatre*>& theatres)
+{
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if ((*iterator)->getTheatreId()==theatreId)
+		{
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::displayEditTheatreMenu
+ * Description: Displays the menu options available for editing theatre
+ *              details such as name, city, address, phone number, and email.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::displayEditTheatreMenu()
+{
+	cout << "\n\n1.Name";
+	cout << "\n2.City";
+	cout << "\n3.Address";
+	cout << "\n4.Phone Number";
+	cout << "\n5.Email";
+	cout << "\n0.Exit";
+	cout << "\nEnter which details want to edit: ";
+}
+
+/*
+ * Function: UserInterface::updateTheatre
+ * Description: Allows the current theatre owner to update theatre details.
+ *              Displays available theatres, validates the selected theatre ID,
+ *              and provides options to edit theatre information.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::updateTheatre()
+{
+	std::string theatreId, name, city, address, phoneNumber, email;
+	int choice = 1;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			const Theatre* theatre = getCurrentTheatreById(theatreId, theatres);
+			while (choice != 0)
+			{
+				displayEditTheatreMenu();
+				util::readValue(choice);
+				if (choice == 1) 
+				{
+					cout << "\nEnter the new name: ";
+					util::readValue(name);
+					changeTheatreName(theatreId, name,theatre);
+				}
+				else if (choice == 2) 
+				{
+					cout << "\nEnter the new city: ";
+					util::readValue(city);
+					changeTheatreCity(theatreId, city, theatre);
+				}
+				else if (choice == 3) 
+				{
+					cout << "\nEnter the new address: ";
+					util::readValue(address);
+					changeTheatreAddress(theatreId, address, theatre);
+				}
+				else if (choice == 4)
+				{
+					cout << "\nEnter the new phone number: "; 
+					util::readValue(phoneNumber);
+					util::isPhoneNumberValid(phoneNumber);
+					getUniqueTheatrePhoneNumber(phoneNumber);
+					changeTheatrePhoneNumber(theatreId, phoneNumber, theatre);
+				}
+				else if (choice == 5)
+				{
+					cout << "\nEnter the new email: ";
+					util::isEmailValid(email);
+					getUniqueTheatreEmail(email);
+					changeTheatreEmail(theatreId, email,theatre);
+				}
+				else
+				{
+					cout << "\nEnter a valid choice!.";
+				}
+			}
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreName
+ * Description: Updates the name of the selected theatre after validating
+ *              the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    name      - New theatre name.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreName(const std::string& theatreId, const std::string& name, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(name, theatre->getCity(), theatre->getAddress(), theatre->getTheatrePhoneNumber(), theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreNameById(theatreId, name))
+		{
+			cout << "Name has been updated!.";
+		}
+		else
+		{
+			cout << "\nName can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreCity
+ * Description: Updates the city of the selected theatre after validating
+ *              the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    city      - New city name.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreCity(const std::string& theatreId, const std::string& city, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), city, theatre->getAddress(), theatre->getTheatrePhoneNumber(), theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreCityById(theatreId, city))
+		{
+			cout << "\nCity has been updated!.";
+		}
+		else
+		{
+			cout << "\nCity can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreAddress
+ * Description: Updates the address of the selected theatre after validating
+ *              the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    address   - New address of the theatre.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreAddress(const std::string& theatreId, const std::string& address, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), theatre->getCity(), address, theatre->getTheatrePhoneNumber(), theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreAddressById(theatreId, address))
+		{
+			cout << "\nAddress has been updated!.";
+		}
+		else
+		{
+			cout << "\nAddress can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatrePhoneNumber
+ * Description: Updates the phone number of the selected theatre after
+ *              validating the updated theatre details.
+ * Parameters:
+ *    theatreId   - Unique identifier of the theatre.
+ *    phoneNumber - New phone number of the theatre.
+ *    theatre     - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatrePhoneNumber(const std::string& theatreId, const std::string& phoneNumber, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), theatre->getCity(), theatre->getAddress(), phoneNumber, theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatrePhoneNumberById(theatreId, phoneNumber))
+		{
+			cout << "\nPhone number has been updated!.";
+		}
+		else
+		{
+			cout << "\nPhone Number can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreEmail
+ * Description: Updates the email address of the selected theatre after
+ *              validating the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    email     - New email address of the theatre.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreEmail(const std::string& theatreId, const std::string& email, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), theatre->getCity(), theatre->getAddress(), theatre->getTheatrePhoneNumber(), email) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreEmailById(theatreId, email))
+		{
+			cout << "\nEmail has been updated!.";
+		}
+		else
+		{
+			cout << "\nEmail can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::getCurrentTheatreById
+ * Description: Retrieves the theatre object that matches the given
+ *              theatre ID from the provided theatre collection.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    theatres  - Vector containing theatre objects.
+ * Returns:
+ *    Pointer to the matching Theatre object if found.
+ */
+const Theatre* UserInterface::getCurrentTheatreById(const std::string& theatreId, const std::vector<const Theatre*>& theatres)
+{
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if ((*iterator)->getTheatreId() == theatreId)
+		{
+			return *iterator;
 		}
 	}
 }

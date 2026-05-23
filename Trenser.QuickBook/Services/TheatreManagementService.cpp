@@ -378,10 +378,140 @@ Enums::ProcessStatus TheatreManagementService::isTheatreUniqueInSystem(const std
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        if ((iterator->second)->getName() == name && (iterator->second)->getCity() == city && (iterator->second)->getAddress() == address && (iterator->second)->getTheatrePhoneNumber() == phoneNumber && (iterator->second)->getTheatreEmail() == email)
+        if ((iterator->second)->getName() == name && (iterator->second)->getCity() == city && (iterator->second)->getAddress() == address)
         {
             return Enums::ProcessStatus::FAILED;
         }
     }
     return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: TheatreManagementService::setTheatreNameById
+ * Description: Updates the name of a theatre identified by the given
+ *              theatre ID. Searches the datastore for the matching
+ *              theatre and updates its name if found.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    name      - New name to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre name was updated successfully.
+ *    ProcessStatus::FAILED if no matching theatre was found.
+ */
+Enums::ProcessStatus TheatreManagementService::setTheatreNameById(const std::string& theatreId, const std::string& name)
+{
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getTheatreId() == theatreId)
+        {
+            (iterator->second)->setName(name);
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: TheatreManagementService::setTheatreCityById
+ * Description: Updates the city of a theatre identified by the given
+ *              theatre ID. Searches the datastore for the matching
+ *              theatre and updates its city if found.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    city      - New city to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre city was updated successfully.
+ *    ProcessStatus::FAILED if no matching theatre was found.
+ */
+Enums::ProcessStatus TheatreManagementService::setTheatreCityById(const std::string& theatreId, const std::string& city)
+{
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getTheatreId() == theatreId)
+        {
+            (iterator->second)->setCity(city);
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: TheatreManagementService::setTheatreAddressById
+ * Description: Updates the address of a theatre identified by the given
+ *              theatre ID. Searches the datastore for the matching
+ *              theatre and updates its address if found.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    address   - New address to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre address was updated successfully.
+ *    ProcessStatus::FAILED if no matching theatre was found.
+ */
+Enums::ProcessStatus TheatreManagementService::setTheatreAddressById(const std::string& theatreId, const std::string& address)
+{
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getTheatreId() == theatreId)
+        {
+            (iterator->second)->setAddress(address);
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: TheatreManagementService::setTheatrePhoneNumberById
+ * Description: Updates the phone number of a theatre identified by the
+ *              given theatre ID. Searches the datastore for the matching
+ *              theatre and updates its phone number if found.
+ * Parameters:
+ *    theatreId   - Unique identifier of the theatre.
+ *    phoneNumber - New phone number to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre phone number was updated successfully.
+ *    ProcessStatus::FAILED if no matching theatre was found.
+ */
+Enums::ProcessStatus TheatreManagementService::setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber)
+{
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getTheatreId() == theatreId)
+        {
+            (iterator->second)->setTheatrePhoneNumber(phoneNumber);
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: TheatreManagementService::setTheatreEmailById
+ * Description: Updates the email address of a theatre identified by the
+ *              given theatre ID. Searches the datastore for the matching
+ *              theatre and updates its email address if found.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    email     - New email address to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre email was updated successfully.
+ *    ProcessStatus::FAILED if no matching theatre was found.
+ */
+Enums::ProcessStatus TheatreManagementService::setTheatreEmailById(const std::string& theatreId, const std::string& email)
+{
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getTheatreId() == theatreId)
+        {
+            (iterator->second)->setTheatreEmail(email);
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
 }

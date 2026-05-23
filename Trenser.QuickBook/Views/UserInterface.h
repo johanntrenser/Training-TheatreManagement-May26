@@ -85,4 +85,13 @@ public:
 	void getUniqueTheatreEmail(std::string& email);
 	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	void displayMoviesInTheatre();
+	void updateTheatre();
+	Enums::ProcessStatus isValidTheatreID(const std::string& theatreId, const std::vector<const Theatre*>& theatres);
+	void displayEditTheatreMenu();
+	void changeTheatreName(const std::string& theatreId, const std::string& name, const Theatre*& theatre);
+	void changeTheatreCity(const std::string& theatreId, const std::string& city, const Theatre*& theatre);
+	void changeTheatreAddress(const std::string& theatreId, const std::string& address, const Theatre*& theatre);
+	void changeTheatrePhoneNumber(const std::string& theatreId, const std::string& phoneNumber, const Theatre*& theatre);
+	void changeTheatreEmail(const std::string& theatreId, const std::string& email, const Theatre*& theatre);
+	const Theatre* getCurrentTheatreById(const std::string& theatreId, const std::vector<const Theatre*>& theatres);
 };
