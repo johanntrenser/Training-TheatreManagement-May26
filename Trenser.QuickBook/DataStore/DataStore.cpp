@@ -61,3 +61,13 @@ void DataStore::setAuthenticatedUser(User* user)
 {
     m_currentUser = user;
 }
+
+const std::map<std::string, Show*>& DataStore::getShows() const
+{
+    return m_show;
+}
+
+std::map<std::string, Show*>& DataStore::getShowsForUpdation()
+{
+    return m_show;
+}

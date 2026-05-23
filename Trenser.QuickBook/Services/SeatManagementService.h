@@ -9,7 +9,15 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <vector>
+#include "DataStore.h"
+
 class SeatManagementService
 {
+private:
+	DataStore& m_dataStore;
+public:
+	SeatManagementService();
+	Enums::ProcessStatus updateSeatLayout(Screen* screen, const int newRows, const int newColumns);
 };
 
