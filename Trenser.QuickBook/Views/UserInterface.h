@@ -79,4 +79,8 @@ public:
 	void displayTheatresForUsers(const std::vector<const Theatre*>& theatres);
 	void listAllTheatres();
 	void displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status);
+	void addTheatre();
+	void getUniqueTheatrePhoneNumber(std::string& phoneNumber);
+	void getUniqueTheatreEmail(std::string& email);
+	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 };

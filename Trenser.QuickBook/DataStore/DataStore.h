@@ -65,5 +65,6 @@ public:
 	Screen* getScreenById(const std::string& screenId) const;
 	Enums::UserType getAuthenticatedUserType();
 	const std::map<std::string, Theatre*>& getTheatres() const;
-	const User* getAuthenticatedUser();
+	User* const getAuthenticatedUser() const;
+	void addTheatre(Theatre* theatre);
 };

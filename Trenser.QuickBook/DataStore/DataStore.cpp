@@ -287,7 +287,7 @@ Enums::UserType DataStore::getAuthenticatedUserType()
  */
 const std::map<std::string, Theatre*>& DataStore::getTheatres() const
 {
-    return m_theatre;
+    return m_theatres;
 }
 
 /*
@@ -299,7 +299,21 @@ const std::map<std::string, Theatre*>& DataStore::getTheatres() const
  *    Pointer to the User object representing the authenticated user, or nullptr
  *    if no user is currently logged in.
  */
-const User* DataStore::getAuthenticatedUser()
+User* const DataStore::getAuthenticatedUser() const
 {
     return m_currentUser;
+}
+
+/*
+ * Function: DataStore::addTheatre
+ * Description: Adds a new theatre object to the data store using
+ *              the theatre ID as the key.
+ * Parameters:
+ *    theatre (Theatre*) - Pointer to the theatre object to be added
+ * Returns:
+ *    void
+ */
+void DataStore::addTheatre(Theatre* theatre)
+{
+    m_theatres[theatre->getTheatreId()] = theatre;
 }
