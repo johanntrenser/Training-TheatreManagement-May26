@@ -303,3 +303,4 @@ void DataStore::addTheatre(Theatre* theatre)
 {
     m_theatres[theatre->getTheatreId()] = theatre;
 }
+

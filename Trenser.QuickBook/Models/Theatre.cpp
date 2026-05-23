@@ -19,7 +19,8 @@ Theatre::Theatre()
     : m_theatreId(""), m_name(""), m_city(""), m_address(""),
     m_phoneNumber(""), m_email(""),
     m_theatreOwner(nullptr), m_status(Enums::TheatreStatus::PENDING),
-    m_screens(), m_movies() {}
+    m_screens(), m_movies() {
+}
 
 /*
  * Function: Theatre::Theatre

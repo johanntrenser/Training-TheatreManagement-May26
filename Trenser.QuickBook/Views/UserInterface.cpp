@@ -5,19 +5,17 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
-#include <iomanip>
+#include <iostream>
 #include <iostream>
 #include <stdexcept>
+#include <iomanip>
 #include <string>
-#include "Enums.h"
-#include "Enums.h"
+using namespace std;
 #include "InputHelper.h"
 #include "OutputHelper.h"
 #include "UserInterface.h"
 #include "Validator.h"
-
-using namespace std;
-
+#include "Enums.h"
 /*
  * Function: UserInterface::UserInterface
  * Description: Default constructor. Initializes the UserInterface by creating
@@ -1232,6 +1230,7 @@ void UserInterface::changeMovieLanguage(const string& movieId, const string& lan
 		return;
 	}
 }
+
 /*
  * Function: UserInterface::viewTheatreDetails
  * Description: Retrieves and displays details of theatres owned by the current user.
