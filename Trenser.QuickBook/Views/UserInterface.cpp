@@ -2184,7 +2184,7 @@ void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres,
 				<< setw(20) << (*iterator)->getName()
 				<< setw(15) << (*iterator)->getCity()
 				<< setw(25) << (*iterator)->getAddress()
-				<< setw(15) << (*iterator)->getContactPhone()
+				<< setw(15) << (*iterator)->getTheatrePhoneNumber()
 				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
 				<< endl;
 		}
