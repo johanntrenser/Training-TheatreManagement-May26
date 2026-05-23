@@ -60,6 +60,7 @@ public:
 	Enums::ProcessStatus registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType);
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
+	const std::vector<const Log*> getLogsByType(const Enums::LogType logType);
 	void logout();
 	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	const std::vector<const User*> getActiveUsers() const;

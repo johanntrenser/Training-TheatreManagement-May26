@@ -136,7 +136,7 @@ void Log::setTimestamp(const util::Timestamp& timestamp)
  * Returns:
  *    std::string - String containing timestamp, log type, ID, and description
  */
-std::string Log::toString()
+std::string Log::toString() const
 {
     std::ostringstream buffer;
     buffer << "<" << m_timestamp.toString() << "> ";

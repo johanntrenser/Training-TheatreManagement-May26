@@ -52,4 +52,29 @@ void LogManagementService::addLog(const std::string& description, const Enums::L
 	}
 }
 
+/*
+ * Function: LogManagementService::getLogsByType
+ * Description: Retrieves all logs from the DataStore that match the specified
+ *              log type. Iterates through the stored logs and filters them
+ *              into a vector of immutable log pointers.
+ * Parameters:
+ *    const Enums::LogType logType - The type of logs to filter (e.g., ERROR, SYSTEM_ACTIVITY, UNKNOWN)
+ * Returns:
+ *    const std::vector<const Log*> - Vector containing pointers to logs of the specified type
+ */
+const std::vector<const Log*> LogManagementService::getLogsByType(const Enums::LogType logType)
+{
+	std::vector<const Log*> filteredLogs;
+	const std::map<std::string, Log*> logs = m_dataStore.getLogs();
+	for (std::map<std::string, Log*>::const_iterator iterator = logs.begin(); iterator != logs.end(); ++iterator)
+	{
+		if (iterator->second->getLogType() == logType)
+		{
+			filteredLogs.push_back(iterator->second);
+		}
+	}
+	return filteredLogs;
+}
+
+
 

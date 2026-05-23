@@ -160,5 +160,5 @@ User* DataStore::getAuthenticatedUser() const
 */
 std::map<std::string, Notification*>& DataStore::getNotifications()
 {
-    return m_notification;
+    return m_notifications;
 }
