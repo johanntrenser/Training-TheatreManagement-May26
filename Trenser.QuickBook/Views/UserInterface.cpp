@@ -2242,6 +2242,42 @@ void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres,
 }
 
 /*
+ * Function: UserInterface::displayMoviesInTheatre
+ * Description: Allows the theatre owner to select a theatre by ID and view
+ *              all movies associated with that theatre. Validates the entered
+ *              theatre ID against the current owner’s theatres before displaying
+ *              movie details.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::displayMoviesInTheatre()
+{
+	std::string theatreId;
+	bool isTheatreIdValid = false;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	displayTheatreDetails(theatres);
+	cout << "Enter theatre id of theatre to select: ";
+	util::readValue(theatreId);
+	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
+	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
+	{
+		if (theatreId == *iterator)
+		{
+			isTheatreIdValid = true;
+			break;
+		}
+	}
+	if (!isTheatreIdValid)
+	{
+		cout << "Invalid Theatre id!" << endl;
+		util::pressEnter();
+		return;
+	}
+	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
+	displayMovieDetails(movies);
+}
+
+/*
  * Function: UserInterface::validateMovieId
  * Description: Validates whether a given movie ID exists within the list of
  *              available movie IDs. Iterates through the provided IDs and
@@ -2443,42 +2479,6 @@ void UserInterface::addMovieToTheatre()
 	{
 		cout << "\nMovie already exists in theatre!";
 	}
-}
-
-/*
- * Function: UserInterface::displayMoviesInTheatre
- * Description: Allows the theatre owner to select a theatre by ID and view
- *              all movies associated with that theatre. Validates the entered
- *              theatre ID against the current owner’s theatres before displaying
- *              movie details.
- * Parameters: None
- * Returns: None
- */
-void UserInterface::displayMoviesInTheatre()
-{
-	std::string theatreId;
-	bool isTheatreIdValid = false;
-	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
-	displayTheatreDetails(theatres);
-	cout << "Enter theatre id of theatre to select: ";
-	util::readValue(theatreId);
-	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
-	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
-	{
-		if (theatreId == *iterator)
-		{
-			isTheatreIdValid = true;
-			break;
-		}
-	}
-	if (!isTheatreIdValid)
-	{
-		cout << "Invalid Theatre id!" << endl;
-		util::pressEnter();
-		return;
-	}
-	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
-	displayMovieDetails(movies);
 }
 
 /*
