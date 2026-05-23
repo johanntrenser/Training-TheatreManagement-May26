@@ -144,10 +144,20 @@ std::vector<Theatre*> TheatreManagementService::listTheatresByCity(const std::st
      *   - name: Name of the theatre to search for.
      * Returns: Pointer to the Theatre object if found, or nullptr otherwise.
      */
-Theatre* TheatreManagementService::searchByTheatreName(const std::string& name) const
+const std::vector<const Theatre*> TheatreManagementService::searchByTheatreName(const std::string& theatreName) const
 {
-    return nullptr;
+    std::vector<const Theatre*> resultantTheatres;
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getName() == theatreName && (iterator->second)->getStatus() == Enums::TheatreStatus::ACTIVE)
+        {
+            resultantTheatres.push_back(iterator->second);
+        }
+    }
+    return resultantTheatres;
 }
+
 
 /*
  * Function: TheatreManagementService::getCurrentOwnerTheatres
@@ -173,4 +183,19 @@ const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheat
         }
     }
     return ownerTheatres;
+}
+
+/*
+ * Function: TheatreManagementService::getAuthenticatedUser
+ * Description: Retrieves the currently authenticated user from the datastore
+ *              through the TheatreManagementService. Provides access to the
+ *              user object representing the active session.
+ * Parameters: None
+ * Returns:
+ *    Pointer to the User object representing the authenticated user, or nullptr
+ *    if no user is currently logged in.
+ */
+const User* TheatreManagementService::getAuthenticatedUser() const
+{
+    return m_dataStore.getAuthenticatedUser();
 }
