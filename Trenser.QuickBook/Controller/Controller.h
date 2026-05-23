@@ -87,5 +87,6 @@ public:
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
 	std::vector<const Movie*> getAllInactiveMovies();
 	Enums::ProcessStatus updateSeatLayout(Screen* screen, const int rows, const int columns);
+	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
 	~Controller();
 };

@@ -19,5 +19,5 @@ private:
 public:
 	SeatManagementService();
 	Enums::ProcessStatus updateSeatLayout(Screen* screen, const int newRows, const int newColumns);
+	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
 };
-
