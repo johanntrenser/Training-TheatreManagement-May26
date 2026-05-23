@@ -205,6 +205,21 @@ const User* Controller::getAuthenticatedUser() const
 }
 
 /*
+ * Function: Controller::getAllTheatres
+ * Description: Retrieves all theatres from the TheatreManagementService.
+ *              Acts as a delegation layer to access the complete list of
+ *              theatres stored in the system.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers representing all theatres available
+ *    in the datastore. Returns an empty vector if no theatres exist.
+ */
+const std::vector<const Theatre*> Controller::getAllTheatres()
+{
+    return m_theatreManagementService->getAllTheatres();
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

@@ -63,6 +63,7 @@ public:
 	const std::vector<const Theatre*> getCurrentOwnerTheatres();
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
 	const User* getAuthenticatedUser() const;
+	const std::vector<const Theatre*> getAllTheatres();
 	void logout();
 	~Controller();
 };
