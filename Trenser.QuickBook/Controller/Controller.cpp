@@ -312,6 +312,37 @@ const std::vector<const Theatre*> Controller::getCurrentOwnerTheatres()
 }
 
 /*
+ * Function: Controller::getCurrentOwnerTheatreIds
+ * Description: Retrieves the theatre IDs associated with the currently logged-in
+ *              owner. Calls getCurrentOwnerTheatres to obtain the list of theatres
+ *              and extracts their unique identifiers.
+ * Parameters: None
+ * Returns:
+ *    const std::vector<std::string> - Vector containing theatre IDs owned by the
+ *                                     current user
+ */
+const std::vector<std::string> Controller::getCurrentOwnerTheatreIds()
+{
+    return m_theatreManagementService->getCurrentOwnerTheatreIds();
+}
+
+/*
+ * Function: Controller::getMoviesFromTheatre
+ * Description: Retrieves all movies associated with a specific theatre.
+ *              Delegates the request to the TheatreManagementService to
+ *              fetch movies linked to the given theatre ID.
+ * Parameters:
+ *    theatreId (const std::string&) - The unique identifier of the theatre
+ * Returns:
+ *    const std::vector<const Movie*> - Vector of Movie pointers representing
+ *                                      movies available in the specified theatre.
+ */
+const std::vector<const Movie*> Controller::getMoviesFromTheatre(const std::string& theatreId)
+{
+    return m_theatreManagementService->getMoviesFromTheatre(theatreId);
+}
+
+/*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
  * Parameters:

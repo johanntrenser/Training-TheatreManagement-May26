@@ -73,6 +73,8 @@ public:
 	Enums::ProcessStatus setMovieActivate(const std::string& movieId);
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	const std::vector<const Theatre*> getCurrentOwnerTheatres();
+	const std::vector<std::string> getCurrentOwnerTheatreIds();
+	const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
 	const User* getAuthenticatedUser() const;
 	const std::vector<const Theatre*> getAllTheatres();

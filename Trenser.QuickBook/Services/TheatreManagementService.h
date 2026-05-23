@@ -29,6 +29,8 @@ public:
     std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
     const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
     const std::vector<const Theatre*> getCurrentOwnerTheatres();
+    const std::vector<std::string> getCurrentOwnerTheatreIds();
+    const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
     const User* getAuthenticatedUser() const;
     const std::vector<const Theatre*> getAllTheatres();
     Enums::ProcessStatus isTheatrePhoneNumberUnique(const std::string& phoneNumber);
