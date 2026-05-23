@@ -64,4 +64,6 @@ public:
 	Theatre* getTheatreById(const std::string& theatreId) const;
 	Screen* getScreenById(const std::string& screenId) const;
 	Enums::UserType getAuthenticatedUserType();
+	const std::map<std::string, Theatre*>& getTheatres() const;
+	const User* getAuthenticatedUser();
 };

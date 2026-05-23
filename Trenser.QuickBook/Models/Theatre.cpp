@@ -18,7 +18,7 @@
 Theatre::Theatre()
     : m_theatreId(""), m_name(""), m_city(""), m_address(""),
     m_contactPhone(""), m_contactEmail(""),
-    m_theatreOwner(nullptr), m_status(0),
+    m_theatreOwner(nullptr), m_status(Enums::TheatreStatus::PENDING),
     m_screens(), m_movies() {}
 
 /*
@@ -45,12 +45,11 @@ Theatre::Theatre(const std::string& id,
     const std::string& contactPhone,
     const std::string& contactEmail,
     User* theatreOwner,
-    int status,
     const std::vector<Screen*>& screens,
     const std::vector<Movie*>& movies)
     : m_theatreId(id), m_name(name), m_city(city), m_address(address),
     m_contactPhone(contactPhone), m_contactEmail(contactEmail),
-    m_theatreOwner(theatreOwner), m_status(status),
+    m_theatreOwner(theatreOwner), m_status(Enums::TheatreStatus::PENDING),
     m_screens(screens), m_movies(movies) {}
 
 /*
@@ -136,7 +135,7 @@ User* Theatre::getTheatreOwner() const
  * Returns:
  *    int - Theatre status
  */
-int Theatre::getStatus() const
+Enums::TheatreStatus Theatre::getStatus() const
 {
     return m_status;
 }
@@ -274,7 +273,7 @@ void Theatre::setTheatreOwner(User* theatreOwner)
  * Returns:
  *    void
  */
-void Theatre::setStatus(int status)
+void Theatre::setStatus(Enums::TheatreStatus status)
 {
     m_status = status;
 }

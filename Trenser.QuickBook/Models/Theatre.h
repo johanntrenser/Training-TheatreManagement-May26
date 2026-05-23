@@ -26,7 +26,7 @@ private:
     std::string m_contactPhone;
     std::string m_contactEmail;
     User* m_theatreOwner;
-    int m_status; // enum can be defined separately
+    Enums::TheatreStatus m_status; // enum can be defined separately
     std::vector<Screen*> m_screens;
     std::vector<Movie*> m_movies;
 public:
@@ -38,7 +38,6 @@ public:
         const std::string& contactPhone,
         const std::string& contactEmail,
         User* theatreOwner,
-        int status,
         const std::vector<Screen*>& screens,
         const std::vector<Movie*>& movies);
     const std::string& getTheatreId() const;
@@ -48,7 +47,7 @@ public:
     const std::string& getContactPhone() const;
     const std::string& getContactEmail() const;
     User* getTheatreOwner() const;
-    int getStatus() const;
+    Enums::TheatreStatus getStatus() const;
     const std::vector<Screen*>& getScreens() const;
     const std::vector<Movie*>& getMovies() const;
     void setTheatreId(const std::string& id);
@@ -58,7 +57,7 @@ public:
     void setContactPhone(const std::string& contactPhone);
     void setContactEmail(const std::string& contactEmail);
     void setTheatreOwner(User* theatreOwner);
-    void setStatus(int status);
+    void setStatus(Enums::TheatreStatus status);
     void setScreens(const std::vector<Screen*>& screens);
     void setMovies(const std::vector<Movie*>& movies);
     void setScreen(Screen* screen);

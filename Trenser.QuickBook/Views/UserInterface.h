@@ -72,4 +72,6 @@ public:
 	Enums::ProcessStatus deactivateScreen(const std::string& theatreId, const std::string& screenId);
 	Enums::ProcessStatus reactivateScreen(const std::string& theatreId, const std::string& screenId);
 	void viewTheatreScreens(const std::string& theatreId);
+	void viewTheatreDetails();
+	void displayTheatreDetails(const std::vector<const Theatre*>& theatres);
 };

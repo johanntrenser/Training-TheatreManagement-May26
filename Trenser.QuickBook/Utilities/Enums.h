@@ -17,7 +17,8 @@ namespace Enums {
     {
         ACTIVE,
         INACTIVE,
-        UNDER_MAINTENANCE
+        UNDER_MAINTENANCE,
+        PENDING
     };
 
     enum class MovieStatus
