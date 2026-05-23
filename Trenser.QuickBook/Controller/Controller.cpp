@@ -235,7 +235,7 @@ Enums::ProcessStatus Controller::isTheatreEmailUnique(const std::string& email)
 }
 
 /*
- * Function: Controller::addTheatre
+ * Function: Controller:: addTheatre
  * Description: Adds a new theatre to the system with the provided details.
  * Parameters:
  *    name (const std::string&) - Name of the theatre
