@@ -70,7 +70,11 @@ public:
 	Enums::ProcessStatus addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	Enums::ProcessStatus isTheatreUnique(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	const std::vector<const Theatre*> getAllTheatres();
+	Enums::ProcessStatus setTheatreNameById(const std::string& theatreId, const std::string& name);
+	Enums::ProcessStatus setTheatreCityById(const std::string& theatreId, const std::string& city);
+	Enums::ProcessStatus setTheatreAddressById(const std::string& theatreId, const std::string& address);
+	Enums::ProcessStatus setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber);
+	Enums::ProcessStatus setTheatreEmailById(const std::string& theatreId, const std::string& email);
 	void logout();
 	~Controller();
 };
-
