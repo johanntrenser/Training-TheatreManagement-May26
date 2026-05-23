@@ -2246,11 +2246,12 @@ void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres,
 
 /*
  * Function: UserInterface::displayMoviesInTheatre
- * Description: Displays movies available in the selected theatre.
- * Parameters:
- *    theatreId (std::string&) - Reference to store selected theatre ID
- * Returns:
- *    void
+ * Description: Allows the theatre owner to select a theatre by ID and view
+ *              all movies associated with that theatre. Validates the entered
+ *              theatre ID against the current owner’s theatres before displaying
+ *              movie details.
+ * Parameters: None
+ * Returns: None
  */
 void UserInterface::displayMoviesInTheatre()
 {
