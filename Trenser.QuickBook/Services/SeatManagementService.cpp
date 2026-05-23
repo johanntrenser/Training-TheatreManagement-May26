@@ -83,3 +83,16 @@ Enums::ProcessStatus SeatManagementService::updateSeatLayout(Screen* screen, con
 	}
 	return Enums::ProcessStatus::FAILED;
 }
+
+/*
+ * Function: getSeatLayout
+ * Description: Returns the seating grid of a given screen.
+ * Parameters:
+ *    Screen* - Target screen
+ * Returns:
+ *    Const reference to 2D vector of Seat pointers
+ */
+const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(const Screen* screen) const
+{
+	return screen->getSeatGrid();
+}

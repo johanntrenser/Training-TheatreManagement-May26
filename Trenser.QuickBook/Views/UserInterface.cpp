@@ -447,4 +447,42 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
 	getUniquePhoneNumber(phoneNumber);
 }
 
+/*
+ * Function: viewSeatLayout
+ * Description: Displays the seating grid of a given screen.
+ * Parameters:
+ *    Screen* - Target screen
+ * Returns:
+ *    None
+ */
+void UserInterface::viewSeatLayout(const Screen* screen)
+{
+	const std::vector<std::vector<Seat*>>& seatGrid = m_controller->getSeatLayout(screen);
+	cout << "<------ Seat Grid ------>" << endl << endl;
+	for (std::vector<std::vector<Seat*>>::const_iterator iteratorOne = seatGrid.begin(); iteratorOne != seatGrid.end(); ++iteratorOne)
+	{
+		for (std::vector<Seat*>::const_iterator iteratorTwo = (*iteratorOne).begin(); iteratorTwo != (*iteratorOne).end(); ++iteratorTwo)
+		{
+			if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::AVAILABLE)
+			{
+				cout << (*iteratorTwo)->getSeatId() << " [A]" << " ";
+			}
+			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BOOKED)
+			{
+				cout << (*iteratorTwo)->getSeatId() << " [B]" << " ";
+			}
+			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::RESERVED)
+			{
+				cout << (*iteratorTwo)->getSeatId() << " [R]" << " ";
+			}
+			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
+			{
+				cout << (*iteratorTwo)->getSeatId() << " [D]" << " ";
+			}
+		}
+		cout << endl;
+	}
+	cout << endl;
+	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked" << endl;
+}
 

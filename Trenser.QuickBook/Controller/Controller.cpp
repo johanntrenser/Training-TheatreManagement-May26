@@ -187,6 +187,19 @@ Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, const int rows
 }
 
 /*
+ * Function: getSeatLayout
+ * Description: Retrieves the seating grid for a given screen from SeatManagementService.
+ * Parameters:
+ *    Screen* - Target screen
+ * Returns:
+ *    Const reference to 2D vector of Seat pointers
+ */
+const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const Screen* screen) const
+{
+    return m_seatManagementService->getSeatLayout(screen);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
