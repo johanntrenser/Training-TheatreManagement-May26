@@ -60,6 +60,7 @@ public:
 	Enums::ProcessStatus registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType);
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
+	const std::vector<const Theatre*> getCurrentOwnerTheatres();
 	void logout();
 	~Controller();
 };

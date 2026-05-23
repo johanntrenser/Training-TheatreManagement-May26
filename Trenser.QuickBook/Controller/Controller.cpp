@@ -143,6 +143,21 @@ Enums::ProcessStatus Controller::isPhoneNumberUnique(const std::string& phoneNum
 }
 
 /*
+ * Function: Controller::getCurrentOwnerTheatres
+ * Description: Retrieves the list of theatres owned by the currently logged-in
+ *              user. Delegates the request to the TheatreManagementService
+ *              to fetch theatres associated with the current owner.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers representing the theatres owned by the
+ *    current user. Returns an empty vector if no theatres are found.
+ */
+const std::vector<const Theatre*> Controller::getCurrentOwnerTheatres()
+{
+    return m_theatreManagementService->getCurrentOwnerTheatres();
+}
+
+/*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
  * Parameters:
