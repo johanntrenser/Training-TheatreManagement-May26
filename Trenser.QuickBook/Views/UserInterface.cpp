@@ -497,8 +497,8 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 			changePassword();
 			break;
 		case 13:
-			m_controller->logout();   // You can implement your logout logic here
-			isMenuActive = false;  // Exit the menu loop
+			m_controller->logout();   
+			isMenuActive = false;  
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -3937,3 +3937,20 @@ void UserInterface::selectPaymentMethod(const std::string& bookingId, double amo
 	}
 }
 
+	cout << "--------------------------------------------------------------------------------------------------\n";
+
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left
+				<< setw(15) << (*iterator)->getTheatreId()
+				<< setw(20) << (*iterator)->getName()
+				<< setw(15) << (*iterator)->getCity()
+				<< setw(25) << (*iterator)->getAddress()
+				<< setw(15) << (*iterator)->getContactPhone()
+				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
+				<< endl;
+		}
+	}
+}
