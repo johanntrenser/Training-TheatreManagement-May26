@@ -143,6 +143,20 @@ Enums::ProcessStatus Controller::isPhoneNumberUnique(const std::string& phoneNum
 }
 
 /*
+ * Function: Controller::getLogsByType
+ * Description: Retrieves logs filtered by the specified log type from the
+ *              LogManagementService.
+ * Parameters:
+ *    const Enums::LogType logType - The type of logs to retrieve
+ * Returns:
+ *    const std::vector<const Log*> - Vector of log entries matching the type
+ */
+const std::vector<const Log*> Controller::getLogsByType(const Enums::LogType logType)
+{
+    return m_logManagementService->getLogsByType(logType);
+}
+
+/*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
  * Parameters:

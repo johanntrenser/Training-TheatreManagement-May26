@@ -28,7 +28,7 @@ public:
     void setDescription(const std::string& description);
     void setLogType(const Enums::LogType logType);
     void setTimestamp(const util::Timestamp& timestamp);
-    std::string toString();
+    std::string toString() const;
 };
 
 

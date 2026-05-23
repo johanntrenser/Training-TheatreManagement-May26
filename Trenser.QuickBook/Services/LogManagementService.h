@@ -18,5 +18,6 @@ public:
 	LogManagementService();
 	const std::string generateLogId();
 	void addLog(const std::string& description, const Enums::LogType logType);
+	const std::vector<const Log*> getLogsByType(const Enums::LogType logType);
 };
 
