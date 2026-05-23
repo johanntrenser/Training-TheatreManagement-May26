@@ -85,7 +85,8 @@ namespace Enums {
         AVAILABLE,
         BOOKED,
         RESERVED,
-        BROKEN
+        BROKEN,
+        BLOCKED
     };
 
     enum class RefundStatus

@@ -61,3 +61,29 @@ void DataStore::setAuthenticatedUser(User* user)
 {
     m_currentUser = user;
 }
+
+/*
+ * Function: getShows
+ * Description: Returns read?only access to all shows.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Const reference to map of Show pointers
+ */
+const std::map<std::string, Show*>& DataStore::getShows() const
+{
+    return m_show;
+}
+
+/*
+ * Function: getShowsForUpdation
+ * Description: Returns modifiable access to all shows.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Reference to map of Show pointers
+ */
+std::map<std::string, Show*>& DataStore::getShowsForUpdation()
+{
+    return m_show;
+}
