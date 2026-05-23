@@ -202,7 +202,6 @@ const std::vector<const Theatre*> TheatreManagementService::getAllTheatres()
     }
     return theatresList;
 }
-}
 
 /*
  * Function: TheatreManagementService::generateTheatreId
