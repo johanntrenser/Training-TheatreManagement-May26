@@ -200,6 +200,20 @@ const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const Screen* s
 }
 
 /*
+ * Function: deactivateSeat
+ * Description: Delegates seat deactivation request to SeatManagementService.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    enum - ProcessStatus
+ */
+Enums::ProcessStatus Controller::deactivateSeat(Screen* screen, const std::string& seatId)
+{
+    return m_seatManagementService->deactivateSeat(screen, seatId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
