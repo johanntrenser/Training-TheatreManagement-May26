@@ -1700,3 +1700,25 @@ void UserInterface::deactivateSeat(Screen* screen, const std::string& seatId)
 		cout << "Failure! Seat could not be deactivated." << endl;
 	}
 }
+
+/*
+ * Function: reactivateSeat
+ * Description: Reactivates a specific seat in the given screen and shows result.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    None
+ */
+void UserInterface::reactivateSeat(Screen* screen, const std::string& seatId)
+{
+	Enums::ProcessStatus status = m_controller->reactivateSeat(screen, seatId);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Seat Number " << seatId << " Reactivated!" << endl;
+	}
+	else
+	{
+		cout << "Failure! Seat could not be Reactivated." << endl;
+	}
+}
