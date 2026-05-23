@@ -5,15 +5,18 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
+#include <iomanip>
+#include <iostream>
 #include <stdexcept>
 #include <string>
-#include <iomanip>
-using namespace std;
+#include "Enums.h"
+#include "Enums.h"
 #include "InputHelper.h"
 #include "OutputHelper.h"
-#include "Enums.h"
-#include "Validator.h"
 #include "UserInterface.h"
+#include "Validator.h"
+
+using namespace std;
 
 /*
  * Function: UserInterface::UserInterface
@@ -1980,5 +1983,102 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
 			cout << std::setw(25) << Enums::getScreenStatusString((*iterator)->getScreenStatus());
 		}
 		cout << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::searchTheatre
+ * Description: Allows the user to search for theatres by name. Prompts the user
+ *              to enter a theatre name, retrieves matching theatres from the
+ *              Controller, and displays results based on the authenticated
+ *              user's role. Admin users see detailed theatre information, while
+ *              regular users see a simplified view.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::searchTheatre()
+{
+	std::string theatreName;
+	cout << "Enter theatre name: ";
+	util::readValue(theatreName);
+	const std::vector<const Theatre*> theatres = m_controller->searchTheatreByName(theatreName);
+	if (theatres.empty())
+	{
+		cout << "\nNo theatres found";
+		return;
+	}
+	const User* authenticatedUser = m_controller->getAuthenticatedUser();
+	if (authenticatedUser->getUserType() == Enums::UserType::ADMIN)
+	{
+		displayTheatresForAdmin(theatres);
+	}
+	else
+	{
+		displayTheatresForUsers(theatres);
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatresForAdmin
+ * Description: Displays detailed information about a list of theatres in a
+ *              formatted tabular view specifically for administrators. Outputs
+ *              theatre attributes such as ID, name, city, address, and contact
+ *              phone number in a structured layout for easy review.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres
+ *               whose details are to be displayed for the admin user.
+ * Returns: None
+ */
+void UserInterface::displayTheatresForAdmin(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n---------------------------------------------------------------------------------------\n";
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< endl;
+	cout << "---------------------------------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		cout << left
+			<< setw(15) << (*iterator)->getTheatreId()
+			<< setw(20) << (*iterator)->getName()
+			<< setw(15) << (*iterator)->getCity()
+			<< setw(25) << (*iterator)->getAddress()
+			<< setw(15) << (*iterator)->getContactPhone()
+			<< endl;
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatresForUsers
+ * Description: Displays a simplified view of theatre information tailored for
+ *              regular users. Outputs theatre attributes such as name, city,
+ *              address, and contact phone number in a formatted tabular layout.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres
+ *               whose details are to be displayed for user view.
+ * Returns: None
+ */
+void UserInterface::displayTheatresForUsers(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< endl;
+	cout << "-------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		cout << left
+			<< setw(20) << (*iterator)->getName()
+			<< setw(15) << (*iterator)->getCity()
+			<< setw(25) << (*iterator)->getAddress()
+			<< setw(15) << (*iterator)->getContactPhone()
+			<< endl;
 	}
 }

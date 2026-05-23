@@ -329,6 +329,36 @@ pair<Enums::LoginStatus, Enums::UserType> Controller::login(string email, string
 }
 
 /*
+ * Function: Controller::searchTheatreByName
+ * Description: Searches for theatres by their name. Delegates the request to the
+ *              TheatreManagementService to retrieve theatres that match the given name.
+ * Parameters:
+ *    theatreName - The name of the theatre to search for.
+ * Returns:
+ *    A vector of Theatre pointers representing theatres that match the provided name.
+ *    Returns an empty vector if no theatres are found.
+ */
+const std::vector<const Theatre*> Controller::searchTheatreByName(const std::string& theatreName)
+{
+    return m_theatreManagementService->searchByTheatreName(theatreName);
+}
+
+/*
+ * Function: Controller::getAuthenticatedUser
+ * Description: Retrieves the currently authenticated user through the
+ *              TheatreManagementService. Provides access to the user object
+ *              representing the active session.
+ * Parameters: None
+ * Returns:
+ *    Pointer to the User object representing the authenticated user, or nullptr
+ *    if no user is currently logged in.
+ */
+const User* Controller::getAuthenticatedUser() const
+{
+    return m_theatreManagementService->getAuthenticatedUser();
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

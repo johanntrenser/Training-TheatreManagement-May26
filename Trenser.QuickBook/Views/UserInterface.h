@@ -74,4 +74,7 @@ public:
 	void viewTheatreScreens(const std::string& theatreId);
 	void viewTheatreDetails();
 	void displayTheatreDetails(const std::vector<const Theatre*>& theatres);
+	void searchTheatre();
+	void  displayTheatresForAdmin(const std::vector<const Theatre*>& theatres);
+	void  displayTheatresForUsers(const std::vector<const Theatre*>& theatres);
 };
