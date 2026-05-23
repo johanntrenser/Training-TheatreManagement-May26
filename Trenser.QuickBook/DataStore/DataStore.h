@@ -29,18 +29,18 @@ private:
 	DataStore() : m_currentUser(nullptr) {}
 	User* m_currentUser;
 	std::map<std::string, User*> m_users;
-	std::map<std::string, Booking*> m_booking;
-	std::map<std::string, Log*> m_log;
-	std::map<std::string, Movie*> m_movie;
-	std::map<std::string, Notification*> m_notification;
-	std::map<std::string, Payment*> m_payment;
-	std::map<std::string, Refund*> m_refund;
-	std::map<std::string, Screen*> m_screen;
-	std::map<std::string, Seat*> m_seat;
-	std::map<std::string, Show*> m_show;
-	std::map<std::string, ShowSeatAvailability*> m_showSeatAvailability;
-	std::map<std::string, Theatre*> m_theatre;
-	std::map<std::string, Ticket*> m_ticket;
+	std::map<std::string, Booking*> m_bookings;
+	std::map<std::string, Log*> m_logs;
+	std::map<std::string, Movie*> m_movies;
+	std::map<std::string, Notification*> m_notifications;
+	std::map<std::string, Payment*> m_payments;
+	std::map<std::string, Refund*> m_refunds;
+	std::map<std::string, Screen*> m_screens;
+	std::map<std::string, Seat*> m_seats;
+	std::map<std::string, Show*> m_shows;
+	std::map<std::string, ShowSeatAvailability*> m_showSeatAvailabilitys;
+	std::map<std::string, Theatre*> m_theatres;
+	std::map<std::string, Ticket*> m_tickets;
 public:
 	const std::map<std::string, User*>& getUsers() const;
 	void addUser(User* user);
@@ -49,5 +49,6 @@ public:
 	static DataStore& getInstance();
 	void setAuthenticatedUser(User* user);
 	const std::map<std::string, Theatre*>& getTheatres() const;
-	const User* getAuthenticatedUser();
+	User* const getAuthenticatedUser() const;
+	void addTheatre(Theatre* theatre);
 };
