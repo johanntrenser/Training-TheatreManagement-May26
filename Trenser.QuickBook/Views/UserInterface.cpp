@@ -209,7 +209,8 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. View Theatre Details" << endl;
+	cout << "1. Add Theatre" << endl;
+	cout << "2. View Theatre Details" << endl;
 	cout << "0. Exit" << endl;
 	cout << "Enter an option: ";
 }
@@ -333,6 +334,9 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 			isMenuActive = false;
 			break;
 		case 1:
+			addTheatre();
+			break;
+		case 2:
 			viewTheatreDetails();
 			break;
 		default:
@@ -480,7 +484,7 @@ void UserInterface::displayTheatreDetails(const std::vector<const Theatre*>& the
 				<< setw(20) << (*iterator)->getName()
 				<< setw(15) << (*iterator)->getCity()
 				<< setw(25) << (*iterator)->getAddress()
-				<< setw(15) << (*iterator)->getContactPhone()
+				<< setw(15) << (*iterator)->getTheatrePhoneNumber()
 				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
 				<< endl;
 		}
@@ -548,7 +552,7 @@ void UserInterface::displayTheatresForAdmin(const std::vector<const Theatre*>& t
 			<< setw(20) << (*iterator)->getName()
 			<< setw(15) << (*iterator)->getCity()
 			<< setw(25) << (*iterator)->getAddress()
-			<< setw(15) << (*iterator)->getContactPhone()
+			<< setw(15) << (*iterator)->getTheatrePhoneNumber()
 			<< endl;
 	}
 }
@@ -579,7 +583,120 @@ void UserInterface::displayTheatresForUsers(const std::vector<const Theatre*>& t
 			<< setw(20) << (*iterator)->getName()
 			<< setw(15) << (*iterator)->getCity()
 			<< setw(25) << (*iterator)->getAddress()
-			<< setw(15) << (*iterator)->getContactPhone()
+			<< setw(15) << (*iterator)->getTheatrePhoneNumber()
 			<< endl;
+	}
+}
+
+/*
+ * Function: UserInterface::handleInputTheatreDetails
+ * Description: Validates the entered theatre details by checking whether
+ *              the theatre already exists in the system.
+ * Parameters:
+ *    name (const std::string&) - Name of the theatre
+ *    city (const std::string&) - City where the theatre is located
+ *    address (const std::string&) - Address of the theatre
+ *    phoneNumber (const std::string&) - Contact phone number of the theatre
+ *    email (const std::string&) - Contact email address of the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the theatre details are unique,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus UserInterface::handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email)
+{
+	return m_controller->isTheatreUnique(name, city, address, phoneNumber, email);
+}
+
+/*
+ * Function: UserInterface::addTheatre
+ * Description: Collects theatre details from the user, validates the input,
+ *              ensures unique phone number and email, and sends the theatre
+ *              registration request to the controller for approval.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void UserInterface::addTheatre()
+{
+	std::string name, city, address, phoneNumber, email;
+	cout << "\nEnter the name is Theatre   : ";
+	util::readValue(name);
+	cout << "\nEnter the city              : ";
+	util::readValue(city);
+	cout << "\nEnter the address           : ";
+	util::readValue(address);
+	cout << "\nEnter the phone number      : ";
+	util::readValue(phoneNumber);
+	util::isPhoneNumberValid(phoneNumber);
+	getUniqueTheatrePhoneNumber(phoneNumber);
+	cout << "\nEnter the email             : ";
+	util::readValue(email);
+	util::isEmailValid(email);
+	getUniqueTheatreEmail(email);
+	if (handleInputTheatreDetails(name, city, address, phoneNumber, email) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->addTheatre(name, city, address, phoneNumber, email))
+		{
+			cout << "\nTheatre added successfully.\nYour request has been sent to the admin for approval.\n";
+		}
+		else
+		{
+			cout << "Something went wrong!.";
+		}
+	}
+	else
+	{
+		cout << "\nTheatre already exist!.";
+	}
+}
+
+/*
+ * Function: UserInterface::getUniqueTheatrePhoneNumber
+ * Description: Ensures that the entered theatre phone number is unique
+ *              by repeatedly prompting the user until a unique number is entered.
+ * Parameters:
+ *    phoneNumber (std::string&) - Reference to the theatre phone number
+ * Returns:
+ *    void
+ */
+void UserInterface::getUniqueTheatrePhoneNumber(std::string& phoneNumber)
+{
+	bool isPhoneNumberUnique = (m_controller->isTheatrePhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS) ? true : false;
+	{
+		while (!isPhoneNumberUnique)
+		{
+			cout << "Phone number already exists!. Please enter again: ";
+			util::readValue(phoneNumber);
+			util::isPhoneNumberValid(phoneNumber);
+			if (m_controller->isTheatrePhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
+			{
+				isPhoneNumberUnique = true;
+			}
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::getUniqueTheatreEmail
+ * Description: Ensures that the entered theatre email address is unique
+ *              by repeatedly prompting the user until a unique email is entered.
+ * Parameters:
+ *    email (std::string&) - Reference to the theatre email address
+ * Returns:
+ *    void
+ */
+void UserInterface::getUniqueTheatreEmail(std::string& email)
+{
+	bool isEmailUnique = (m_controller->isTheatreEmailUnique(email) == Enums::ProcessStatus::SUCCESS) ? true : false;
+	while (!isEmailUnique)
+	{
+		cout << "Email already exists!. Please enter again: ";
+		util::readValue(email);
+		util::isEmailValid(email);
+		if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
+		{
+			isEmailUnique = true;
+		}
 	}
 }

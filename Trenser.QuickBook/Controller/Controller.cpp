@@ -205,6 +205,72 @@ const User* Controller::getAuthenticatedUser() const
 }
 
 /*
+ * Function: Controller::isTheatrePhoneNumberUnique
+ * Description: Validates whether the provided theatre phone number is unique
+ *              by checking against existing theatres in the system.
+ * Parameters:
+ *    phoneNumber (const std::string&) - Theatre contact phone number to validate
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the phone number is unique,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isTheatrePhoneNumberUnique(const std::string& phoneNumber)
+{
+    return m_theatreManagementService->isTheatrePhoneNumberUnique(phoneNumber);
+}
+
+/*
+ * Function: Controller::isTheatreEmailUnique
+ * Description: Validates whether the provided theatre email address is unique
+ *              by checking against existing theatres in the system.
+ * Parameters:
+ *    email (const std::string&) - Theatre email address to validate
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the email address is unique,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isTheatreEmailUnique(const std::string& email)
+{
+    return m_theatreManagementService->isTheatreEmailUnique(email);
+}
+
+/*
+ * Function: Controller::addTheatre
+ * Description: Adds a new theatre to the system with the provided details.
+ * Parameters:
+ *    name (const std::string&) - Name of the theatre
+ *    city (const std::string&) - City where the theatre is located
+ *    address (const std::string&) - Address of the theatre
+ *    phoneNumber (const std::string&) - Contact phone number of the theatre
+ *    email (const std::string&) - Contact email address of the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the theatre is added successfully,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email)
+{
+    return m_theatreManagementService->addTheatre(name, city, address, phoneNumber, email);
+}
+
+/*
+ * Function: Controller::isTheatreUnique
+ * Description: Validates whether the provided theatre details are unique
+ *              in the system by checking existing theatre records.
+ * Parameters:
+ *    name (const std::string&) - Name of the theatre
+ *    city (const std::string&) - City where the theatre is located
+ *    address (const std::string&) - Address of the theatre
+ *    phoneNumber (const std::string&) - Contact phone number of the theatre
+ *    email (const std::string&) - Contact email address of the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the theatre details are unique,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isTheatreUnique(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email)
+{
+    return m_theatreManagementService->isTheatreUniqueInSystem(name, city, address, phoneNumber, email);
+}
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.
