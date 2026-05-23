@@ -28,4 +28,5 @@ public:
 	void getUniquePhoneNumber(std::string& phoneNumber);
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
 	void updateSeatLayout(Screen* screen, const int rows, const int columns);
+	void viewSeatLayout(const Screen* screen);
 };
