@@ -168,6 +168,57 @@ const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheat
 }
 
 /*
+ * Function: TheatreManagementService::getCurrentOwnerTheatreIds
+ * Description: Retrieves the unique IDs of theatres owned by the currently
+ *              authenticated user. Calls getCurrentOwnerTheatres and extracts
+ *              the theatreId from each theatre.
+ * Parameters: None
+ * Returns:
+ *    const std::vector<std::string> - Vector containing theatre IDs owned by
+ *                                     the current authenticated user.
+ */
+const std::vector<std::string> TheatreManagementService::getCurrentOwnerTheatreIds()
+{
+    const std::vector<const Theatre*> theatres = getCurrentOwnerTheatres();
+    std::vector<std::string> theatreIds;
+    for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        theatreIds.push_back((*iterator)->getTheatreId());
+    }
+    return theatreIds;
+}
+
+/*
+ * Function: TheatreManagementService::getMoviesFromTheatre
+ * Description: Retrieves all movies associated with a specific theatre owned
+ *              by the currently authenticated user. Iterates through the
+ *              owner’s theatres, matches the given theatreId, and collects
+ *              all movies linked to that theatre.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    const std::vector<const Movie*> - Vector of Movie pointers representing
+ *                                      movies available in the specified theatre.
+ */
+const std::vector<const Movie*> TheatreManagementService::getMoviesFromTheatre(const std::string& theatreId)
+{
+    std::vector<const Theatre*> theatres = getCurrentOwnerTheatres();
+    std::vector<const Movie*> theatreMovies;
+    for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((*iterator)->getTheatreId() == theatreId)
+        {
+            std::vector<Movie*> movies = (*iterator)->getMovies();
+            for (std::vector<Movie*>::iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+            {
+                theatreMovies.push_back((*iterator));
+            }
+        }
+    }
+    return theatreMovies;
+}
+
+/*
  * Function: TheatreManagementService::getAuthenticatedUser
  * Description: Retrieves the currently authenticated user from the datastore
  *              through the TheatreManagementService. Provides access to the

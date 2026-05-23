@@ -492,6 +492,47 @@ void UserInterface::displayTheatreDetails(const std::vector<const Theatre*>& the
 }
 
 /*
+ * Function: UserInterface::displayMovieDetails
+ * Description: Displays detailed information about a list of movies in a
+ *              formatted tabular view. Outputs movie attributes such as
+ *              ID, title, language, genre, duration, and status.
+ * Parameters:
+ *    movies - A vector of Movie pointers representing the movies
+ *             whose details are to be displayed.
+ * Returns: None
+ */
+void UserInterface::displayMovieDetails(const std::vector<const Movie*>& movies)
+{
+	cout << "\n--------------------------------------------------------------------------------------------------\n";
+
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Title"
+		<< setw(15) << "Language"
+		<< setw(25) << "Genre"
+		<< setw(15) << "Duration"
+		<< setw(15) << "Status"
+		<< endl;
+
+	cout << "--------------------------------------------------------------------------------------------------\n";
+
+	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left
+				<< setw(15) << (*iterator)->getMovieId()
+				<< setw(20) << (*iterator)->getTitle()
+				<< setw(15) << (*iterator)->getLanguage()
+				<< setw(25) << (*iterator)->getGenre()
+				<< setw(15) << (*iterator)->getDuration()
+				<< setw(15) << Enums::getMovieStatusString((*iterator)->getStatus())
+				<< endl;
+		}
+	}
+}
+
+/*
  * Function: UserInterface::searchTheatre
  * Description: Allows the user to search for theatres by name. Prompts the user
  *              to enter a theatre name, retrieves matching theatres from the
@@ -688,6 +729,42 @@ void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres,
 				<< endl;
 		}
 	}
+}
+
+/*
+ * Function: UserInterface::displayMoviesInTheatre
+ * Description: Allows the theatre owner to select a theatre by ID and view
+ *              all movies associated with that theatre. Validates the entered
+ *              theatre ID against the current owner’s theatres before displaying
+ *              movie details.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::displayMoviesInTheatre()
+{
+	std::string theatreId;
+	bool isTheatreIdValid = false;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	displayTheatreDetails(theatres);
+	cout << "Enter theatre id of theatre to select: ";
+	util::readValue(theatreId);
+	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
+	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
+	{
+		if (theatreId == *iterator)
+		{
+			isTheatreIdValid = true;
+			break;
+		}
+	}
+	if (!isTheatreIdValid)
+	{
+		cout << "Invalid Theatre id!" << endl;
+		util::pressEnter();
+		return;
+	}
+	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
+	displayMovieDetails(movies);
 }
 
 /*
