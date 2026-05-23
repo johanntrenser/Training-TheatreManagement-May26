@@ -2082,3 +2082,105 @@ void UserInterface::displayTheatresForUsers(const std::vector<const Theatre*>& t
 			<< endl;
 	}
 }
+
+/*
+ * Function: UserInterface::listAllTheatres
+ * Description: Provides an interactive menu for users to view theatres based on
+ *              their status (Active or Inactive). Prompts the user for a choice,
+ *              retrieves all theatres from the Controller, and displays them
+ *              according to the selected status. Handles invalid input gracefully.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::listAllTheatres()
+{
+	int choice;
+	cout << "\n1. Active Theatres";
+	cout << "\n2.Inactive Theatres";
+	cout << "\n Enter choice: ";
+	util::readValue(choice);
+	const std::vector<const Theatre*>theatres = m_controller->getAllTheatres();
+	if (choice == 1)
+	{
+		bool isActiveTheatreFound = false;
+		for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+		{
+			if ((*iterator)->getStatus() == Enums::TheatreStatus::ACTIVE)
+			{
+				isActiveTheatreFound = true;
+				break;
+			}
+		}
+		if (isActiveTheatreFound)
+		{
+			displayTheatres(theatres, Enums::TheatreStatus::ACTIVE);
+		}
+		else
+		{
+			cout << "\nNo active theatres found!";
+		}
+	}
+	else if (choice == 2)
+	{
+		bool isInactiveTheatreFound = false;
+		for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+		{
+			if ((*iterator)->getStatus() == Enums::TheatreStatus::INACTIVE)
+			{
+				isInactiveTheatreFound = true;
+				break;
+			}
+		}
+		if (isInactiveTheatreFound)
+		{
+			displayTheatres(theatres, Enums::TheatreStatus::INACTIVE);
+		}
+		else
+		{
+			cout << "\nNo inactive theatres found!";
+		}
+	}
+	else
+	{
+		cout << "\nInvalid Choice!";
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatres
+ * Description: Displays a formatted tabular view of theatres filtered by their
+ *              status (Active or Inactive). Outputs theatre attributes such as
+ *              ID, name, city, address, contact phone number, and status string
+ *              for each theatre that matches the given status.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres to be displayed.
+ *    status   - The TheatreStatus enum value used to filter which theatres are shown.
+ * Returns: None
+ */
+void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status)
+{
+	cout << "\n--------------------------------------------------------------------------------------------------\n";
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< setw(15) << "Status"
+		<< endl;
+	cout << "--------------------------------------------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if ((*iterator)->getStatus() == status)
+		{
+			cout << left
+				<< setw(15) << (*iterator)->getTheatreId()
+				<< setw(20) << (*iterator)->getName()
+				<< setw(15) << (*iterator)->getCity()
+				<< setw(25) << (*iterator)->getAddress()
+				<< setw(15) << (*iterator)->getContactPhone()
+				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
+				<< endl;
+		}
+	}
+}

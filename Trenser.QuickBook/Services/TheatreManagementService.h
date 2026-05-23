@@ -31,5 +31,6 @@ public:
     const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
     const std::vector<const Theatre*> getCurrentOwnerTheatres();
     const User* getAuthenticatedUser() const;
+    const std::vector<const Theatre*> getAllTheatres();
 };
 

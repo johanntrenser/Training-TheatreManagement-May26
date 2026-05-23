@@ -199,3 +199,24 @@ const User* TheatreManagementService::getAuthenticatedUser() const
 {
     return m_dataStore.getAuthenticatedUser();
 }
+
+/*
+ * Function: TheatreManagementService::getAllTheatres
+ * Description: Retrieves all theatres stored in the datastore. Iterates through
+ *              the internal theatre map and collects each theatre into a list
+ *              for return.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers representing all theatres in the datastore.
+ *    Returns an empty vector if no theatres are available.
+ */
+const std::vector<const Theatre*> TheatreManagementService::getAllTheatres()
+{
+    std::vector<const Theatre*> theatresList;
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        theatresList.push_back(iterator->second);
+    }
+    return theatresList;
+}
