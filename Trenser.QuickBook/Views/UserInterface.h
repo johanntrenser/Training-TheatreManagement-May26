@@ -29,6 +29,7 @@ public:
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
 	void viewTheatreDetails();
 	void displayTheatreDetails(const std::vector<const Theatre*>& theatres);
+	void displayMovieDetails(const std::vector<const Movie*>& movies);
 	void searchTheatre();
 	void  displayTheatresForAdmin(const std::vector<const Theatre*>& theatres);
 	void  displayTheatresForUsers(const std::vector<const Theatre*>& theatres);
@@ -38,4 +39,5 @@ public:
 	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	void listAllTheatres();
 	void displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status);
+	void displayMoviesInTheatre();
 };

@@ -61,6 +61,8 @@ public:
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	const std::vector<const Theatre*> getCurrentOwnerTheatres();
+	const std::vector<std::string> getCurrentOwnerTheatreIds();
+	const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
 	const User* getAuthenticatedUser() const;
 	Enums::ProcessStatus isTheatrePhoneNumberUnique(const std::string& phoneNumber);
