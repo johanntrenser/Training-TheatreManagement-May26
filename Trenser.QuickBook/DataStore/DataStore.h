@@ -58,4 +58,6 @@ public:
 	std::map<std::string, Notification*>& getNotifications();
 	const std::map<std::string, Movie*>& getMovies() const;
 	void addMovieToSystem(Movie* movie);
+	const std::map<std::string, Show*>& getShows() const;
+	std::map<std::string, Show*>& getShowsForUpdation();
 };

@@ -188,3 +188,13 @@ void DataStore::addMovieToSystem(Movie* movie)
 {
     m_movies[movie->getMovieId()] = movie;
 }
+
+const std::map<std::string, Show*>& DataStore::getShows() const
+{
+    return m_show;
+}
+
+std::map<std::string, Show*>& DataStore::getShowsForUpdation()
+{
+    return m_show;
+}

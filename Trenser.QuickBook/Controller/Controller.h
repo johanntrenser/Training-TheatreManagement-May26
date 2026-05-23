@@ -86,5 +86,6 @@ public:
 	Enums::UserStatus getUserStatus(const std::string& userId);
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
 	std::vector<const Movie*> getAllInactiveMovies();
+	Enums::ProcessStatus updateSeatLayout(Screen* screen, const int rows, const int columns);
 	~Controller();
 };

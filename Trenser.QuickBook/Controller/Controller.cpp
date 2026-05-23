@@ -581,6 +581,21 @@ std::vector<const Movie*> Controller::getAllInactiveMovies()
 }
 
 /*
+ * Function: updateSeatLayout
+ * Description: Passes seat layout update request to SeatManagementService.
+ * Parameters:
+ *    screen  - Target screen object
+ *    rows    - Number of rows
+ *    columns - Number of columns
+ * Returns:
+ *    enum - ProcessStatus
+ */
+Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, const int rows, const int columns)
+{
+    return m_seatManagementService->updateSeatLayout(screen, rows, columns);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

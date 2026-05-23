@@ -223,3 +223,16 @@ void Screen::setScreenStatus(int screenStatus)
 {
     m_screenStatus = screenStatus;
 }
+
+/*
+ * Function: getSeatGridForUpdation
+ * Description: Provides reference access to the screen’s seat grid for updates.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Reference to 2D vector of Seat pointers
+ */
+std::vector<std::vector<Seat*>>& Screen::getSeatGridForUpdation()
+{
+    return m_seatGrid;
+}

@@ -8,6 +8,8 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include "DataStore.h"
+
 class ScreenManagementService
 {
 };

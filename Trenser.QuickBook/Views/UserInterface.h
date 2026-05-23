@@ -63,3 +63,5 @@ public:
 	void searchMovie();
 	bool displayAllInactiveMovies();
 };
+	void updateSeatLayout(Screen* screen, const int rows, const int columns);
+};

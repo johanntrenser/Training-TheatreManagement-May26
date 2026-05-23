@@ -502,6 +502,34 @@ void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
 }
 
 /*
+ * Function: UserInterface::updateSeatLayout
+ * Description: Prompts the user to enter the number of rows and columns for a
+ *              given screen’s seating layout. Passes the update request to
+ *              the Controller
+ * Parameters:
+ *    screen  - A pointer to the Screen object whose seat layout is to be updated
+ *    rows    - The number of rows in the seating layout
+ *    columns - The number of columns in the seating layout
+ * Returns:
+ *    None
+ */
+void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns)
+{
+	cout << "Enter Number of Rows: ";
+	util::readValue(rows);
+	cout << "Enter Number of Columns: ";
+	util::readValue(columns);
+	if (m_controller->updateSeatLayout(screen, rows, columns) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Seat Layout Updated Successfully" << endl;
+	}
+	else
+	{
+		cout << "Failed! Seat Layout could not be updated" << endl;
+	}
+}
+
+/*
  * Function: handleUserDetailsInput
  * Description: Collects and validates user details including username, email,
  *              password, and phone number. Ensures uniqueness of email and
