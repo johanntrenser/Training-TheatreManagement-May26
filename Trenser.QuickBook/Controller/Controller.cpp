@@ -214,6 +214,20 @@ Enums::ProcessStatus Controller::deactivateSeat(Screen* screen, const std::strin
 }
 
 /*
+ * Function: reactivateSeat
+ * Description: Delegates seat reactivation request to SeatManagementService.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    ProcessStatus indicating success or failure
+ */
+Enums::ProcessStatus Controller::reactivateSeat(Screen* screen, const std::string& seatId)
+{
+    return m_seatManagementService->reactivateSeat(screen, seatId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

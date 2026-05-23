@@ -154,3 +154,36 @@ Enums::ProcessStatus SeatManagementService::deactivateSeat(Screen* screen, const
 	}
 	return Enums::ProcessStatus::FAILED;
 }
+
+/*
+ * Function: reactivateSeat
+ * Description: Changes a blocked seat back to available in the given screen.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    ProcessStatus::SUCCESS if seat reactivated, FAILED otherwise
+ */
+Enums::ProcessStatus SeatManagementService::reactivateSeat(Screen* screen, const std::string& seatId)
+{
+	if (!screen)
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
+	std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGridForUpdation();
+	for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
+	{
+		for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
+		{
+			if ((*seatIterator)->getSeatId() == seatId)
+			{
+				if ((*seatIterator)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
+				{
+					(*seatIterator)->setSeatStatus(Enums::SeatStatus::AVAILABLE);
+					return Enums::ProcessStatus::SUCCESS;
+				}
+			}
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
