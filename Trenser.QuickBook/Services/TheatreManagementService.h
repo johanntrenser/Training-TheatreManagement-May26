@@ -43,4 +43,6 @@ public:
     Enums::ProcessStatus setTheatreAddressById(const std::string& theatreId, const std::string& address);
     Enums::ProcessStatus setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber);
     Enums::ProcessStatus setTheatreEmailById(const std::string& theatreId, const std::string& email);
+    const std::vector<const Theatre*> getPendingTheatres();
+    Enums::ProcessStatus setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus);
 };

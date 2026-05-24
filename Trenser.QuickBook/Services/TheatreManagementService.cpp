@@ -515,3 +515,54 @@ Enums::ProcessStatus TheatreManagementService::setTheatreEmailById(const std::st
     }
     return Enums::ProcessStatus::FAILED;
 }
+
+/*
+ * Function: TheatreManagementService::getPendingTheatres
+ * Description: Retrieves all theatres that are currently marked with
+ *              pending status from the datastore.
+ *              Iterates through all stored theatres and collects
+ *              theatres whose status is PENDING.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers containing all pending theatres.
+ *    Returns an empty vector if no pending theatres are found.
+ */
+const std::vector<const Theatre*> TheatreManagementService::getPendingTheatres()
+{
+    std::vector<const Theatre*> theatresList;
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if((iterator->second)->getStatus()==Enums::TheatreStatus::PENDING)
+        {
+            theatresList.push_back(iterator->second);
+        }
+    }
+    return theatresList;
+}
+
+/*
+ * Function: TheatreManagementService::setTheatreStatusById
+ * Description: Updates the status of a theatre identified by the given
+ *              theatre ID. Searches the datastore for the matching
+ *              theatre and updates its status if found.
+ * Parameters:
+ *    theatreId    - Unique identifier of the theatre.
+ *    theatreStatus - New status to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre status was updated successfully.
+ *    ProcessStatus::FAILED if no matching theatre was found.
+ */
+Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus)
+{
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getTheatreId() == theatreId)
+        {
+            (iterator->second)->setStatus(theatreStatus);
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
+}
