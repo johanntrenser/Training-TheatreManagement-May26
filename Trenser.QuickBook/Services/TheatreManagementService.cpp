@@ -102,9 +102,15 @@ int TheatreManagementService::viewTheatreStatus(const std::string& theatreId) co
      * Parameters: None
      * Returns: Vector of Theatre pointers representing all theatres.
      */
-std::vector<Theatre*> TheatreManagementService::listAllTheatres() const
+std::vector<const Theatre*> TheatreManagementService::listAllTheatres() const
 {
-    return {};
+    std::vector<const Theatre*> theatres;
+    const std::map<std::string, Theatre*>& allTheatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = allTheatres.begin(); iterator != allTheatres.end(); ++iterator)
+    {
+        theatres.push_back(iterator->second);
+    }
+    return theatres;
 }
 
 /*

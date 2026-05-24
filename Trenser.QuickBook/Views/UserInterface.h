@@ -97,4 +97,6 @@ public:
 	void validateTheatreRequest();
 	void displayTheatreValidationMenu();
 	void setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus theatreStatus);
+	void deactivateTheatreByOwner();
+	void deactivateTheatreByAdmin();
 };

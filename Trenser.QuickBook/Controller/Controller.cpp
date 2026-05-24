@@ -606,6 +606,23 @@ Enums::ProcessStatus Controller::setTheatreStatusById(const std::string& theatre
 }
 
 /*
+ * Function: Controller::listAllTheatres
+ * Description: Retrieves all theatres available in the system from
+ *              the TheatreManagementService.
+ *              Acts as a delegation layer between the user interface
+ *              and the service layer.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers containing all theatres
+ *    stored in the datastore. Returns an empty vector if
+ *    no theatres are available.
+ */
+std::vector<const Theatre*> Controller::listAllTheatres() const
+{
+    return m_theatreManagementService->listAllTheatres();
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

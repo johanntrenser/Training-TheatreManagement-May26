@@ -25,7 +25,7 @@ public:
     bool addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
     Theatre* viewTheatreDetails(const std::string& theatreId) const;
     int viewTheatreStatus(const std::string& theatreId) const; // enum placeholder
-    std::vector<Theatre*> listAllTheatres() const;
+    std::vector<const Theatre*> listAllTheatres() const;
     std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
     const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
     const std::vector<const Theatre*> getCurrentOwnerTheatres();

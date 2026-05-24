@@ -89,6 +89,7 @@ public:
 	Enums::ProcessStatus setTheatreEmailById(const std::string& theatreId, const std::string& email);
 	const std::vector<const Theatre*> getPendingTheatres();
 	Enums::ProcessStatus setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus);
+	std::vector<const Theatre*> listAllTheatres() const;
 	void logout();
 	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	const std::vector<const User*> getActiveUsers() const;
