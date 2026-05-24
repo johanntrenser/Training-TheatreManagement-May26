@@ -21,6 +21,7 @@ Seat::Seat()
     m_screen(nullptr),
     m_seatRow('A'),
     m_seatColumn(0),
+    m_amount(0),
     m_seatStatus(Enums::SeatStatus::AVAILABLE),
     m_bookingStatus(Enums::BookingStatus::NOT_BOOKED)
 {}
@@ -43,12 +44,14 @@ Seat::Seat(const std::string& id,
     Screen* screen,
     char seatRow,
     int seatColumn,
+    double amount,
     Enums::SeatStatus seatStatus,
     Enums::BookingStatus bookingStatus)
     : m_seatId(id),
     m_screen(screen),
     m_seatRow(seatRow),
     m_seatColumn(seatColumn),
+    m_amount(amount),
     m_seatStatus(seatStatus),
     m_bookingStatus(bookingStatus)
 {}
@@ -95,6 +98,17 @@ char Seat::getSeatRow() const
 int Seat::getSeatColumn() const
 {
     return m_seatColumn;
+}
+
+/*
+ * Function: getSeatAmount
+ * Description: Retrieves the seat price.
+ * Returns:
+ *    double - Seat column
+ */
+double Seat::getSeatAmount() const
+{
+    return m_amount;
 }
 
 /*
@@ -195,4 +209,17 @@ void Seat::setSeatStatus(Enums::SeatStatus seatStatus)
 void Seat::setBookingStatus(Enums::BookingStatus bookingStatus)
 {
     m_bookingStatus = bookingStatus;
+}
+
+/*
+ * Function: setSeatAmoun
+ * Description: Sets the seat price.
+ * Parameters:
+ *    double bookingStatus - seat amount
+ * Returns:
+ *    void
+ */
+void Seat::setSeatAmount(double amount)
+{
+    m_amount = amount;
 }
