@@ -402,6 +402,40 @@ Enums::ProcessStatus Controller::setTheatreEmailById(const std::string& theatreI
 }
 
 /*
+ * Function: Controller::getPendingTheatres
+ * Description: Retrieves all theatres that are currently in pending
+ *              status from the TheatreManagementService.
+ *              Acts as a delegation layer between the user interface
+ *              and the service layer.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers containing all theatres with
+ *    pending status. Returns an empty vector if no pending
+ *    theatres are available.
+ */
+const std::vector<const Theatre*> Controller::getPendingTheatres()
+{
+    return m_theatreManagementService->getPendingTheatres();
+}
+
+/*
+ * Function: Controller::setTheatreStatusById
+ * Description: Updates the status of a theatre identified by the given
+ *              theatre ID. Delegates the theatre status update
+ *              operation to the TheatreManagementService.
+ * Parameters:
+ *    theatreId    - Unique identifier of the theatre.
+ *    theatreStatus - New status to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre status update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreStatusById(std::string& theatreId, Enums::TheatreStatus& theatreStatus)
+{
+    return m_theatreManagementService->setTheatreStatusById(theatreId, theatreStatus);
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

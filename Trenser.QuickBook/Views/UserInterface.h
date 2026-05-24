@@ -49,4 +49,7 @@ public:
 	void changeTheatrePhoneNumber(const std::string& theatreId, const std::string& phoneNumber, const Theatre*& theatre);
 	void changeTheatreEmail(const std::string& theatreId, const std::string& email, const Theatre*& theatre);
 	const Theatre* getCurrentTheatreById(const std::string& theatreId, const std::vector<const Theatre*>& theatres);
+	void validateTheatreRequest();
+	void displayTheatreValidationMenu();
+	void setTheatreStatusById(std::string& theatreId, Enums::TheatreStatus theatreStatus);
 };
