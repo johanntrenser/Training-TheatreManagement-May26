@@ -301,6 +301,35 @@ Enums::ProcessStatus Controller::isTheatreUnique(const std::string& name, const 
 {
     return m_theatreManagementService->isTheatreUniqueInSystem(name, city, address, phoneNumber, email);
 }
+
+/*
+ * Function: Controller::isMovieInTheatre
+ * Description: Checks whether the specified movie is available in the given theatre.
+ * Parameters:
+ *    movieId (const std::string&) - Unique identifier of the movie
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the movie is present in the theatre,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isMovieInTheatre(const std::string& movieId, const std::string& theatreId)
+{
+    return m_showManagementService->isMovieInTheatre(movieId, theatreId);
+}
+
+/*
+ * Function: Controller::getScreensFromTheatre
+ * Description: Retrieves all screens available in the specified theatre.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    std::vector<const Screen*> - List of screens present in the theatre
+ */
+const std::vector<const Screen*> Controller::getScreensFromTheatre(const std::string& theatreId)
+{
+    return m_showManagementService->getScreensFromTheatre(theatreId);
+}
+
 /*
  * Function: Controller::getAllTheatres
  * Description: Retrieves all theatres from the TheatreManagementService.
@@ -399,6 +428,48 @@ Enums::ProcessStatus Controller::setTheatrePhoneNumberById(const std::string& th
 Enums::ProcessStatus Controller::setTheatreEmailById(const std::string& theatreId, const std::string& email)
 {
     return m_theatreManagementService->setTheatreEmailById(theatreId, email);
+}
+
+/*
+ * Function: Controller::isShowTimeConflicting
+ * Description: Determines whether the specified show timing conflicts with
+ *              any existing show on the same screen.
+ * Parameters:
+ *    movieId (const std::string&) - Unique identifier of the movie
+ *    screenId (const std::string&) - Unique identifier of the screen
+ *    year (int) - Year of the show
+ *    month (int) - Month of the show
+ *    day (int) - Day of the show
+ *    startTimeHour (int) - Hour component of show start time
+ *    startTimeMinute (int) - Minute component of show start time
+ * Returns:
+ *    Enums::ProcessStatus - FAILED if there is a conflict,
+ *                           SUCCESS otherwise
+ */
+Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute)
+{
+    return m_showManagementService->isShowTimeConflicting(movieId, screenId, year, month, day, startTimeHour, startTimeMinute);
+}
+
+/*
+ * Function: Controller::addShow
+ * Description: Adds a new show for a given movie and screen after validating
+ *              inputs and checking for conflicts.
+ * Parameters:
+ *    movieId (const std::string&) - Unique identifier of the movie
+ *    screenId (const std::string&) - Unique identifier of the screen
+ *    year (int) - Year of the show
+ *    month (int) - Month of the show
+ *    day (int) - Day of the show
+ *    startTimeHour (int) - Hour component of show start time
+ *    startTimeMinute (int) - Minute component of show start time
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the show is added successfully,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::addShow(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinutes)
+{
+    return m_showManagementService->addShow(movieId, screenId, year, month, day, startTimeHour, startTimeMinutes);
 }
 
 /*

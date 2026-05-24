@@ -51,4 +51,9 @@ public:
 	const std::map<std::string, Theatre*>& getTheatres() const;
 	User* const getAuthenticatedUser() const;
 	void addTheatre(Theatre* theatre);
+	Theatre* getTheatreById(const std::string& theatreId) const;
+	Movie* getMovieById(const std::string& movieId) const;
+	Screen* getScreenById(const std::string& screenId) const;
+	void addShow(Show* show);
+	const std::map<std::string, Show*>& getShows() const;
 };
