@@ -96,5 +96,5 @@ public:
 	const Theatre* getCurrentTheatreById(const std::string& theatreId, const std::vector<const Theatre*>& theatres);
 	void validateTheatreRequest();
 	void displayTheatreValidationMenu();
-	void setTheatreStatusById(std::string& theatreId, Enums::TheatreStatus theatreStatus);
+	void setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus theatreStatus);
 };

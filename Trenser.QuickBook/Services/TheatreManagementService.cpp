@@ -553,7 +553,7 @@ const std::vector<const Theatre*> TheatreManagementService::getPendingTheatres()
  *    ProcessStatus::SUCCESS if the theatre status was updated successfully.
  *    ProcessStatus::FAILED if no matching theatre was found.
  */
-Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(std::string& theatreId, Enums::TheatreStatus& theatreStatus)
+Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus)
 {
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
