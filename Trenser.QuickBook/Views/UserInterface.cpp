@@ -128,7 +128,7 @@ void UserInterface::login()
 	cout << "Enter email: ";
 	util::readValue(email);
 	util::isEmailValid(email);
-	cout << "Enter passsword: ";
+	cout << "Enter password: ";
 	util::readValue(password);
 	pair<Enums::LoginStatus, Enums::UserType> authenticationContext = m_controller->login(email, password);
 	Enums::LoginStatus loginStatus = get<0>(authenticationContext);
@@ -195,6 +195,10 @@ void UserInterface::adminMenu()
 	cout << "14.  Reactivate Movie" << endl;
 	cout << "15.  Search Movie" << endl;
 	cout << "------------------------" << endl;
+	cout << "Enter an option: ";
+	cout << "Admin Menu" << endl;
+	cout << "------------------------" << endl;
+	cout << "7. Validate Theatre Request" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -348,7 +352,7 @@ void UserInterface::handleAdminMenuOperation()
 		case 8:
 			changePassword();
 			break;
-		case 9:
+		case 0:
 			isMenuActive = false;
 			break;
 		case 10:
@@ -368,6 +372,9 @@ void UserInterface::handleAdminMenuOperation()
 			break;
 		case 15:
 			searchMovie();
+			break;
+		case 16:
+			validateTheatreRequest();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -1270,7 +1277,6 @@ void UserInterface::displayTheatreDetails(const std::vector<const Theatre*>& the
 		<< setw(15) << "Status"
 		<< endl;
 	cout << "--------------------------------------------------------------------------------------------------\n";
-
 	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		if (*iterator)
@@ -2670,5 +2676,94 @@ const Theatre* UserInterface::getCurrentTheatreById(const std::string& theatreId
 		{
 			return *iterator;
 		}
+	}
+}
+
+/*
+ * Function: UserInterface::validateTheatreRequest
+ * Description: Allows the administrator to validate pending theatre
+ *              requests by approving or rejecting a selected theatre.
+ *              Displays all pending theatres, validates the selected
+ *              theatre ID, and updates the theatre status based on
+ *              the administrator's choice.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::validateTheatreRequest()
+{
+	std::string theatreId;
+	int choice = 1;
+	const std::vector<const Theatre*> pendingTheatres=m_controller->getPendingTheatres();
+	if(!pendingTheatres.empty())
+	{
+		displayTheatreDetails(pendingTheatres);
+		cout << "\nEnter the theatre Id, which you want to validate: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, pendingTheatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			displayTheatreValidationMenu();
+			util::readValue(choice);
+			if (choice == 1)
+			{
+				setTheatreStatusById(theatreId, Enums::TheatreStatus::ACTIVE);
+			}
+			else if (choice == 2)
+			{
+				setTheatreStatusById(theatreId, Enums::TheatreStatus::PENDING);
+			}
+			else if (choice == 0)
+			{
+				exit;
+			}
+			else
+			{
+				cout << "\nEnter a valid choice!.";
+			}
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "\nNo pending theatre request!";
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatreValidationMenu
+ * Description: Displays the theatre validation menu with options to
+ *              approve, reject, or exit the validation process.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::displayTheatreValidationMenu()
+{
+	cout << "\n1. Approve";
+	cout << "\n2. Reject";
+	cout << "\n0. Exit";
+	cout << "\nEnter the choice: ";
+}
+
+/*
+ * Function: UserInterface::setTheatreStatusById
+ * Description: Updates the status of a theatre identified by the given
+ *              theatre ID. Delegates the status update operation to
+ *              the controller layer.
+ * Parameters:
+ *    theatreId    - Unique identifier of the theatre.
+ *    theatreStatus - New status to be assigned to the theatre.
+ * Returns: None
+ */
+void UserInterface::setTheatreStatusById(std::string& theatreId, Enums::TheatreStatus theatreStatus)
+{
+	if (m_controller->setTheatreStatusById(theatreId, theatreStatus) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "\nTheatre Status has been updated!.";
+	}
+	else
+	{
+		cout << "\nSomething went wrong!.";
 	}
 }
