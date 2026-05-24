@@ -21,9 +21,8 @@ Seat::Seat()
     m_screen(nullptr),
     m_seatRow('A'),
     m_seatColumn(0),
-    m_seatType(0),
-    m_seatStatus(0),
-    m_bookingStatus(0)
+    m_seatStatus(Enums::SeatStatus::AVAILABLE),
+    m_bookingStatus(Enums::BookingStatus::NOT_BOOKED)
 {}
 
 /*
@@ -44,14 +43,12 @@ Seat::Seat(const std::string& id,
     Screen* screen,
     char seatRow,
     int seatColumn,
-    int seatType,
-    int seatStatus,
-    int bookingStatus)
+    Enums::SeatStatus seatStatus,
+    Enums::BookingStatus bookingStatus)
     : m_seatId(id),
     m_screen(screen),
     m_seatRow(seatRow),
     m_seatColumn(seatColumn),
-    m_seatType(seatType),
     m_seatStatus(seatStatus),
     m_bookingStatus(bookingStatus)
 {}
@@ -101,23 +98,12 @@ int Seat::getSeatColumn() const
 }
 
 /*
- * Function: Seat::getSeatType
- * Description: Retrieves the seat type code.
- * Returns:
- *    int - Seat type
- */
-int Seat::getSeatType() const
-{
-    return m_seatType;
-}
-
-/*
  * Function: Seat::getSeatStatus
  * Description: Retrieves the seat status code.
  * Returns:
- *    int - Seat status
+ *    enum - Seat status
  */
-int Seat::getSeatStatus() const
+Enums::SeatStatus Seat::getSeatStatus() const
 {
     return m_seatStatus;
 }
@@ -126,9 +112,9 @@ int Seat::getSeatStatus() const
  * Function: Seat::getBookingStatus
  * Description: Retrieves the booking status code.
  * Returns:
- *    int - Booking status
+ *    enum - Booking status
  */
-int Seat::getBookingStatus() const
+Enums::BookingStatus Seat::getBookingStatus() const
 {
     return m_bookingStatus;
 }
@@ -186,19 +172,6 @@ void Seat::setSeatColumn(int seatColumn)
 }
 
 /*
- * Function: Seat::setSeatType
- * Description: Sets the seat type code.
- * Parameters:
- *    int seatType - New seat type
- * Returns:
- *    void
- */
-void Seat::setSeatType(int seatType)
-{
-    m_seatType = seatType;
-}
-
-/*
  * Function: Seat::setSeatStatus
  * Description: Sets the seat status code.
  * Parameters:
@@ -206,7 +179,7 @@ void Seat::setSeatType(int seatType)
  * Returns:
  *    void
  */
-void Seat::setSeatStatus(int seatStatus)
+void Seat::setSeatStatus(Enums::SeatStatus seatStatus)
 {
     m_seatStatus = seatStatus;
 }
@@ -219,7 +192,7 @@ void Seat::setSeatStatus(int seatStatus)
  * Returns:
  *    void
  */
-void Seat::setBookingStatus(int bookingStatus)
+void Seat::setBookingStatus(Enums::BookingStatus bookingStatus)
 {
     m_bookingStatus = bookingStatus;
 }

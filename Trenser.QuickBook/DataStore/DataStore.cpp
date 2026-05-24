@@ -36,13 +36,18 @@ void DataStore::addUser(User* user)
     m_users[user->getUserId()] = user;
 }
 
+const std::map<std::string, Screen*>& DataStore::getScreens() const
+{
+    return m_screen;
+}
+
 /*
   * Function: DataStore::getInstance
   * Description: Provides access to the singleton instance of the DataStore class.
   *              Ensures only one instance exists throughout the application.
   * Returns:
   *    Reference to the single DataStore instance
-  */
+ */
 DataStore& DataStore::getInstance()
 {
     static DataStore instance;
@@ -60,4 +65,26 @@ DataStore& DataStore::getInstance()
 void DataStore::setAuthenticatedUser(User* user)
 {
     m_currentUser = user;
+}
+
+/*
+* Function Name : getAuthenticatedUserType
+* Description   : Returns the type of the currently authenticated user.
+* Parameters    : None
+* Return Type   : Enums::UserType
+*/
+Enums::UserType DataStore::getAuthenticatedUserType()
+{
+    return m_currentUser->getUserType();
+}
+
+/*
+* Function Name : getShows
+* Description   : Returns all shows stored in the datastore.
+* Parameters    : None
+* Return Type   : const std::map<std::string, Show*>&
+*/
+const std::map<std::string, Show*>& DataStore::getShows() const
+{
+    return m_show;
 }
