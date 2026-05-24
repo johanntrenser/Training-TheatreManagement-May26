@@ -430,7 +430,7 @@ const std::vector<const Theatre*> Controller::getPendingTheatres()
  *    ProcessStatus indicating whether the theatre status update
  *    operation was successful or failed.
  */
-Enums::ProcessStatus Controller::setTheatreStatusById(std::string& theatreId, Enums::TheatreStatus& theatreStatus)
+Enums::ProcessStatus Controller::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus)
 {
     return m_theatreManagementService->setTheatreStatusById(theatreId, theatreStatus);
 }

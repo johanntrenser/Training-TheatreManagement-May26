@@ -1250,7 +1250,7 @@ void UserInterface::displayTheatreValidationMenu()
  *    theatreStatus - New status to be assigned to the theatre.
  * Returns: None
  */
-void UserInterface::setTheatreStatusById(std::string& theatreId, Enums::TheatreStatus theatreStatus)
+void UserInterface::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus theatreStatus)
 {
 	if (m_controller->setTheatreStatusById(theatreId, theatreStatus) == Enums::ProcessStatus::SUCCESS)
 	{
