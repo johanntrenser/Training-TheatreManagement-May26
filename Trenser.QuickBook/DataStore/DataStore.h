@@ -61,9 +61,11 @@ public:
 	const std::map<std::string, Show*>& getShows() const;
 	std::map<std::string, Show*>& getShowsForUpdation();
 	const std::map<std::string, Screen*>& getScreens() const;
-	Theatre* getTheatreById(const std::string& theatreId) const;
-	Screen* getScreenById(const std::string& screenId) const;
 	Enums::UserType getAuthenticatedUserType();
 	const std::map<std::string, Theatre*>& getTheatres() const;
 	void addTheatre(Theatre* theatre);
+	Theatre* getTheatreById(const std::string& theatreId) const;
+	Movie* getMovieById(const std::string& movieId) const;
+	Screen* getScreenById(const std::string& screenId) const;
+	void addShow(Show* show);
 };

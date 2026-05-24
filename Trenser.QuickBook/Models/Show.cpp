@@ -38,7 +38,6 @@ Show::Show()
  *    time_t startTime - Show start time
  *    time_t endTime - Show end time
  *    ShowSeatAvailability* seatAvailability - Seat availability object
- *    int showStatus - Show status code
  * Returns:
  *    Show object
  */
@@ -128,7 +127,7 @@ ShowSeatAvailability* Show::getSeatAvailability() const
  * Function: Show::getShowStatus
  * Description: Retrieves the show status code.
  * Returns:
- *    enum - Show status
+ *    Enum - Show status
  */
 Enums::ShowStatus Show::getShowStatus() const
 {
@@ -217,7 +216,7 @@ void Show::setSeatAvailability(ShowSeatAvailability* seatAvailability)
  * Function: Show::setShowStatus
  * Description: Sets the show status code.
  * Parameters:
- *    int showStatus - New show status
+ *    Enum showStatus - New show status
  * Returns:
  *    void
  */

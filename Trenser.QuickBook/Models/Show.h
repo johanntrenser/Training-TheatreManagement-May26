@@ -47,4 +47,8 @@ public:
     void setEndTime(time_t endTime);
     void setSeatAvailability(ShowSeatAvailability* seatAvailability);
     void setShowStatus(Enums::ShowStatus showStatus);
+    ~Show()
+    {
+        delete m_seatAvailability;
+    }
 };

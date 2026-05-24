@@ -6,7 +6,6 @@
  * Created: 20 May 2026
  */
 #include <iostream>
-#include <iostream>
 #include <stdexcept>
 #include <iomanip>
 #include <string>
@@ -16,6 +15,8 @@ using namespace std;
 #include "UserInterface.h"
 #include "Validator.h"
 #include "Enums.h"
+#include "TimeStamp.h"
+
 /*
  * Function: UserInterface::UserInterface
  * Description: Default constructor. Initializes the UserInterface by creating
@@ -2243,16 +2244,49 @@ void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres,
 
 /*
  * Function: UserInterface::displayMoviesInTheatre
- * Description: Allows the theatre owner to select a theatre by ID and view
- *              all movies associated with that theatre. Validates the entered
- *              theatre ID against the current owner’s theatres before displaying
- *              movie details.
- * Parameters: None
- * Returns: None
+ * Description: Displays movies available in the selected theatre.
+ * Parameters:
+ *    theatreId (std::string&) - Reference to store selected theatre ID
+ * Returns:
+ *    void
  */
 void UserInterface::displayMoviesInTheatre()
 {
 	std::string theatreId;
+	bool isTheatreIdValid = false;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	displayTheatreDetails(theatres);
+	cout << "Enter theatre id of theatre to select: ";
+	util::readValue(theatreId);
+	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
+	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
+	{
+		if (theatreId == *iterator)
+		{
+			isTheatreIdValid = true;
+			break;
+		}
+	}
+	if (!isTheatreIdValid)
+	{
+		cout << "Invalid Theatre id!" << endl;
+		util::pressEnter();
+		return;
+	}
+	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
+	displayMovieDetails(movies);
+}
+
+/*
+ * Function: UserInterface::displayMoviesInTheatre
+ * Description: Displays movies available in the selected theatre.
+ * Parameters:
+ *    theatreId (std::string&) - Reference to store selected theatre ID
+ * Returns:
+ *    void
+ */
+void UserInterface::displayMoviesInTheatre(std::string& theatreId)
+{
 	bool isTheatreIdValid = false;
 	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
 	displayTheatreDetails(theatres);
@@ -3104,3 +3138,206 @@ void UserInterface::reactivateTheatreByAdmin()
 	}
 }
 
+/*
+ * Function: UserInterface::isValidTime
+ * Description: Validates whether the given hour and minute represent a valid time.
+ * Parameters:
+ *    hour (int) - Hour value (0–23)
+ *    minute (int) - Minute value (0–59)
+ * Returns:
+ *    bool - True if valid, false otherwise
+ */
+bool UserInterface::isValidTime(int hour, int minute)
+{
+	return (hour >= 0 && hour < 24 && minute >= 0 && minute < 60);
+}
+
+/*
+ * Function: UserInterface::isValidDate
+ * Description: Validates whether the given date is valid, including leap year handling.
+ * Parameters:
+ *    year (int) - Year value
+ *    month (int) - Month value
+ *    day (int) - Day value
+ * Returns:
+ *    bool - True if valid, false otherwise
+ */
+bool UserInterface::isValidDate(int year, int month, int day)
+{
+	if (year < 1900 || month < 1 || month > 12 || day < 1)
+	{
+		return false;
+	}
+	int daysInMonth[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
+	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+		daysInMonth[1] = 29;
+	}
+	return day <= daysInMonth[month - 1];
+}
+
+/*
+ * Function: UserInterface::getValidTime
+ * Description: Prompts the user until a valid time is entered.
+ * Parameters:
+ *    hour (int&) - Reference to store valid hour
+ *    minute (int&) - Reference to store valid minute
+ * Returns:
+ *    void
+ */
+void UserInterface::getValidTime(int& hour, int& minute)
+{
+	bool isTimeValid = isValidTime(hour, minute);
+	while (!isTimeValid)
+	{
+		cout << "Please enter a valid time (HH MM) : ";
+		util::readValue(hour);
+		util::readValue(minute);
+		isTimeValid = isValidTime(hour, minute);
+	}
+}
+
+/*
+ * Function: UserInterface::getValidDate
+ * Description: Prompts the user until a valid date is entered.
+ * Parameters:
+ *    year (int&) - Reference to store valid year
+ *    month (int&) - Reference to store valid month
+ *    day (int&) - Reference to store valid day
+ * Returns:
+ *    void
+ */
+void UserInterface::getValidDate(int& year, int& month, int& day)
+{
+	bool isDateValid = isValidDate(year, month, day);
+	while (!isDateValid)
+	{
+		cout << "Please enter a valid date (YYYY MM DD) : ";
+		util::readValue(year);
+		util::readValue(month);
+		util::readValue(day);
+		isDateValid = isValidDate(year, month, day);
+	}
+}
+
+/*
+ * Function: UserInterface::isFutureDateTime
+ * Description: Checks whether the given date and time occur in the future.
+ * Parameters:
+ *    year (int) - Year value
+ *    month (int) - Month value
+ *    day (int) - Day value
+ *    hour (int) - Hour value
+ *    minute (int) - Minute value
+ * Returns:
+ *    bool - True if the datetime is in the future, false otherwise
+ */
+bool UserInterface::isFutureDateTime(int year, int month, int day, int hour, int minute)
+{
+	time_t inputTime = util::createTime(year, month, day, hour, minute);
+	if (inputTime == -1)
+	{
+		return false;
+	}
+	time_t currentTime = time(0);
+	return difftime(inputTime, currentTime) > 0;
+}
+
+/*
+ * Function: UserInterface::addShow
+ * Description: Handles user interaction to add a new show, including
+ *              input collection, validation, and invoking controller logic.
+ * Parameters: None
+ * Returns:
+ *    void
+ */
+void UserInterface::addShow()
+{
+	string showId;
+	string movieId, screenId, theatreId;
+	int year, month, day;
+	int startTimeHour, startTimeMinute;
+	displayMoviesInTheatre(theatreId);
+	cout << "Enter Movie ID: ";
+	util::readValue(movieId);
+	Enums::ProcessStatus isMoviePresent = m_controller->isMovieInTheatre(movieId, theatreId);
+	if (isMoviePresent == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Movie is not present in theatre" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	const std::vector<const Screen*> screens = m_controller->getScreensFromTheatre(theatreId);
+	if (screens.empty())
+	{
+		cout << "No screens available to add show to! " << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	if (!getScreenId(screens, screenId))
+	{
+		cout << "Invalid screen ID!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	cout << "Enter date (YYYY MM DD): ";
+	util::readValue(year);
+	util::readValue(month);
+	util::readValue(day);
+	getValidDate(year, month, day);
+	cout << "Enter start time (HH MM): ";
+	util::readValue(startTimeHour);
+	util::readValue(startTimeMinute);
+	getValidTime(startTimeHour, startTimeMinute);
+	if (!isFutureDateTime(year, month, day, startTimeHour, startTimeMinute))
+	{
+		cout << "Cannot add a show with a past time/date!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	if (m_controller->isShowTimeConflicting(movieId, screenId, year, month, day, startTimeHour, startTimeMinute) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Cannot add show as it conflicts with the time of another show!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	if (m_controller->addShow(movieId, screenId, year, month, day, startTimeHour, startTimeMinute) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Show added successfully!" << endl;
+		util::pressEnter();
+	}
+}
+
+/*
+*Function: UserInterface::getScreenId
+* Description : Displays available screens and validates the selected screen ID.
+* Parameters :
+	*screens(const std::vector<const Screen*>&) - List of available screens
+	* screenId(std::string&) - Reference to store selected screen ID
+	* Returns :
+	*bool - True if a valid screen ID is selected, false otherwise
+*/
+bool UserInterface::getScreenId(const std::vector<const Screen*>&screens, std::string & screenId)
+{
+	std::vector<std::string> screenIds;
+	cout << "\nAvaiable Screens\n-----------------------------" << endl;
+	for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+	{
+		cout << (*iterator)->getScreenId() << "   " << (*iterator)->getName() << endl;
+		screenIds.push_back((*iterator)->getScreenId());
+	}
+	cout << "Enter screen id of screen to add to: ";
+	util::readValue(screenId);
+	for (std::vector<std::string>::iterator iterator = screenIds.begin(); iterator != screenIds.end(); ++iterator)
+	{
+		if ((*iterator) == screenId)
+		{
+			return true;
+		}
+	}
+	return false;
+}
