@@ -2692,7 +2692,7 @@ const Theatre* UserInterface::getCurrentTheatreById(const std::string& theatreId
 void UserInterface::validateTheatreRequest()
 {
 	std::string theatreId;
-	int choice = 1;
+	int choice;
 	const std::vector<const Theatre*> pendingTheatres=m_controller->getPendingTheatres();
 	if(!pendingTheatres.empty())
 	{
