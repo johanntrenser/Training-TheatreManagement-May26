@@ -45,7 +45,7 @@ Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) :
  * Returns:
  *    const std::string& - Ticket ID
  */
-const std::string& Ticket::getTicketId()
+const std::string& Ticket::getTicketId() const
 {
 	return m_ticketId;
 }
@@ -56,7 +56,7 @@ const std::string& Ticket::getTicketId()
  * Returns:
  *    Payment* - Pointer to the payment
  */
-Payment* Ticket::getPayment()
+Payment* Ticket::getPayment() const
 {
 	return m_payment;
 }
@@ -67,7 +67,7 @@ Payment* Ticket::getPayment()
  * Returns:
  *    User* - Pointer to the customer
  */
-User* Ticket::getCustomer()
+User* Ticket::getCustomer() const
 {
 	return m_customer;
 }
@@ -78,7 +78,7 @@ User* Ticket::getCustomer()
  * Returns:
  *    enum - TicketStatus
  */
-Enums::TicketStatus Ticket::getTicketStatus()
+Enums::TicketStatus Ticket::getTicketStatus() const
 {
 	return m_status;
 }

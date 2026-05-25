@@ -95,3 +95,15 @@ void DataStore::addTicket(Ticket* ticket)
 {
     m_ticket[ticket->getTicketId()] = ticket;
 }
+
+/*
+* Function Name : DataStore::getAuthenticatedUserType
+* Description   : Retrieves the user type of the currently authenticated user
+*                 from the datastore.
+* Parameters    : None
+* Return Type   : Enums::UserType
+*/
+Enums::UserType DataStore::getAuthenticatedUserType() const
+{
+    return m_currentUser->getUserType();;
+}
