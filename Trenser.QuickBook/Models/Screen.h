@@ -34,7 +34,7 @@ public:
         const std::vector<std::vector<Seat*>>& seatGrid,
         int screenStatus);
     const std::string& getScreenId() const;
-    Theatre* getTheatre() const;
+    const Theatre* getTheatre() const;
     const std::string& getName() const;
     int getTotalRows() const;
     int getTotalColumns() const;

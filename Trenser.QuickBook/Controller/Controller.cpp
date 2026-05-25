@@ -472,6 +472,11 @@ Enums::ProcessStatus Controller::addShow(const std::string& movieId, const std::
     return m_showManagementService->addShow(movieId, screenId, year, month, day, startTimeHour, startTimeMinutes);
 }
 
+const std::vector<const Show*> Controller::getActiveShows()
+{
+    return m_showManagementService->getActiveShows();
+}
+
 /*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the

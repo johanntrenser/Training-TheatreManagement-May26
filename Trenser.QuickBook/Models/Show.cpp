@@ -72,7 +72,7 @@ const std::string Show::getShowId() const
  * Returns:
  *    Movie* - Pointer to the movie
  */
-Movie* Show::getMovie() const
+const Movie* Show::getMovie() const
 {
     return m_movie;
 }
@@ -83,7 +83,7 @@ Movie* Show::getMovie() const
  * Returns:
  *    Screen* - Pointer to the screen
  */
-Screen* Show::getScreen() const
+const Screen* Show::getScreen() const
 {
     return m_screen;
 }
