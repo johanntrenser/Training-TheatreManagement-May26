@@ -24,8 +24,9 @@ Show::Show()
     m_startTime(0),
     m_endTime(0),
     m_seatAvailability(nullptr),
-    m_showStatus(0)
-{}
+    m_showStatus(Enums::ShowStatus::SCHEDULED)
+{
+}
 
 /*
  * Function: Show::Show
@@ -46,16 +47,16 @@ Show::Show(const std::string showId,
     Screen* screen,
     time_t startTime,
     time_t endTime,
-    ShowSeatAvailability* seatAvailability,
-    int showStatus)
+    ShowSeatAvailability* seatAvailability)
     : m_showId(showId),
     m_movie(movie),
     m_screen(screen),
     m_startTime(startTime),
     m_endTime(endTime),
     m_seatAvailability(seatAvailability),
-    m_showStatus(showStatus)
-{}
+    m_showStatus(Enums::ShowStatus::SCHEDULED)
+{
+}
 
 /*
  * Function: Show::getShowId
@@ -129,7 +130,7 @@ ShowSeatAvailability* Show::getSeatAvailability() const
  * Returns:
  *    int - Show status
  */
-int Show::getShowStatus() const
+Enums::ShowStatus Show::getShowStatus() const
 {
     return m_showStatus;
 }
@@ -220,7 +221,7 @@ void Show::setSeatAvailability(ShowSeatAvailability* seatAvailability)
  * Returns:
  *    void
  */
-void Show::setShowStatus(int showStatus)
+void Show::setShowStatus(Enums::ShowStatus showStatus)
 {
     m_showStatus = showStatus;
 }

@@ -172,6 +172,54 @@ void Controller::logout()
 }
 
 /*
+* Function Name : Controller::viewTicketDetails
+* Description   : Retrieves all active tickets for the currently authenticated user
+*                 by delegating to TicketManagementService.
+* Parameters    : None
+* Return Type   : const std::vector<Ticket*>
+*/
+const std::vector<const Ticket*> Controller::viewTicketDetails()
+{
+    return m_ticketManagementService->viewTicketDetails();
+}
+
+/*
+* Function Name : Controller::viewAllTickets
+* Description   : Returns all tickets stored in the datastore by delegating
+*                 to TicketManagementService.
+* Parameters    : None
+* Return Type   : const std::map<std::string, Ticket*>&
+*/
+const std::vector<const Ticket*> Controller::viewAllTickets()
+{
+    return m_ticketManagementService->viewAllTickets();
+}
+
+/*
+* Function Name : Controller::viewTicketHistory
+* Description   : Retrieves the complete ticket history for the currently authenticated user
+*                 by delegating to TicketManagementService.
+* Parameters    : None
+* Return Type   : const std::vector<Ticket*>
+*/
+const std::vector<const Ticket*> Controller::viewTicketHistory()
+{
+    return m_ticketManagementService->viewTicketHistory();
+}
+
+/*
+* Function Name : Controller::getAuthenticatedUserType
+* Description   : Retrieves the user type of the currently authenticated user
+*                 by delegating the call to TicketManagementService.
+* Parameters    : None
+* Return Type   : Enums::UserType
+*/
+Enums::UserType Controller::getAuthenticatedUserType() const
+{
+    return m_ticketManagementService->getAuthenticatedUserType();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

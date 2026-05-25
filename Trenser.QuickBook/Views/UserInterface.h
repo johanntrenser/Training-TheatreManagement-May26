@@ -27,4 +27,8 @@ public:
 	void getUniqueEmail(std::string& email);
 	void getUniquePhoneNumber(std::string& phoneNumber);
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
+	void viewActiveTicketDetails();
+	void viewAllTickets();
+	void viewTicketHistory();
+	void viewTicketDetails(const std::vector<const Ticket*>);
 };

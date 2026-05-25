@@ -22,10 +22,10 @@ private:
 public:
 	Ticket();
 	Ticket(const std::string& ticketId, Payment* payment, User* customer);
-	const std::string& getTicketId();
-	Payment* getPayment();
-	User* getCustomer();
-	Enums::TicketStatus getTicketStatus();
+	const std::string& getTicketId() const;
+	Payment* getPayment() const;
+	User* getCustomer() const;
+	Enums::TicketStatus getTicketStatus() const;
 	void setTicketId(const std::string ticketId);
 	void setPayment(Payment* payment);
 	void setCustomer(User* customer);

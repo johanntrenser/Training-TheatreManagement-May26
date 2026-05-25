@@ -19,4 +19,8 @@ public:
 	TicketManagementService();
 	Enums::ProcessStatus generateTicket(Payment* payment, User* customer);
 	const std::string generateTicketId();
+	const std::vector<const Ticket*> viewTicketDetails();
+	const std::vector<const Ticket*> viewAllTickets();
+	const std::vector<const Ticket*> viewTicketHistory();
+	Enums::UserType getAuthenticatedUserType() const;
 };
