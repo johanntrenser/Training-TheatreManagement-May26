@@ -473,6 +473,17 @@ Enums::ProcessStatus Controller::addShow(const std::string& movieId, const std::
 }
 
 /*
+ * Function: Controller::getActiveShows
+ * Description: Retrieves all active shows (scheduled and not yet started) via ShowManagementService.
+ * Returns:
+ *    const std::vector<const Show*> - List of active shows
+ */
+const std::vector<const Show*> Controller::getActiveShows()
+{
+    return m_showManagementService->getActiveShows();
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

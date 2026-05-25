@@ -79,6 +79,7 @@ public:
 	Enums::ProcessStatus setTheatreEmailById(const std::string& theatreId, const std::string& email);
 	Enums::ProcessStatus isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute);
 	Enums::ProcessStatus addShow(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinutes);
+	const std::vector<const Show*> getActiveShows();
 	void logout();
 	~Controller();
 };

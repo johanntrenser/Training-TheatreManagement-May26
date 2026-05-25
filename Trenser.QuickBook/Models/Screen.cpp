@@ -73,7 +73,7 @@ const std::string& Screen::getScreenId() const
  * Returns:
  *    Theatre* - Pointer to the theatre
  */
-Theatre* Screen::getTheatre() const
+const Theatre* Screen::getTheatre() const
 {
     return m_theatre;
 }

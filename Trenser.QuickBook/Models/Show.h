@@ -23,7 +23,7 @@ private:
     time_t m_startTime;
     time_t m_endTime;
     ShowSeatAvailability* m_seatAvailability;
-    Enums::ShowStatus m_showStatus; // enum placeholder
+    Enums::ShowStatus m_showStatus;
 public:
     Show();
     Show(const std::string showId,
@@ -33,8 +33,8 @@ public:
         time_t endTime,
         ShowSeatAvailability* seatAvailability);
     const std::string getShowId() const;
-    Movie* getMovie() const;
-    Screen* getScreen() const;
+    const Movie* getMovie() const;
+    const Screen* getScreen() const;
     time_t getStartTime() const;
     time_t getEndTime() const;
     ShowSeatAvailability* getSeatAvailability() const;
