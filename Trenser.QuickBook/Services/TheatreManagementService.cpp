@@ -159,7 +159,7 @@ const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheat
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner() == authenticatedUser))
+        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner() == authenticatedUser) && (iterator->second->getStatus() == Enums::TheatreStatus::ACTIVE))
         {
             ownerTheatres.push_back(iterator->second);
         }

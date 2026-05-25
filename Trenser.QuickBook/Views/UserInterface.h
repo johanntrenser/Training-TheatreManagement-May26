@@ -27,6 +27,12 @@ public:
 	void getUniqueEmail(std::string& email);
 	void getUniquePhoneNumber(std::string& phoneNumber);
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
+	bool isValidTime(int hour, int minute);
+	bool isValidDate(int year, int month, int day);
+	void getValidTime(int& hour, int& minute);
+	void getValidDate(int& year, int& month, int& day);
+	bool isFutureDateTime(int year, int month, int day, int hour, int minute);
+	void addShow();
 	void viewTheatreDetails();
 	void displayTheatreDetails(const std::vector<const Theatre*>& theatres);
 	void displayMovieDetails(const std::vector<const Movie*>& movies);
@@ -39,7 +45,8 @@ public:
 	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	void listAllTheatres();
 	void displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status);
-	void displayMoviesInTheatre();
+	void displayMoviesInTheatre(std::string& theatreId);
+	bool getScreenId(const std::vector<const Screen*>& screens, std::string& screenId);
 	void updateTheatre();
 	Enums::ProcessStatus isValidTheatreID(const std::string& theatreId, const std::vector<const Theatre*>& theatres);
 	void displayEditTheatreMenu();
