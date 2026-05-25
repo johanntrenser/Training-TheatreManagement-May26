@@ -233,7 +233,7 @@ Enums::ProcessStatus Controller::reactivateScreen(const std::string& theatreId, 
 *                  theatre - Theatre whose screens are viewed
 * Return Type   : const std::vector<Screen*>
 */
-const std::vector<Screen*> Controller::viewTheatreScreens(const std::string& theatreId)
+const std::vector<const Screen*> Controller::viewTheatreScreens(const std::string& theatreId)
 {
     return m_ScreenManagementService->viewTheatreScreens(theatreId);
 }
