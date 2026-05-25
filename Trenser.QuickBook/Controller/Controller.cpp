@@ -195,5 +195,7 @@ Controller::~Controller()
 }
 
 
-
-
+void Controller::saveDatas()
+{
+    m_userManagementService->saveUserData();
+}

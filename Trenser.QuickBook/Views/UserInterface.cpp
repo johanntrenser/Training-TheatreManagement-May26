@@ -99,6 +99,7 @@ bool UserInterface::handleOperation(int choice)
 		registerUser();
 		break;
 	case 3:
+		exit();
 		std::cout << "Exiting..." << std::endl;
 		return false;
 	default:
@@ -417,6 +418,11 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
     util::readValue(phoneNumber);
     util::isPhoneNumberValid(phoneNumber);
 	getUniquePhoneNumber(phoneNumber);
+}
+
+void UserInterface::exit()
+{
+	m_controller->saveDatas();
 }
 
 

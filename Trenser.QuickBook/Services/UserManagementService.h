@@ -10,11 +10,19 @@
  */
 #pragma once
 #include <string>
+#include <map>
 #include <vector>
+#include <fstream>
+#include <string>
 #include "User.h"
+#include "DataStore.h"
+#include "ApplicationConfig.h"
 
 class UserManagementService
 {
+private:
+    DataStore& m_dataStore; 
+    const std::string& PATH = config::USER_FILEPATH;
 public:
     UserManagementService();
     bool createUser(const std::string& name,
@@ -38,5 +46,10 @@ public:
 
     void changePassword(const std::string& userId,
         const std::string& newPassword);
+    void saveUserData();
+    std::string userTypeToString(Enums::UserType type);
+    std::string userStatusToString(Enums::UserStatus status);
+    void reverseString(std::string& password);
+    void encryption(std::string& password);
+    void decryption(std::string& password);
 };
-
