@@ -3344,6 +3344,12 @@ bool UserInterface::getScreenId(const std::vector<const Screen*>&screens, std::s
 	return false;
 }
 
+/*
+*Function: UserInterface::displayActiveShows
+* Description : Displays all active shows retrieved from Controller in tabular format.
+* Returns :
+	*void
+*/
 void UserInterface::displayActiveShows()
 {
 	const std::vector<const Show*> shows = m_controller->getActiveShows();
@@ -3356,6 +3362,15 @@ void UserInterface::displayActiveShows()
 	displayShowDetails(shows);
 }
 
+
+/*
+ * Function: UserInterface::displayShowDetails
+ * Description: Displays detailed information for a list of shows including theatre, screen, movie, and start time.
+ * Parameters:
+ *    const std::vector<const Show*> shows - List of shows to display
+ * Returns:
+ *    void
+ */
 void UserInterface::displayShowDetails(const std::vector<const Show*> shows)
 {
 	cout << "\n--------------------------------------------------------------------------------------------------\n";
