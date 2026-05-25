@@ -56,4 +56,6 @@ public:
 	Screen* getScreenById(const std::string& screenId) const;
 	void addShow(Show* show);
 	const std::map<std::string, Show*>& getShows() const;
+	const std::map<std::string, ShowSeatAvailability*>& getShowSeatAvailabilitys() const;
+	void addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability);
 };

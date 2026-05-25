@@ -19,6 +19,7 @@ private:
 public:
 	ShowManagementService() : m_dataStore(DataStore::getInstance()) {}
 	const std::string generateShowId();
+	const std::string generateShowSeatAvailabilityId();
 	Enums::ProcessStatus isMovieInTheatre(const std::string& movieId, const std::string& theatreId);
 	const std::vector<const Screen*> getScreensFromTheatre(const std::string& theatreId);
 	Enums::ProcessStatus isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute);

@@ -27,11 +27,12 @@ ShowSeatAvailability::ShowSeatAvailability() :
  * Parameters:
  *    const std::string& showSeatAvailabilityId - Unique seat availability identifier
  *    Show* show - Associated show object
+ *	  const std::map<std::string, Enums::BookingStatus>& seatMap - map of seat ids with booking status
  * Returns:
  *    ShowSeatAvailability object
  */
-ShowSeatAvailability::ShowSeatAvailability(const std::string& showSeatAvailabilityId, Show* show) :
-	m_showSeatAvailabilityId(showSeatAvailabilityId), m_show(show)
+ShowSeatAvailability::ShowSeatAvailability(const std::string& showSeatAvailabilityId, Show* show, const std::map<std::string, Enums::BookingStatus>& seatMap) :
+	m_showSeatAvailabilityId(showSeatAvailabilityId), m_show(show), m_seatAvailabilityMap(seatMap)
 {}
 
 /*
@@ -60,9 +61,9 @@ Show* ShowSeatAvailability::getShow() const
  * Function: ShowSeatAvailability::getSeatAvailabilityMap
  * Description: Retrieves the seat availability map.
  * Returns:
- *    const std::map<std::string, Seat*>& - Map of seat IDs to Seat objects
+ *    const std::map<std::string, Enums::BookingStatus>& - Map of seat IDs to Seat objects
  */
-const std::map<std::string, Seat*>& ShowSeatAvailability::getSeatAvailabilityMap() const
+const std::map<std::string, Enums::BookingStatus>& ShowSeatAvailability::getSeatAvailabilityMap() const
 {
 	return m_seatAvailabilityMap;
 }
@@ -75,7 +76,7 @@ const std::map<std::string, Seat*>& ShowSeatAvailability::getSeatAvailabilityMap
  * Returns:
  *    void
  */
-void ShowSeatAvailability::setShowSeatAvailability(const std::string& showSeatAvailabilityId)
+void ShowSeatAvailability::setShowSeatAvailabilityId(const std::string& showSeatAvailabilityId)
 {
 	m_showSeatAvailabilityId = showSeatAvailabilityId;
 }
@@ -97,11 +98,11 @@ void ShowSeatAvailability::setShow(Show* show)
  * Function: ShowSeatAvailability::setSeatAvailabilityMap
  * Description: Sets the seat availability map.
  * Parameters:
- *    std::map<std::string, Seat*>& seatAvailabilityMap - New seat availability map
+ *    std::map<std::string, Enums::BookingStatus>& seatAvailabilityMap - New seat availability map
  * Returns:
  *    void
  */
-void ShowSeatAvailability::setSeatAvailabilityMap(std::map<std::string, Seat*>& seatAvailabilityMap)
+void ShowSeatAvailability::setSeatAvailabilityMap(std::map<std::string, Enums::BookingStatus>& seatAvailabilityMap)
 {
 	m_seatAvailabilityMap = seatAvailabilityMap;
 }
