@@ -460,3 +460,16 @@ Enums::ProcessStatus UserInterface::deactivateScreen(const std::string& theatreI
 {
 	return m_controller->deactivateScreen(theatreId, screenId);
 }
+
+/*
+* Function Name : reactivateScreen
+* Description   : Reactivates an inactive screen.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::reactivateScreen(const std::string& theatreId, const std::string& screenId)
+{
+	return m_controller->reactivateScreen(theatreId, screenId);
+}
