@@ -115,4 +115,7 @@ public:
 	bool isFutureDateTime(int year, int month, int day, int hour, int minute);
 	void addShow();
 	bool getScreenId(const std::vector<const Screen*>& screens, std::string& screenId);
+	void displayActiveShows(); 
+	void displayShowDetails(const std::vector<const Show*> shows);
+	std::string displayTimeAndDate(time_t time);
 };

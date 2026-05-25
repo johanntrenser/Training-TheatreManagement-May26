@@ -1136,6 +1136,11 @@ Enums::ProcessStatus Controller::addShow(const std::string & movieId, const std:
     return m_showManagementService->addShow(movieId, screenId, year, month, day, startTimeHour, startTimeMinutes);
 }
 
+const std::vector<const Show*> Controller::getActiveShows()
+{
+    return m_showManagementService->getActiveShows();
+}
+
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all

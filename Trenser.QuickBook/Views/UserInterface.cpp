@@ -7,8 +7,10 @@
  */
 #include <iostream>
 #include <stdexcept>
-#include <iomanip>
 #include <string>
+#include<iomanip>
+#include <ctime>
+#include <sstream>
 using namespace std;
 #include "InputHelper.h"
 #include "OutputHelper.h"
@@ -3340,4 +3342,61 @@ bool UserInterface::getScreenId(const std::vector<const Screen*>&screens, std::s
 		}
 	}
 	return false;
+}
+
+void UserInterface::displayActiveShows()
+{
+	const std::vector<const Show*> shows = m_controller->getActiveShows();
+	if (shows.empty())
+	{
+		cout << "No shows available!" << endl;
+		util::pressEnter();
+		return;
+	}
+	displayShowDetails(shows);
+}
+
+void UserInterface::displayShowDetails(const std::vector<const Show*> shows)
+{
+	cout << "\n--------------------------------------------------------------------------------------------------\n";
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Theatre Name"
+		<< setw(15) << "Screen Id"
+		<< setw(25) << "Movie Title"
+		<< setw(15) << "Show Date and time"
+		<< endl;
+	cout << "--------------------------------------------------------------------------------------------------\n";
+	for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	{
+		cout << left
+			<< setw(15) << (*iterator)->getShowId()
+			<< setw(20) << (*iterator)->getScreen()->getTheatre()->getName()
+			<< setw(15) << (*iterator)->getScreen()->getScreenId()
+			<< setw(25) << (*iterator)->getMovie()->getTitle()
+			<< setw(15) << displayTimeAndDate((*iterator)->getStartTime())
+			<< endl;
+	}
+}
+
+/*
+ * Function: UserInterface::displayTimeAndDate
+ * Description: Formats a time_t value into a human-readable string "YYYY-MM-DD HH:MM:SS".
+ * Parameters:
+ *    time_t time - The time value to format
+ * Returns:
+ *    std::string - Formatted date/time string
+ */
+std::string UserInterface::displayTimeAndDate(time_t time)
+{
+	std::tm local{};
+	localtime_s(&local, &time);
+	std::ostringstream outputStream;
+	outputStream << (1900 + local.tm_year) << "-"
+		<< std::setw(2) << std::setfill('0') << (1 + local.tm_mon) << "-"
+		<< std::setw(2) << std::setfill('0') << local.tm_mday << " "
+		<< std::setw(2) << std::setfill('0') << local.tm_hour << ":"
+		<< std::setw(2) << std::setfill('0') << local.tm_min << ":"
+		<< std::setw(2) << std::setfill('0') << local.tm_sec;
+	return outputStream.str();
 }

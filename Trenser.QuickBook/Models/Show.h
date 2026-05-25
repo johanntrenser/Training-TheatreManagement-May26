@@ -34,8 +34,8 @@ public:
         time_t endTime,
         ShowSeatAvailability* seatAvailability);
     const std::string getShowId() const;
-    Movie* getMovie() const;
-    Screen* getScreen() const;
+    const Movie* getMovie() const;
+    const Screen* getScreen() const;
     time_t getStartTime() const;
     time_t getEndTime() const;
     ShowSeatAvailability* getSeatAvailability() const;
