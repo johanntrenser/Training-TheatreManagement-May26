@@ -72,4 +72,7 @@ public:
 	void addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability);
 	const Show* getShowById(const std::string& showId);
 	Show* getShowByIdForUpdation(const std::string& showId);
+	const User* getAuthenticatedUser() const;
+	std::map<std::string, Ticket*>& getTickets();
+	void addTicket(Ticket* ticket);
 };

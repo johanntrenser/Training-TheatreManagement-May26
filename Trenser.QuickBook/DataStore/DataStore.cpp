@@ -23,6 +23,17 @@ const std::map<string, User*>& DataStore::getUsers() const
 }
 
 /*
+* Function Name : getAuthenticatedUser
+* Description   : Returns the currently authenticated user.
+* Parameters    : None
+* Return Type   : const User*
+*/
+const User* DataStore::getAuthenticatedUser() const
+{
+    return m_currentUser;
+}
+
+/*
  * Function: DataStore::addUser
  * Description: Adds a new user to the DataStore by inserting the user object
  *              into the internal map keyed by the user's unique ID.
@@ -394,3 +405,27 @@ Show* DataStore::getShowByIdForUpdation(const std::string& showId)
     }
     return iterator->second;
 }
+
+/*
+* Function Name : getTickets
+* Description   : Returns all tickets stored in the datastore.
+* Parameters    : None
+* Return Type   : std::map<std::string, Ticket*>&
+*/
+std::map<std::string, Ticket*>& DataStore::getTickets()
+{
+    return m_ticket;
+}
+
+/*
+* Function Name : addTicket
+* Description   : Adds a ticket to the datastore.
+* Parameters    :
+*                  ticket - Ticket to be added
+* Return Type   : void
+*/
+void DataStore::addTicket(Ticket* ticket)
+{
+    m_ticket[ticket->getTicketId()] = ticket;
+}
+
