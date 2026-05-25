@@ -34,8 +34,7 @@ ShowSeatAvailability::ShowSeatAvailability() :
  */
 ShowSeatAvailability::ShowSeatAvailability(const std::string& showSeatAvailabilityId, Show* show, const std::map<std::string, Enums::BookingStatus>& seatMap) :
 	m_showSeatAvailabilityId(showSeatAvailabilityId), m_show(show), m_seatAvailabilityMap(seatMap)
-{
-}
+{}
 
 /*
  * Function: ShowSeatAvailability::getShowAvailabiltyId

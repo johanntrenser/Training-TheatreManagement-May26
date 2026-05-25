@@ -333,3 +333,28 @@ void DataStore::addShow(Show* show)
 {
     m_shows[show->getShowId()] = show;
 }
+
+/*
+ * Function: DataStore::getShowSeatAvailabilitys
+ * Description: Retrieves the map of ShowSeatAvailability objects keyed by their unique IDs.
+ * Returns:
+ *    const std::map<std::string, ShowSeatAvailability*>& - Map of show seat availability entries
+ */
+const std::map<std::string, ShowSeatAvailability*>& DataStore::getShowSeatAvailabilitys() const
+{
+    return m_showSeatAvailabilitys;
+}
+
+
+/*
+ * Function: DataStore::addShowSeatAvailability
+ * Description: Adds a ShowSeatAvailability object to the datastore, keyed by its availability ID.
+ * Parameters:
+ *    ShowSeatAvailability* showSeatAvailability - Pointer to the ShowSeatAvailability object to add
+ * Returns:
+ *    void
+ */
+void DataStore::addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability)
+{
+    m_showSeatAvailabilitys[showSeatAvailability->getShowAvailabiltyId()] = showSeatAvailability;
+}

@@ -20,7 +20,7 @@ private:
 	std::string m_showSeatAvailabilityId;
 	Show* m_show;
 	std::map<std::string, Enums::BookingStatus> m_seatAvailabilityMap;
-public:
+public: 
 	ShowSeatAvailability();
 	ShowSeatAvailability(const std::string& showSeatAvailabilityId, Show* show, const std::map<std::string, Enums::BookingStatus>& seatMap);
 	const std::string& getShowAvailabiltyId() const;

@@ -68,4 +68,6 @@ public:
 	Movie* getMovieById(const std::string& movieId) const;
 	Screen* getScreenById(const std::string& screenId) const;
 	void addShow(Show* show);
+	const std::map<std::string, ShowSeatAvailability*>& getShowSeatAvailabilitys() const;
+	void addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability);
 };

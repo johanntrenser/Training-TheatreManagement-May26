@@ -23,6 +23,21 @@ const std::string ShowManagementService::generateShowId()
 }
 
 /*
+ * Function: ShowManagementService::generateShowSeatAvailabilityId
+ * Description: Generates a unique identifier for a new ShowSeatAvailability object.
+ * Returns:
+ *    const std::string - Generated ShowSeatAvailability ID (e.g., "SSA001")
+ */
+const std::string ShowManagementService::generateShowSeatAvailabilityId()
+{
+    const std::map<std::string, ShowSeatAvailability*>& showSeatAvailabilitys = m_dataStore.getShowSeatAvailabilitys();
+    int idNumber = static_cast<int>(showSeatAvailabilitys.size()) + 1;
+    std::ostringstream buffer;
+    buffer << "SSA" << std::setw(3) << std::setfill('0') << idNumber;
+    return buffer.str();
+}
+
+/*
  * Function: ShowManagementService::isMovieInTheatre
  * Description: Checks whether a given movie exists in the specified theatre.
  * Parameters:
@@ -156,6 +171,26 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
     int buffer = 10;
     time_t endTime = startTime + (movie->getDuration() + buffer) * 60;
     Show* show = Factory::getObject<Show>(showId, movie, screen, startTime, endTime, new ShowSeatAvailability());
+    const std::vector<std::vector<Seat*>>& seats = screen->getSeatGrid();
+    std::map<std::string, Enums::BookingStatus> seatAvailabilityMap;
+    for (std::vector<std::vector<Seat*>>::const_iterator row = seats.begin(); row != seats.end(); ++row)
+    {
+        std::vector<Seat*> rows = *(row);
+        for (std::vector<Seat*>::iterator seat = rows.begin(); seat != rows.end(); ++seat)
+        {
+            seatAvailabilityMap[(*seat)->getSeatId()] = Enums::BookingStatus::PENDING;
+        }
+    }
+    ShowSeatAvailability* showSeatAvailability = Factory::getObject<ShowSeatAvailability>(generateShowSeatAvailabilityId(), show, seatAvailabilityMap);
+    if (showSeatAvailability != nullptr)
+    {
+        m_dataStore.addShowSeatAvailability(showSeatAvailability);
+    }
+    else
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    show->setSeatAvailability(showSeatAvailability);
     if (show != nullptr)
     {
         m_dataStore.addShow(show);
