@@ -25,7 +25,8 @@ Show::Show()
     m_endTime(0),
     m_seatAvailability(nullptr),
     m_showStatus(Enums::ShowStatus::SCHEDULED)
-{}
+{
+}
 
 /*
  * Function: Show::Show
@@ -54,7 +55,8 @@ Show::Show(const std::string showId,
     m_endTime(endTime),
     m_seatAvailability(seatAvailability),
     m_showStatus(Enums::ShowStatus::SCHEDULED)
-{}
+{
+}
 
 /*
  * Function: Show::getShowId

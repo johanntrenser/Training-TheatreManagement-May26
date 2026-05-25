@@ -93,5 +93,6 @@ public:
 	const std::vector<std::vector<std::string>> viewShowSeatLayout(const Show* show);
 	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 	Enums::ProcessStatus updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name);
+	Enums::ProcessStatus deactivateScreen(const std::string& theatreId, const std::string& screenId);
 	~Controller();
 };

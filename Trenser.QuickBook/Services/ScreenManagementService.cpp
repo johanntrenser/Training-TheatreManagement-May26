@@ -159,3 +159,51 @@ Enums::ProcessStatus ScreenManagementService::updateScreenName(const std::string
 	}
 	return Enums::ProcessStatus::FAILED;
 }
+
+/*
+* Function Name : deactivateScreen
+* Description   : Changes an active screen to unavailable status if no active shows exist.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string& theatreId, const std::string& screenId)
+{
+	Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+	if (!theatre)
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
+	const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+	bool hasActiveShows = false;
+	for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	{
+		if (iterator->second->getScreen()->getScreenId() == screenId)
+		{
+			if (iterator->second->getShowStatus() == Enums::ShowStatus::RUNNING
+				|| iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED)
+			{
+				hasActiveShows = true;
+				break;
+			}
+		}
+	}
+	if (!hasActiveShows)
+	{
+		std::vector<Screen*>& screens = theatre->getScreensForUpdation();
+		for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+		{
+			if ((*iterator)->getScreenId() == screenId)
+			{
+				if ((*iterator)->getScreenStatus() == Enums::ScreenStatus::UNAVAILABLE)
+				{
+					return Enums::ProcessStatus::FAILED;
+				}
+				(*iterator)->setScreenStatus(Enums::ScreenStatus::UNAVAILABLE);
+				return Enums::ProcessStatus::SUCCESS;
+			}
+		}
+	}
+	return Enums::ProcessStatus::NOT_FOUND;
+}

@@ -263,3 +263,14 @@ Screen* DataStore::getScreenById(const std::string& screenId) const
     }
     return iterator->second;
 }
+
+/*
+* Function Name : getShows
+* Description   : Returns all shows stored in the datastore.
+* Parameters    : None
+* Return Type   : const std::map<std::string, Show*>&
+*/
+const std::map<std::string, Show*>& DataStore::getShows() const
+{
+    return m_show;
+}

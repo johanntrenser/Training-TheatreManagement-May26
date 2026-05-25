@@ -21,4 +21,5 @@ public:
 	void cleanupSeatGrid(std::vector<std::vector<Seat*>>& seatGrid, std::vector<Seat*>& seatRow);
 	std::string generateScreenId();
 	Enums::ProcessStatus updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name);
+	Enums::ProcessStatus deactivateScreen(const std::string& theatreId, const std::string& screenId);
 };
