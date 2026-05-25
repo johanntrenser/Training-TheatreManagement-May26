@@ -129,4 +129,8 @@ public:
 	void viewTicketHistory();
 	void viewTicketDetails(const std::vector<const Ticket*>& tickets);
 	void viewTicketStatus();
+	void selectPaymentMethod(const std::string& bookingId, double amount);
+	Enums::ProcessStatus handleCardPayment(Enums::PaymentMethod type);
+	Enums::ProcessStatus handleUPIPayment(Enums::PaymentMethod type);
+	int displayPaymentOptions();
 };

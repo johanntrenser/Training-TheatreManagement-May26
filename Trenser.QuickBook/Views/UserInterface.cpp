@@ -3777,3 +3777,118 @@ void UserInterface::viewTicketStatus()
 		cout << "Ticket with ID : " << ticketId << " not found!" << endl;
 	}
 }
+
+/*
+Function Name : handleCardPayment
+Description   : Handles card-based payment input (Credit/Debit).
+				Prompts the user for card details with retry until valid input is provided.
+Parameters    :
+				 type - The payment method (Credit or Debit Card)
+Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::handleCardPayment(Enums::PaymentMethod type)
+{
+	type = (type == Enums::PaymentMethod::CREDIT_CARD) ? Enums::PaymentMethod::CREDIT_CARD : Enums::PaymentMethod::DEBIT_CARD;
+	std::string cardNumber, expiry, cvv;
+	util::readValueWithRetry(cardNumber, "Enter Card Number: ");
+	util::readValueWithRetry(expiry, "Enter Expiry (MM/YY): ");
+	util::readValueWithRetry(cvv, "Enter CVV: ");
+	while (!util::validateCard(cardNumber, expiry, cvv))
+	{
+		std::cout << "Error: Invalid card details. Please try again.\n";
+		util::readValueWithRetry(cardNumber, "Enter Card Number: ");
+		util::readValueWithRetry(expiry, "Enter Expiry (MM/YY): ");
+		util::readValueWithRetry(cvv, "Enter CVV: ");
+	}
+	return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+Function Name : handleUPIPayment
+Description   : Handles UPI-based payment input.
+				Prompts the user for UPI ID with retry until valid input is provided.
+Parameters    :
+				 type - The payment method (UPI)
+Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::handleUPIPayment(Enums::PaymentMethod type)
+{
+	type = Enums::PaymentMethod::UPI;
+	std::string upiId;
+
+	util::readValueWithRetry(upiId, "Enter UPI ID: ");
+	while (!util::validateUPI(upiId))
+	{
+		std::cout << "Error: Invalid UPI ID. Please try again.\n";
+		util::readValueWithRetry(upiId, "Enter UPI ID: ");
+	}
+
+	return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+Function Name : displayPaymentOptions
+Description   : Displays available payment methods to the user
+				and reads their choice.
+Parameters    : None
+Return Type   : int
+*/
+int UserInterface::displayPaymentOptions()
+{
+	std::cout << "Select Payment Method:\n";
+	std::cout << "1. Credit Card\n";
+	std::cout << "2. Debit Card\n";
+	std::cout << "3. UPI\n";
+	std::cout << "Enter choice: ";
+	int choice;
+	util::readValue(choice);
+	return choice;
+}
+
+/*
+Function Name : selectPaymentMethod
+Description   : Allows the user to select a payment method, validates
+				the input, and initiates payment through the controller.
+				Generates a ticket upon successful payment.
+Parameters    :
+				 bookingId - The unique identifier of the booking
+				 amount    - The payment amount
+Return Type   : void
+*/
+void UserInterface::selectPaymentMethod(const std::string& bookingId, double amount)
+{
+	int choice = displayPaymentOptions();
+	Enums::PaymentMethod type = Enums::PaymentMethod::UPI;
+	Enums::ProcessStatus valid;
+	if (choice == 1)
+	{
+		type = Enums::PaymentMethod::CREDIT_CARD;
+		valid = handleCardPayment(type);
+	}
+	else if (choice == 2)
+	{
+		type = Enums::PaymentMethod::DEBIT_CARD;
+		valid = handleCardPayment(type);
+	}
+	else if (choice == 3)
+	{
+		valid = handleUPIPayment(type);
+	}
+	else
+	{
+		std::cout << "Error: Invalid payment method.\n";
+		return;
+	}
+	std::cout << "Payment method selected successfully.\n";
+	Enums::ProcessStatus result = Enums::ProcessStatus::FAILED;
+	//result = m_controller->initiatePayment(bookingId, type, amount);
+	if (result == Enums::ProcessStatus::SUCCESS)
+	{
+		std::cout << "Payment completed and ticket generated.\n";
+	}
+	else
+	{
+		std::cout << "Payment failed.\n";
+	}
+}
+
