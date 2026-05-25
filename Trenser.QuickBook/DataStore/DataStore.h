@@ -73,4 +73,5 @@ public:
 	Show* getShowByIdForUpdation(const std::string& showId);
 	std::map<std::string, Ticket*>& getTickets();
 	void addTicket(Ticket* ticket);
+	Ticket* getTicketById(const std::string& ticketId) const;
 };

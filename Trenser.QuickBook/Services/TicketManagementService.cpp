@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <sstream>
 #include "TicketManagementService.h"
+#include "PaymentManagementService.h"
 #include "Factory.h"
 #include "Enums.h"
 
@@ -163,4 +164,32 @@ Enums::TicketStatus TicketManagementService::viewTicketStatus(const std::string&
 		return Enums::TicketStatus::NOT_FOUND;
 	}
 	return ticket->second->getTicketStatus();
+}
+
+/*
+* Function Name : cancelTicket
+* Description   : Cancels a ticket based on the provided Ticket ID.
+*                 Retrieves the ticket from the datastore, cancels the associated payment
+*                 using PaymentManagementService, and returns the process status.
+* Parameters    :
+*                  ticketId - The unique identifier of the ticket to be cancelled
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus TicketManagementService::cancelTicket(const std::string& ticketId)
+{
+	Ticket* ticket = m_dataStore.getTicketById(ticketId);
+	if (!ticket)
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
+	Payment* payment = ticket->getPayment();
+	Enums::ProcessStatus status = Enums::ProcessStatus::FAILED;
+	PaymentManagementService* paymentManagementService = new PaymentManagementService();
+	//status = paymentManagementService->cancelPayment(payment);
+	delete paymentManagementService;
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	return Enums::ProcessStatus::FAILED;
 }
