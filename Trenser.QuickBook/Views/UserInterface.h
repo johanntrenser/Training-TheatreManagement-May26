@@ -30,5 +30,5 @@ public:
 	void viewActiveTicketDetails();
 	void viewAllTickets();
 	void viewTicketHistory();
-	void viewTicketDetails(const std::vector<const Ticket*>);
+	void viewTicketDetails(const std::vector<const Ticket*>& tickets);
 };
