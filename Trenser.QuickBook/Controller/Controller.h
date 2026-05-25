@@ -79,8 +79,6 @@ public:
 	Enums::ProcessStatus setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus);
 	std::vector<const Theatre*> listAllTheatres() const;
 	Enums::ProcessStatus addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
-	Theatre* getTheatreById(const std::string& theatreId);
-	Movie* getMovieById(const std::string& movieId);
 	std::vector<const Movie*> getAllActiveMovies();
 	void logout();
 	~Controller();
