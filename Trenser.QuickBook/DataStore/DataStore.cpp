@@ -208,3 +208,13 @@ void DataStore::addShowSeatAvailability(ShowSeatAvailability* showSeatAvailabili
 {
     m_showSeatAvailabilitys[showSeatAvailability->getShowAvailabiltyId()] = showSeatAvailability;
 }
+
+const Show* DataStore::getShowById(const std::string& showId)
+{
+    std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
+    if (iterator == m_shows.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
