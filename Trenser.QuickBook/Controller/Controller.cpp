@@ -1147,6 +1147,11 @@ const std::vector<const Show*> Controller::getActiveShows()
     return m_showManagementService->getActiveShows();
 }
 
+const std::vector<std::string> Controller::getActiveShowIds()
+{
+    return m_showManagementService->getActiveShowIds();
+}
+
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all

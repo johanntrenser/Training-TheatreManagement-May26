@@ -3362,7 +3362,6 @@ void UserInterface::displayActiveShows()
 	displayShowDetails(shows);
 }
 
-
 /*
  * Function: UserInterface::displayShowDetails
  * Description: Displays detailed information for a list of shows including theatre, screen, movie, and start time.
@@ -3415,3 +3414,14 @@ std::string UserInterface::displayTimeAndDate(time_t time)
 		<< std::setw(2) << std::setfill('0') << local.tm_sec;
 	return outputStream.str();
 }
+
+void UserInterface::cancelShow()
+{
+	std::string showId;
+	displayActiveShows();
+	cout << "Enter the show id of show to cancel: ";
+	util::readValue(showId);
+	const std::vector<std::string> showIds = m_controller->getActiveShowIds();
+}
+
+

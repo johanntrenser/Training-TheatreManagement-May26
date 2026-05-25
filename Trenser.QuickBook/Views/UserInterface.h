@@ -118,4 +118,5 @@ public:
 	void displayActiveShows(); 
 	void displayShowDetails(const std::vector<const Show*> shows);
 	std::string displayTimeAndDate(time_t time);
+	void cancelShow();
 };

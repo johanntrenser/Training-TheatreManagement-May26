@@ -208,18 +208,37 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
 const std::vector<const Show*> ShowManagementService::getActiveShows()
 {
     std::vector<const Show*> filteredShows;
+    std::string theatreOwnerId = m_dataStore.getAuthenticatedUser()->getUserId();
     const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
     {
         if (iterator->second != nullptr)
         {
-            time_t showTime = iterator->second->getStartTime();
-            time_t currentTime = time(nullptr);
-            if (iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED && difftime(showTime, currentTime) > 0)
+            std::string showTheatreOwnerId = iterator->second->getScreen()->getTheatre()->getTheatreOwner()->getUserId();
+            if (theatreOwnerId == showTheatreOwnerId)
             {
-                filteredShows.push_back(iterator->second);
+                time_t showTime = iterator->second->getStartTime();
+                time_t currentTime = time(nullptr);
+                if (iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED && difftime(showTime, currentTime) > 0)
+                {
+                    filteredShows.push_back(iterator->second);
+                }
             }
         }
     }
     return filteredShows;
+}
+
+const std::vector<std::string> ShowManagementService::getActiveShowIds()
+{
+    const std::vector<const Show*> shows = getActiveShows();
+    std::vector<std::string> filteredShowIds;
+    for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if (*iterator != nullptr)
+        {
+            filteredShowIds.push_back((*iterator)->getShowId());
+        }
+    }
+    return filteredShowIds;
 }
