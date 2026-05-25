@@ -131,3 +131,31 @@ void ScreenManagementService::cleanupSeatGrid(std::vector<std::vector<Seat*>>& s
 		delete existingSeat;
 	}
 }
+
+/*
+* Function Name : updateScreenName
+* Description   : Updates the name of a screen.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+*                  name     - New screen name
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus ScreenManagementService::updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name)
+{
+	Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+	if (!theatre)
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
+	std::vector<Screen*>& screens = theatre->getScreensForUpdation();
+	for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+	{
+		if ((*iterator)->getScreenId() == screenId)
+		{
+			(*iterator)->setName(name);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}

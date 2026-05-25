@@ -1766,3 +1766,17 @@ Enums::ProcessStatus UserInterface::addScreen(const std::string& theatreId, cons
 {
 	return m_controller->addScreen(theatreId, name, seatRows, seatColumns, seatAmount);
 }
+
+/*
+* Function Name : updateScreenName
+* Description   : Updates the name of a screen.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+*                  name     - New screen name
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name)
+{
+	return m_controller->updateScreenName(theatreId, screenId, name);
+}

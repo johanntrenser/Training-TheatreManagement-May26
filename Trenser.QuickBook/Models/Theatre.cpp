@@ -304,3 +304,14 @@ void Theatre::setMovies(const std::vector<Movie*>& movies)
 {
     m_movies = movies;
 }
+
+/*
+* Function Name : getScreensForUpdation
+* Description   : Returns the list of screens for modification.
+* Parameters    : None
+* Return Type   : std::vector<Screen*>&
+*/
+std::vector<Screen*>& Theatre::getScreensForUpdation()
+{
+    return m_screens;
+}
