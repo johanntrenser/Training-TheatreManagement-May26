@@ -19,8 +19,9 @@ Notification::Notification()
     m_receiver(nullptr),
     m_message(""),
     m_status(Enums::NotificationStatus::SENT),
-    m_time("")
-{}
+    m_time(-1)
+{
+}
 
 /*
  * Function: Notification::Notification
@@ -36,13 +37,14 @@ Notification::Notification()
 Notification::Notification(const std::string& id,
     User* receiver,
     const std::string& message,
-    const std::string& time)
+    time_t time)
     : m_notificationId(id),
     m_receiver(receiver),
     m_message(message),
     m_status(Enums::NotificationStatus::SENT),
     m_time(time)
-{}
+{
+}
 
 /*
  * Function: Notification::getNotificationId
@@ -94,7 +96,7 @@ Enums::NotificationStatus Notification::getStatus() const
  * Returns:
  *    const std::string& - Notification time
  */
-const std::string& Notification::getTime() const
+const time_t Notification::getTime() const
 {
     return m_time;
 }
@@ -154,7 +156,7 @@ void Notification::setStatus(Enums::NotificationStatus status)
  *    const std::string& time - New notification time
  * Returns: None
  */
-void Notification::setTime(const std::string& time)
+void Notification::setTime(const time_t time)
 {
     m_time = time;
 }
