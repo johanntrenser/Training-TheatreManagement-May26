@@ -422,7 +422,7 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
 
 void UserInterface::exit()
 {
-	m_controller->saveDatas();
+	m_controller->saveData();
 }
 
 

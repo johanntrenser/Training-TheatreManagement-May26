@@ -11,12 +11,15 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <fstream>
 #include "Theatre.h"
 #include "DataStore.h"
+#include "ApplicationConfig.h"
 
 class TheatreManagementService
 {
     DataStore& m_dataStore;
+    const std::string& PATH = config::THEATRE_FILEPATH;
 public:
     TheatreManagementService();
     bool addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phone, const std::string& email);
@@ -29,5 +32,7 @@ public:
     std::vector<Theatre*> listAllTheatres() const;
     std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
     Theatre* searchByTheatreName(const std::string& name) const;
+    void saveTheatreData();
+    std::string theatreStatusToString(Enums::TheatreStatus status);
 };
 

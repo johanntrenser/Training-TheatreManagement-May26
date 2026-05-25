@@ -148,3 +148,75 @@ Theatre* TheatreManagementService::searchByTheatreName(const std::string& name) 
 {
     return nullptr;
 }
+
+/*
+ * Function: TheatreManagementService::saveTheatreData
+ * Description: Saves all theatre data from the DataStore into a CSV file.
+ *              Includes theatre details, status, associated screens, and movies.
+ *              Overwrites existing file content.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened)
+ */
+void TheatreManagementService::saveTheatreData()
+{
+    const std::map<std::string, Theatre*> theatres = m_dataStore.getTheatres();
+    std::ofstream theatreFile(PATH, std::ios::trunc);
+    if (!theatreFile.is_open())
+    {
+        throw std::runtime_error("Cannot open file: " + PATH);
+    }
+    theatreFile << "THEATRE ID,THEATRE NAME,CITY,ADDRESS,PHONE NUMBER,EMAIL,THEATRE OWNER, STATUS, SCREENS NAME, MOVIES TITLE\n";
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        theatreFile << (iterator->second)->getTheatreId() << ","
+            << (iterator->second)->getName() << ","
+            << (iterator->second)->getCity() << ","
+            << (iterator->second)->getAddress() << ","
+            << (iterator->second)->getTheatrePhoneNumber() << ","
+            << (iterator->second)->getTheatreEmail() << ","
+            << (iterator->second)->getTheatreOwner() << ","
+            << theatreStatusToString((iterator->second)->getStatus()) << ",";
+        for (std::vector<Screen*>::const_iterator screenItertor = (iterator->second)->getScreens().begin(); screenItertor != (iterator->second)->getScreens().end(); ++screenItertor)
+        {
+            theatreFile << (*screenItertor)->getName();
+            if (screenItertor + 1 != (iterator->second)->getScreens().end())
+            {
+                theatreFile << "|";
+            }
+        }
+        theatreFile << ",";
+        for (std::vector<Movie*>::const_iterator movieItertor = (iterator->second)->getMovies().begin(); movieItertor != (iterator->second)->getMovies().end(); ++movieItertor)
+        {
+            theatreFile << (*movieItertor)->getTitle();
+            if (movieItertor + 1 != (iterator->second)->getMovies().end())
+            {
+                theatreFile << "|";
+            }
+        }
+        theatreFile << ",";
+    }
+    theatreFile.close();
+}
+
+/*
+ * Function: TheatreManagementService::theatreStatusToString
+ * Description: Converts a TheatreStatus enum value into its corresponding string representation.
+ * Parameters:
+ *    status - TheatreStatus enum value (ACTIVE, INACTIVE)
+ * Returns:
+ *    String representation of the theatre status
+ */
+std::string TheatreManagementService::theatreStatusToString(Enums::TheatreStatus status)
+{
+    switch (status)
+    {
+    case Enums::TheatreStatus::ACTIVE:
+        return "ACTIVE";
+        break;
+    case Enums::TheatreStatus::INACTIVE:
+        return "INACTIVE";
+        break;
+    }
+}

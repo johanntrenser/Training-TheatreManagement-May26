@@ -195,7 +195,8 @@ Controller::~Controller()
 }
 
 
-void Controller::saveDatas()
+void Controller::saveData()
 {
     m_userManagementService->saveUserData();
+    m_theatreManagementService->saveTheatreData();
 }
