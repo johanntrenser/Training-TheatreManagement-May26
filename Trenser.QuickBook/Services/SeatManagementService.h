@@ -18,8 +18,10 @@ private:
 	DataStore& m_dataStore;
 public:
 	SeatManagementService();
-	Enums::ProcessStatus updateSeatLayout(Screen* screen, const int newRows, const int newColumns);
+	Enums::ProcessStatus updateSeatLayout(Screen* screen, int newRows, int newColumns, double amount);
+	void clearSeatGrid(std::vector<std::vector<Seat*>>& seatGrid);
 	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
 	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
+	Enums::ProcessStatus hasActiveSeatBooking(Screen* screen, const std::string& seatId);
 	Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
 };

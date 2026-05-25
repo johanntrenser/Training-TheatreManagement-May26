@@ -590,9 +590,9 @@ std::vector<const Movie*> Controller::getAllInactiveMovies()
  * Returns:
  *    enum - ProcessStatus
  */
-Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, const int rows, const int columns)
+Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
 {
-    return m_seatManagementService->updateSeatLayout(screen, rows, columns);
+    return m_seatManagementService->updateSeatLayout(screen, rows, columns, amount);
 }
 
 /*

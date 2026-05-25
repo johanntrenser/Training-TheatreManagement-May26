@@ -23,7 +23,7 @@ private:
     time_t m_startTime;
     time_t m_endTime;
     ShowSeatAvailability* m_seatAvailability;
-    Enums::ShowStatus m_showStatus; // enum placeholder
+    Enums::ShowStatus m_showStatus;
 public:
     Show();
     Show(const std::string showId,

@@ -35,21 +35,14 @@ SeatManagementService::SeatManagementService()
  * Returns:
  *    ProcessStatus::SUCCESS if layout updated, FAILED otherwise
  */
-Enums::ProcessStatus SeatManagementService::updateSeatLayout(Screen* screen, const int rows, const int columns)
+Enums::ProcessStatus SeatManagementService::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
 {
 	if (!screen)
 	{
 		return Enums::ProcessStatus::FAILED;
 	}
 	std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGridForUpdation();
-	for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
-	{
-		for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
-		{
-			delete (*seatIterator);
-			(*seatIterator) = nullptr;
-		}
-	}
+	clearSeatGrid(seatGrid);
 	std::vector<std::vector<Seat*>> newSeatGrid;
 	for (int row = 0; row < rows; ++row)
 	{
@@ -58,30 +51,43 @@ Enums::ProcessStatus SeatManagementService::updateSeatLayout(Screen* screen, con
 		for (int column = 0; column < columns; ++column)
 		{
 			std::string seatId = std::string(1, rowCharacter) + std::to_string(column);
-			Seat* seat = Factory::getObject<Seat>(seatId, screen, rowCharacter, column, Enums::SeatStatus::AVAILABLE,Enums::BookingStatus::PENDING);
-			if (seat != nullptr)
-			{
-				seatRow.push_back(seat);
-			}
-			else
+			Seat* seat = Factory::getObject<Seat>(seatId, screen, rowCharacter, column, amount, Enums::SeatStatus::AVAILABLE);
+			if (!seat)
 			{
 				return Enums::ProcessStatus::FAILED;
 			}
+			seatRow.push_back(seat);
 		}
-		if (!seatRow.empty())
-		{
-			newSeatGrid.push_back(seatRow);
-		}
-		else
+		if (seatRow.empty())
 		{
 			return Enums::ProcessStatus::FAILED;
 		}
+		newSeatGrid.push_back(seatRow);
 	}
 	if (!newSeatGrid.empty())
 	{
 		return Enums::ProcessStatus::SUCCESS;
 	}
 	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+* Function Name : clearSeatGrid
+* Description   : Deletes all seats in the seat grid and clears memory.
+* Parameters    :
+*                  seatGrid - Seat grid to be cleared
+* Return Type   : void
+*/
+void SeatManagementService::clearSeatGrid(std::vector<std::vector<Seat*>>& seatGrid)
+{
+	for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
+	{
+		for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
+		{
+			delete (*seatIterator);
+			(*seatIterator) = nullptr;
+		}
+	}
 }
 
 /*
@@ -112,47 +118,63 @@ Enums::ProcessStatus SeatManagementService::deactivateSeat(Screen* screen, const
 	{
 		return Enums::ProcessStatus::FAILED;
 	}
-	std::map<std::string, Show*>& shows = m_dataStore.getShowsForUpdation();
-	bool status = true;
-	for (std::map<std::string, Show*>::iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	Enums::ProcessStatus status = hasActiveSeatBooking(screen, seatId);
+	if (status == Enums::ProcessStatus::FAILED)
 	{
-		if (iterator->second->getScreen()->getScreenId() == screen->getScreenId())
-		{
-			if (iterator->second->getShowStatus() != Enums::ShowStatus::RUNNING
-				&& iterator->second->getShowStatus() != Enums::ShowStatus::SCHEDULED)
-			{
-				ShowSeatAvailability* showSeatAvailability = iterator->second->getSeatAvailability();
-				const std::map<std::string, Seat*>& seatAvailabilityMap = showSeatAvailability->getSeatAvailabilityMap();
-				for (std::map<std::string, Seat*>::const_iterator seatIterator = seatAvailabilityMap.begin(); seatIterator != seatAvailabilityMap.end(); ++seatIterator)
-				{
-					if (seatIterator->second->getSeatId() == seatId
-						&& seatIterator->second->getSeatStatus() != Enums::SeatStatus::AVAILABLE)
-					{
-						status = false;
-					}
-				}
-			}
-		}
+		return Enums::ProcessStatus::FAILED;
 	}
-	if (status == false)
+	std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGridForUpdation();
+	for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
 	{
-		std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGridForUpdation();
-		for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
+		for (std::vector<Seat*>::iterator seatIterator = rowIterator->begin(); seatIterator != rowIterator->end(); ++seatIterator)
 		{
-			for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
+			if ((*seatIterator)->getSeatId() == seatId)
 			{
-				if ((*seatIterator)->getSeatId() == seatId)
+				if ((*seatIterator)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
 				{
-					if ((*seatIterator)->getSeatStatus() == Enums::SeatStatus::AVAILABLE)
-					{
-						(*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
-						return Enums::ProcessStatus::SUCCESS;
-					}
+					return Enums::ProcessStatus::FAILED;
 				}
+				(*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
+				return Enums::ProcessStatus::SUCCESS;
 			}
 		}
 	}
 	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: SeatManagementService::hasActiveSeatBooking
+ * Description: Checks whether the seat has confirmed bookings in active shows.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    ProcessStatus::FAILED if active booking exists, SUCCESS otherwise
+ */
+Enums::ProcessStatus SeatManagementService::hasActiveSeatBooking(Screen* screen, const std::string& seatId)
+{
+	std::map<std::string, Show*>& shows = m_dataStore.getShowsForUpdation();
+	for (std::map<std::string, Show*>::iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	{
+		Show* show = iterator->second;
+		if (show->getScreen()->getScreenId() == screen->getScreenId())
+		{
+			if (show->getShowStatus() == Enums::ShowStatus::RUNNING || show->getShowStatus() == Enums::ShowStatus::SCHEDULED)
+			{
+				ShowSeatAvailability* availability = show->getSeatAvailability();
+				const std::map<std::string, Enums::BookingStatus>& seatAvailabilityMap = availability->getSeatAvailabilityMap();
+				std::map<std::string, Enums::BookingStatus>::const_iterator seatIterator = seatAvailabilityMap.find(seatId);
+				if (seatIterator != seatAvailabilityMap.end())
+				{
+					if (seatIterator->second == Enums::BookingStatus::CONFIRMED)
+					{
+						return Enums::ProcessStatus::FAILED;
+					}
+				}
+			}
+		}
+	}
+	return Enums::ProcessStatus::SUCCESS;
 }
 
 /*

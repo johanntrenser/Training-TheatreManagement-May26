@@ -513,13 +513,13 @@ void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
  * Returns:
  *    None
  */
-void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns)
+void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
 {
 	cout << "Enter Number of Rows: ";
 	util::readValue(rows);
 	cout << "Enter Number of Columns: ";
 	util::readValue(columns);
-	if (m_controller->updateSeatLayout(screen, rows, columns) == Enums::ProcessStatus::SUCCESS)
+	if (m_controller->updateSeatLayout(screen, rows, columns, amount) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Layout Updated Successfully" << endl;
 	}

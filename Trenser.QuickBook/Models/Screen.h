@@ -47,5 +47,5 @@ public:
     void setTotalColumns(int totalColumns);
     void setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid);
     void setScreenStatus(int screenStatus);
-    std::vector <std::vector<Seat*>>& getSeatGridForUpdation();
+    std::vector<std::vector<Seat*>>& getSeatGridForUpdation();
 };

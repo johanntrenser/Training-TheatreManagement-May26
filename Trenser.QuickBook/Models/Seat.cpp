@@ -21,9 +21,10 @@ Seat::Seat()
     m_screen(nullptr),
     m_seatRow('A'),
     m_seatColumn(0),
-    m_seatStatus(Enums::SeatStatus::AVAILABLE),
-    m_bookingStatus(Enums::BookingStatus::PENDING)
-{}
+    m_amount(0),
+    m_seatStatus(Enums::SeatStatus::AVAILABLE)
+{
+}
 
 /*
  * Function: Seat::Seat
@@ -43,15 +44,16 @@ Seat::Seat(const std::string& id,
     Screen* screen,
     char seatRow,
     int seatColumn,
-    Enums::SeatStatus seatStatus,
-    Enums::BookingStatus bookingStatus)
+    double m_amount,
+    Enums::SeatStatus seatStatus)
     : m_seatId(id),
     m_screen(screen),
     m_seatRow(seatRow),
     m_seatColumn(seatColumn),
-    m_seatStatus(seatStatus),
-    m_bookingStatus(bookingStatus)
-{}
+    m_amount(0),
+    m_seatStatus(seatStatus)
+{
+}
 
 /*
  * Function: Seat::getSeatId
@@ -98,25 +100,25 @@ int Seat::getSeatColumn() const
 }
 
 /*
+ * Function: getSeatAmount
+ * Description: Retrieves the seat amount.
+ * Returns:
+ *    double - Seat amount
+ */
+double Seat::getSeatAmount()
+{
+    return m_amount;
+}
+
+/*
  * Function: Seat::getSeatStatus
  * Description: Retrieves the seat status code.
  * Returns:
- *    int - Seat status
+ *    enum - Seat status
  */
 Enums::SeatStatus Seat::getSeatStatus() const
 {
     return m_seatStatus;
-}
-
-/*
- * Function: Seat::getBookingStatus
- * Description: Retrieves the booking status code.
- * Returns:
- *    int - Booking status
- */
-Enums::BookingStatus Seat::getBookingStatus() const
-{
-    return m_bookingStatus;
 }
 
 /*
@@ -185,14 +187,14 @@ void Seat::setSeatStatus(Enums::SeatStatus seatStatus)
 }
 
 /*
- * Function: Seat::setBookingStatus
- * Description: Sets the booking status code.
+ * Function: setSeatAmount
+ * Description: Sets the seat amount.
  * Parameters:
- *    int bookingStatus - New booking status
+ *    int amount - New booking amount
  * Returns:
  *    void
  */
-void Seat::setBookingStatus(Enums::BookingStatus bookingStatus)
+void Seat::setSeatAmount(double amount)
 {
-    m_bookingStatus = bookingStatus;
+    m_amount = amount;
 }
