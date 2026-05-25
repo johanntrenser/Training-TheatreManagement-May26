@@ -286,6 +286,73 @@ const std::vector<const Theatre*> Controller::getAllTheatres()
 }
 
 /*
+ * Function: Controller::addMovieToTheatre
+ * Description: Adds a movie to a specified theatre by passing the request
+ *              to the TheatreManagementService. Validates the operation and
+ *              returns the process status indicating success or failure.
+ * Parameters:
+ *    theatreId - A string representing the unique identifier of the theatre
+ *                where the movie should be added.
+ *    movieId   - A string representing the unique identifier of the movie
+ *                to be added to the theatre.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was successfully added.
+ *    Enums::ProcessStatus::FAILED if the movie already exists in the theatre
+ *    or if the operation could not be completed.
+ */
+Enums::ProcessStatus Controller::addMovieToTheatre(const std::string& theatreId, const std::string& movieId)
+{
+    return m_theatreManagementService->addMovieToTheatre(theatreId, movieId);
+}
+
+/*
+ * Function: Controller::getTheatreById
+ * Description: Retrieves a theatre object by its unique identifier. Passes
+ *              the request to the TheatreManagementService to fetch the
+ *              corresponding theatre from the datastore.
+ * Parameters:
+ *    theatreId - A string representing the unique identifier of the theatre
+ *                to be retrieved.
+ * Returns:
+ *    Pointer to the Theatre object if found, or nullptr if no theatre exists
+ *    with the given ID.
+ */
+Theatre* Controller::getTheatreById(const std::string& theatreId)
+{
+    return m_theatreManagementService->getTheatreById(theatreId);
+}
+
+/*
+ * Function: Controller::getMovieById
+ * Description: Retrieves a movie object by its unique identifier. Passes the
+ *              request to the TheatreManagementService to fetch the corresponding
+ *              movie from the datastore.
+ * Parameters:
+ *    movieId - A string representing the unique identifier of the movie to be retrieved.
+ * Returns:
+ *    Pointer to the Movie object if found, or nullptr if no movie exists with the given ID.
+ */
+Movie* Controller::getMovieById(const std::string& movieId)
+{
+    return m_theatreManagementService->getMovieById(movieId);
+}
+
+/*
+ * Function: Controller::getAllActiveMovies
+ * Description: Retrieves all active movies from the MovieManagementService.
+ *              Acts as a passing layer to access the list of movies that
+ *              are currently marked as active in the system.
+ * Parameters: None
+ * Returns:
+ *    A vector of Movie pointers representing all active movies available
+ *    in the datastore. Returns an empty vector if no active movies exist.
+ */
+std::vector<const Movie*> Controller::getAllActiveMovies()
+{
+    return m_movieManagementService->getAllActiveMovies();
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

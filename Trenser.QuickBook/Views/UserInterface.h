@@ -38,4 +38,11 @@ public:
 	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	void listAllTheatres();
 	void displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status);
+	void addMovieToTheatre();
+	void displayOwnerTheatres(const std::vector<const Theatre*>& theatres);
+	const std::vector<std::string> getTheatreIds(const std::vector<const Theatre*>& theatres);
+	Enums::ProcessStatus validateTheatreId(const std::string& theatreId, const std::vector<std::string>& theatreIds);
+	const std::vector<std::string> getMovieIds(const std::vector<const Movie*>& movies);
+	Enums::ProcessStatus validateMovieId(const std::string& movieId, const std::vector<std::string>& movieIds);
+	void displayMovie(const std::vector<const Movie*>& movies);
 };

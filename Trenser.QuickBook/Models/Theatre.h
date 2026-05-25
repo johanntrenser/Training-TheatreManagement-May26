@@ -58,4 +58,5 @@ public:
     void setStatus(Enums::TheatreStatus status);
     void setScreens(const std::vector<Screen*>& screens);
     void setMovies(const std::vector<Movie*>& movies);
+    void addMovieToTheatre(Movie* movie);
 };

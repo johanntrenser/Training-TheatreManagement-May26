@@ -290,3 +290,8 @@ void Theatre::setMovies(const std::vector<Movie*>& movies)
 {
     m_movies = movies;
 }
+
+void Theatre::addMovieToTheatre(Movie* movie)
+{
+    m_movies.push_back(movie);
+}

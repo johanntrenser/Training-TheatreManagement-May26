@@ -68,6 +68,10 @@ public:
 	Enums::ProcessStatus addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	Enums::ProcessStatus isTheatreUnique(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	const std::vector<const Theatre*> getAllTheatres();
+	Enums::ProcessStatus addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
+	Theatre* getTheatreById(const std::string& theatreId);
+	Movie* getMovieById(const std::string& movieId);
+	std::vector<const Movie*> getAllActiveMovies();
 	void logout();
 	~Controller();
 };

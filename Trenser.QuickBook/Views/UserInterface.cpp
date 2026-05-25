@@ -683,10 +683,214 @@ void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres,
 				<< setw(20) << (*iterator)->getName()
 				<< setw(15) << (*iterator)->getCity()
 				<< setw(25) << (*iterator)->getAddress()
-				<< setw(15) << (*iterator)->getContactPhone()
+				<< setw(15) << (*iterator)->getTheatrePhoneNumber()
 				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
 				<< endl;
 		}
+	}
+}
+
+/*
+ * Function: UserInterface::validateMovieId
+ * Description: Validates whether a given movie ID exists within the list of
+ *              available movie IDs. Iterates through the provided IDs and
+ *              checks for a match with the input movie ID.
+ * Parameters:
+ *    movieId  - The movie ID entered by the user to be validated.
+ *    movieIds - A vector of strings containing valid movie IDs.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie ID is found in the list.
+ *    Enums::ProcessStatus::FAILED if the movie ID does not exist.
+ */
+Enums::ProcessStatus UserInterface::validateMovieId(const std::string& movieId, const std::vector<std::string>& movieIds)
+{
+	for (std::vector<std::string>::const_iterator iterator = movieIds.begin(); iterator != movieIds.end(); ++iterator)
+	{
+		if (*iterator == movieId)
+		{
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::getMovieIds
+ * Description: Extracts and returns the list of movie IDs from a given vector
+ *              of Movie pointers. Iterates through the provided movies and
+ *              collects their unique identifiers into a string vector.
+ * Parameters:
+ *    movies - A vector of Movie pointers representing the movies from which
+ *             IDs are to be extracted.
+ * Returns:
+ *    A vector of strings containing the IDs of the provided movies.
+ */
+const std::vector<std::string> UserInterface::getMovieIds(const std::vector<const Movie*>& movies)
+{
+	std::vector<std::string> movieIds;
+	for (std::vector<const Movie*>::const_iterator iterator =movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		movieIds.push_back((*iterator)->getMovieId());
+	}
+	return movieIds;
+}
+
+/*
+ * Function: UserInterface::validateTheatreId
+ * Description: Validates whether a given theatre ID exists within the list of
+ *              available theatre IDs. Iterates through the provided IDs and
+ *              checks for a match with the input theatre ID.
+ * Parameters:
+ *    theatreId  - The theatre ID entered by the user to be validated.
+ *    theatreIds - A vector of strings containing valid theatre IDs.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the theatre ID is found in the list.
+ *    Enums::ProcessStatus::FAILED if the theatre ID does not exist.
+ */
+Enums::ProcessStatus UserInterface::validateTheatreId(const std::string& theatreId, const std::vector<std::string>& theatreIds)
+{
+	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
+	{
+		if (*iterator == theatreId)
+		{
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::getTheatreIds
+ * Description: Extracts and returns the list of theatre IDs from a given vector
+ *              of Theatre pointers. Iterates through the provided theatres and
+ *              collects their unique identifiers into a string vector.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres from
+ *               which IDs are to be extracted.
+ * Returns:
+ *    A vector of strings containing the IDs of the provided theatres.
+ */
+const std::vector<std::string> UserInterface::getTheatreIds(const std::vector<const Theatre*>&theatres)
+{
+	std::vector<std::string> theatreIds;
+	for (std::vector<const Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		theatreIds.push_back((*iterator)->getTheatreId());
+	}
+	return theatreIds;
+}
+
+/*
+ * Function: UserInterface::displayOwnerTheatres
+ * Description: Displays a simplified tabular view of theatres owned by the
+ *              currently authenticated user. Outputs theatre attributes such
+ *              as ID, name, and city for each owned theatre.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres owned
+ *               by the authenticated user.
+ * Returns: None
+ */
+void UserInterface::displayOwnerTheatres(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< endl;
+	cout << "-------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		cout << left
+			<< setw(15) << (*iterator)->getTheatreId()
+			<< setw(20) << (*iterator)->getName()
+			<< setw(15) << (*iterator)->getCity()
+			<< endl;
+	}
+}
+
+/*
+ * Function: UserInterface::displayMovie
+ * Description: Displays a formatted list of movies with their details (ID, Title, Language, Genre, Duration).
+ * Parameters:
+ *    movies - Vector of constant Movie pointers to display
+ * Returns:
+ *    None
+ */
+void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
+{
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left << setw(10) << "ID"
+		<< setw(10) << "Title"
+		<< setw(10) << "Language"
+		<< setw(10) << "Genre"
+		<< setw(10) << "Duration" << endl;
+	cout << "-------------------------------------------------------------\n";
+	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left << setw(10) << (*iterator)->getMovieId()
+				<< setw(10) << (*iterator)->getTitle()
+				<< setw(10) << (*iterator)->getLanguage()
+				<< setw(10) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getDuration()
+				<< endl;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::addMovieToTheatre
+ * Description: Allows a theatre owner to add a movie to one of their theatres.
+ *              Prompts the user to select a theatre and a movie from available
+ *              lists, validates the entered IDs, and delegates the addition
+ *              process to the Controller. Provides feedback on success or
+ *              failure (e.g., movie already exists in theatre).
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::addMovieToTheatre()
+{
+	std::string theatreId;
+	std::string movieId;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (theatres.empty())
+	{
+		cout << "\nNo theatres found!";
+		return;
+	}
+	displayOwnerTheatres(theatres);
+	const std::vector<std::string> theatreIds = getTheatreIds(theatres);
+	cout << "\nEnter Theatre ID: ";
+	util::readValue(theatreId);
+	if (validateTheatreId(theatreId, theatreIds) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "\nInvalid Theatre ID!";
+		return;
+	}
+	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	if (movies.empty())
+	{
+		cout << "\nNo active movies found!";
+		return;
+	}
+	displayMovie(movies);
+	const std::vector<std::string> movieIds = getMovieIds(movies);
+	cout << "\nEnter Movie ID: ";
+	util::readValue(movieId);
+	if (validateMovieId(movieId, movieIds) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "\nInvalid Movie ID!";
+		return;
+	}
+	if (m_controller->addMovieToTheatre(theatreId, movieId) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "\nMovie successfully added to theatre!";
+	}
+	else
+	{
+		cout << "\nMovie already exists in theatre!";
 	}
 }
 
