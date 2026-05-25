@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{51317829-459d-4e40-991b-32497567ab86}</ProjectGuid>
+    <RootNamespace>TrenserQuickBook</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)Views;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Controller\Controller.cpp" />
+    <ClCompile Include="DataStore\DataStore.cpp" />
+    <ClCompile Include="Factories\Factory.cpp" />
+    <ClCompile Include="Models\Admin.cpp" />
+    <ClCompile Include="Models\Booking.cpp" />
+    <ClCompile Include="Models\Customer.cpp" />
+    <ClCompile Include="Models\Log.cpp" />
+    <ClCompile Include="Models\Movie.cpp" />
+    <ClCompile Include="Models\Notification.cpp" />
+    <ClCompile Include="Models\Payment.cpp" />
+    <ClCompile Include="Models\Refund.cpp" />
+    <ClCompile Include="Models\Screen.cpp" />
+    <ClCompile Include="Models\Seat.cpp" />
+    <ClCompile Include="Models\Show.cpp" />
+    <ClCompile Include="Models\ShowSeatAvailability.cpp" />
+    <ClCompile Include="Models\Theatre.cpp" />
+    <ClCompile Include="Models\TheatreOwner.cpp" />
+    <ClCompile Include="Models\Ticket.cpp" />
+    <ClCompile Include="Models\User.cpp" />
+    <ClCompile Include="Services\AuthenticationManagementService.cpp" />
+    <ClCompile Include="Services\BookingManagementService.cpp" />
+    <ClCompile Include="Services\LogManagementService.cpp" />
+    <ClCompile Include="Services\MovieManagementService.cpp" />
+    <ClCompile Include="Services\NotificationManagementService.cpp" />
+    <ClCompile Include="Services\PaymentManagementService.cpp" />
+    <ClCompile Include="Services\RefundManagementService.cpp" />
+    <ClCompile Include="Services\ScreenManagementService.cpp" />
+    <ClCompile Include="Services\SeatManagementService.cpp" />
+    <ClCompile Include="Services\ShowManagementService.cpp" />
+    <ClCompile Include="Services\TheatreManagementService.cpp" />
+    <ClCompile Include="Services\TicketManagementService.cpp" />
+    <ClCompile Include="Services\UserManagementService.cpp" />
+    <ClCompile Include="Trenser.QuickBook.cpp" />
+    <ClCompile Include="Utilities\Enums.cpp" />
+    <ClCompile Include="Utilities\InputHelper.cpp" />
+    <ClCompile Include="Utilities\OutputHelper.cpp" />
+    <ClCompile Include="Utilities\TimeStamp.cpp" />
+    <ClCompile Include="Utilities\Validator.cpp" />
+    <ClCompile Include="Views\UserInterface.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Controller\Controller.h" />
+    <ClInclude Include="DataStore\DataStore.h" />
+    <ClInclude Include="Factories\Factory.h" />
+    <ClInclude Include="Models\Admin.h" />
+    <ClInclude Include="Models\Booking.h" />
+    <ClInclude Include="Models\Customer.h" />
+    <ClInclude Include="Models\Log.h" />
+    <ClInclude Include="Models\Movie.h" />
+    <ClInclude Include="Models\Notification.h" />
+    <ClInclude Include="Models\Payment.h" />
+    <ClInclude Include="Models\Refund.h" />
+    <ClInclude Include="Models\Screen.h" />
+    <ClInclude Include="Models\Seat.h" />
+    <ClInclude Include="Models\Show.h" />
+    <ClInclude Include="Models\ShowSeatAvailability.h" />
+    <ClInclude Include="Models\Theatre.h" />
+    <ClInclude Include="Models\TheatreOwner.h" />
+    <ClInclude Include="Models\Ticket.h" />
+    <ClInclude Include="Models\User.h" />
+    <ClInclude Include="Services\AuthenticationManagementService.h" />
+    <ClInclude Include="Services\BookingManagementService.h" />
+    <ClInclude Include="Services\LogManagementService.h" />
+    <ClInclude Include="Services\MovieManagementService.h" />
+    <ClInclude Include="Services\NotificationManagementService.h" />
+    <ClInclude Include="Services\PaymentManagementService.h" />
+    <ClInclude Include="Services\RefundManagementService.h" />
+    <ClInclude Include="Services\ScreenManagementService.h" />
+    <ClInclude Include="Services\SeatManagementService.h" />
+    <ClInclude Include="Services\ShowManagementService.h" />
+    <ClInclude Include="Services\TheatreManagementService.h" />
+    <ClInclude Include="Services\TicketManagementService.h" />
+    <ClInclude Include="Services\UserManagementService.h" />
+    <ClInclude Include="Utilities\Enums.h" />
+    <ClInclude Include="Utilities\InputHelper.h" />
+    <ClInclude Include="Utilities\OutputHelper.h" />
+    <ClInclude Include="Utilities\TimeStamp.h" />
+    <ClInclude Include="Utilities\Validator.h" />
+    <ClInclude Include="Views\UserInterface.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
