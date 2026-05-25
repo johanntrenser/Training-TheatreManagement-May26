@@ -59,6 +59,79 @@ bool TheatreManagementService::deactivateTheatre(const std::string& theatreId)
 }
 
 /*
+ * Function: TheatreManagementService::isMovieAlreadyExistsInTheatre
+ * Description: Checks whether a given movie already exists in the specified
+ *              theatre. Iterates through the theatre's movie list and compares
+ *              each movie's ID with the provided movie ID.
+ * Parameters:
+ *    theatre - Pointer to the Theatre object where the movie existence is to be checked.
+ *    movieId - A string representing the unique identifier of the movie to be validated.
+ * Returns:
+ *    true  - If the movie with the given ID already exists in the theatre.
+ *    false - If the movie does not exist in the theatre.
+ */
+bool TheatreManagementService::isMovieAlreadyExistsInTheatre(Theatre* theatre, const std::string& movieId)
+{
+    const std::vector<Movie*>& movies = theatre->getMovies();
+    for (std::vector<Movie*>::const_iterator iterator =movies.begin(); iterator != movies.end(); ++iterator)
+    {
+        if ((*iterator)->getMovieId() == movieId)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ * Function: TheatreManagementService::getMovieById
+ * Description: Retrieves a movie object from the datastore by its unique identifier.
+ *              Iterates through the internal movie map and returns the corresponding
+ *              Movie pointer if a match is found.
+ * Parameters:
+ *    movieId - A string representing the unique identifier of the movie to be retrieved.
+ * Returns:
+ *    Pointer to the Movie object if found.
+ *    nullptr if no movie exists with the given ID.
+ */
+Movie* TheatreManagementService::getMovieById(const std::string& movieId)
+{
+    const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
+    for (std::map<std::string, Movie*>::const_iterator iterator =movies.begin(); iterator != movies.end(); ++iterator)
+    {
+        if ((iterator->second)->getMovieId() == movieId)
+        {
+            return iterator->second;
+        }
+    }
+    return nullptr;
+}
+
+/*
+ * Function: TheatreManagementService::getTheatreById
+ * Description: Retrieves a theatre object from the datastore by its unique identifier.
+ *              Iterates through the internal theatre map and returns the corresponding
+ *              Theatre pointer if a match is found.
+ * Parameters:
+ *    theatreId - A string representing the unique identifier of the theatre to be retrieved.
+ * Returns:
+ *    Pointer to the Theatre object if found.
+ *    nullptr if no theatre exists with the given ID.
+ */
+Theatre* TheatreManagementService::getTheatreById(const std::string& theatreId)
+{
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second)->getTheatreId() == theatreId)
+        {
+            return iterator->second;
+        }
+    }
+    return nullptr;
+}
+
+/*
      * Function: addMovieToTheatre
      * Description: Associates a movie with a specific theatre.
      * Parameters:
@@ -66,10 +139,20 @@ bool TheatreManagementService::deactivateTheatre(const std::string& theatreId)
      *   - movieId: Unique identifier of the movie.
      * Returns: True if the movie is successfully added to the theatre, false otherwise.
      */
-bool TheatreManagementService::addMovieToTheatre(const std::string& theatreId,
-    const std::string& movieId)
+Enums::ProcessStatus TheatreManagementService::addMovieToTheatre(const std::string& theatreId, const std::string& movieId)
 {
-    return true;
+    Theatre* theatre = getTheatreById(theatreId);
+    Movie* movie = getMovieById(movieId);
+    if (theatre == nullptr || movie == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    if (isMovieAlreadyExistsInTheatre(theatre, movieId))
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    theatre->addMovieToTheatre(movie);
+    return Enums::ProcessStatus::SUCCESS;
 }
 
 /*

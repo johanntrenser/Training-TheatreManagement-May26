@@ -60,4 +60,5 @@ public:
     void setMovies(const std::vector<Movie*>& movies);
     void setScreen(Screen* screen);
     std::vector<Screen*>& getScreensForUpdation();
+    void addMovieToTheatre(Movie* movie);
 };

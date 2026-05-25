@@ -22,7 +22,6 @@ public:
     bool updateTheatreDetails(const std::string& theatreId, const std::string& name, const std::string& address, const std::string& phone, const std::string& email);
     bool reactivateTheatre(const std::string& theatreId);
     bool deactivateTheatre(const std::string& theatreId);
-    bool addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
     Theatre* viewTheatreDetails(const std::string& theatreId) const;
     int viewTheatreStatus(const std::string& theatreId) const; // enum placeholder
     std::vector<const Theatre*> listAllTheatres() const;
@@ -45,4 +44,9 @@ public:
     Enums::ProcessStatus setTheatreEmailById(const std::string& theatreId, const std::string& email);
     const std::vector<const Theatre*> getPendingTheatres();
     Enums::ProcessStatus setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus);
+    Enums::ProcessStatus addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
+    Theatre* getTheatreById(const std::string& theatreId);
+    Movie* getMovieById(const std::string& movieId);
+    bool isMovieAlreadyExistsInTheatre(Theatre* theatre, const std::string& movieId);
 };
+

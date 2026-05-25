@@ -101,4 +101,11 @@ public:
 	void deactivateTheatreByAdmin();
 	void reactivateTheatreByOwner();
 	void reactivateTheatreByAdmin();
+	void addMovieToTheatre();
+	void displayOwnerTheatres(const std::vector<const Theatre*>& theatres);
+	const std::vector<std::string> getTheatreIds(const std::vector<const Theatre*>& theatres);
+	Enums::ProcessStatus validateTheatreId(const std::string& theatreId, const std::vector<std::string>& theatreIds);
+	const std::vector<std::string> getMovieIds(const std::vector<const Movie*>& movies);
+	Enums::ProcessStatus validateMovieId(const std::string& movieId, const std::vector<std::string>& movieIds);
+	void displayMovie(const std::vector<const Movie*>& movies);
 };

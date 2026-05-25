@@ -313,3 +313,8 @@ std::vector<Screen*>& Theatre::getScreensForUpdation()
 {
     return m_screens;
 }
+
+void Theatre::addMovieToTheatre(Movie* movie)
+{
+    m_movies.push_back(movie);
+}
