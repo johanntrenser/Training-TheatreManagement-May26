@@ -190,6 +190,18 @@ void Theatre::setName(const std::string& name)
 }
 
 /*
+* Function Name : setScreen
+* Description   : Adds a screen to the theatre.
+* Parameters    :
+*                  screen - Screen to be added
+* Return Type   : void
+*/
+void Theatre::setScreen(Screen* screen)
+{
+    m_screens.push_back(screen);
+}
+
+/*
  * Function: Theatre::setCity
  * Description: Sets the theatre city.
  * Parameters:

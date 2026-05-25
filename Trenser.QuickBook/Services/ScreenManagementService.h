@@ -12,4 +12,12 @@
 
 class ScreenManagementService
 {
+private:
+	DataStore& m_dataStore;
+public:
+	ScreenManagementService();
+	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
+	std::vector<std::vector<Seat*>> generateSeatGrid(Screen* screen, int seatRows, int seatColumns, double seatAmount);
+	void cleanupSeatGrid(std::vector<std::vector<Seat*>>& seatGrid, std::vector<Seat*>& seatRow);
+	std::string generateScreenId();
 };

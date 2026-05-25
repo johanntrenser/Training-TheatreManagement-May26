@@ -10,6 +10,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "Enums.h"
 
 class Theatre;
 class Seat;
@@ -23,7 +24,7 @@ private:
     int m_totalRows;
     int m_totalColumns;
     std::vector<std::vector<Seat*>> m_seatGrid;
-    int m_screenStatus; // enum placeholder
+    Enums::ScreenStatus m_screenStatus;
 public:
     Screen();
     Screen(const std::string& screenId,
@@ -31,21 +32,19 @@ public:
         const std::string& name,
         int totalRows,
         int totalColumns,
-        const std::vector<std::vector<Seat*>>& seatGrid,
-        int screenStatus);
+        const std::vector<std::vector<Seat*>>& seatGrid);
     const std::string& getScreenId() const;
     Theatre* getTheatre() const;
     const std::string& getName() const;
     int getTotalRows() const;
     int getTotalColumns() const;
     const std::vector<std::vector<Seat*>>& getSeatGrid() const;
-    int getScreenStatus() const;
+    Enums::ScreenStatus getScreenStatus() const;
     void setScreenId(const std::string& screenId);
     void setTheatre(Theatre* theatre);
     void setName(const std::string& name);
     void setTotalRows(int totalRows);
     void setTotalColumns(int totalColumns);
     void setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid);
-    void setScreenStatus(int screenStatus);
-    std::vector<std::vector<Seat*>>& getSeatGridForUpdation();
+    void setScreenStatus(Enums::ScreenStatus screenStatus);
 };

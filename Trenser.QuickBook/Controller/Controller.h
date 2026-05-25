@@ -91,5 +91,6 @@ public:
 	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
 	Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
 	const std::vector<std::vector<std::string>> viewShowSeatLayout(const Show* show);
+	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 	~Controller();
 };

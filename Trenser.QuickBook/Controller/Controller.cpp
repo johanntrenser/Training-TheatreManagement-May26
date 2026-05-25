@@ -651,6 +651,21 @@ const std::vector<std::vector<std::string>> Controller::viewShowSeatLayout(const
 }
 
 /*
+* Function Name : addScreen
+* Description   : Adds a new screen to the theatre through the screen management service.
+* Parameters    :
+*                  theatre     - Theatre where the screen is added
+*                  name        - Name of the screen
+*                  seatRows    - Number of seat rows
+*                  seatColumns - Number of seat columns
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus Controller::addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount)
+{
+    return m_ScreenManagementService->addScreen(theatreId, name, seatRows, seatColumns, seatAmount);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

@@ -67,4 +67,5 @@ public:
 	void deactivateSeat(Screen* screen, const std::string& seatId);
 	void reactivateSeat(Screen* screen, const std::string& seatId);
 	void viewShowSeatLayout(const Show* show);
+	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 };

@@ -60,4 +60,7 @@ public:
 	void addMovieToSystem(Movie* movie);
 	const std::map<std::string, Show*>& getShows() const;
 	std::map<std::string, Show*>& getShowsForUpdation();
+	const std::map<std::string, Screen*>& getScreens() const;
+	Theatre* getTheatreById(const std::string& theatreId) const;
+	Screen* getScreenById(const std::string& screenId) const;
 };

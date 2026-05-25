@@ -1752,3 +1752,17 @@ void UserInterface::viewShowSeatLayout(const Show* show)
 	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked  [NA] - Invalid Seat" << endl;
 }
 
+/*
+* Function Name : addScreen
+* Description   : Adds a new screen to the theatre.
+* Parameters    :
+*                  theatre     - Theatre where the screen is added
+*                  name        - Name of the screen
+*                  seatRows    - Number of seat rows
+*                  seatColumns - Number of seat columns
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount)
+{
+	return m_controller->addScreen(theatreId, name, seatRows, seatColumns, seatAmount);
+}
