@@ -660,6 +660,50 @@ void UserInterface::deactivateUser()
 	util::pressEnter();
 	util::clear();
 }
+/*
+* Function Name : viewNotifications
+* Description   : Displays unread notifications for the authenticated user in batches.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::viewNotifications()
+{
+	bool condition = true;
+	int choice = 1;
+	int count = 0;
+	while (condition)
+	{
+		int remainingUnreadCount = 0;
+		const std::vector<std::string> notifications = m_controller->getUnreadNotifications(5, remainingUnreadCount);
+		if (notifications.empty())
+		{
+			cout << "No unread notifications." << endl;
+			return;
+		}
+		cout << endl;
+		cout << "========= Notifications =========" << endl << endl;
+		for (std::vector<std::string>::const_iterator iterator = notifications.begin(); iterator != notifications.end(); ++iterator)
+		{
+			cout << ++count << ". " << (*iterator) << endl;
+		}
+		if (remainingUnreadCount > 0)
+		{
+			cout << remainingUnreadCount << " unread notifications remaining." << endl;
+			cout << "1. View More" << endl;
+			cout << "2. Exit" << endl;
+			util::readValue(choice);
+			if (choice == 2)
+			{
+				condition = false;
+			}
+		}
+		else
+		{
+			cout << "No more unread notifications." << endl;
+			break;
+		}
+	}
+}
 
 /*
  * Function: UserInterface::viewInactiveUsers

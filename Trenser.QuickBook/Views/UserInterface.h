@@ -38,4 +38,5 @@ public:
 	void reactivateUser();
 	void changePassword();
 	void viewUserStatus();
+	void viewNotifications();
 };
