@@ -39,6 +39,53 @@ namespace util
 		}
 	}
 
+	/*
+	* Function Name : readValueWithRetry (template)
+	* Description   : Reads a value of type T from user input with retry logic.
+	*                 Keeps prompting until a valid value is entered.
+	* Parameters    :
+	*                  value  - Reference to the variable where input will be stored
+	*                  prompt - The message displayed to the user before input
+	* Return Type   : void
+	*/
+	template <typename T>
+	void readValueWithRetry(T& value, const std::string& prompt)
+	{
+		while (true)
+		{
+			try
+			{
+				std::cout << prompt;
+				readValue(value);
+				break;
+			}
+			catch (const std::exception& e)
+			{
+				std::cout << e.what() << " Please try again.\n";
+			}
+		}
+	}
+
+	/*
+	* Function Name : readValueWithRetry (string overload)
+	* Description   : Reads a string value from user input with retry logic.
+	*                 Keeps prompting until a non-empty string is entered.
+	* Parameters    :
+	*                  value  - Reference to the string where input will be stored
+	*                  prompt - The message displayed to the user before input
+	* Return Type   : void
+	*/
+	inline void readValueWithRetry(std::string& value, const std::string& prompt)
+	{
+		while (true)
+		{
+			std::cout << prompt;
+			readValue(value);
+			if (!value.empty())
+				break;
+			std::cout << "Input cannot be empty. Please try again.\n";
+		}
+	}
 	void readValue(std::string& value);
 	void pressEnter();
 }

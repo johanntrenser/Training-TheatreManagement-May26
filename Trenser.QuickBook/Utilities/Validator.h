@@ -19,4 +19,6 @@ namespace util
 	void isPhoneNumberValid(std::string&);
 	void isEmailValid(std::string&);
 	void isPasswordValid(std::string&);
+	bool validateCard(const std::string& cardNumber, const std::string& expiry, const std::string& cvv);
+	inline bool validateUPI(const std::string& upiId);
 }
