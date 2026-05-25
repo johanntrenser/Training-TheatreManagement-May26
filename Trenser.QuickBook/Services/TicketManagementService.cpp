@@ -145,3 +145,22 @@ const std::vector<const Ticket*> TicketManagementService::viewTicketHistory()
 	}
 	return authenticatedUserTickets;
 }
+
+/*
+* Function Name : TicketManagementService::viewTicketStatus
+* Description   : Retrieves the status of a ticket based on the provided Ticket ID.
+*                 If the ticket is not found in the datastore, returns TicketStatus::NOT_FOUND.
+* Parameters    :
+*                  ticketId - The unique identifier of the ticket whose status is to be retrieved
+* Return Type   : Enums::TicketStatus
+*/
+Enums::TicketStatus TicketManagementService::viewTicketStatus(const std::string& ticketId)
+{
+	const std::map<std::string, Ticket*>& tickets = m_dataStore.getTickets();
+	std::map<std::string, Ticket*>::const_iterator ticket = tickets.find(ticketId);
+	if (ticket == tickets.end())
+	{
+		return Enums::TicketStatus::NOT_FOUND;
+	}
+	return ticket->second->getTicketStatus();
+}
