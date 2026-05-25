@@ -22,4 +22,5 @@ public:
 	std::string generateScreenId();
 	Enums::ProcessStatus updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name);
 	Enums::ProcessStatus deactivateScreen(const std::string& theatreId, const std::string& screenId);
+	Enums::ProcessStatus reactivateScreen(const std::string& theatreId, const std::string& screenId);
 };

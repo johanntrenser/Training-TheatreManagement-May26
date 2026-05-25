@@ -207,3 +207,30 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
 	}
 	return Enums::ProcessStatus::NOT_FOUND;
 }
+
+/*
+* Function Name : reactivateScreen
+* Description   : Changes an inactive screen to available status.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string& theatreId, const std::string& screenId)
+{
+	Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+	std::vector<Screen*>& screens = theatre->getScreensForUpdation();
+	for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+	{
+		if ((*iterator)->getScreenId() == screenId)
+		{
+			if ((*iterator)->getScreenStatus() == Enums::ScreenStatus::AVAILABLE)
+			{
+				return Enums::ProcessStatus::FAILED;
+			}
+			(*iterator)->setScreenStatus(Enums::ScreenStatus::AVAILABLE);
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::NOT_FOUND;
+}
