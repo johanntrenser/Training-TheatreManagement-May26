@@ -121,3 +121,14 @@ const std::map<std::string, Show*>& DataStore::getShows() const
 {
     return m_show;
 }
+
+/*
+* Function Name : getAuthenticatedUserType
+* Description   : Returns the type of the currently authenticated user.
+* Parameters    : None
+* Return Type   : Enums::UserType
+*/
+Enums::UserType DataStore::getAuthenticatedUserType()
+{
+    return m_currentUser->getUserType();
+}

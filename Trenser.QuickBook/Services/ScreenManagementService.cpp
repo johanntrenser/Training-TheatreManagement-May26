@@ -234,3 +234,33 @@ Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string
 	}
 	return Enums::ProcessStatus::NOT_FOUND;
 }
+
+/*
+* Function Name : viewTheatreScreens
+* Description   : Returns screens available in a theatre.
+* Parameters    :
+*                  theatre - Theatre whose screens are viewed
+* Return Type   : const std::vector<Screen*>
+*/
+const std::vector<Screen*> ScreenManagementService::viewTheatreScreens(const std::string& theatreId)
+{
+	Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+	if (!theatre)
+	{
+		return {};
+	}
+	const std::vector<Screen*>& screens = theatre->getScreens();
+	if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::CUSTOMER)
+	{
+		std::vector<Screen*> activeScreens;
+		for (std::vector<Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+		{
+			if ((*iterator)->getScreenStatus() == Enums::ScreenStatus::AVAILABLE)
+			{
+				activeScreens.push_back((*iterator));
+			}
+		}
+		return activeScreens;
+	}
+	return screens;
+}
