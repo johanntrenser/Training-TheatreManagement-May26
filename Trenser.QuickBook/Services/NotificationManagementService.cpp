@@ -85,3 +85,59 @@ Enums::ProcessStatus NotificationManagementService::sendNotificationToAllUsers(c
 	}
 	return Enums::ProcessStatus::SUCCESS;
 }
+
+/*
+* Function Name : getUnreadNotifications
+* Description   : Retrieves unread notifications for the authenticated user.
+* Parameters    :
+*                  batchSize             - Number of notifications to retrieve
+*                  remainingUnreadCount  - Count of remaining unread notifications
+* Return Type   : std::vector<std::string>
+*/
+std::vector<std::string> NotificationManagementService::getUnreadNotifications(int batchSize, int& remainingUnreadCount)
+{
+	std::vector<std::string> unreadNotifications;
+	const User* currentUser = m_dataStore.getAuthenticatedUser();
+	const std::map<std::string, Notification*>& notifications = m_dataStore.getNotifications();
+	int displayedCount = 0;
+	for (std::map<std::string, Notification*>::const_iterator iterator = notifications.begin(); iterator != notifications.end(); ++iterator)
+	{
+		Notification* notification = iterator->second;
+		if (notification->getReceiver() == currentUser && notification->getStatus() == Enums::NotificationStatus::UNREAD)
+		{
+			if (displayedCount < batchSize)
+			{
+				std::string notificationMessage = convertNotificationObjectToStringFormat(notification);
+				unreadNotifications.push_back(notificationMessage);
+				notification->setStatus(Enums::NotificationStatus::READ);
+				++displayedCount;
+			}
+			else
+			{
+				++remainingUnreadCount;
+			}
+		}
+	}
+	return unreadNotifications;
+}
+
+/*
+* Function Name : convertNotificationObjectToStringFormat
+* Description   : Converts a notification object into a formatted string.
+* Parameters    :
+*                  notification - Notification object to format
+* Return Type   : std::string
+*/
+std::string NotificationManagementService::convertNotificationObjectToStringFormat(const Notification* notification)
+{
+	time_t notificationTime = notification->getTime();
+	char buffer[26];
+	ctime_s(buffer, sizeof(buffer), &notificationTime);
+	std::string timeString = buffer;
+	if (!timeString.empty() && timeString[timeString.length() - 1] == '\n')
+	{
+		timeString.erase(timeString.length() - 1);
+	}
+	std::string notificationMessage = "[" + timeString + "] : " + notification->getMessage();
+	return notificationMessage;
+}

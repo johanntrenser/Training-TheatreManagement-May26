@@ -172,6 +172,19 @@ void Controller::logout()
 }
 
 /*
+* Function Name : getUnreadNotifications
+* Description   : Retrieves unread notifications for the user.
+* Parameters    :
+*                  batchSize             - Number of notifications to retrieve
+*                  remainingUnreadCount  - Remaining unread notification count
+* Return Type   : std::vector<std::string>
+*/
+std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& remainingUnreadCount)
+{
+    return m_notificationManagementService->getUnreadNotifications(batchSize, remainingUnreadCount);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

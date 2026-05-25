@@ -48,5 +48,6 @@ public:
 	DataStore& operator=(const DataStore&) = delete;
 	static DataStore& getInstance();
 	void setAuthenticatedUser(User* user);
+	const User* getAuthenticatedUser() const;
 	std::map<std::string, Notification*>& getNotifications();
 };
