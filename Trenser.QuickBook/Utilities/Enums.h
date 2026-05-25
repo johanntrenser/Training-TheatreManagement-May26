@@ -60,9 +60,10 @@ namespace Enums {
 
     enum class NotificationStatus
     {
+        READ,
+        UNREAD,
         SENT,
         DELIVERED,
-        READ,
         FAILED
     };
 
