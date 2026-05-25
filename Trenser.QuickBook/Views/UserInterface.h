@@ -124,4 +124,8 @@ public:
 	void updateShow();
 	Enums::ProcessStatus getNewDateAndTime(time_t& time);
 	void listShowsForAMovie();
+	void viewActiveTicketDetails();
+	void viewAllTickets();
+	void viewTicketHistory();
+	void viewTicketDetails(const std::vector<const Ticket*>);
 };

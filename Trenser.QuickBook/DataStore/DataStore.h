@@ -10,19 +10,19 @@
 #pragma once
 #include <string>
 #include <map>
-#include <User.h>
-#include <Booking.h>
-#include <Log.h>
-#include <Movie.h>
-#include <Notification.h>
-#include <Payment.h>
-#include <Refund.h>
-#include <Screen.h>
-#include <Seat.h>
-#include <Show.h>
-#include <ShowSeatAvailability.h>
-#include <Theatre.h>
-#include <Ticket.h>
+#include "User.h"
+#include "Booking.h"
+#include "Log.h"
+#include "Movie.h"
+#include "Notification.h"
+#include "Payment.h"
+#include "Refund.h"
+#include "Screen.h"
+#include "Seat.h"
+#include "Show.h"
+#include "ShowSeatAvailability.h"
+#include "Theatre.h"
+#include "Ticket.h"
 class DataStore
 {
 private:
@@ -61,7 +61,6 @@ public:
 	const std::map<std::string, Show*>& getShows() const;
 	std::map<std::string, Show*>& getShowsForUpdation();
 	const std::map<std::string, Screen*>& getScreens() const;
-	Enums::UserType getAuthenticatedUserType();
 	const std::map<std::string, Theatre*>& getTheatres() const;
 	void addTheatre(Theatre* theatre);
 	Theatre* getTheatreById(const std::string& theatreId) const;
@@ -72,7 +71,6 @@ public:
 	void addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability);
 	const Show* getShowById(const std::string& showId);
 	Show* getShowByIdForUpdation(const std::string& showId);
-	const User* getAuthenticatedUser() const;
 	std::map<std::string, Ticket*>& getTickets();
 	void addTicket(Ticket* ticket);
 };

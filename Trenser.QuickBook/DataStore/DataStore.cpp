@@ -23,17 +23,6 @@ const std::map<string, User*>& DataStore::getUsers() const
 }
 
 /*
-* Function Name : getAuthenticatedUser
-* Description   : Returns the currently authenticated user.
-* Parameters    : None
-* Return Type   : const User*
-*/
-const User* DataStore::getAuthenticatedUser() const
-{
-    return m_currentUser;
-}
-
-/*
  * Function: DataStore::addUser
  * Description: Adds a new user to the DataStore by inserting the user object
  *              into the internal map keyed by the user's unique ID.
@@ -238,16 +227,6 @@ const std::map<std::string, Screen*>& DataStore::getScreens() const
 {
     return m_screens;
 }
-/*
-* Function Name : getAuthenticatedUserType
-* Description   : Returns the type of the currently authenticated user.
-* Parameters    : None
-* Return Type   : Enums::UserType
-*/
-Enums::UserType DataStore::getAuthenticatedUserType()
-{
-    return m_currentUser->getUserType();
-}
 
 /*
  * Function: DataStore::getTheatres
@@ -414,7 +393,7 @@ Show* DataStore::getShowByIdForUpdation(const std::string& showId)
 */
 std::map<std::string, Ticket*>& DataStore::getTickets()
 {
-    return m_ticket;
+    return m_tickets;
 }
 
 /*
@@ -426,6 +405,6 @@ std::map<std::string, Ticket*>& DataStore::getTickets()
 */
 void DataStore::addTicket(Ticket* ticket)
 {
-    m_ticket[ticket->getTicketId()] = ticket;
+    m_tickets[ticket->getTicketId()] = ticket;
 }
 

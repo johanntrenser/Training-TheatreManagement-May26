@@ -551,6 +551,47 @@ namespace Enums {
         }
         return LogType::UNKNOWN;
     }
+
+    inline TicketStatus getTicketStatus(const std::string& input)
+    {
+        if (input == "ACTIVE")
+        {
+            return TicketStatus::ACTIVE;
+        }
+        if (input == "CANCELLED")
+        {
+            return TicketStatus::CANCELLED;
+        }
+        if (input == "NOT_FOUND")
+        {
+            return TicketStatus::NOT_FOUND;
+        }
+        if (input == "COMPLETED")
+        {
+            return TicketStatus::COMPLETED;
+        }
+        return TicketStatus::NOT_FOUND;
+    }
+
+    inline std::string getTicketStatusString(TicketStatus status)
+    {
+        switch (status)
+        {
+        case TicketStatus::ACTIVE:
+            return "ACTIVE";
+        case TicketStatus::CANCELLED:
+            return "CANCELLED";
+        case TicketStatus::NOT_FOUND:
+            return "NOT_FOUND";
+        case TicketStatus::COMPLETED:
+            return "COMPLETED";
+        default:
+            return "UNKNOWN";
+        }
+    }
+
 }
+
+
 
 
