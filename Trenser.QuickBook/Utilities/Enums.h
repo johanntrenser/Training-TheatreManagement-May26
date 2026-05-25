@@ -116,6 +116,14 @@ namespace Enums {
         USER_FOUND
     };
 
+    enum class TicketStatus
+    {
+        ACTIVE,
+        CANCELLED,
+        NOT_FOUND,
+        COMPLETED
+    };
+
     inline std::string getTheatreStatusString(TheatreStatus status)
     {
         switch (status)
