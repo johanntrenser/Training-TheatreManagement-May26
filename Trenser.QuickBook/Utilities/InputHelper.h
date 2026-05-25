@@ -38,7 +38,6 @@ namespace util
 			throw std::runtime_error("Invalid Console Input");
 		}
 	}
-
 	void readValue(std::string& value);
 	void pressEnter();
 }

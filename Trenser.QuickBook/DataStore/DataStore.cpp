@@ -107,3 +107,9 @@ Enums::UserType DataStore::getAuthenticatedUserType() const
 {
     return m_currentUser->getUserType();;
 }
+
+Ticket* DataStore::getTicketById(const std::string& ticketId) const
+{
+    std::map<std::string, Ticket*>::const_iterator ticket = m_ticket.find(ticketId);
+    return ticket->second;
+}

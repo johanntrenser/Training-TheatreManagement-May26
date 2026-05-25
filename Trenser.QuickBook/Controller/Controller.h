@@ -65,8 +65,7 @@ public:
 	const std::vector<const Ticket*> viewAllTickets();
 	const std::vector<const Ticket*> viewTicketHistory();
 	Enums::UserType getAuthenticatedUserType() const;
-	Enums::TicketStatus viewTicketStatus(const std::string& ticketId)
-		;
+	Enums::TicketStatus viewTicketStatus(const std::string& ticketId);
 	~Controller();
 };
 

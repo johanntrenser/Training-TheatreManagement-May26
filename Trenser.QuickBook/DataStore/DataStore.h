@@ -52,4 +52,5 @@ public:
 	std::map<std::string, Ticket*>& getTickets();
 	void addTicket(Ticket* ticket);
 	Enums::UserType getAuthenticatedUserType() const;
+	Ticket* getTicketById(const std::string& ticketId) const;
 };
