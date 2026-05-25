@@ -178,6 +178,7 @@ void UserInterface::adminMenu()
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
 		cout << "7. Validate Theatre Request" << endl;
+		cout << "8. Deactivate Theatre" << endl;
 		cout << "Enter an option: ";
 }
 
@@ -212,6 +213,7 @@ void UserInterface::theatreOwnerMenu()
 	cout << "1. Add Theatre" << endl;
 	cout << "2. View Theatre Details" << endl;
 	cout << "3. Update Theatre Details" << endl;
+	cout << "4. Deactivate Theatre" << endl;
 	cout << "0. Exit" << endl;
 	cout << "Enter an option: ";
 }
@@ -293,6 +295,9 @@ void UserInterface::handleAdminMenuOperation()
 		case 7:
 			validateTheatreRequest();
 			break;
+		case 8:
+			deactivateTheatreByAdmin();
+			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
 			util::pressEnter();
@@ -345,6 +350,9 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 			break;
 		case 3:
 			updateTheatre();
+			break;
+		case 4:
+			deactivateTheatreByOwner();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -998,7 +1006,7 @@ void UserInterface::updateTheatre()
 	}
 	else
 	{
-		cout << "No theatres found for current owner" << endl;
+		cout << "No theatres found has added" << endl;
 	}
 }
 
@@ -1259,5 +1267,71 @@ void UserInterface::setTheatreStatusById(const std::string& theatreId, Enums::Th
 	else
 	{
 		cout << "\nSomething went wrong!.";
+	}
+}
+
+/*
+ * Function: UserInterface::deactivateTheatreByOwner
+ * Description: Allows the current theatre owner to deactivate one of
+ *              their theatres by selecting a valid theatre ID from
+ *              the list of owned theatres. Updates the selected
+ *              theatre's status to INACTIVE.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::deactivateTheatreByOwner()
+{
+	std::string theatreId;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			setTheatreStatusById(theatreId, Enums::TheatreStatus::INACTIVE);
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::deactivateTheatreByAdmin
+ * Description: Allows the administrator to deactivate a theatre by
+ *              selecting a valid theatre ID from the list of all
+ *              available theatres. Updates the selected theatre's
+ *              status to INACTIVE.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::deactivateTheatreByAdmin()
+{
+	std::string theatreId;
+	const std::vector<const Theatre*> theatres = m_controller->listAllTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			setTheatreStatusById(theatreId, Enums::TheatreStatus::INACTIVE);
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
 	}
 }
