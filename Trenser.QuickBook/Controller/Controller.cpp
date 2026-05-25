@@ -706,6 +706,18 @@ Enums::ProcessStatus Controller::reactivateScreen(const std::string& theatreId, 
 }
 
 /*
+* Function Name : viewTheatreScreens
+* Description   : Retrieves all screens available in the theatre.
+* Parameters    :
+*                  theatre - Theatre whose screens are viewed
+* Return Type   : const std::vector<Screen*>
+*/
+const std::vector<Screen*> Controller::viewTheatreScreens(const std::string& theatreId)
+{
+    return m_ScreenManagementService->viewTheatreScreens(theatreId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

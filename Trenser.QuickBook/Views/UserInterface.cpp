@@ -1806,3 +1806,35 @@ Enums::ProcessStatus UserInterface::reactivateScreen(const std::string& theatreI
 {
 	return m_controller->reactivateScreen(theatreId, screenId);
 }
+
+/*
+* Function Name : viewTheatreScreens
+* Description   : Displays all screens available in the theatre.
+* Parameters    :
+*                  theatre - Theatre whose screens are viewed
+* Return Type   : void
+*/
+void UserInterface::viewTheatreScreens(const std::string& theatreId)
+{
+	const std::vector<Screen*>& screens = m_controller->viewTheatreScreens(theatreId);
+	if (screens.empty())
+	{
+		cout << "No screens available." << endl;
+		return;
+	}
+	cout << endl;
+	cout << std::left
+		<< std::setw(15) << "Screen ID"
+		<< std::setw(25) << "Screen Name"
+		<< endl;
+	cout << std::string(40, '-') << endl;
+	for (std::vector<Screen*>::const_iterator iterator = screens.begin();
+		iterator != screens.end();
+		++iterator)
+	{
+		cout << std::left
+			<< std::setw(15) << (*iterator)->getScreenId()
+			<< std::setw(25) << (*iterator)->getName()
+			<< endl;
+	}
+}
