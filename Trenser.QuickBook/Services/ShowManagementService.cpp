@@ -199,6 +199,12 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
     return Enums::ProcessStatus::FAILED;
 }
 
+/*
+ * Function: ShowManagementService::getActiveShows
+ * Description: Filters shows from DataStore to return only scheduled shows with start times later than current time.
+ * Returns:
+ *    const std::vector<const Show*> - List of active shows
+ */
 const std::vector<const Show*> ShowManagementService::getActiveShows()
 {
     std::vector<const Show*> filteredShows;

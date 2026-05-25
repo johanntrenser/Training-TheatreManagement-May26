@@ -1378,6 +1378,12 @@ const Theatre* UserInterface::getCurrentTheatreById(const std::string& theatreId
 	return nullptr;
 }
 
+/*
+ * Function: UserInterface::displayActiveShows
+ * Description: Displays all active shows retrieved from Controller in tabular format.
+ * Returns:
+ *    void
+ */
 void UserInterface::displayActiveShows()
 {
 	const std::vector<const Show*> shows =  m_controller->getActiveShows();
@@ -1390,6 +1396,15 @@ void UserInterface::displayActiveShows()
 	displayShowDetails(shows);
 }
 
+
+/*
+ * Function: UserInterface::displayShowDetails
+ * Description: Displays detailed information for a list of shows including theatre, screen, movie, and start time.
+ * Parameters:
+ *    const std::vector<const Show*> shows - List of shows to display
+ * Returns:
+ *    void
+ */
 void UserInterface::displayShowDetails(const std::vector<const Show*> shows)
 {
 	cout << "\n--------------------------------------------------------------------------------------------------\n";
@@ -1413,6 +1428,14 @@ void UserInterface::displayShowDetails(const std::vector<const Show*> shows)
 	}
 }
 
+/*
+ * Function: UserInterface::displayTimeAndDate
+ * Description: Formats a time_t value into a human-readable string "YYYY-MM-DD HH:MM:SS".
+ * Parameters:
+ *    time_t time - The time value to format
+ * Returns:
+ *    std::string - Formatted date/time string
+ */
 std::string UserInterface::displayTimeAndDate(time_t time)
 {
 	std::tm local{};
