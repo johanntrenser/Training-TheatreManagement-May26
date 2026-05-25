@@ -61,3 +61,14 @@ void DataStore::setAuthenticatedUser(User* user)
 {
     m_currentUser = user;
 }
+
+/*
+* Function Name : getNotifications
+* Description   : Returns all notifications stored in the datastore.
+* Parameters    : None
+* Return Type   : std::map<std::string, Notification*>&
+*/
+std::map<std::string, Notification*>& DataStore::getNotifications()
+{
+    return m_notification;
+}
