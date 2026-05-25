@@ -187,6 +187,20 @@ Enums::ProcessStatus Controller::addScreen(const std::string& theatreId, const s
 }
 
 /*
+* Function Name : updateScreenName
+* Description   : Updates the name of a screen through the service.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+*                  name     - New screen name
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus Controller::updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name)
+{
+    return m_ScreenManagementService->updateScreenName(theatreId, screenId, name);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
