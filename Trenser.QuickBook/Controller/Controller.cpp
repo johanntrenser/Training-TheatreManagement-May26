@@ -158,6 +158,37 @@ const std::vector<const Theatre*> Controller::getCurrentOwnerTheatres()
 }
 
 /*
+ * Function: Controller::getCurrentOwnerTheatreIds
+ * Description: Retrieves the theatre IDs associated with the currently logged-in
+ *              owner. Calls getCurrentOwnerTheatres to obtain the list of theatres
+ *              and extracts their unique identifiers.
+ * Parameters: None
+ * Returns:
+ *    const std::vector<std::string> - Vector containing theatre IDs owned by the
+ *                                     current user
+ */
+const std::vector<std::string> Controller::getCurrentOwnerTheatreIds()
+{
+    return m_theatreManagementService->getCurrentOwnerTheatreIds();
+}
+
+/*
+ * Function: Controller::getMoviesFromTheatre
+ * Description: Retrieves all movies associated with a specific theatre.
+ *              Delegates the request to the TheatreManagementService to
+ *              fetch movies linked to the given theatre ID.
+ * Parameters:
+ *    theatreId (const std::string&) - The unique identifier of the theatre
+ * Returns:
+ *    const std::vector<const Movie*> - Vector of Movie pointers representing
+ *                                      movies available in the specified theatre.
+ */
+const std::vector<const Movie*> Controller::getMoviesFromTheatre(const std::string& theatreId)
+{
+    return m_theatreManagementService->getMoviesFromTheatre(theatreId);
+}
+
+/*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
  * Parameters:
@@ -286,6 +317,142 @@ const std::vector<const Theatre*> Controller::getAllTheatres()
 }
 
 /*
+ * Function: Controller::setTheatreNameById
+ * Description: Updates the name of a theatre using the given theatre ID.
+ *              Delegates the theatre name update operation to the
+ *              TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    name      - New name to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre name update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreNameById(const std::string& theatreId, const std::string& name)
+{
+    return m_theatreManagementService->setTheatreNameById(theatreId, name);
+}
+
+/*
+ * Function: Controller::setTheatreCityById
+ * Description: Updates the city of a theatre using the given theatre ID.
+ *              Delegates the theatre city update operation to the
+ *              TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    city      - New city to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre city update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreCityById(const std::string& theatreId, const std::string& city)
+{
+    return m_theatreManagementService->setTheatreCityById(theatreId, city);
+}
+
+/*
+ * Function: Controller::setTheatreAddressById
+ * Description: Updates the address of a theatre using the given theatre ID.
+ *              Delegates the theatre address update operation to the
+ *              TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    address   - New address to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre address update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreAddressById(const std::string& theatreId, const std::string& address)
+{
+    return m_theatreManagementService->setTheatreAddressById(theatreId, address);
+}
+
+/*
+ * Function: Controller::setTheatrePhoneNumberById
+ * Description: Updates the phone number of a theatre using the given
+ *              theatre ID. Delegates the theatre phone number update
+ *              operation to the TheatreManagementService.
+ * Parameters:
+ *    theatreId   - Unique identifier of the theatre.
+ *    phoneNumber - New phone number to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre phone number update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber)
+{
+    return m_theatreManagementService->setTheatrePhoneNumberById(theatreId, phoneNumber);
+}
+
+/*
+ * Function: Controller::setTheatreEmailById
+ * Description: Updates the email address of a theatre using the given
+ *              theatre ID. Delegates the theatre email update operation
+ *              to the TheatreManagementService.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    email     - New email address to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre email update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreEmailById(const std::string& theatreId, const std::string& email)
+{
+    return m_theatreManagementService->setTheatreEmailById(theatreId, email);
+}
+
+/*
+ * Function: Controller::getPendingTheatres
+ * Description: Retrieves all theatres that are currently in pending
+ *              status from the TheatreManagementService.
+ *              Acts as a delegation layer between the user interface
+ *              and the service layer.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers containing all theatres with
+ *    pending status. Returns an empty vector if no pending
+ *    theatres are available.
+ */
+const std::vector<const Theatre*> Controller::getPendingTheatres()
+{
+    return m_theatreManagementService->getPendingTheatres();
+}
+
+/*
+ * Function: Controller::setTheatreStatusById
+ * Description: Updates the status of a theatre identified by the given
+ *              theatre ID. Delegates the theatre status update
+ *              operation to the TheatreManagementService.
+ * Parameters:
+ *    theatreId    - Unique identifier of the theatre.
+ *    theatreStatus - New status to be assigned to the theatre.
+ * Returns:
+ *    ProcessStatus indicating whether the theatre status update
+ *    operation was successful or failed.
+ */
+Enums::ProcessStatus Controller::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus)
+{
+    return m_theatreManagementService->setTheatreStatusById(theatreId, theatreStatus);
+}
+
+/*
+ * Function: Controller::listAllTheatres
+ * Description: Retrieves all theatres available in the system from
+ *              the TheatreManagementService.
+ *              Acts as a delegation layer between the user interface
+ *              and the service layer.
+ * Parameters: None
+ * Returns:
+ *    A vector of Theatre pointers containing all theatres
+ *    stored in the datastore. Returns an empty vector if
+ *    no theatres are available.
+ */
+std::vector<const Theatre*> Controller::listAllTheatres() const
+{
+    return m_theatreManagementService->listAllTheatres();
+}
+
+/*
  * Function: Controller::addMovieToTheatre
  * Description: Adds a movie to a specified theatre by passing the request
  *              to the TheatreManagementService. Validates the operation and
@@ -386,7 +553,3 @@ Controller::~Controller()
     delete m_seatManagementService;
     delete m_refundManagementService;
 }
-
-
-
-

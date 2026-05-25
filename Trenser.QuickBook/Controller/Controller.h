@@ -61,6 +61,8 @@ public:
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	const std::vector<const Theatre*> getCurrentOwnerTheatres();
+	const std::vector<std::string> getCurrentOwnerTheatreIds();
+	const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
 	const User* getAuthenticatedUser() const;
 	Enums::ProcessStatus isTheatrePhoneNumberUnique(const std::string& phoneNumber);
@@ -68,6 +70,14 @@ public:
 	Enums::ProcessStatus addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	Enums::ProcessStatus isTheatreUnique(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	const std::vector<const Theatre*> getAllTheatres();
+	Enums::ProcessStatus setTheatreNameById(const std::string& theatreId, const std::string& name);
+	Enums::ProcessStatus setTheatreCityById(const std::string& theatreId, const std::string& city);
+	Enums::ProcessStatus setTheatreAddressById(const std::string& theatreId, const std::string& address);
+	Enums::ProcessStatus setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber);
+	Enums::ProcessStatus setTheatreEmailById(const std::string& theatreId, const std::string& email);
+	const std::vector<const Theatre*> getPendingTheatres();
+	Enums::ProcessStatus setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus);
+	std::vector<const Theatre*> listAllTheatres() const;
 	Enums::ProcessStatus addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
 	Theatre* getTheatreById(const std::string& theatreId);
 	Movie* getMovieById(const std::string& movieId);
@@ -75,4 +85,3 @@ public:
 	void logout();
 	~Controller();
 };
-
