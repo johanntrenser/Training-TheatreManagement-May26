@@ -483,6 +483,11 @@ const std::vector<const Show*> Controller::getActiveShows()
     return m_showManagementService->getActiveShows();
 }
 
+const std::vector<std::string> Controller::getActiveShowIds()
+{
+    return m_showManagementService->getActiveShowids();
+}
+
 /*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
