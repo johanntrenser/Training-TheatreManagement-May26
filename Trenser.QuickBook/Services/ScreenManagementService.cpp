@@ -242,7 +242,7 @@ Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string
 *                  theatre - Theatre whose screens are viewed
 * Return Type   : const std::vector<Screen*>
 */
-const std::vector<Screen*> ScreenManagementService::viewTheatreScreens(const std::string& theatreId)
+const std::vector<const Screen*> ScreenManagementService::viewTheatreScreens(const std::string& theatreId)
 {
 	Theatre* theatre = m_dataStore.getTheatreById(theatreId);
 	if (!theatre)
@@ -252,7 +252,7 @@ const std::vector<Screen*> ScreenManagementService::viewTheatreScreens(const std
 	const std::vector<Screen*>& screens = theatre->getScreens();
 	if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::CUSTOMER)
 	{
-		std::vector<Screen*> activeScreens;
+		std::vector<const Screen*> activeScreens;
 		for (std::vector<Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 		{
 			if ((*iterator)->getScreenStatus() == Enums::ScreenStatus::AVAILABLE)
@@ -262,5 +262,5 @@ const std::vector<Screen*> ScreenManagementService::viewTheatreScreens(const std
 		}
 		return activeScreens;
 	}
-	return screens;
+	return {};
 }

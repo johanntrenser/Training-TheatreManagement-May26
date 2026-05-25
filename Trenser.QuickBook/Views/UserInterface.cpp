@@ -1816,7 +1816,7 @@ Enums::ProcessStatus UserInterface::reactivateScreen(const std::string& theatreI
 */
 void UserInterface::viewTheatreScreens(const std::string& theatreId)
 {
-	const std::vector<Screen*>& screens = m_controller->viewTheatreScreens(theatreId);
+	const std::vector<const Screen*> screens = m_controller->viewTheatreScreens(theatreId);
 	if (screens.empty())
 	{
 		cout << "No screens available." << endl;
@@ -1828,9 +1828,7 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
 		<< std::setw(25) << "Screen Name"
 		<< endl;
 	cout << std::string(40, '-') << endl;
-	for (std::vector<Screen*>::const_iterator iterator = screens.begin();
-		iterator != screens.end();
-		++iterator)
+	for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 	{
 		cout << std::left
 			<< std::setw(15) << (*iterator)->getScreenId()
