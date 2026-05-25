@@ -99,4 +99,6 @@ public:
 	void setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus theatreStatus);
 	void deactivateTheatreByOwner();
 	void deactivateTheatreByAdmin();
+	void reactivateTheatreByOwner();
+	void reactivateTheatreByAdmin();
 };
