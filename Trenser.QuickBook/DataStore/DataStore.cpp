@@ -61,3 +61,52 @@ void DataStore::setAuthenticatedUser(User* user)
 {
     m_currentUser = user;
 }
+
+/*
+ * Function: getScreens
+ * Description: get all the screens in the datastore
+ * Parameters:
+ *    None
+ * Returns:
+ *    std::map<std::string, Screen*>& - reference of map of screens
+ */
+const std::map<std::string, Screen*>& DataStore::getScreens() const
+{
+    return m_screen;
+}
+
+/*
+ * Function: DataStore::getTheatreById
+ * Description: Retrieves a theatre object based on its unique identifier.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    Theatre* - Pointer to the theatre if found, nullptr otherwise
+ */
+Theatre* DataStore::getTheatreById(const std::string& theatreId) const
+{
+    std::map<std::string, Theatre*>::const_iterator iterator = m_theatre.find(theatreId);
+    if (iterator == m_theatre.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::getScreenById
+ * Description: Retrieves a screen object based on its unique identifier.
+ * Parameters:
+ *    screenId (const std::string&) - Unique identifier of the screen
+ * Returns:
+ *    Screen* - Pointer to the screen if found, nullptr otherwise
+ */
+Screen* DataStore::getScreenById(const std::string& screenId) const
+{
+    std::map<std::string, Screen*>::const_iterator iterator = m_screen.find(screenId);
+    if (iterator == m_screen.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}

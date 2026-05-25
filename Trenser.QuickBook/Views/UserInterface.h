@@ -27,4 +27,5 @@ public:
 	void getUniqueEmail(std::string& email);
 	void getUniquePhoneNumber(std::string& phoneNumber);
 	void handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber);
+	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 };
