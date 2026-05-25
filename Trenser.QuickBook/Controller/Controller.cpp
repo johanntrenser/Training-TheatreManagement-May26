@@ -1152,6 +1152,16 @@ const std::vector<std::string> Controller::getActiveShowIds()
     return m_showManagementService->getActiveShowIds();
 }
 
+Enums::ProcessStatus Controller::isShowCancellable(const std::string& showId)
+{
+    return m_showManagementService->isShowCancellable(showId);
+}
+
+Enums::ProcessStatus Controller::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
+{
+    return m_showManagementService->setShowStatusById(showId, status);
+}
+
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all

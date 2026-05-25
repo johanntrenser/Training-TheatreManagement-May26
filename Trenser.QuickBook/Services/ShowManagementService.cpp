@@ -242,3 +242,38 @@ const std::vector<std::string> ShowManagementService::getActiveShowIds()
     }
     return filteredShowIds;
 }
+
+Enums::ProcessStatus ShowManagementService::isShowCancellable(const std::string& showId)
+{
+    const Show* show = m_dataStore.getShowById(showId);
+    if (show == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    ShowSeatAvailability* seatAvailability = show->getSeatAvailability();
+    const std::map<std::string, Enums::BookingStatus>& seatMap = seatAvailability->getSeatAvailabilityMap();
+    int bookingCount = 0;
+    for (std::map<std::string, Enums::BookingStatus>::const_iterator iterator = seatMap.begin(); iterator != seatMap.end(); ++iterator)
+    {
+        if (iterator->second == Enums::BookingStatus::COMPLETED)
+        {
+            ++bookingCount;
+        }
+    }
+    if (bookingCount > 0)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+Enums::ProcessStatus ShowManagementService::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
+{
+    Show* show = m_dataStore.getShowByIdForUpdation(showId);
+    if (show == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    show->setShowStatus(status);
+    return Enums::ProcessStatus::SUCCESS;
+}

@@ -3422,6 +3422,42 @@ void UserInterface::cancelShow()
 	cout << "Enter the show id of show to cancel: ";
 	util::readValue(showId);
 	const std::vector<std::string> showIds = m_controller->getActiveShowIds();
+	bool isShowIdValid = false;
+	for (std::vector<std::string>::const_iterator iterator = showIds.begin(); iterator != showIds.end(); ++iterator)
+	{
+		if (*iterator == showId)
+		{
+			isShowIdValid = true;
+			break;
+		}
+	}
+	if (!isShowIdValid)
+	{
+		cout << "Show id is not valid!" << endl;
+		util::pressEnter();
+		return;
+	}
+	Enums::ProcessStatus isShowCancellable = m_controller->isShowCancellable(showId);
+	if (isShowCancellable == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Show is not cancellable" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	Enums::ProcessStatus status = m_controller->setShowStatusById(showId, Enums::ShowStatus::CANCELLED);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Show cancelled successfully" << endl;
+		util::pressEnter();
+		util::clear();
+	}
+	else
+	{
+		cout << "Failed to cancel show" << endl;
+		util::pressEnter();
+		util::clear();
+	}
 }
 
 
