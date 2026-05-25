@@ -108,6 +108,14 @@ Enums::UserType DataStore::getAuthenticatedUserType() const
     return m_currentUser->getUserType();;
 }
 
+/*
+* Function Name : getTicketById
+* Description   : Retrieves a ticket from the datastore based on the provided Ticket ID.
+*                 Returns a pointer to the Ticket if found, otherwise returns nullptr.
+* Parameters    :
+*                  ticketId - The unique identifier of the ticket to be retrieved
+* Return Type   : Ticket*
+*/
 Ticket* DataStore::getTicketById(const std::string& ticketId) const
 {
     std::map<std::string, Ticket*>::const_iterator ticket = m_ticket.find(ticketId);

@@ -184,9 +184,8 @@ Enums::ProcessStatus TicketManagementService::cancelTicket(const std::string& ti
 	}
 	Payment* payment = ticket->getPayment();
 	Enums::ProcessStatus status;
-	PaymentManagementService* paymentManagementService = new PaymentManagementService();
-	status = paymentManagementService->cancelPayment(payment);
-	delete paymentManagementService;
+	PaymentManagementService paymentManagementService;
+	status = paymentManagementService.cancelPayment(payment);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		return Enums::ProcessStatus::SUCCESS;
