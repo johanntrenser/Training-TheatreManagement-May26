@@ -157,6 +157,7 @@
     <ClCompile Include="Services\TicketManagementService.cpp" />
     <ClCompile Include="Services\UserManagementService.cpp" />
     <ClCompile Include="Trenser.QuickBook.cpp" />
+    <ClCompile Include="Utilities\ApplicationConfig.cpp" />
     <ClCompile Include="Utilities\Enums.cpp" />
     <ClCompile Include="Utilities\InputHelper.cpp" />
     <ClCompile Include="Utilities\OutputHelper.cpp" />
@@ -197,12 +198,27 @@
     <ClInclude Include="Services\TheatreManagementService.h" />
     <ClInclude Include="Services\TicketManagementService.h" />
     <ClInclude Include="Services\UserManagementService.h" />
+    <ClInclude Include="Utilities\ApplicationConfig.h" />
     <ClInclude Include="Utilities\Enums.h" />
     <ClInclude Include="Utilities\InputHelper.h" />
     <ClInclude Include="Utilities\OutputHelper.h" />
     <ClInclude Include="Utilities\TimeStamp.h" />
     <ClInclude Include="Utilities\Validator.h" />
     <ClInclude Include="Views\UserInterface.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\Booking.csv" />
+    <None Include="Files\Log.csv" />
+    <None Include="Files\Movie.csv" />
+    <None Include="Files\Notification.csv" />
+    <None Include="Files\Payment.csv" />
+    <None Include="Files\Refund.csv" />
+    <None Include="Files\Screen.csv" />
+    <None Include="Files\Seat.csv" />
+    <None Include="Files\Show.csv" />
+    <None Include="Files\Theatre.csv" />
+    <None Include="Files\Ticket.csv" />
+    <None Include="Files\User.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
