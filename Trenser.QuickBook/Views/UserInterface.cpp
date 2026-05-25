@@ -3712,7 +3712,7 @@ void UserInterface::viewTicketHistory()
 *                  tickets - Vector of Ticket pointers to display
 * Return Type   : void
 */
-void UserInterface::viewTicketDetails(const std::vector<const Ticket*> tickets)
+void UserInterface::viewTicketDetails(const std::vector<const Ticket*>& tickets)
 {
 	Enums::UserType type = m_controller->getAuthenticatedUserType();
 	std::cout << std::left
