@@ -161,3 +161,15 @@ const std::map<std::string, Log*>& DataStore::getLogs() const
 {
     return m_logs;
 }
+
+/*
+ * Function: DataStore::getRefunds
+ * Description: Retrieves the collection of getRefunds stored in the DataStore.
+ * Parameters: None
+ * Returns:
+ *    Constant reference to a map of getRefunds IDs to getRefunds pointers.
+ */
+const std::map<std::string, Refund*>& DataStore::getRefunds() const
+{
+    return m_refunds;
+}

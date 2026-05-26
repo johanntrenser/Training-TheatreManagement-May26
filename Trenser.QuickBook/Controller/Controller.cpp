@@ -204,4 +204,5 @@ void Controller::saveData()
     m_paymentManagementService->savePaymentData();
     m_notificationManagementService->saveNotificationData();
     m_logManagementService->saveLogData();
+    m_refundManagementService->saveRefundData();
 }

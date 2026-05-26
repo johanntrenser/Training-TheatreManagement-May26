@@ -8,7 +8,16 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <map>
+#include <fstream>
+#include "DataStore.h"
+#include "ApplicationConfig.h"
 class RefundManagementService
 {
+private:
+    const std::string& PATH = config::REFUND_FILEPATH;
+    DataStore& m_dataStore;
+public:
+    RefundManagementService();
+    void saveRefundData();
 };
-

@@ -56,4 +56,5 @@ public:
 	const std::map < std::string, Payment*>& getPayments() const;
 	std::map<std::string, Notification*>& getNotifications();
 	const std::map<std::string, Log*>& getLogs() const;
+	const std::map<std::string, Refund*>& getRefunds() const;
 };

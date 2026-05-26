@@ -18,9 +18,10 @@ Refund::Refund()
     : m_refundId(""),
     m_bookedTicket(nullptr),
     m_refundAmount(0.0),
-    m_time(""),
-    m_status(0)
-{}
+    m_time(-1),
+    m_status(Enums::RefundStatus::COMPLETED)
+{
+}
 
 /*
  * Function: Refund::Refund
@@ -37,14 +38,14 @@ Refund::Refund()
 Refund::Refund(const std::string& id,
     Ticket* bookedTicket,
     double refundAmount,
-    const std::string& time,
-    int status)
+    time_t time)
     : m_refundId(id),
     m_bookedTicket(bookedTicket),
     m_refundAmount(refundAmount),
     m_time(time),
-    m_status(status)
-{}
+    m_status(Enums::RefundStatus::COMPLETED)
+{
+}
 
 /*
  * Function: Refund::getRefundId
@@ -85,7 +86,7 @@ double Refund::getRefundAmount() const
  * Returns:
  *    const std::string& - Refund timestamp
  */
-const std::string& Refund::getTime() const
+time_t Refund::getTime() const
 {
     return m_time;
 }
@@ -94,9 +95,9 @@ const std::string& Refund::getTime() const
  * Function: Refund::getStatus
  * Description: Retrieves the refund status code.
  * Returns:
- *    int - Refund status
+ *    enum - Refund status
  */
-int Refund::getStatus() const
+Enums::RefundStatus Refund::getStatus() const
 {
     return m_status;
 }
@@ -148,7 +149,7 @@ void Refund::setRefundAmount(double refundAmount)
  * Returns:
  *    void
  */
-void Refund::setTime(const std::string& time)
+void Refund::setTime(time_t time)
 {
     m_time = time;
 }
@@ -157,11 +158,11 @@ void Refund::setTime(const std::string& time)
  * Function: Refund::setStatus
  * Description: Sets the refund status code.
  * Parameters:
- *    int status - New refund status
+ *    enum status - New refund status
  * Returns:
  *    void
  */
-void Refund::setStatus(int status)
+void Refund::setStatus(Enums::RefundStatus status)
 {
     m_status = status;
 }
