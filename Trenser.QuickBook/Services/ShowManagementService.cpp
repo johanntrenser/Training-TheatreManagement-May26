@@ -243,6 +243,16 @@ const std::vector<std::string> ShowManagementService::getActiveShowIds()
     return filteredShowIds;
 }
 
+/*
+ * Function: ShowManagementService::isShowCancellable
+ * Description: Determines whether a show can be cancelled by checking if any
+ *              seats have completed bookings.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if no completed bookings exist,
+ *                           FAILED if the show has existing bookings or is invalid
+ */
 Enums::ProcessStatus ShowManagementService::isShowCancellable(const std::string& showId)
 {
     const Show* show = m_dataStore.getShowById(showId);
@@ -267,6 +277,17 @@ Enums::ProcessStatus ShowManagementService::isShowCancellable(const std::string&
     return Enums::ProcessStatus::SUCCESS;
 }
 
+/*
+ * Function: ShowManagementService::setShowStatusById
+ * Description: Updates the status of a show by retrieving it from the DataStore
+ *              and modifying its state.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    status (Enums::ShowStatus) - New status to be set
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if update is successful,
+ *                           FAILED if the show is not found
+ */
 Enums::ProcessStatus ShowManagementService::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
 {
     Show* show = m_dataStore.getShowByIdForUpdation(showId);

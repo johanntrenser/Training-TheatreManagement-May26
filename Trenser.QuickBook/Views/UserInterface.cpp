@@ -3415,6 +3415,14 @@ std::string UserInterface::displayTimeAndDate(time_t time)
 	return outputStream.str();
 }
 
+/*
+ * Function: UserInterface::cancelShow
+ * Description: Handles user interaction to cancel a show by validating the show ID,
+ *              checking cancellability, and updating the show status.
+ * Parameters: None
+ * Returns:
+ *    void
+ */
 void UserInterface::cancelShow()
 {
 	std::string showId;

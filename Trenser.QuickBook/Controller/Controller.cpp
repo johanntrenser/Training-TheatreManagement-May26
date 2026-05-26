@@ -1152,11 +1152,31 @@ const std::vector<std::string> Controller::getActiveShowIds()
     return m_showManagementService->getActiveShowIds();
 }
 
+/*
+ * Function: Controller::isShowCancellable
+ * Description: Checks whether the specified show can be cancelled by verifying
+ *              booking status through the ShowManagementService.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the show can be cancelled,
+ *                           FAILED otherwise
+ */
 Enums::ProcessStatus Controller::isShowCancellable(const std::string& showId)
 {
     return m_showManagementService->isShowCancellable(showId);
 }
 
+/*
+ * Function: Controller::setShowStatusById
+ * Description: Updates the status of a show identified by its ID.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    status (Enums::ShowStatus) - New status to be assigned to the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the status is updated successfully,
+ *                           FAILED otherwise
+ */
 Enums::ProcessStatus Controller::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
 {
     return m_showManagementService->setShowStatusById(showId, status);
