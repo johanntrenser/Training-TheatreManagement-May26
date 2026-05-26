@@ -58,4 +58,5 @@ public:
 	const std::map<std::string, Log*>& getLogs() const;
 	const std::map<std::string, Refund*>& getRefunds() const;
 	const std::map<std::string, Seat*>& getSeats() const;
+	const std::map<std::string, Show*>& getShows() const;
 };

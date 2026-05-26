@@ -9,7 +9,18 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <fstream>
+#include <map>
+#include <ctime>
+#include "DataStore.h"
+#include "ApplicationConfig.h"
 class ShowManagementService
 {
+private:
+	DataStore& m_dataStore;
+	const std::string& PATH = config::SHOW_FILEPATH;
+public:
+	ShowManagementService() : m_dataStore(DataStore::getInstance()) {}
+	void saveShowData();
 };
 

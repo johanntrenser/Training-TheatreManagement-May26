@@ -187,3 +187,15 @@ const std::map<std::string, Seat*>& DataStore::getSeats() const
 {
     return m_seats;
 }
+
+/*
+ * Function: DataStore::getShows
+ * Description: Retrieves all shows currently stored in the system.
+ * Parameters: None
+ * Returns:
+ *    const std::map<std::string, Show*>& - Map of show IDs to show objects
+ */
+const std::map<std::string, Show*>& DataStore::getShows() const
+{
+    return m_shows;
+}
