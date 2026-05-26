@@ -49,7 +49,9 @@ public:
 	static DataStore& getInstance();
 	void setAuthenticatedUser(User* user);
 	void addPayment(Payment* payment);
+	void addRefund(Refund* refund);
 	const std::map < std::string, Payment*>& getPayments() const;
+	const std::map<std::string, Refund*>& getRefunds() const;
 	void addTicket(Ticket* ticket);
 	const std::map < std::string, Ticket*>& getTickets() const;
 };
