@@ -23,6 +23,17 @@ const std::map<string, User*>& DataStore::getUsers() const
 }
 
 /*
+* Function Name : getAuthenticatedUser
+* Description   : Returns the currently authenticated user.
+* Parameters    : None
+* Return Type   : const User*
+*/
+const User* DataStore::getAuthenticatedUser() const
+{
+    return m_currentUser;
+}
+
+/*
  * Function: DataStore::addUser
  * Description: Adds a new user to the DataStore by inserting the user object
  *              into the internal map keyed by the user's unique ID.
@@ -125,4 +136,15 @@ void DataStore::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
 User* const DataStore::getAuthenticatedUser() const
 {
     return m_currentUser;
+}
+
+/*
+* Function Name : getNotifications
+* Description   : Returns all notifications stored in the datastore.
+* Parameters    : None
+* Return Type   : std::map<std::string, Notification*>&
+*/
+std::map<std::string, Notification*>& DataStore::getNotifications()
+{
+    return m_notification;
 }

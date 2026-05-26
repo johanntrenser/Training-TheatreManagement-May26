@@ -72,6 +72,7 @@ public:
 	const std::vector<const User*> getInactiveUsers();
 	Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
 	Enums::UserStatus getUserStatus(const std::string& userId);
+	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
 	~Controller();
 };
 
