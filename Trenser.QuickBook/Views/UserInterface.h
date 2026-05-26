@@ -121,4 +121,6 @@ public:
 	std::string displayTimeAndDate(time_t time);
 	void cancelShow();
 	void viewShowStatus();
+	void updateShow();
+	Enums::ProcessStatus getNewDateAndTime(time_t& time);
 };

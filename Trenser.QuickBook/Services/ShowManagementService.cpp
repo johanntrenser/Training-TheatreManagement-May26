@@ -133,6 +133,52 @@ Enums::ProcessStatus ShowManagementService::isShowTimeConflicting(const std::str
 }
 
 /*
+ * Function: ShowManagementService::isNewShowTimeConflicting
+ * Description: Determines if a new show time overlaps with existing shows on the same screen.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    newStartTime (const time_t&) - Proposed new start time
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if no conflict, FAILED otherwise
+ */
+Enums::ProcessStatus ShowManagementService::isNewShowTimeConflicting(const std::string& showId, const time_t& newStartTime)
+{
+    const Show* show = m_dataStore.getShowById(showId);
+    if (show == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    int buffer = 10;
+    const Movie* movie = show->getMovie();
+    const Screen* screen = show->getScreen();
+    if (screen == nullptr || movie == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    const std::string& screenId = screen->getScreenId();
+    int duration = movie->getDuration();
+    time_t newEndTime = newStartTime + (duration + buffer) * 60;
+    if (newStartTime >= newEndTime)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+    for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if ((iterator->second->getScreen() && ((iterator->second->getScreen()->getScreenId()) == screenId)) && iterator->second->getShowId() != showId)
+        {
+            time_t existingStart = iterator->second->getStartTime();
+            time_t existingEnd = iterator->second->getEndTime();
+            if (newStartTime < existingEnd && newEndTime > existingStart)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
+        }
+    }
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
  * Function: ShowManagementService::addShow
  * Description: Creates and stores a new show after validating inputs,
  *              ensuring no time conflicts, and computing end time based
@@ -197,6 +243,39 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: ShowManagementService::updateShow
+ * Description: Updates the start and end time of a show after validation.
+ * Parameters:
+ *    startTime (const time_t&) - New start time
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if updated, FAILED otherwise
+ */
+Enums::ProcessStatus ShowManagementService::updateShow(const time_t& startTime, const std::string& showId)
+{
+    Show* show = m_dataStore.getShowByIdForUpdation(showId);
+    if (show == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    const Movie* movie = show->getMovie();
+    if (movie == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    int buffer = 10;
+    int duration = movie->getDuration();
+    time_t endTime = startTime + (duration + buffer) * 60;
+    if (startTime >= endTime)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    show->setStartTime(startTime);
+    show->setEndTime(endTime);
+    return Enums::ProcessStatus::SUCCESS;
 }
 
 /*
@@ -313,7 +392,7 @@ Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId
 }
 
 /*
- * Function: ShowManagementService::isShowCancellable
+ * Function: ShowManagementService::isShowChangable
  * Description: Determines whether a show can be cancelled by checking if any
  *              seats have completed bookings.
  * Parameters:
@@ -322,7 +401,7 @@ Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId
  *    Enums::ProcessStatus - SUCCESS if no completed bookings exist,
  *                           FAILED if the show has existing bookings or is invalid
  */
-Enums::ProcessStatus ShowManagementService::isShowCancellable(const std::string& showId)
+Enums::ProcessStatus ShowManagementService::isShowChangable(const std::string& showId)
 {
     const Show* show = m_dataStore.getShowById(showId);
     if (show == nullptr)
@@ -330,6 +409,10 @@ Enums::ProcessStatus ShowManagementService::isShowCancellable(const std::string&
         return Enums::ProcessStatus::FAILED;
     }
     ShowSeatAvailability* seatAvailability = show->getSeatAvailability();
+    if (seatAvailability == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
     const std::map<std::string, Enums::BookingStatus>& seatMap = seatAvailability->getSeatAvailabilityMap();
     int bookingCount = 0;
     for (std::map<std::string, Enums::BookingStatus>::const_iterator iterator = seatMap.begin(); iterator != seatMap.end(); ++iterator)

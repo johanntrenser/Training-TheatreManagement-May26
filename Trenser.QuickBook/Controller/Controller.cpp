@@ -1116,6 +1116,20 @@ Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string & movie
 }
 
 /*
+ * Function: Controller::isNewShowTimeConflicting
+ * Description: Validates whether a new show time conflicts with existing shows on the same screen.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    newTime (const time_t&) - Proposed new start time
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if no conflict, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isNewShowTimeConflicting(const std::string& showId, const time_t& newTime)
+{
+    return m_showManagementService->isNewShowTimeConflicting(showId, newTime);
+}
+
+/*
  * Function: Controller::addShow
  * Description: Adds a new show for a given movie and screen after validating
  *              inputs and checking for conflicts.
@@ -1134,6 +1148,20 @@ Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string & movie
 Enums::ProcessStatus Controller::addShow(const std::string & movieId, const std::string & screenId, int year, int month, int day, int startTimeHour, int startTimeMinutes)
 {
     return m_showManagementService->addShow(movieId, screenId, year, month, day, startTimeHour, startTimeMinutes);
+}
+
+/*
+ * Function: Controller::updateShow
+ * Description: Updates the start and end time of a show.
+ * Parameters:
+ *    time (const time_t&) - New start time
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if updated, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::updateShow(const time_t& time, const std::string& showId)
+{
+    return m_showManagementService->updateShow(time, showId);
 }
 
 /*
@@ -1194,8 +1222,8 @@ Enums::ShowStatus Controller::getShowStatus(const std::string& showId)
 }
 
 /*
- * Function: Controller::isShowCancellable
- * Description: Checks whether the specified show can be cancelled by verifying
+ * Function: Controller::isShowChangable
+ * Description: Checks whether the specified show can be cancelled or updated by verifying
  *              booking status through the ShowManagementService.
  * Parameters:
  *    showId (const std::string&) - Unique identifier of the show
@@ -1203,9 +1231,9 @@ Enums::ShowStatus Controller::getShowStatus(const std::string& showId)
  *    Enums::ProcessStatus - SUCCESS if the show can be cancelled,
  *                           FAILED otherwise
  */
-Enums::ProcessStatus Controller::isShowCancellable(const std::string& showId)
+Enums::ProcessStatus Controller::isShowChangable(const std::string& showId)
 {
-    return m_showManagementService->isShowCancellable(showId);
+    return m_showManagementService->isShowChangable(showId);
 }
 
 /*
