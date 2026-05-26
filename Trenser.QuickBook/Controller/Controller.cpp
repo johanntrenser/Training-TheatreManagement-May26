@@ -1152,6 +1152,21 @@ const std::vector<std::string> Controller::getActiveShowIds()
     return m_showManagementService->getActiveShowIds();
 }
 
+const std::vector<const Show*> Controller::getAllShows()
+{
+    return m_showManagementService->getAllShows(); 
+}
+
+const std::vector<std::string> Controller::getAllShowIds()
+{
+    return m_showManagementService->getAllShowIds();
+}
+
+Enums::ShowStatus Controller::getShowStatus(const std::string& showId)
+{
+    return m_showManagementService->getShowStatus(showId);
+}
+
 /*
  * Function: Controller::isShowCancellable
  * Description: Checks whether the specified show can be cancelled by verifying

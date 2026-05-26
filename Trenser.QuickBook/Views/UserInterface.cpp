@@ -3362,6 +3362,18 @@ void UserInterface::displayActiveShows()
 	displayShowDetails(shows);
 }
 
+void UserInterface::displayAllShows()
+{
+	const std::vector<const Show*> shows = m_controller->getAllShows();
+	if (shows.empty())
+	{
+		cout << "No shows available!" << endl;
+		util::pressEnter();
+		return;
+	}
+	displayShowDetails(shows);
+}
+
 /*
  * Function: UserInterface::displayShowDetails
  * Description: Displays detailed information for a list of shows including theatre, screen, movie, and start time.
@@ -3466,6 +3478,34 @@ void UserInterface::cancelShow()
 		util::pressEnter();
 		util::clear();
 	}
+}
+
+void UserInterface::viewShowStatus()
+{
+	std::string showId;
+	displayAllShows();
+	cout << "Enter the show id of show to see status of: ";
+	util::readValue(showId);
+	const std::vector<std::string> showIds = m_controller->getAllShowIds();
+	bool isShowIdValid = false;
+	for (std::vector<std::string>::const_iterator iterator = showIds.begin(); iterator != showIds.end(); ++iterator)
+	{
+		if (*iterator == showId)
+		{
+			isShowIdValid = true;
+			break;
+		}
+	}
+	if (!isShowIdValid)
+	{
+		cout << "Show id is not valid!" << endl;
+		util::pressEnter();
+		return;
+	}
+	Enums::ShowStatus status = m_controller->getShowStatus(showId);
+	cout << " Show Status: " << Enums::getShowStatusString(status);
+	util::pressEnter();
+	util::clear();
 }
 
 

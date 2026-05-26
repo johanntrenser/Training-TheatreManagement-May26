@@ -116,7 +116,9 @@ public:
 	void addShow();
 	bool getScreenId(const std::vector<const Screen*>& screens, std::string& screenId);
 	void displayActiveShows(); 
+	void displayAllShows();
 	void displayShowDetails(const std::vector<const Show*> shows);
 	std::string displayTimeAndDate(time_t time);
 	void cancelShow();
+	void viewShowStatus();
 };
