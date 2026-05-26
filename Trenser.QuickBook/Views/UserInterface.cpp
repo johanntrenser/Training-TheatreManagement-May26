@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <iomanip>
 using namespace std;
 #include "InputHelper.h"
 #include "OutputHelper.h"
@@ -176,7 +177,7 @@ void UserInterface::adminMenu()
 {
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
-		cout << "1. Exit" << endl;
+		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout" << endl;
 		cout << "Enter an option: ";
 }
 
@@ -192,7 +193,7 @@ void UserInterface::customerMenu()
 {
 	cout << "Customer Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Exit" << endl;
+	cout << "1. Update User Details\n2. View Profile\n3. Change Password\n4. Logout" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -208,7 +209,7 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Exit" << endl;
+	cout << "1. Update User Details\n2. View Profile\n3. Change Password\n4. Logout" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -238,6 +239,8 @@ void UserInterface::registerUser()
 		break;
     default:
         cout << "Invalid Choice. Please Try again!" << endl;
+		util::pressEnter();
+		util::clear();
         return;
     }
     handleUserDetailsInput(userName, email, password, phoneNumber);
@@ -264,7 +267,6 @@ void UserInterface::registerUser()
  * Returns:
  *    None
  */
-
 void UserInterface::userTypesMenu()
 {
     cout << "-------------------User Type List-------------------" << std::endl;
@@ -273,6 +275,14 @@ void UserInterface::userTypesMenu()
     cout << "Enter a choice: " << std::endl;
 }
 
+/*
+ * Function: UserInterface::handleAdminMenuOperation
+ * Description: Handles the admin menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleAdminMenuOperation()
 {
 	bool isMenuActive = true;
@@ -284,6 +294,30 @@ void UserInterface::handleAdminMenuOperation()
 		switch (choice)
 		{
 		case 1:
+			createUser();
+			break;
+		case 2:
+			viewAllUsers();
+			break;
+		case 3:
+			updateUserDetails();
+			break;
+		case 4:
+			deactivateUser();
+			break;
+		case 5:
+			reactivateUser();
+			break;
+		case 6:
+			viewProfile();
+			break;
+		case 7:
+			viewUserStatus();
+			break;
+		case 8:
+			changePassword();
+			break;
+		case 9:
 			isMenuActive = false;
 			break;
 		default:
@@ -295,6 +329,14 @@ void UserInterface::handleAdminMenuOperation()
 	}
 }
 
+/*
+ * Function: UserInterface::handleCustomerMenuOperation
+ * Description: Handles the customer menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleCustomerMenuOperation()
 {
 	bool isMenuActive = true;
@@ -306,6 +348,15 @@ void UserInterface::handleCustomerMenuOperation()
 		switch (choice)
 		{
 		case 1:
+			updateUserDetails();
+			break;
+		case 2:
+			viewProfile();
+			break;
+		case 3:
+			changePassword();
+			break;
+		case 4:
 			isMenuActive = false;
 			break;
 		default:
@@ -317,6 +368,14 @@ void UserInterface::handleCustomerMenuOperation()
 	}
 }
 
+/*
+ * Function: UserInterface::handleTheatreOwnerMenuOperation
+ * Description: Handles the theatre owner menu loop, displaying options and processing user input.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void UserInterface::handleTheatreOwnerMenuOperation()
 {
 	bool isMenuActive = true;
@@ -328,6 +387,15 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		switch (choice)
 		{
 		case 1:
+			updateUserDetails();
+			break;
+		case 2:
+			viewProfile();
+			break;
+		case 3:
+			changePassword();
+			break;
+		case 4:
 			isMenuActive = false;
 			break;
 		default:
@@ -419,4 +487,370 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
 	getUniquePhoneNumber(phoneNumber);
 }
 
+/*
+ * Function: createUser
+ * Description: Allows an Admin to register a new user directly by selecting
+ *              the role (Customer, Theatre Owner, or Admin) and entering
+ *              user details.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::createUser()
+{
+	string userName, email, password, phoneNumber;
+	Enums::UserType userType = Enums::UserType::CUSTOMER;
+	int choice;
+	userTypesAdminMenu();
+	util::readValue(choice);
+	switch (choice)
+	{
+	case 1:
+		userType = Enums::UserType::CUSTOMER;
+		break;
+	case 2:
+		userType = Enums::UserType::THEATRE_OWNER;
+		break;
+	case 3:
+		userType = Enums::UserType::ADMIN;
+	default:
+		cout << "Invalid Choice. Please Try again!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	handleUserDetailsInput(userName, email, password, phoneNumber);
+	if (m_controller->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "User registered successfully!" << endl;
+		util::pressEnter();
+		util::clear();
+	}
+	else
+	{
+		cout << "User could not be registered!" << endl;
+		util::pressEnter();
+		util::clear();
+	}
+}
 
+/*
+ * Function: userTypesAdminMenu
+ * Description: Displays the list of available user types (Customer, Theatre Owner,
+ *              Admin) for Admin registration.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::userTypesAdminMenu()
+{
+	cout << "-------------------User Type List-------------------" << std::endl;
+	cout << "1. Customer" << std::endl;
+	cout << "2. Theatre Owner" << std::endl;
+	cout << "3. Admin" << std::endl;
+	cout << "Enter a choice: " << std::endl;
+}
+
+/*
+ * Function: UserInterface::updateUserDetails
+ * Description: Provides a menu for the authenticated user to update
+ *              their details (username, email, phone number). Prompts the user
+ *              for each field individually, validates input, and passes the
+ *              update request to the Controller.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::updateUserDetails()
+{
+	bool condition = true;
+	while (condition)
+	{
+		int choice;
+		string input;
+		Enums::ProcessStatus result = Enums::ProcessStatus::FAILED;
+		viewProfile();
+		updateUserDetailsMenu();
+		util::readValue(choice);
+		switch (choice)
+		{
+		case 1:
+			cout << "Enter username: ";
+			util::readValue(input);
+			result = m_controller->setAuthenticatedUserUserName(input);
+			break;
+		case 2:
+			cout << "Enter email: ";
+			util::readValue(input);
+			result = m_controller->setAuthenticatedUserEmail(input);
+			break;
+		case 3:
+			cout << "Enter phoneNumber: ";
+			util::readValue(input);
+			result = m_controller->setAuthenticatedUserPhoneNumber(input);
+			break;
+		case 4:
+			condition = false;
+			break;
+		default:
+			cout << "Enter a valid option!" << endl;
+			util::pressEnter();
+			util::clear();
+			break;
+		}
+		if (choice >= 1 && choice <= 3)
+		{
+			if (result == Enums::ProcessStatus::SUCCESS)
+			{
+				cout << "user Details Updated Successfully" << endl;
+			}
+			else
+			{
+				cout << "failed, could not update user details!" << endl;
+			}
+			util::pressEnter();
+			util::clear();
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::updateUserDetailsMenu
+ * Description: Displays the update user details menu options (username, email,
+ *              phone number, exit) and prompts the user to select an option.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::updateUserDetailsMenu()
+{
+	cout << "<--- User Details Menu---->" << endl;
+	cout << "1. User Name\n2. Email\n3. Phone Number\n4. Exit\nEnter Your Choice: ";
+}
+
+/*
+ * Function: UserInterface::deactivateUser
+ * Description: Displays all users, prompts the Admin to enter a User ID,
+ *              and attempts to deactivate the selected user. Provides feedback on
+ *              whether the deactivation was successful or failed.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::deactivateUser()
+{
+	string userId;
+	viewAllUsers();
+	cout << "Enter the User ID: ";
+	util::readValue(userId);
+	Enums::ProcessStatus result = m_controller->deactivateUser(userId);
+	if (result == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "USER " << userId << " deactivated successfully" << endl;
+	}
+	else
+	{
+		cout << "Invalid User Id, Try again!" << endl;
+	}
+	util::pressEnter();
+	util::clear();
+}
+
+/*
+ * Function: UserInterface::viewInactiveUsers
+ * Description: Retrieves all inactive users from the Controller and displays
+ *              them in a tabular format on the console.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewInactiveUsers()
+{
+	const vector<const User*> users = m_controller->getInactiveUsers();
+	if (users.empty())
+	{
+		cout << "No users found!" << endl;
+	}
+	std::cout << std::left
+		<< std::setw(10) << "User ID"
+		<< std::setw(20) << "Name"
+		<< std::setw(25) << "Email"
+		<< std::setw(15) << "Password"
+		<< std::setw(15) << "Role"
+		<< std::endl;
+	std::cout << std::string(100, '-') << std::endl;
+	for (const User* const user : users)
+	{
+		std::cout << std::left
+			<< std::setw(10) << user->getUserId()
+			<< std::setw(20) << user->getUserName()
+			<< std::setw(25) << user->getEmail()
+			<< std::setw(15) << user->getPassword()
+			<< std::setw(15) << Enums::getUserTypeString(user->getUserType())
+			<< std::endl;
+	}
+	util::pressEnter();
+	util::clear();
+}
+
+/*
+ * Function: UserInterface::reactivateUser
+ * Description: Displays all inactive users, prompts the Admin to enter a User ID,
+ *              and to activate the selected user. Provides feedback on
+ *              whether the activation was successful or failed.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::reactivateUser()
+{
+	string userId;
+	viewInactiveUsers();
+	cout << "Enter the User ID: ";
+	util::readValue(userId);
+	Enums::ProcessStatus result = m_controller->reactivateUser(userId);
+	if (result == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "USER " << userId << " activated successfully" << endl;
+	}
+	else
+	{
+		cout << "Invalid User Id, Try again!" << endl;
+	}
+	util::pressEnter();
+	util::clear();
+}
+
+/*
+ * Function: UserInterface::viewAllUsers
+ * Description: Displays all registered users on the console.
+ *              Shows user details including User ID, Name, Email, Password,
+ *              Role, and Status.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewAllUsers()
+{
+	const vector<const User*>& users = m_controller->getActiveUsers();
+	if (users.empty())
+	{
+		cout << "No users found!" << endl;
+	}
+	else
+	{
+		std::cout << std::left
+			<< std::setw(10) << "Index"
+			<< std::setw(10) << "User ID"
+			<< std::setw(20) << "Name"
+			<< std::setw(25) << "Email"
+			<< std::setw(15) << "Password"
+			<< std::setw(15) << "Role"
+			<< std::endl;
+		std::cout << std::string(100, '-') << std::endl;
+		for (vector<const User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+		{
+			std::cout << std::left
+				<< std::setw(10) << (*iterator)->getUserId()
+				<< std::setw(20) << (*iterator)->getUserName()
+				<< std::setw(25) << (*iterator)->getEmail()
+				<< std::setw(15) << (*iterator)->getPassword()
+				<< std::setw(15) << Enums::getUserTypeString((*iterator)->getUserType())
+				<< std::endl;
+		}
+	}
+	util::pressEnter();
+	util::clear();
+}
+
+/*
+ * Function: UserInterface::viewProfile
+ * Description: Retrieves the currently authenticated user from the Controller
+ *              and displays their profile details.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewProfile()
+{
+	const User* const currentUser = m_controller->getAuthenticatedUser();
+	cout << "User Id: " << currentUser->getUserId() << endl;
+	cout << "Name : " << currentUser->getUserName() << endl;
+	cout << "Email: " << currentUser->getEmail() << endl;
+	cout << "Phone Number: " << currentUser->getUserId() << endl;
+	util::pressEnter();
+	util::clear();
+}
+/*
+ * Function: UserInterface::changePassword
+ * Description: Prompts the currently authenticated user to change their password.
+ *              Requests the current password and a new password from the user,
+ *              validates the new password, and pass the change request to
+ *              the Controller. Provides feedback on whether the password change
+ *              was successful or failed due to a mismatch.
+ * Parameters:
+ *    currentPassword (string) - The current password entered by the user
+ *    newPassword (string)    - The new password entered by the user
+ * Returns:
+ *    None
+ */
+void UserInterface::changePassword()
+{
+	string currentPassword, newPassword;
+	cout << "Enter the current password: ";
+	util::readValue(currentPassword);
+	cout << "Enter the new Password: ";
+	util::readValue(newPassword);
+	util::isPasswordValid(newPassword);
+	Enums::ProcessStatus result = m_controller->changePassword(currentPassword, newPassword);
+	if (result == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Password changed successfully." << endl;
+	}
+	else
+	{
+		cout << "Password does not match." << endl;
+	}
+	util::pressEnter();
+	util::clear();
+}
+/*
+ * Function: UserInterface::viewUserStatus
+ * Description: Prompts the user to enter a User ID and retrieves the status
+ *              of the specified user from the Controller. Displays whether
+ *              the user is Active, Inactive, or not found.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::viewUserStatus()
+{
+	string userId;
+	cout << "Enter User ID: ";
+	util::readValue(userId);
+	Enums::UserStatus status = m_controller->getUserStatus(userId);
+	if (status == Enums::UserStatus::ACTIVE)
+	{
+		cout << "User is Active" << endl;
+	}
+	else if (status == Enums::UserStatus::INACTIVE)
+	{
+		cout << "User is Inactive" << endl;
+	}
+	else
+	{
+		cout << "User not found!" << endl;
+	}
+	util::pressEnter();
+	util::clear();
+}

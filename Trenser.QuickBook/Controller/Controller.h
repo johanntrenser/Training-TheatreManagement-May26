@@ -61,6 +61,17 @@ public:
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	void logout();
+	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
+	const std::vector<const User*> getActiveUsers() const;
+	Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
+	Enums::ProcessStatus setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
+	Enums::ProcessStatus setAuthenticatedUserUserName(const std::string& userName);
+	Enums::ProcessStatus deactivateUser(const std::string& userId);
+	Enums::ProcessStatus reactivateUser(const std::string& userId);
+	const User* const getAuthenticatedUser();
+	const std::vector<const User*> getInactiveUsers();
+	Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
+	Enums::UserStatus getUserStatus(const std::string& userId);
 	~Controller();
 };
 

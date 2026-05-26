@@ -12,31 +12,25 @@
 #include <string>
 #include <vector>
 #include "User.h"
+#include "DataStore.h"
 
 class UserManagementService
 {
+private:
+    DataStore& m_dataStore;
 public:
     UserManagementService();
-    bool createUser(const std::string& name,
-        const std::string& username,
-        const std::string& email,
-        long int phone,
-        const std::string& password);
-
-    bool deactivateUser(const std::string& userId);
-    bool reactivateUser(const std::string& userId);
-
-    std::vector<User*> viewAllUsers() const;
-
-    bool updateUserDetails(const std::string& userId,
-        const std::string& name,
-        const std::string& email,
-        long int phone);
-
-    User* viewProfile(const std::string& userId) const;
-    int viewUserStatus(const std::string& userId) const; // enum placeholder
-
-    void changePassword(const std::string& userId,
-        const std::string& newPassword);
+    const std::string generateUserId();
+    Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
+    const std::vector<const User*> getActiveUsers() const;
+    const std::vector<const User*> getInactiveUsers() const;
+    Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
+    Enums::ProcessStatus setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
+    Enums::ProcessStatus setAuthenticatedUserUserName(const std::string& userName);
+    Enums::ProcessStatus deactivateUser(const std::string& userId);
+    Enums::ProcessStatus reactivateUser(const std::string& userId);
+    Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
+    Enums::UserStatus getUserStatus(const std::string& userId);
+    const User* const getAuthenticatedUser();
 };
 

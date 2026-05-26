@@ -172,6 +172,178 @@ void Controller::logout()
 }
 
 /*
+ * Function: createUser
+ * Description: Delegates the Admin-driven user registration process to the
+ *              UserManagementService. Attempts to register a new user with
+ *              the provided details and role. Returns the outcome of the
+ *              registration attempt.
+ * Parameters:
+ *    userName   - The name of the user to be registered
+ *    email      - The email address of the user
+ *    password   - The password for the user account
+ *    phoneNumber- The phone number of the user
+ *    userType   - The role of the user
+ * Returns:
+ *    enum - SUCCESS if registration is successful,
+ *    enum - FAILED otherwise
+ */
+Enums::ProcessStatus Controller::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
+{
+    if (m_userManagementService->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: getActiveUsers
+ * Description: Retrieves a list of all active users from the UserManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of const User* pointers representing active users
+ */
+const std::vector<const User*> Controller::getActiveUsers() const
+{
+    return m_userManagementService->getActiveUsers();
+}
+
+/*
+ * Function: getInactiveUsers
+ * Description: Retrieves a list of all inactive users from the UserManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of const User* pointers representing inactive users
+ */
+const std::vector<const User*> Controller::getInactiveUsers()
+{
+    return m_userManagementService->getInactiveUsers();
+}
+
+/*
+ * Function: setAuthenticatedUserUserName
+ * Description: Updates the username of the currently authenticated user.
+ * Parameters:
+ *    username - The new username to be set
+ * Returns:
+ *    SUCCESS if the update succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setAuthenticatedUserUserName(const std::string& username)
+{
+    return m_userManagementService->setAuthenticatedUserUserName(username);
+}
+
+/*
+ * Function: setAuthenticatedUserEmail
+ * Description: Updates the email of the currently authenticated user after verifying uniqueness.
+ * Parameters:
+ *    email - The new email to be set
+ * Returns:
+ *    SUCCESS if the update succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setAuthenticatedUserEmail(const std::string& email)
+{
+    if (isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
+    {
+        return m_userManagementService->setAuthenticatedUserEmail(email);
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: setAuthenticatedUserPhoneNumber
+ * Description: Updates the phone number of the currently authenticated user after verifying uniqueness.
+ * Parameters:
+ *    phoneNumber - The new phone number to be set
+ * Returns:
+ *    SUCCESS if the update succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
+{
+    if (isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
+    {
+        return m_userManagementService->setAuthenticatedUserPhoneNumber(phoneNumber);
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: deactivateUser
+ * Description: Passes the deactivation of a user account to the UserManagementService.
+ * Parameters:
+ *    userId - The unique identifier of the user to be deactivated
+ * Returns:
+ *    enum - SUCCESS if activation succeeds,
+ *    enum - FAILED otherwise
+ */
+Enums::ProcessStatus Controller::deactivateUser(const std::string& userId)
+{
+    return m_userManagementService->deactivateUser(userId);
+}
+
+/*
+ * Function: reactivateUser
+ * Description: Delegates the activation of a user account to the UserManagementService.
+ * Parameters:
+ *    userId - The unique identifier of the user to be activated
+ * Returns:
+ *    enum - SUCCESS if activation succeeds,
+ *    enum - FAILED otherwise
+ */
+Enums::ProcessStatus Controller::reactivateUser(const std::string& userId)
+{
+    return m_userManagementService->reactivateUser(userId);
+}
+
+/*
+ * Function: getAuthenticatedUser
+ * Description: Retrieves the currently authenticated user from the UserManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A pointer to the authenticated User object, or nullptr if no user is authenticated
+ */
+const User* const Controller::getAuthenticatedUser()
+{
+    return m_userManagementService->getAuthenticatedUser();
+}
+
+/*
+ * Function: changePassword
+ * Description: Delegates the password change request to the UserManagementService.
+ * Parameters:
+ *    currentPassword - The current password entered by the user
+ *    newPassword     - The new password to be set
+ * Returns:
+ *    SUCCESS if the password change succeeds,
+ *    FAILED otherwise
+ */
+Enums::ProcessStatus Controller::changePassword(const std::string& currentPassword, const std::string& newPassword)
+{
+    return m_userManagementService->changePassword(currentPassword, newPassword);
+}
+
+/*
+ * Function: getUserStatus
+ * Description: Retrieves the status (Active/Inactive) of a user by their ID.
+ * Parameters:
+ *    userId - The unique identifier of the user
+ * Returns:
+ *    ACTIVE if the user is active,
+ *    INACTIVE if the user is inactive,
+ *    or another appropriate status if not found
+ */
+Enums::UserStatus Controller::getUserStatus(const std::string& userId)
+{
+    return m_userManagementService->getUserStatus(userId);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

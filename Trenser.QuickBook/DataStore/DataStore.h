@@ -47,5 +47,10 @@ public:
 	DataStore(const DataStore&) = delete;
 	DataStore& operator=(const DataStore&) = delete;
 	static DataStore& getInstance();
+	User* const getAuthenticatedUser() const;
 	void setAuthenticatedUser(User* user);
+	const Enums::UserType getAuthenticatedUserType() const;
+	void setAuthenticatedUserEmail(const std::string& email);
+	void setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
+	void setAuthenticatedUserName(const std::string& userName);
 };
