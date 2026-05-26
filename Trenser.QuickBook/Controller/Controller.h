@@ -78,13 +78,15 @@ public:
 	Enums::ProcessStatus setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber);
 	Enums::ProcessStatus setTheatreEmailById(const std::string& theatreId, const std::string& email);
 	Enums::ProcessStatus isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute);
+	Enums::ProcessStatus isNewShowTimeConflicting(const std::string& showId, const time_t& newTime);
 	Enums::ProcessStatus addShow(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinutes);
+	Enums::ProcessStatus updateShow(const time_t& time, const std::string& showId);
 	const std::vector<const Show*> getActiveShows();
 	const std::vector<std::string> getActiveShowIds();
 	const std::vector<const Show*> getAllShows();
 	const std::vector<std::string> getAllShowIds();
 	Enums::ShowStatus getShowStatus(const std::string& showId);
-	Enums::ProcessStatus isShowCancellable(const std::string& showId);
+	Enums::ProcessStatus isShowChangable(const std::string& showId);
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 	void logout();
 	~Controller();
