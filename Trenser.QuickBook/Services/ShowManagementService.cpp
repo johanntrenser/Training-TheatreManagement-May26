@@ -392,6 +392,37 @@ Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId
 }
 
 /*
+ * Function: UserInterface::listShowsForAMovie
+ * Description: Displays all active movies, validates user input, and lists shows for the selected movie.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+const std::vector<const Show*> ShowManagementService::getShowsForMovie(const std::string& movieId)
+{
+    std::vector<const Show*> filteredShows;
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+    for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getMovie())
+        {
+            const Movie* movie = iterator->second->getMovie();
+            if (movie->getMovieId() == movieId)
+            {
+                time_t showTime = iterator->second->getStartTime();
+                time_t currentTime = std::time(nullptr);
+                if (difftime(showTime, currentTime) > 0 && iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED)
+                {
+                    filteredShows.push_back(iterator->second);
+                }
+            }
+        }
+    }
+    return filteredShows;
+}
+
+/*
  * Function: ShowManagementService::isShowChangable
  * Description: Determines whether a show can be cancelled by checking if any
  *              seats have completed bookings.

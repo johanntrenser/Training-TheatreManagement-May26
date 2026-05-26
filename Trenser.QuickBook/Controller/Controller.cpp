@@ -236,6 +236,20 @@ const User* Controller::getAuthenticatedUser() const
 }
 
 /*
+ * Function: Controller::getAllActiveMovies
+ * Description: Retrieves all movies currently marked as ACTIVE in the system by delegating
+ *              the request to the MovieManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of constant Movie pointers representing all active movies
+ */
+std::vector<const Movie*> Controller::getAllActiveMovies()
+{
+    return m_movieManagementService->getAllActiveMovies();
+}
+
+/*
  * Function: Controller::isTheatrePhoneNumberUnique
  * Description: Validates whether the provided theatre phone number is unique
  *              by checking against existing theatres in the system.
@@ -585,6 +599,19 @@ Enums::ProcessStatus Controller::isShowChangable(const std::string& showId)
 Enums::ProcessStatus Controller::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
 {
     return m_showManagementService->setShowStatusById(showId, status);
+}
+
+/*
+ * Function: Controller::getShowsForMovie
+ * Description: Retrieves all scheduled future shows for a given movie ID.
+ * Parameters:
+ *    movieId (const std::string) - Unique identifier of the movie
+ * Returns:
+ *    const std::vector<const Show*> - List of shows for the movie
+ */
+const std::vector<const Show*> Controller::getShowsForMovie(const std::string movieId)
+{
+    return m_showManagementService->getShowsForMovie(movieId);
 }
 
 /*

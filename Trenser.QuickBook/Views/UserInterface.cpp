@@ -1424,6 +1424,11 @@ void UserInterface::displayAllShows()
  */
 void UserInterface::displayShowDetails(const std::vector<const Show*> shows)
 {
+	if (shows.empty())
+	{
+		cout << "NO SHOWS TO DISPLAY!" << endl;
+		return;
+	}
 	cout << "\n--------------------------------------------------------------------------------------------------\n";
 	cout << left
 		<< setw(15) << "ID"
@@ -1650,6 +1655,159 @@ Enums::ProcessStatus UserInterface::getNewDateAndTime(time_t& time)
 		return Enums::ProcessStatus::FAILED;
 	}
 	return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: UserInterface::displayMovie
+ * Description: Displays a formatted list of movies with their details (ID, Title, Language, Genre, Duration).
+ * Parameters:
+ *    movies - Vector of constant Movie pointers to display
+ * Returns:
+ *    None
+ */
+void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
+{
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left << setw(10) << "ID"
+		<< setw(10) << "Title"
+		<< setw(10) << "Language"
+		<< setw(10) << "Genre"
+		<< setw(10) << "Duration" << endl;
+	cout << "-------------------------------------------------------------\n";
+	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left << setw(10) << (*iterator)->getMovieId()
+				<< setw(10) << (*iterator)->getTitle()
+				<< setw(10) << (*iterator)->getLanguage()
+				<< setw(10) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getDuration()
+				<< endl;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::displayAllMovies
+ * Description: Retrieves and displays all active movies in the system. If no active movies exist,
+ *              informs the user accordingly.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserInterface::displayAllMovies()
+{
+	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	if (!(movies.empty()))
+	{
+		displayMovie(movies);
+	}
+	else
+	{
+		cout << "\nNo current movies!.";
+	}
+}
+
+/*
+ * Function: UserInterface::getMovieIdFromList
+ * Description: Extracts and returns a list of movie IDs from the given movie collection.
+ * Parameters:
+ *    movies - Vector of constant Movie pointers
+ * Returns:
+ *    A vector of strings containing movie IDs
+ */
+const std::vector<std::string> UserInterface::getMovieIdFromList(const std::vector<const Movie*>& movies)
+{
+	vector<string> movieIds;
+	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		const Movie* movie = *iterator;
+		if (movie)
+		{
+			movieIds.push_back(movie->getMovieId());
+		}
+	}
+	return movieIds;
+}
+
+/*
+ * Function: UserInterface::checkMovieIdIsValid
+ * Description: Validates whether the provided movie ID exists within the given list of IDs.
+ * Parameters:
+ *    movieId     - Movie ID to validate
+ *    movieIdList - Vector of valid movie IDs
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the ID is valid,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus UserInterface::checkMovieIdIsValid(string movieId, const std::vector<string> movieIdList)
+{
+	bool flag = false;
+	for (string id : movieIdList)
+	{
+		if (id == movieId)
+		{
+			flag = true;
+		}
+	}
+	if (flag)
+	{
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::validateMovieIdInput
+ * Description: Prompts the user to enter a movie ID and validates it against
+ *              the list of available movie IDs derived from the provided movies.
+ *              Ensures that the entered ID corresponds to a valid movie in the list.
+ * Parameters:
+ *    movies  - A vector of Movie pointers representing the movies to validate against.
+ *    movieId - Reference string to store the user-entered movie ID.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the entered movie ID is valid.
+ *    Enums::ProcessStatus::FAILED if the entered movie ID is invalid.
+ */
+Enums::ProcessStatus UserInterface::validateMovieIdInput(const std::vector<const Movie*>& movies, std::string& movieId)
+{
+	const vector<string> movieIdList = getMovieIdFromList(movies);
+	cout << "\nEnter the Movie ID: ";
+	util::readValue(movieId);
+	Enums::ProcessStatus status = checkMovieIdIsValid(movieId, movieIdList);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::listShowsForAMovie
+ * Description: Displays all active movies, validates user input, and lists shows for the selected movie.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void UserInterface::listShowsForAMovie()
+{
+	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	std::string movieId;
+	displayAllMovies();
+	cout << "Enter the id of a movie to search shows for: ";
+	util::readValue(movieId);
+	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Invalid movie id!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	const std::vector<const Show*> shows = m_controller->getShowsForMovie(movieId);
+	displayShowDetails(shows);
 }
 
 

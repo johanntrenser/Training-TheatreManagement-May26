@@ -31,6 +31,7 @@ public:
 	const std::vector<const Show*> getAllShows();
 	const std::vector<std::string> getAllShowIds();
 	Enums::ShowStatus getShowStatus(const std::string& showId);
+	const std::vector<const Show*> getShowsForMovie(const std::string& movieId);
 	Enums::ProcessStatus isShowChangable(const std::string& showId);
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 };

@@ -64,4 +64,10 @@ public:
 	void viewShowStatus();
 	void updateShow();
 	Enums::ProcessStatus getNewDateAndTime(time_t& time);
+	void displayMovie(const std::vector<const Movie*>& movies);
+	void displayAllMovies();
+	const std::vector<std::string> getMovieIdFromList(const std::vector<const Movie*>& movies);
+	Enums::ProcessStatus checkMovieIdIsValid(std::string movieId, std::vector<std::string> movieIdList);
+	Enums::ProcessStatus validateMovieIdInput(const std::vector<const Movie*>& movies, std::string& movieId);
+	void listShowsForAMovie();
 };
