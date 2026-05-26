@@ -133,4 +133,6 @@ public:
 	Enums::ProcessStatus handleCardPayment(Enums::PaymentMethod type);
 	Enums::ProcessStatus handleUPIPayment(Enums::PaymentMethod type);
 	int displayPaymentOptions();
+	void viewPaymentStatus();
+	void displayPaymentStatus(const std::string& paymentId);
 };

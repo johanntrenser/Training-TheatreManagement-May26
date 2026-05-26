@@ -18,5 +18,7 @@ public:
     const std::string generatePaymentId();
     Enums::ProcessStatus initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount);
     Payment* getPaymentById(const std::string& paymentId);
+    Enums::ProcessStatus viewPaymentStatus(const std::string& paymentId, std::string& bookingId, double& amount,
+        Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate);
 };
 
