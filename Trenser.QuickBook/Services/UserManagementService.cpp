@@ -229,7 +229,7 @@ const User* const UserManagementService::getAuthenticatedUser()
  */
 Enums::ProcessStatus UserManagementService::changePassword(const std::string& currentPassword, const std::string& newPassword)
 {
-    User* const authenticatedUser = m_dataStore.getAuthenticatedUser();
+    User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::string authenticatedUserPassword = authenticatedUser->getPassword();
     if (currentPassword == authenticatedUserPassword)
     {
