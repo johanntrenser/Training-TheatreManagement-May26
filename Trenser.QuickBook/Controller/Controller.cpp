@@ -199,4 +199,5 @@ void Controller::saveData()
 {
     m_userManagementService->saveUserData();
     m_theatreManagementService->saveTheatreData();
+    m_movieManagementService->saveMovieData();
 }

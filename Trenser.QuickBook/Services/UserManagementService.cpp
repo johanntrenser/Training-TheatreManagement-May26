@@ -150,55 +150,10 @@ void UserManagementService::saveUserData()
             << (iterator->second)->getEmail() << ","
             << pasword << ","
             << (iterator->second)->getPhoneNumber() << ","
-            << userTypeToString((iterator->second)->getUserType()) << ","
-            << userStatusToString((iterator->second)->getStatus()) << "\n";
+            << Enums::getUserTypeString((iterator->second)->getUserType()) << ","
+            << Enums::getUserStatusString((iterator->second)->getStatus()) << "\n";
     }
     userFile.close();
-}
-
-/*
- * Function: UserManagementService::userTypeToString
- * Description: Converts a UserType enum value into its corresponding string representation.
- * Parameters:
- *    type - UserType enum value (ADMIN, CUSTOMER, THEATRE_OWNER)
- * Returns:
- *    String representation of the user type
- */
-std::string UserManagementService::userTypeToString(Enums::UserType type)
-{
-    switch (type)
-    {
-    case Enums::UserType::ADMIN:
-        return "ADMIN";
-        break;
-    case Enums::UserType::CUSTOMER:
-        return "CUSTOMER";
-        break;
-    case Enums::UserType::THEATRE_OWNER:
-        return "THEATRE OWNER";
-        break;
-    }
-}
-
-/*
- * Function: UserManagementService::userStatusToString
- * Description: Converts a UserStatus enum value into its corresponding string representation.
- * Parameters:
- *    status - UserStatus enum value (ACTIVE, INACTIVE)
- * Returns:
- *    String representation of the user status
- */
-std::string UserManagementService::userStatusToString(Enums::UserStatus status)
-{
-    switch (status)
-    {
-    case Enums::UserStatus::ACTIVE:
-        return "ACTIVE";
-        break;
-    case Enums::UserStatus::INACTIVE:
-        return "INACTIVE";
-        break;
-    }
 }
 
 /*

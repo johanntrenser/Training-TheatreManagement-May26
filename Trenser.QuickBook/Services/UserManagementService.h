@@ -46,8 +46,6 @@ public:
     void changePassword(const std::string& userId,
         const std::string& newPassword);
     void saveUserData();
-    std::string userTypeToString(Enums::UserType type);
-    std::string userStatusToString(Enums::UserStatus status);
     void reverseString(std::string& password);
     void encryption(std::string& password);
     void decryption(std::string& password);

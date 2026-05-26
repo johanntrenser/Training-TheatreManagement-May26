@@ -177,7 +177,7 @@ void TheatreManagementService::saveTheatreData()
             << (iterator->second)->getTheatrePhoneNumber() << ","
             << (iterator->second)->getTheatreEmail() << ","
             << (iterator->second)->getTheatreOwner() << ","
-            << theatreStatusToString((iterator->second)->getStatus()) << ",";
+            << Enums::getTheatreStatusString((iterator->second)->getStatus()) << ",";
         for (std::vector<Screen*>::const_iterator screenItertor = (iterator->second)->getScreens().begin(); screenItertor != (iterator->second)->getScreens().end(); ++screenItertor)
         {
             theatreFile << (*screenItertor)->getName();
@@ -198,25 +198,4 @@ void TheatreManagementService::saveTheatreData()
         theatreFile << ",";
     }
     theatreFile.close();
-}
-
-/*
- * Function: TheatreManagementService::theatreStatusToString
- * Description: Converts a TheatreStatus enum value into its corresponding string representation.
- * Parameters:
- *    status - TheatreStatus enum value (ACTIVE, INACTIVE)
- * Returns:
- *    String representation of the theatre status
- */
-std::string TheatreManagementService::theatreStatusToString(Enums::TheatreStatus status)
-{
-    switch (status)
-    {
-    case Enums::TheatreStatus::ACTIVE:
-        return "ACTIVE";
-        break;
-    case Enums::TheatreStatus::INACTIVE:
-        return "INACTIVE";
-        break;
-    }
 }
