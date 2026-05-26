@@ -36,4 +36,3 @@ public:
     void setTime(time_t time);
     void setStatus(Enums::RefundStatus status);
 };
-

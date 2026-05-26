@@ -11,9 +11,9 @@ PaymentManagementService::PaymentManagementService()
 { }
 
 /*
-* Function Name : TicketManagementService::generateTicketId
-* Description   : Generates a unique ticket ID based on the current number
-*                 of tickets in the datastore. The ID is formatted as "USXXX".
+* Function Name : generatePaymentId
+* Description   : Generates a unique payment ID based on the current number
+*                 of payments in the datastore. The ID is formatted as "PAXXX".
 * Parameters    : None
 * Return Type : const std::string
 */
@@ -26,6 +26,13 @@ const std::string PaymentManagementService::generatePaymentId()
     return buffer.str();
 }
 
+/*
+* Function Name : generateRefundId
+* Description   : Generates a unique refund ID based on the current number
+*                 of refunds in the datastore. The ID is formatted as "RFXXX".
+* Parameters    : None
+* Return Type : const std::string
+*/
 const std::string PaymentManagementService::generateRefundId()
 {
     const std::map<std::string, Refund*>& refunds = m_dataStore.getRefunds();
@@ -182,7 +189,4 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Pay
     payment->setStatus(Enums::PaymentStatus::REFUNDED);
     return Enums::ProcessStatus::SUCCESS;
 }
-
-
-
 
