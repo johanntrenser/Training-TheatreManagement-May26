@@ -3390,6 +3390,11 @@ void UserInterface::displayAllShows()
  */
 void UserInterface::displayShowDetails(const std::vector<const Show*> shows)
 {
+	if (shows.empty())
+	{
+		cout << "NO SHOWS TO DISPLAY!" << endl;
+		return;
+	}
 	cout << "\n--------------------------------------------------------------------------------------------------\n";
 	cout << left
 		<< setw(15) << "ID"
@@ -3616,6 +3621,32 @@ Enums::ProcessStatus UserInterface::getNewDateAndTime(time_t& time)
 		return Enums::ProcessStatus::FAILED;
 	}
 	return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: UserInterface::listShowsForAMovie
+ * Description: Displays all active movies, validates user input, and lists shows for the selected movie.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void UserInterface::listShowsForAMovie()
+{
+	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	std::string movieId;
+	displayAllMovies();
+	cout << "Enter the id of a movie to search shows for: ";
+	util::readValue(movieId);
+	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Invalid movie id!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	const std::vector<const Show*> shows = m_controller->getShowsForMovie(movieId);
+	displayShowDetails(shows);
 }
 
 

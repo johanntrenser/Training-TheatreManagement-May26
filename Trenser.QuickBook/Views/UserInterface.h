@@ -123,4 +123,5 @@ public:
 	void viewShowStatus();
 	void updateShow();
 	Enums::ProcessStatus getNewDateAndTime(time_t& time);
+	void listShowsForAMovie();
 };

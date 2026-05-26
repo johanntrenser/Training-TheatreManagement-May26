@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "DataStore.h"
+
 class MovieManagementService
 {
 private:

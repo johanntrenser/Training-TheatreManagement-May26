@@ -405,6 +405,20 @@ const std::vector<const Theatre*> Controller::getAllTheatres()
 }
 
 /*
+ * Function: Controller::getAllActiveMovies
+ * Description: Retrieves all movies currently marked as ACTIVE in the system by delegating
+ *              the request to the MovieManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of constant Movie pointers representing all active movies
+ */
+std::vector<const Movie*> Controller::getAllActiveMovies()
+{
+    return m_movieManagementService->getAllActiveMovies();
+}
+
+/*
  * Function: Controller::isTheatrePhoneNumberUnique
  * Description: Validates whether the provided theatre phone number is unique
  *              by checking against existing theatres in the system.
@@ -675,33 +689,6 @@ Enums::ProcessStatus Controller::addMovieToTheatre(const std::string& theatreId,
 Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int hour, int minute)
 {
     return m_showManagementService->isShowTimeConflicting(movieId, screenId, year, month, day, hour, minute);
-}
-
-/*
- * Function: Controller::getAllActiveMovies
- * Description: Retrieves all active movies from the MovieManagementService.
- *              Acts as a passing layer to access the list of movies that
- *              are currently marked as active in the system.
- * Parameters: None
- * Returns:
- *    A vector of Movie pointers representing all active movies available
- *    in the datastore. Returns an empty vector if no active movies exist.
- */
-std::vector<const Movie*> Controller::getAllActiveMovies()
-{
-    return m_movieManagementService->getAllActiveMovies();
-}
-
-/*
- * Function: Controller::logout
- * Description: Logs out the currently authenticated user by delegating the
- *              operation to the AuthenticationManagementService.
- * Parameters: None
- * Returns: None
- */
-void Controller::logout()
-{
-    m_authenticationManagementService->logout();
 }
 
 /*
@@ -1249,6 +1236,31 @@ Enums::ProcessStatus Controller::isShowChangable(const std::string& showId)
 Enums::ProcessStatus Controller::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
 {
     return m_showManagementService->setShowStatusById(showId, status);
+}
+
+/*
+ * Function: Controller::getShowsForMovie
+ * Description: Retrieves all scheduled future shows for a given movie ID.
+ * Parameters:
+ *    movieId (const std::string) - Unique identifier of the movie
+ * Returns:
+ *    const std::vector<const Show*> - List of shows for the movie
+ */
+const std::vector<const Show*> Controller::getShowsForMovie(const std::string movieId)
+{
+    return m_showManagementService->getShowsForMovie(movieId);
+}
+
+/*
+ * Function: Controller::logout
+ * Description: Logs out the currently authenticated user by delegating the
+ *              operation to the AuthenticationManagementService.
+ * Parameters: None
+ * Returns: None
+ */
+void Controller::logout()
+{
+    m_authenticationManagementService->logout();
 }
 
 /*
