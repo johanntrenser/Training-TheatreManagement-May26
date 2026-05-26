@@ -138,3 +138,26 @@ const std::map<std::string, Payment*>& DataStore::getPayments() const
 {
     return m_payments;
 }
+
+
+/*
+* Function Name : getNotifications
+* Description   : Returns all notifications stored in the datastore.
+* Parameters    : None
+* Return Type   : std::map<std::string, Notification*>&
+*/
+std::map<std::string, Notification*>& DataStore::getNotifications()
+{
+    return m_notifications;
+}
+
+/*
+ * Function: DataStore::getLogs
+ * Description: Retrieves the collection of logs stored in the DataStore.
+ * Returns:
+ *    A constant reference to the map of log IDs to Log pointers.
+ */
+const std::map<std::string, Log*>& DataStore::getLogs() const
+{
+    return m_logs;
+}

@@ -8,7 +8,16 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <fstream>
+#include <map>
+#include "DataStore.h"
+#include "ApplicationConfig.h"
 class NotificationManagementService
 {
+private:
+	DataStore& m_dataStore;
+	const std::string& PATH = config::NOTIFICATION_FILEPATH;
+public:
+	NotificationManagementService();
+	void saveNotificationData();
 };
-

@@ -43,4 +43,5 @@ void PaymentManagementService::savePaymentData()
             << Enums::getPaymentStatusString((iterator->second)->getStatus()) << ","
             << (iterator->second)->getTimeStamp()<<"\n";
     }
+    paymentFile.close();
 }
