@@ -419,6 +419,7 @@ const std::vector<const Show*> ShowManagementService::getShowsForMovie(const std
             }
         }
     }
+    return filteredShows;
 }
 
 /*
