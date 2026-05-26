@@ -9,13 +9,18 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <fstream>
+#include <map>
 #include "DataStore.h"
+#include "ApplicationConfig.h"
 
 class SeatManagementService
 {
 private:
 	DataStore& m_dataStore;
+	const std::string& PATH = config::SEAT_FILEPATH;
 public:
 	SeatManagementService();
+	void saveSeatData();
 };
 

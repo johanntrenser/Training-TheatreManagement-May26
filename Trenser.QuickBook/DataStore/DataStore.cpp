@@ -173,3 +173,17 @@ const std::map<std::string, Refund*>& DataStore::getRefunds() const
 {
     return m_refunds;
 }
+
+/*
+ * Function: DataStore::getSeats
+ * Description: Retrieves all seats stored in the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A constant reference to a map containing all Seat objects,
+ *    keyed by their unique seat IDs.
+ */
+const std::map<std::string, Seat*>& DataStore::getSeats() const
+{
+    return m_seats;
+}
