@@ -243,6 +243,49 @@ const std::vector<std::string> ShowManagementService::getActiveShowIds()
     return filteredShowIds;
 }
 
+const std::vector<const Show*> ShowManagementService::getAllShows()
+{
+    std::vector<const Show*> filteredShows;
+    std::string theatreOwnerId = m_dataStore.getAuthenticatedUser()->getUserId();
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+    for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if (iterator->second != nullptr)
+        {
+            std::string showTheatreOwnerId = iterator->second->getScreen()->getTheatre()->getTheatreOwner()->getUserId();
+            if (theatreOwnerId == showTheatreOwnerId)
+            {
+                filteredShows.push_back(iterator->second);
+            }
+        }
+    }
+    return filteredShows;
+}
+
+const std::vector<std::string> ShowManagementService::getAllShowIds()
+{
+    const std::vector<const Show*> shows = getAllShows();
+    std::vector<std::string> filteredShowIds;
+    for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if (*iterator != nullptr)
+        {
+            filteredShowIds.push_back((*iterator)->getShowId());
+        }
+    }
+    return filteredShowIds;
+}
+
+Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId)
+{
+    const Show* show = m_dataStore.getShowById(showId);
+    if (show != nullptr)
+    {
+        return show->getShowStatus();
+    }
+    return Enums::ShowStatus::NOT_FOUND;
+}
+
 /*
  * Function: ShowManagementService::isShowCancellable
  * Description: Determines whether a show can be cancelled by checking if any

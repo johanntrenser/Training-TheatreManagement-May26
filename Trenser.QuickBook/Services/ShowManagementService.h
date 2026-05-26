@@ -26,6 +26,9 @@ public:
 	Enums::ProcessStatus addShow(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute);
 	const std::vector<const Show*> getActiveShows();
 	const std::vector<std::string> getActiveShowIds();
+	const std::vector<const Show*> getAllShows();
+	const std::vector<std::string> getAllShowIds();
+	Enums::ShowStatus getShowStatus(const std::string& showId);
 	Enums::ProcessStatus isShowCancellable(const std::string& showId);
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 };
