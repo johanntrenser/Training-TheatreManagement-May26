@@ -114,7 +114,6 @@ std::map<std::string, Ticket*>& DataStore::getTickets()
     return m_tickets;
 }
 
-
 /*
  * Function: getScreens
  * Description: get all the screens in the datastore
@@ -126,4 +125,16 @@ std::map<std::string, Ticket*>& DataStore::getTickets()
 const std::map<std::string, Screen*>& DataStore::getScreens() const
 {
     return m_screens;
+}
+
+/*
+ * Function: DataStore::getPayments
+ * Description: Retrieves the collection of payments stored in the DataStore.
+ * Parameters: None
+ * Returns:
+ *    Constant reference to a map of payment IDs to Payment pointers.
+ */
+const std::map<std::string, Payment*>& DataStore::getPayments() const
+{
+    return m_payments;
 }

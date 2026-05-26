@@ -492,6 +492,19 @@ namespace Enums {
         }
         return RefundStatus::FAILED;
     }
+
+    inline std::string getPaymentMethodString(PaymentMethod status)
+    {
+        switch (status)
+        {
+        case PaymentMethod::UPI:
+            return "UPI";
+        case PaymentMethod::CREDIT_CARD:
+            return "CREDIT_CARD";
+        case PaymentMethod::DEBIT_CARD:
+            return "DEBIT_CARD";
+        default:
+            return "UNKNOWN";
+        }
+    }
 }
-
-
