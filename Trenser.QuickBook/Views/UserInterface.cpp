@@ -1396,7 +1396,6 @@ void UserInterface::displayActiveShows()
 	displayShowDetails(shows);
 }
 
-
 /*
  * Function: UserInterface::displayShowDetails
  * Description: Displays detailed information for a list of shows including theatre, screen, movie, and start time.
@@ -1448,6 +1447,59 @@ std::string UserInterface::displayTimeAndDate(time_t time)
 		<< std::setw(2) << std::setfill('0') << local.tm_min << ":"
 		<< std::setw(2) << std::setfill('0') << local.tm_sec;
 	return outputStream.str();
+}
+
+/*
+ * Function: UserInterface::cancelShow
+ * Description: Handles user interaction to cancel a show by validating the show ID,
+ *              checking cancellability, and updating the show status.
+ * Parameters: None
+ * Returns:
+ *    void
+ */
+void UserInterface::cancelShow()
+{
+	std::string showId;
+	displayActiveShows();
+	cout << "Enter the show id of show to cancel: ";
+	util::readValue(showId);
+	const std::vector<std::string> showIds = m_controller->getActiveShowIds();
+	bool isShowIdValid = false;
+	for (std::vector<std::string>::const_iterator iterator = showIds.begin(); iterator != showIds.end(); ++iterator)
+	{
+		if (*iterator == showId)
+		{
+			isShowIdValid = true;
+			break;
+		}
+	}
+	if (!isShowIdValid)
+	{
+		cout << "Show id is not valid!" << endl;
+		util::pressEnter();
+		return;
+	}
+	Enums::ProcessStatus isShowCancellable = m_controller->isShowCancellable(showId);
+	if (isShowCancellable == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Show is not cancellable" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	Enums::ProcessStatus status = m_controller->setShowStatusById(showId, Enums::ShowStatus::CANCELLED);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Show cancelled successfully" << endl;
+		util::pressEnter();
+		util::clear();
+	}
+	else
+	{
+		cout << "Failed to cancel show" << endl;
+		util::pressEnter();
+		util::clear();
+	}
 }
 
 

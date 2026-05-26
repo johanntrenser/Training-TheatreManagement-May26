@@ -208,3 +208,39 @@ void DataStore::addShowSeatAvailability(ShowSeatAvailability* showSeatAvailabili
 {
     m_showSeatAvailabilitys[showSeatAvailability->getShowAvailabiltyId()] = showSeatAvailability;
 }
+
+/*
+ * Function: DataStore::getShowById
+ * Description: Retrieves a show object in read-only mode using its unique ID.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    const Show* - Pointer to the show if found, nullptr otherwise
+ */
+const Show* DataStore::getShowById(const std::string& showId)
+{
+    std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
+    if (iterator == m_shows.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::getShowByIdForUpdation
+ * Description: Retrieves a modifiable show object using its unique ID for update operations.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Show* - Pointer to the show if found, nullptr otherwise
+ */
+Show* DataStore::getShowByIdForUpdation(const std::string& showId)
+{
+    std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
+    if (iterator == m_shows.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}

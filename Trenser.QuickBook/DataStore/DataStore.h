@@ -58,4 +58,6 @@ public:
 	const std::map<std::string, Show*>& getShows() const;
 	const std::map<std::string, ShowSeatAvailability*>& getShowSeatAvailabilitys() const;
 	void addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability);
+	const Show* getShowById(const std::string& showId);
+	Show* getShowByIdForUpdation(const std::string& showId);
 };

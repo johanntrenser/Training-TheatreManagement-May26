@@ -208,18 +208,93 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
 const std::vector<const Show*> ShowManagementService::getActiveShows()
 {
     std::vector<const Show*> filteredShows;
+    std::string theatreOwnerId = m_dataStore.getAuthenticatedUser()->getUserId();
     const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
     {
         if (iterator->second != nullptr)
         {
-            time_t showTime = iterator->second->getStartTime();
-            time_t currentTime = time(nullptr);
-            if (iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED && difftime(showTime, currentTime) > 0)
+            std::string showTheatreOwnerId = iterator->second->getScreen()->getTheatre()->getTheatreOwner()->getUserId();
+            if (theatreOwnerId == showTheatreOwnerId)
             {
-                filteredShows.push_back(iterator->second);
+                time_t showTime = iterator->second->getStartTime();
+                time_t currentTime = time(nullptr);
+                if (iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED && difftime(showTime, currentTime) > 0)
+                {
+                    filteredShows.push_back(iterator->second);
+                }
             }
         }
     }
     return filteredShows;
+}
+
+const std::vector<std::string> ShowManagementService::getActiveShowIds()
+{
+    const std::vector<const Show*> shows = getActiveShows();
+    std::vector<std::string> filteredShowIds;
+    for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if (*iterator != nullptr)
+        {
+            filteredShowIds.push_back((*iterator)->getShowId());
+        }
+    }
+    return filteredShowIds;
+}
+
+/*
+ * Function: ShowManagementService::isShowCancellable
+ * Description: Determines whether a show can be cancelled by checking if any
+ *              seats have completed bookings.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if no completed bookings exist,
+ *                           FAILED if the show has existing bookings or is invalid
+ */
+Enums::ProcessStatus ShowManagementService::isShowCancellable(const std::string& showId)
+{
+    const Show* show = m_dataStore.getShowById(showId);
+    if (show == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    ShowSeatAvailability* seatAvailability = show->getSeatAvailability();
+    const std::map<std::string, Enums::BookingStatus>& seatMap = seatAvailability->getSeatAvailabilityMap();
+    int bookingCount = 0;
+    for (std::map<std::string, Enums::BookingStatus>::const_iterator iterator = seatMap.begin(); iterator != seatMap.end(); ++iterator)
+    {
+        if (iterator->second == Enums::BookingStatus::COMPLETED)
+        {
+            ++bookingCount;
+        }
+    }
+    if (bookingCount > 0)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: ShowManagementService::setShowStatusById
+ * Description: Updates the status of a show by retrieving it from the DataStore
+ *              and modifying its state.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    status (Enums::ShowStatus) - New status to be set
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if update is successful,
+ *                           FAILED if the show is not found
+ */
+Enums::ProcessStatus ShowManagementService::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
+{
+    Show* show = m_dataStore.getShowByIdForUpdation(showId);
+    if (show == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    show->setShowStatus(status);
+    return Enums::ProcessStatus::SUCCESS;
 }
