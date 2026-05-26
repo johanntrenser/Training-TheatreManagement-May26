@@ -61,6 +61,8 @@ public:
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	Enums::ProcessStatus initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount);
+	Enums::ProcessStatus viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
+			double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate);
 	void logout();
 	~Controller();
 };
