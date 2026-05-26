@@ -63,6 +63,19 @@ void DataStore::setAuthenticatedUser(User* user)
 }
 
 /*
+ * Function: DataStore::getMovies
+ * Description: Retrieves the collection of movies stored in the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Constant reference to a map of movie IDs to Movie pointers
+ */
+const std::map<string, Movie*>& DataStore::getMovies() const
+{
+    return m_movies;
+}
+
+/*
  * Function: DataStore::getTheatres
  * Description: Provides access to the collection of theatres stored in the datastore.
  *              Returns a reference to the internal map containing all theatre records.

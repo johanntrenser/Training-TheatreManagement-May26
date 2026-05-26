@@ -65,6 +65,7 @@ public:
 	const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
 	const User* getAuthenticatedUser() const;
+	std::vector<const Movie*> getAllActiveMovies();
 	Enums::ProcessStatus isTheatrePhoneNumberUnique(const std::string& phoneNumber);
 	Enums::ProcessStatus isTheatreEmailUnique(const std::string& email);
 	Enums::ProcessStatus addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
@@ -88,6 +89,7 @@ public:
 	Enums::ShowStatus getShowStatus(const std::string& showId);
 	Enums::ProcessStatus isShowChangable(const std::string& showId);
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
+	const std::vector<const Show*> getShowsForMovie(const std::string movieId);
 	void logout();
 	~Controller();
 };

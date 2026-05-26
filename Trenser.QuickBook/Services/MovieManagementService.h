@@ -8,7 +8,14 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include "DataStore.h"
+
 class MovieManagementService
 {
+private:
+	DataStore& m_dataStore;
+public:
+	MovieManagementService();
+	std::vector<const Movie*> getAllActiveMovies();
 };
 
