@@ -1497,7 +1497,7 @@ void UserInterface::cancelShow()
 		util::pressEnter();
 		return;
 	}
-	Enums::ProcessStatus isShowCancellable = m_controller->isShowCancellable(showId);
+	Enums::ProcessStatus isShowCancellable = m_controller->isShowChangable(showId);
 	if (isShowCancellable == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Show is not cancellable" << endl;
@@ -1552,6 +1552,104 @@ void UserInterface::viewShowStatus()
 	cout << " Show Status: " << Enums::getShowStatusString(status);
 	util::pressEnter();
 	util::clear();
+}
+
+/*
+ * Function: UserInterface::updateShow
+ * Description: Handles user interaction to update a show’s time after validation.
+ * Returns:
+ *    void
+ */
+void UserInterface::updateShow()
+{
+	std::string showId;
+	displayAllShows();
+	cout << "Enter the show id of show to update: ";
+	util::readValue(showId);
+	const std::vector<std::string> showIds = m_controller->getAllShowIds();
+	bool isShowIdValid = false;
+	for (std::vector<std::string>::const_iterator iterator = showIds.begin(); iterator != showIds.end(); ++iterator)
+	{
+		if (*iterator == showId)
+		{
+			isShowIdValid = true;
+			break;
+		}
+	}
+	if (!isShowIdValid)
+	{
+		cout << "Show id is not valid!" << endl;
+		util::pressEnter();
+		return;
+	}
+	Enums::ProcessStatus isShowUpdatable = m_controller->isShowChangable(showId);
+	if (isShowUpdatable == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Show cannot be updated because it has completed bookings!" << endl;
+		util::pressEnter();
+		util::clear();
+	}
+	time_t newTimeAndDate;
+	Enums::ProcessStatus status = getNewDateAndTime(newTimeAndDate);
+	if (status == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Invalid time!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	if (m_controller->isNewShowTimeConflicting(showId, newTimeAndDate) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Cannot update show time as it conflicts with the time of another show!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	if (m_controller->updateShow(newTimeAndDate, showId) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Show updated successfully!" << endl;
+		util::pressEnter();
+	}
+	else
+	{
+		cout << "Failed to update show!" << endl;
+		util::pressEnter();
+	}
+}
+
+/*
+ * Function: UserInterface::getNewDateAndTime
+ * Description: Reads and validates new date/time input from user, ensuring it is in the future.
+ * Parameters:
+ *    time (time_t&) - Reference to store the constructed time
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if valid, FAILED otherwise
+ */
+Enums::ProcessStatus UserInterface::getNewDateAndTime(time_t& time)
+{
+	int year, month, day, startTimeHour, startTimeMinute;
+	cout << "Enter date (YYYY MM DD): ";
+	util::readValue(year);
+	util::readValue(month);
+	util::readValue(day);
+	getValidDate(year, month, day);
+	cout << "Enter start time (HH MM): ";
+	util::readValue(startTimeHour);
+	util::readValue(startTimeMinute);
+	getValidTime(startTimeHour, startTimeMinute);
+	if (!isFutureDateTime(year, month, day, startTimeHour, startTimeMinute))
+	{
+		cout << "Cannot update a show with a past time/date!" << endl;
+		util::pressEnter();
+		util::clear();
+		return Enums::ProcessStatus::FAILED;
+	}
+	time = util::createTime(year, month, day, startTimeHour, startTimeMinute);
+	if (time == -1)
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
+	return Enums::ProcessStatus::SUCCESS;
 }
 
 
