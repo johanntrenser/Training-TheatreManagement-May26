@@ -8,7 +8,17 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <map>
+#include <fstream>
+#include "ApplicationConfig.h"
+#include "DataStore.h"
+
 class TicketManagementService
 {
+private:
+	DataStore& m_dataStore;
+	const std::string& PATH = config::TICKET_FILEPATH;
+public:
+	TicketManagementService();
+	void saveTicketData();
 };
-

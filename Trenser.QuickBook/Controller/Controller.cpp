@@ -194,10 +194,10 @@ Controller::~Controller()
     delete m_refundManagementService;
 }
 
-
 void Controller::saveData()
 {
     m_userManagementService->saveUserData();
     m_theatreManagementService->saveTheatreData();
     m_movieManagementService->saveMovieData();
+    m_ticketManagementService->saveTicketData();
 }

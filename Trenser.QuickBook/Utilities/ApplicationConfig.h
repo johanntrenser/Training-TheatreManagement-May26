@@ -13,4 +13,5 @@ namespace config
 	constexpr const char* SHOW_FILEPATH = "Files/Show.csv";
 	constexpr const char* THEATRE_FILEPATH = "Files/Theatre.csv";
 	constexpr const char* USER_FILEPATH = "Files/User.csv";
+	constexpr const char* TICKET_FILEPATH = "Files/Ticket.csv";
 }

@@ -102,3 +102,14 @@ void DataStore::addMovieToSystem(Movie* movie)
 {
     m_movies[movie->getMovieId()] = movie;
 }
+
+/*
+* Function Name : getTickets
+* Description   : Returns all tickets stored in the datastore.
+* Parameters    : None
+* Return Type   : std::map<std::string, Ticket*>&
+*/
+std::map<std::string, Ticket*>& DataStore::getTickets()
+{
+    return m_tickets;
+}
