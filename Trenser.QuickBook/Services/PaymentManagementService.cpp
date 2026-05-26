@@ -119,6 +119,25 @@ Enums::ProcessStatus PaymentManagementService::viewPaymentStatus(const std::stri
     return Enums::ProcessStatus::SUCCESS;
 }
 
+Enums::ProcessStatus PaymentManagementService::refundPayment(const std::string& paymentId)
+{
+    Payment* payment = getPaymentById(paymentId);
+    if (payment == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    if (payment->getStatus() == Enums::PaymentStatus::REFUNDED)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    if (payment->getStatus() != Enums::PaymentStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    payment->setStatus(Enums::PaymentStatus::REFUNDED);
+    return Enums::ProcessStatus::SUCCESS;
+}
+
 
 
 
