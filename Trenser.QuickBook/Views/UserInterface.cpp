@@ -239,6 +239,8 @@ void UserInterface::registerUser()
 		break;
     default:
         cout << "Invalid Choice. Please Try again!" << endl;
+		util::pressEnter();
+		util::clear();
         return;
     }
     handleUserDetailsInput(userName, email, password, phoneNumber);
@@ -514,16 +516,22 @@ void UserInterface::createUser()
 		userType = Enums::UserType::ADMIN;
 	default:
 		cout << "Invalid Choice. Please Try again!" << endl;
+		util::pressEnter();
+		util::clear();
 		return;
 	}
 	handleUserDetailsInput(userName, email, password, phoneNumber);
 	if (m_controller->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "User registered successfully!" << endl;
+		util::pressEnter();
+		util::clear();
 	}
 	else
 	{
 		cout << "User could not be registered!" << endl;
+		util::pressEnter();
+		util::clear();
 	}
 }
 
@@ -589,6 +597,8 @@ void UserInterface::updateUserDetails()
 			break;
 		default:
 			cout << "Enter a valid option!" << endl;
+			util::pressEnter();
+			util::clear();
 			break;
 		}
 		if (choice >= 1 && choice <= 3)
@@ -601,6 +611,8 @@ void UserInterface::updateUserDetails()
 			{
 				cout << "failed, could not update user details!" << endl;
 			}
+			util::pressEnter();
+			util::clear();
 		}
 	}
 }
@@ -645,6 +657,8 @@ void UserInterface::deactivateUser()
 	{
 		cout << "Invalid User Id, Try again!" << endl;
 	}
+	util::pressEnter();
+	util::clear();
 }
 
 /*
@@ -681,6 +695,8 @@ void UserInterface::viewInactiveUsers()
 			<< std::setw(15) << Enums::getUserTypeString(user->getUserType())
 			<< std::endl;
 	}
+	util::pressEnter();
+	util::clear();
 }
 
 /*
@@ -708,6 +724,8 @@ void UserInterface::reactivateUser()
 	{
 		cout << "Invalid User Id, Try again!" << endl;
 	}
+	util::pressEnter();
+	util::clear();
 }
 
 /*
@@ -749,6 +767,8 @@ void UserInterface::viewAllUsers()
 				<< std::endl;
 		}
 	}
+	util::pressEnter();
+	util::clear();
 }
 
 /*
@@ -767,6 +787,8 @@ void UserInterface::viewProfile()
 	cout << "Name : " << currentUser->getUserName() << endl;
 	cout << "Email: " << currentUser->getEmail() << endl;
 	cout << "Phone Number: " << currentUser->getUserId() << endl;
+	util::pressEnter();
+	util::clear();
 }
 /*
  * Function: UserInterface::changePassword
@@ -798,6 +820,8 @@ void UserInterface::changePassword()
 	{
 		cout << "Password does not match." << endl;
 	}
+	util::pressEnter();
+	util::clear();
 }
 /*
  * Function: UserInterface::viewUserStatus
@@ -826,6 +850,7 @@ void UserInterface::viewUserStatus()
 	else
 	{
 		cout << "User not found!" << endl;
-		util::pressEnter();
 	}
+	util::pressEnter();
+	util::clear();
 }
