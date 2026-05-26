@@ -1396,6 +1396,12 @@ void UserInterface::displayActiveShows()
 	displayShowDetails(shows);
 }
 
+/*
+ * Function: UserInterface::displayAllShows
+ * Description: Displays all shows in tabular format for the authenticated theatre owner.
+ * Returns:
+ *    void
+ */
 void UserInterface::displayAllShows()
 {
 	const std::vector<const Show*> shows = m_controller->getAllShows();
@@ -1514,6 +1520,12 @@ void UserInterface::cancelShow()
 	}
 }
 
+/*
+ * Function: UserInterface::viewShowStatus
+ * Description: Allows the user to view the status of a specific show by ID.
+ * Returns:
+ *    void
+ */
 void UserInterface::viewShowStatus()
 {
 	std::string showId;

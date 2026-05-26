@@ -229,6 +229,12 @@ const std::vector<const Show*> ShowManagementService::getActiveShows()
     return filteredShows;
 }
 
+/*
+ * Function: ShowManagementService::getActiveShowIds
+ * Description: Retrieves IDs of all active shows owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<std::string> - List of show IDs
+ */
 const std::vector<std::string> ShowManagementService::getActiveShowIds()
 {
     const std::vector<const Show*> shows = getActiveShows();
@@ -243,6 +249,12 @@ const std::vector<std::string> ShowManagementService::getActiveShowIds()
     return filteredShowIds;
 }
 
+/*
+ * Function: ShowManagementService::getAllShows
+ * Description: Filters and retrieves all shows owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<const Show*> - List of shows
+ */
 const std::vector<const Show*> ShowManagementService::getAllShows()
 {
     std::vector<const Show*> filteredShows;
@@ -262,6 +274,12 @@ const std::vector<const Show*> ShowManagementService::getAllShows()
     return filteredShows;
 }
 
+/*
+ * Function: ShowManagementService::getAllShowIds
+ * Description: Retrieves IDs of all shows owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<std::string> - List of show IDs
+ */
 const std::vector<std::string> ShowManagementService::getAllShowIds()
 {
     const std::vector<const Show*> shows = getAllShows();
@@ -276,6 +294,14 @@ const std::vector<std::string> ShowManagementService::getAllShowIds()
     return filteredShowIds;
 }
 
+/*
+ * Function: ShowManagementService::getShowStatus
+ * Description: Retrieves the status of a show by its ID.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ShowStatus - Current status of the show or NOT_FOUND if invalid
+ */
 Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId)
 {
     const Show* show = m_dataStore.getShowById(showId);

@@ -483,21 +483,47 @@ const std::vector<const Show*> Controller::getActiveShows()
     return m_showManagementService->getActiveShows();
 }
 
+/*
+ * Function: Controller::getActiveShowIds
+ * Description: Retrieves all active show IDs owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<std::string> - List of show IDs
+ */
 const std::vector<std::string> Controller::getActiveShowIds()
 {
     return m_showManagementService->getActiveShowIds();
 }
 
+/*
+ * Function: Controller::getAllShows
+ * Description: Retrieves all shows owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<const Show*> - List of shows
+ */
 const std::vector<const Show*> Controller::getAllShows()
 {
     return m_showManagementService->getAllShows(); 
 }
 
+/*
+ * Function: Controller::getAllShowIds
+ * Description: Retrieves all show IDs owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<std::string> - List of show IDs
+ */
 const std::vector<std::string> Controller::getAllShowIds()
 {
     return m_showManagementService->getAllShowIds();
 }
 
+/*
+ * Function: Controller::getShowStatus
+ * Description: Retrieves the current status of a show by its ID.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ShowStatus - Current status of the show or NOT_FOUND if invalid
+ */
 Enums::ShowStatus Controller::getShowStatus(const std::string& showId)
 {
     return m_showManagementService->getShowStatus(showId);
