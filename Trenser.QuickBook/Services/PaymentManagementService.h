@@ -23,4 +23,3 @@ public:
     Enums::ProcessStatus refundPayment(Ticket* ticket, Payment* payment);
     const std::string generateRefundId();
 };
-
