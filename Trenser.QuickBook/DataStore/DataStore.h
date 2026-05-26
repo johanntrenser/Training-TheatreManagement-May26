@@ -48,4 +48,8 @@ public:
 	DataStore& operator=(const DataStore&) = delete;
 	static DataStore& getInstance();
 	void setAuthenticatedUser(User* user);
+	void addPayment(Payment* payment);
+	const std::map < std::string, Payment*>& getPayments() const;
+	void addTicket(Ticket* ticket);
+	const std::map < std::string, Ticket*>& getTickets() const;
 };

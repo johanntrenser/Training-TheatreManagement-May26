@@ -499,7 +499,7 @@ Return Type   : void
 void UserInterface::selectPaymentMethod(const std::string& bookingId, double amount)
 {
 	int choice = displayPaymentOptions();
-	Enums::PaymentMethod type;
+	Enums::PaymentMethod type = Enums::PaymentMethod::CREDIT_CARD;
 	Enums::ProcessStatus valid;
 	if (choice == 1)
 	{

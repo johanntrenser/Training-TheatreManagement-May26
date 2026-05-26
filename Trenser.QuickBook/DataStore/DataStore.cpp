@@ -61,3 +61,51 @@ void DataStore::setAuthenticatedUser(User* user)
 {
     m_currentUser = user;
 }
+
+/*
+ * Function: DataStore::addPayment
+ * Description: Adds a new payment object to the DataStore, indexed by its unique payment ID.
+ * Parameters:
+ *    payment - Pointer to the Payment object to be added.
+ * Returns: None
+ */
+void DataStore::addPayment(Payment* payment)
+{
+    m_payment[payment->getPaymentId()] = payment;
+}
+
+/*
+ * Function: DataStore::getPayments
+ * Description: Retrieves the collection of payments stored in the DataStore.
+ * Parameters: None
+ * Returns:
+ *    Constant reference to a map of payment IDs to Payment pointers.
+ */
+const std::map<std::string, Payment*>& DataStore::getPayments() const
+{
+    return m_payment;
+}
+
+/*
+ * Function: DataStore::addTicket
+ * Description: Adds a new ticket object to the DataStore, indexed by its unique ticket ID.
+ * Parameters:
+ *    ticket - Pointer to the Ticket object to be added.
+ * Returns: None
+ */
+void DataStore::addTicket(Ticket* ticket)
+{
+    m_ticket[ticket->getTicketId()] = ticket;
+}
+
+/*
+ * Function: DataStore::getTickets
+ * Description: Retrieves the collection of tickets stored in the DataStore.
+ * Parameters: None
+ * Returns:
+ *    Constant reference to a map of ticket IDs to Ticket pointers.
+ */
+const std::map<std::string, Ticket*>& DataStore::getTickets() const
+{
+    return m_ticket;
+}
