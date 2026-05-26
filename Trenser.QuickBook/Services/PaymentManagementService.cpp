@@ -119,6 +119,18 @@ Enums::ProcessStatus PaymentManagementService::viewPaymentStatus(const std::stri
     return Enums::ProcessStatus::SUCCESS;
 }
 
+/*
+ * Function: PaymentManagementService::refundPayment
+ * Description: Processes a refund for a given payment. Validates that the payment exists,
+ *              has a status of SUCCESS, and has not already been refunded. Updates the
+ *              payment status to REFUNDED if all conditions are met.
+ * Parameters:
+ *    paymentId - Unique identifier of the payment to be refunded.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the payment was successfully refunded.
+ *    Enums::ProcessStatus::FAILED if the payment does not exist, is already refunded,
+ *    or is not in a SUCCESS state.
+ */
 Enums::ProcessStatus PaymentManagementService::refundPayment(const std::string& paymentId)
 {
     Payment* payment = getPaymentById(paymentId);
