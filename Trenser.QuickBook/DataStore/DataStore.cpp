@@ -422,4 +422,27 @@ Ticket* DataStore::getTicketById(const std::string& ticketId) const
     return ticket->second;
 }
 
+/*
+ * Function: DataStore::addPayment
+ * Description: Adds a new payment object to the DataStore, indexed by its unique payment ID.
+ * Parameters:
+ *    payment - Pointer to the Payment object to be added.
+ * Returns: None
+ */
+void DataStore::addPayment(Payment* payment)
+{
+    m_payment[payment->getPaymentId()] = payment;
+}
+
+/*
+ * Function: DataStore::getPayments
+ * Description: Retrieves the collection of payments stored in the DataStore.
+ * Parameters: None
+ * Returns:
+ *    Constant reference to a map of payment IDs to Payment pointers.
+ */
+const std::map<std::string, Payment*>& DataStore::getPayments() const
+{
+    return m_payment;
+}
 

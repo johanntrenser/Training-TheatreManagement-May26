@@ -1,3 +1,5 @@
+#include <string>
+#include "DataStore.h"
 /*
  * File: TicketManagementService.h
  * Description: Declares the TicketManagementService class, which provides

@@ -1252,6 +1252,24 @@ const std::vector<const Show*> Controller::getShowsForMovie(const std::string mo
 }
 
 /*
+*Function: Controller::initiatePayment
+* Description : Initiates the payment process for a given booking by passing
+* the request to the PaymentManagementService.Handles payment
+* creation, validation, and ticket generation through the service layer.
+* Parameters :
+    *bookingId - Unique identifier of the booking for which payment is to be initiated.
+    * paymentMethod - Enum value representing the chosen payment method(e.g., CARD, UPI).
+    * amount - The payment amount to be processed.
+    * Returns :
+    *Enums::ProcessStatus::SUCCESS if the payment and ticket generation were successful.
+    * Enums::ProcessStatus::FAILED if the booking does not exist or if the operation fails.
+*/
+Enums::ProcessStatus Controller::initiatePayment(const std::string & bookingId, Enums::PaymentMethod paymentMethod, double amount)
+{
+    return m_paymentManagementService->initiatePayment(bookingId, paymentMethod, amount);
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.
