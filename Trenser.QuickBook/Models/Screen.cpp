@@ -23,8 +23,9 @@ Screen::Screen()
     m_totalRows(0),
     m_totalColumns(0),
     m_seatGrid(),
-    m_screenStatus(0)
-{}
+    m_screenStatus(Enums::ScreenStatus::AVAILABLE)
+{
+}
 
 /*
  * Function: Screen::Screen
@@ -45,16 +46,16 @@ Screen::Screen(const std::string& screenId,
     const std::string& name,
     int totalRows,
     int totalColumns,
-    const std::vector<std::vector<Seat*>>& seatGrid,
-    int screenStatus)
+    const std::vector<std::vector<Seat*>>& seatGrid)
     : m_screenId(screenId),
     m_theatre(theatre),
     m_name(name),
     m_totalRows(totalRows),
     m_totalColumns(totalColumns),
     m_seatGrid(seatGrid),
-    m_screenStatus(screenStatus)
-{}
+    m_screenStatus(Enums::ScreenStatus::AVAILABLE)
+{
+}
 
 /*
  * Function: Screen::getScreenId
@@ -128,7 +129,7 @@ const std::vector<std::vector<Seat*>>& Screen::getSeatGrid() const
  * Returns:
  *    int - Screen status
  */
-int Screen::getScreenStatus() const
+Enums::ScreenStatus Screen::getScreenStatus() const
 {
     return m_screenStatus;
 }
@@ -219,7 +220,7 @@ void Screen::setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid)
  * Returns:
  *    void
  */
-void Screen::setScreenStatus(int screenStatus)
+void Screen::setScreenStatus(Enums::ScreenStatus screenStatus)
 {
     m_screenStatus = screenStatus;
 }

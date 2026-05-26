@@ -8,7 +8,18 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <map>
+#include <fstream>
+#include <vector>
+#include "DataStore.h"
+#include "ApplicationConfig.h"
+
 class ScreenManagementService
 {
+private:
+	DataStore& m_dataStore;
+	const std::string& PATH = config::SCREEN_FILEPATH;
+public:
+	ScreenManagementService();
+	void saveScreenData();
 };
-

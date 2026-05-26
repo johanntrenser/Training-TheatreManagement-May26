@@ -200,4 +200,5 @@ void Controller::saveData()
     m_theatreManagementService->saveTheatreData();
     m_movieManagementService->saveMovieData();
     m_ticketManagementService->saveTicketData();
+    m_ScreenManagementService->saveScreenData();
 }

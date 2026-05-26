@@ -52,4 +52,5 @@ public:
 	const std::map<std::string, Movie*>& getMovies() const;
 	void addMovieToSystem(Movie* movie);
 	std::map<std::string, Ticket*>& getTickets();
+	const std::map<std::string, Screen*>& getScreens() const;
 };

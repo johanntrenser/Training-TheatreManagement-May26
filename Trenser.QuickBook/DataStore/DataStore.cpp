@@ -113,3 +113,17 @@ std::map<std::string, Ticket*>& DataStore::getTickets()
 {
     return m_tickets;
 }
+
+
+/*
+ * Function: getScreens
+ * Description: get all the screens in the datastore
+ * Parameters:
+ *    None
+ * Returns:
+ *    std::map<std::string, Screen*>& - reference of map of screens
+ */
+const std::map<std::string, Screen*>& DataStore::getScreens() const
+{
+    return m_screens;
+}

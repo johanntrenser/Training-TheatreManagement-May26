@@ -9,7 +9,13 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include "DataStore.h"
+
 class SeatManagementService
 {
+private:
+	DataStore& m_dataStore;
+public:
+	SeatManagementService();
 };
 
