@@ -485,6 +485,95 @@ Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& t
 }
 
 /*
+ * Function: UserInterface::getMoviesByTitleInput
+ * Description: Prompts the user to enter a movie title and retrieves all movies
+ *              matching that title from the Controller. Acts as a user input
+ *              handler for initiating movie search operations.
+ * Parameters: None
+ * Returns:
+ *    A vector of constant Movie pointers representing the movies that match
+ *    the entered title. Returns an empty vector if no movies are found.
+ */
+const std::vector<const Movie*> UserInterface::getMoviesByTitleInput()
+{
+	std::string title;
+	cout << "\nEnter the movie title: ";
+	util::readValue(title);
+	return m_controller->searchMovieByTitle(title);
+}
+
+/*
+ * Function: UserInterface::validateMovieIdInput
+ * Description: Prompts the user to enter a movie ID and validates it against
+ *              the list of available movie IDs derived from the provided movies.
+ *              Ensures that the entered ID corresponds to a valid movie in the list.
+ * Parameters:
+ *    movies  - A vector of Movie pointers representing the movies to validate against.
+ *    movieId - Reference string to store the user-entered movie ID.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the entered movie ID is valid.
+ *    Enums::ProcessStatus::FAILED if the entered movie ID is invalid.
+ */
+Enums::ProcessStatus UserInterface::validateMovieIdInput(const std::vector<const Movie*>& movies, std::string& movieId)
+{
+	const vector<string> movieIdList = getMovieIdFromList(movies);
+	cout << "\nEnter the Movie ID: ";
+	util::readValue(movieId);
+	Enums::ProcessStatus status = checkMovieIdIsValid(movieId, movieIdList);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::editMovieDetails
+ * Description: Provides an interactive menu-driven workflow for editing movie details.
+ *              Allows the user to update attributes such as title, language, genre,
+ *              and duration for a selected movie. Continuously prompts the user until
+ *              they choose to exit by entering 0.
+ * Parameters:
+ *    movieId      - Unique identifier of the movie to be edited.
+ *    currentMovie - Pointer to the current Movie object being updated.
+ * Returns: None
+ */
+void UserInterface::editMovieDetails(const std::string& movieId, const Movie* currentMovie)
+{
+	int choice = 1;
+	std::string title, genre, language;
+	int duration;
+	while (choice != 0)
+	{
+		displayEditMovieMenu();
+		util::readValue(choice);
+		switch (choice)
+		{
+		case 1:
+			cout << "\nEnter the new Title: ";
+			util::readValue(title);
+			changeMovieTitle(movieId, title, currentMovie);
+			break;
+		case 2:
+			cout << "\nEnter the new Language: ";
+			util::readValue(language);
+			changeMovieLanguage(movieId, language, currentMovie);
+			break;
+		case 3:
+			cout << "\nEnter the new Genre: ";
+			util::readValue(genre);
+			changeMovieGenre(movieId, genre, currentMovie);
+			break;
+		case 4:
+			cout << "\nEnter the new Duration: ";
+			util::readValue(duration);
+			changeMovieDuration(movieId, duration, currentMovie);
+			break;
+		}
+	}
+}
+
+/*
  * Function: UserInterface::updateMovie
  * Description: Allows the user to update details of an existing movie by searching with its title,
  *              validating the movie ID, and presenting an edit menu for modifying attributes.
@@ -495,61 +584,24 @@ Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& t
  */
 void UserInterface::updateMovie()
 {
-	string title, movieId, genre, language;
-	int choice = 1, duration;
-	cout << "\nEnter the movie title: ";
-	util::readValue(title);
-	const std::vector<const Movie*> movies = m_controller->searchMovieByTitle(title);
-	if (!movies.empty())
+	const std::vector<const Movie*> movies = getMoviesByTitleInput();
+	if (movies.empty())
 	{
-		displayMovie(movies);
-		const vector<string> movieIdList = getMovieIdFromList(movies);
-		cout << "\nEnter the Movie ID: ";
-		util::readValue(movieId);
-		if (checkMovieIdIsValid(movieId, movieIdList) == Enums::ProcessStatus::SUCCESS)
-		{
-			displayCurrentMovieDetails(movieId, movies);
-			const Movie* currentMovie = getCurrentMovie(movieId, movies);
-			while (choice != 0)
-			{
-				displayEditMovieMenu();
-				util::readValue(choice);
-				if (choice == 1)
-				{
-					cout << "\nEnter the new Title: ";
-					util::readValue(title);
-					changeMovieTitle(movieId, title, currentMovie);
-				}
-				else if (choice == 2)
-				{
-					cout << "\nEnter the new Language: ";
-					util::readValue(language);
-					changeMovieLanguage(movieId, language, currentMovie);
-				}
-				else if (choice == 3)
-				{
-					cout << "\nEnter the new Genre: ";
-					util::readValue(genre);
-					changeMovieGenre(movieId, genre, currentMovie);
-				}
-				else if (choice == 4)
-				{
-					cout << "\nEnter the new Duration: ";
-					util::readValue(duration);
-					changeMovieDuration(movieId, duration, currentMovie);
-				}
-			}
-		}
-		else
-		{
-			cout << "\nEnter valid Movie Id from list!";
-		}
+		cout << "\nNo movies found with given title.";
+		return;
 	}
-	else
+	displayMovie(movies);
+	std::string movieId;
+	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
 	{
-		cout << "\nNo movies with " << title << " name!.";
+		cout << "\nEnter valid Movie Id from list!";
+		return;
 	}
+	displayCurrentMovieDetails(movieId, movies);
+	const Movie* currentMovie = getCurrentMovie(movieId, movies);
+	editMovieDetails(movieId, currentMovie);
 }
+
 
 /*
  * Function: UserInterface::displayMovie
@@ -681,6 +733,7 @@ const Movie* UserInterface::getCurrentMovie(string& movieId, const std::vector<c
 			return *iterator;
 		}
 	}
+	return nullptr;
 }
 
 /*
@@ -711,7 +764,7 @@ void UserInterface::displayEditMovieMenu()
  * Returns:
  *    None
  */
-void UserInterface::changeMovieTitle(string& movieId, string& title, const Movie*& currentMovie)
+void UserInterface::changeMovieTitle(const string& movieId, const string& title, const Movie*& currentMovie)
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(title, currentMovie->getLanguage(), currentMovie->getGenre(), currentMovie->getDuration()))
 	{
@@ -741,7 +794,7 @@ void UserInterface::changeMovieTitle(string& movieId, string& title, const Movie
  * Returns:
  *    None
  */
-void UserInterface::changeMovieLanguage(string& movieId, string& language, const Movie*& currentMovie)
+void UserInterface::changeMovieLanguage(const string& movieId, const string& language, const Movie*& currentMovie)
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(currentMovie->getTitle(), language, currentMovie->getGenre(), currentMovie->getDuration()))
 	{
@@ -771,7 +824,7 @@ void UserInterface::changeMovieLanguage(string& movieId, string& language, const
  * Returns:
  *    None
  */
-void UserInterface::changeMovieGenre(string& movieId, string& genre, const Movie*& currentMovie)
+void UserInterface::changeMovieGenre(const string& movieId, const string& genre, const Movie*& currentMovie)
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(currentMovie->getTitle(), currentMovie->getLanguage(), genre, currentMovie->getDuration()))
 	{
@@ -801,7 +854,7 @@ void UserInterface::changeMovieGenre(string& movieId, string& genre, const Movie
  * Returns:
  *    None
  */
-void UserInterface::changeMovieDuration(string& movieId, int& duration, const Movie*& currentMovie)
+void UserInterface::changeMovieDuration(const string& movieId, int& duration, const Movie*& currentMovie)
 {
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(currentMovie->getTitle(), currentMovie->getLanguage(), currentMovie->getGenre(), duration))
 	{
