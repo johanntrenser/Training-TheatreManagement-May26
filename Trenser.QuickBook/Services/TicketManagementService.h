@@ -1,3 +1,5 @@
+#include <string>
+#include "DataStore.h"
 /*
  * File: TicketManagementService.h
  * Description: Declares the TicketManagementService class, which provides
@@ -10,5 +12,10 @@
 #pragma once
 class TicketManagementService
 {
+    DataStore& m_dataStore;
+public:
+    TicketManagementService();
+    const std::string generateTicketId();
+    Enums::ProcessStatus generateTicket(Payment* payment, User* user);
 };
 
