@@ -151,13 +151,17 @@ Enums::ProcessStatus ScreenManagementService::updateScreenName(const std::string
 	std::vector<Screen*>& screens = theatre->getScreensForUpdation();
 	for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 	{
+		if ((*iterator)->getName() == name)
+		{
+			return Enums::ProcessStatus::ALREADY_EXISTS;
+		}
 		if ((*iterator)->getScreenId() == screenId)
 		{
 			(*iterator)->setName(name);
 			return Enums::ProcessStatus::SUCCESS;
 		}
 	}
-	return Enums::ProcessStatus::FAILED;
+	return Enums::ProcessStatus::NOT_FOUND;
 }
 
 /*
@@ -175,21 +179,8 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
 	{
 		return Enums::ProcessStatus::FAILED;
 	}
-	const std::map<std::string, Show*>& shows = m_dataStore.getShows();
-	bool hasActiveShows = false;
-	for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
-	{
-		if (iterator->second->getScreen()->getScreenId() == screenId)
-		{
-			if (iterator->second->getShowStatus() == Enums::ShowStatus::RUNNING
-				|| iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED)
-			{
-				hasActiveShows = true;
-				break;
-			}
-		}
-	}
-	if (!hasActiveShows)
+	Enums::ProcessStatus status = hasActiveShows(theatreId, screenId);
+	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		std::vector<Screen*>& screens = theatre->getScreensForUpdation();
 		for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
@@ -198,7 +189,7 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
 			{
 				if ((*iterator)->getScreenStatus() == Enums::ScreenStatus::UNAVAILABLE)
 				{
-					return Enums::ProcessStatus::FAILED;
+					return Enums::ProcessStatus::ALREADY_EXISTS;
 				}
 				(*iterator)->setScreenStatus(Enums::ScreenStatus::UNAVAILABLE);
 				return Enums::ProcessStatus::SUCCESS;
@@ -206,6 +197,35 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
 		}
 	}
 	return Enums::ProcessStatus::NOT_FOUND;
+}
+
+/*
+* Function Name : ScreenManagementService::hasActiveShows
+* Description   : Checks if a given screen in a theatre has any active shows.
+*                 Active shows are defined as those with status RUNNING or SCHEDULED.
+*                 Returns FAILED if active shows exist, otherwise SUCCESS.
+* Parameters    :
+*                  theatreId - The unique identifier of the theatre
+*                  screenId  - The unique identifier of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus ScreenManagementService::hasActiveShows(const std::string& theatreId, const std::string& screenId)
+{
+	const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+	Enums::ProcessStatus status = Enums::ProcessStatus::SUCCESS;
+	for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	{
+		if (iterator->second->getScreen()->getScreenId() == screenId)
+		{
+			if (iterator->second->getShowStatus() == Enums::ShowStatus::RUNNING
+				|| iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED)
+			{
+				status = Enums::ProcessStatus::FAILED;
+				return status;
+			}
+		}
+	}
+	return status;
 }
 
 /*
@@ -226,7 +246,7 @@ Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string
 		{
 			if ((*iterator)->getScreenStatus() == Enums::ScreenStatus::AVAILABLE)
 			{
-				return Enums::ProcessStatus::FAILED;
+				return Enums::ProcessStatus::ALREADY_EXISTS;
 			}
 			(*iterator)->setScreenStatus(Enums::ScreenStatus::AVAILABLE);
 			return Enums::ProcessStatus::SUCCESS;
