@@ -23,17 +23,6 @@ const std::map<string, User*>& DataStore::getUsers() const
 }
 
 /*
-* Function Name : getAuthenticatedUser
-* Description   : Returns the currently authenticated user.
-* Parameters    : None
-* Return Type   : const User*
-*/
-const User* DataStore::getAuthenticatedUser() const
-{
-    return m_currentUser;
-}
-
-/*
  * Function: DataStore::addUser
  * Description: Adds a new user to the DataStore by inserting the user object
  *              into the internal map keyed by the user's unique ID.
