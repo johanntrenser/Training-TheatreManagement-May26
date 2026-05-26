@@ -79,3 +79,46 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     }
     return Enums::ProcessStatus::SUCCESS;
 }
+
+/*
+ * Function: PaymentManagementService::viewPaymentStatus
+ * Description: Retrieves the status and details of a payment by its unique identifier.
+ *              Validates that the payment exists and belongs to the currently authenticated user.
+ *              Populates the provided reference parameters with booking ID, amount, payment method,
+ *              payment status, and payment date if validation succeeds.
+ * Parameters:
+ *    paymentId     - Unique identifier of the payment to be viewed.
+ *    bookingId     - Reference string to store the associated booking ID.
+ *    amount        - Reference double to store the payment amount.
+ *    paymentMethod - Reference enum to store the payment method used.
+ *    paymentStatus - Reference enum to store the current status of the payment.
+ *    paymentDate   - Reference string to store the payment date.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the payment exists, belongs to the current user,
+ *    and details were successfully retrieved.
+ *    Enums::ProcessStatus::FAILED if the payment does not exist or does not belong to the current user.
+ */
+Enums::ProcessStatus PaymentManagementService::viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
+    double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate)
+{
+    Payment* payment = getPaymentById(paymentId);
+    if (payment == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    const User* currentUser = m_dataStore.getAuthenticatedUser();
+    if (payment->getBooking()->getCustomer()->getUserId() != currentUser->getUserId())
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    bookingId = payment->getBooking()->getBookingId();
+    amount = payment->getAmount();
+    paymentMethod = payment->getPaymentMethod();
+    paymentStatus = payment->getStatus();
+    paymentDate = payment->getTimeStamp();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+
+
+

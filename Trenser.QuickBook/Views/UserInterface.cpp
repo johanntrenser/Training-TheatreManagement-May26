@@ -487,6 +487,51 @@ int UserInterface::displayPaymentOptions()
 }
 
 /*
+ * Function: UserInterface::displayPaymentStatus
+ * Description: Displays the details of a payment based on its unique identifier.
+ *              Retrieves payment information from the Controller and prints
+ *              the payment ID, booking ID, amount, method, status, and date
+ *              to the console. Handles cases where the payment is not found.
+ * Parameters:
+ *    paymentId - A string representing the unique identifier of the payment to be displayed.
+ * Returns: None
+ */
+void UserInterface::displayPaymentStatus(const std::string& paymentId)
+{
+	std::string bookingId;
+	double amount;
+	Enums::PaymentMethod paymentMethod;
+	Enums::PaymentStatus paymentStatus;
+	std::string paymentDate;
+	if (m_controller->viewPaymentStatus(paymentId,bookingId,amount,paymentMethod,paymentStatus,paymentDate) == Enums::ProcessStatus::FAILED)
+	{
+		std::cout << "\nPayment not found!";
+		return;
+	}
+	std::cout << "\nPayment ID   : " << paymentId;
+	std::cout << "\nBooking ID   : " << bookingId;
+	std::cout << "\nAmount       : " << amount;
+	std::cout << "\nMethod       : " << static_cast<int>(paymentMethod);
+	std::cout << "\nStatus       : " << static_cast<int>(paymentStatus);
+	std::cout << "\nPayment Date : " << paymentDate;
+}
+
+/*
+ * Function: UserInterface::viewPaymentStatus
+ * Description: Prompts the user to enter a payment ID and then calls
+ *              displayPaymentStatus to show the corresponding payment details.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::viewPaymentStatus()
+{
+	std::string paymentId;
+	cout<<"\nEnter payment Id: ";
+	util::readValue(paymentId);
+	displayPaymentStatus(paymentId);
+}
+
+/*
 Function Name : selectPaymentMethod
 Description   : Allows the user to select a payment method, validates
 				the input, and initiates payment through the controller.
