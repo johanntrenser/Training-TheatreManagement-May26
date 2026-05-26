@@ -3858,7 +3858,7 @@ int UserInterface::displayPaymentOptions()
 void UserInterface::displayPaymentStatus(const std::string& paymentId)
 {
 	std::string bookingId;
-	double amount;
+	double amount = 0.0;
 	Enums::PaymentMethod paymentMethod;
 	Enums::PaymentStatus paymentStatus;
 	std::string paymentDate;

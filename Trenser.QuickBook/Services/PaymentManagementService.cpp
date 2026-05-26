@@ -1,7 +1,8 @@
-#include "PaymentManagementService.h"
-#include "TicketManagementService.h"
 #include <iomanip>
 #include <sstream>
+#include "PaymentManagementService.h"
+#include "TicketManagementService.h"
+#include "BookingManagementService.h"
 #include "Factory.h"
 #include "TimeStamp.h"
 
@@ -22,6 +23,15 @@ const std::string PaymentManagementService::generatePaymentId()
     int idNumber = static_cast<int>(payments.size()) + 1;
     std::ostringstream buffer;
     buffer << "PA" << std::setw(3) << std::setfill('0') << idNumber;
+    return buffer.str();
+}
+
+const std::string PaymentManagementService::generateRefundId()
+{
+    const std::map<std::string, Refund*>& refunds = m_dataStore.getRefunds();
+    int idNumber = static_cast<int>(refunds.size()) + 1;
+    std::ostringstream buffer;
+    buffer << "RF" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
 }
 
@@ -63,13 +73,14 @@ Payment* PaymentManagementService::getPaymentById(const std::string& paymentId)
 Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount)
 {
     TicketManagementService ticketManagementService;
-    Booking* booking = m_dataStore.getBookingById(bookingId);
+    Booking* booking = nullptr;
+    //Booking* booking = m_dataStore.getBookingById(bookingId);
     if (booking == nullptr)
     {
         return Enums::ProcessStatus::FAILED;
     }
     std::string paymentId = generatePaymentId();
-    Payment* payment = Factory::getObject<Payment>(paymentId, booking, amount, paymentMethod, Enums::PaymentStatus::SUCCESS, util::Timestamp());
+    Payment* payment = Factory::getObject<Payment>(paymentId, booking, amount, paymentMethod, "nil"); //add timestamp here
     m_dataStore.addPayment(payment);
     User* currentUser = m_dataStore.getAuthenticatedUser();
     Enums::ProcessStatus status = ticketManagementService.generateTicket(payment, currentUser);
@@ -125,15 +136,19 @@ Enums::ProcessStatus PaymentManagementService::viewPaymentStatus(const std::stri
  *              has a status of SUCCESS, and has not already been refunded. Updates the
  *              payment status to REFUNDED if all conditions are met.
  * Parameters:
- *    paymentId - Unique identifier of the payment to be refunded.
+ *    Ticket* - Pointer to the ticket object which is to be cancelled.
+ *    Payment* - Pointer to the payment object which is to be refunded.
  * Returns:
  *    Enums::ProcessStatus::SUCCESS if the payment was successfully refunded.
  *    Enums::ProcessStatus::FAILED if the payment does not exist, is already refunded,
  *    or is not in a SUCCESS state.
  */
-Enums::ProcessStatus PaymentManagementService::refundPayment(const std::string& paymentId)
+Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Payment* payment)
 {
-    Payment* payment = getPaymentById(paymentId);
+    if (ticket == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
     if (payment == nullptr)
     {
         return Enums::ProcessStatus::FAILED;
@@ -146,6 +161,24 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(const std::string& 
     {
         return Enums::ProcessStatus::FAILED;
     }
+    Booking* booking = payment->getBooking();
+    if (booking == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    BookingManagementService bookingManagementService;
+    Enums::ProcessStatus status = Enums::ProcessStatus::FAILED;
+    //status =  bookingManagementService.cancelBooking(booking);
+    if(status == Enums::ProcessStatus::FAILED)
+    { 
+        return Enums::ProcessStatus::FAILED;
+    }
+    Refund* refund = Factory::getObject<Refund>(generateRefundId(), ticket, payment->getAmount(), std::time(0));
+    if (!refund)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    m_dataStore.addRefund(refund);
     payment->setStatus(Enums::PaymentStatus::REFUNDED);
     return Enums::ProcessStatus::SUCCESS;
 }
