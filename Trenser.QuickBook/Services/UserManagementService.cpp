@@ -74,7 +74,10 @@ const std::vector<const User*> UserManagementService::getActiveUsers() const
         const std::map<std::string, User*> users = m_dataStore.getUsers();
         for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
         {
-            constUsers.push_back(iterator->second);
+            if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
+            {
+                constUsers.push_back(iterator->second);
+            }
         }
         return constUsers;
     }
@@ -229,7 +232,7 @@ const User* const UserManagementService::getAuthenticatedUser()
  */
 Enums::ProcessStatus UserManagementService::changePassword(const std::string& currentPassword, const std::string& newPassword)
 {
-    User* const authenticatedUser = m_dataStore.getAuthenticatedUser();
+    User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::string authenticatedUserPassword = authenticatedUser->getPassword();
     if (currentPassword == authenticatedUserPassword)
     {

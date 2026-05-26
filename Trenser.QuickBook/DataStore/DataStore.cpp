@@ -133,7 +133,7 @@ void DataStore::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
  * Returns:
  *    A pointer to the authenticated User object, or nullptr if no user is authenticated
  */
-User* const DataStore::getAuthenticatedUser() const
+User* DataStore::getAuthenticatedUser() const
 {
     return m_currentUser;
 }
