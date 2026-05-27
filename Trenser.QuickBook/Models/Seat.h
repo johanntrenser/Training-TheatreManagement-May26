@@ -30,8 +30,7 @@ public:
         char seatRow,
         int seatColumn,
         double m_amount,
-        Enums::SeatStatus seatStatus,
-        Enums::BookingStatus bookingStatus);
+        Enums::SeatStatus seatStatus);
     const std::string& getSeatId() const;
     Screen* getScreen() const;
     char getSeatRow() const;

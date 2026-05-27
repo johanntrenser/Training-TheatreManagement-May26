@@ -46,15 +46,14 @@ Seat::Seat(const std::string& id,
     char seatRow,
     int seatColumn,
     double m_amount,
-    Enums::SeatStatus seatStatus,
-    Enums::BookingStatus bookingStatus)
+    Enums::SeatStatus seatStatus)
     : m_seatId(id),
     m_screen(screen),
     m_seatRow(seatRow),
     m_seatColumn(seatColumn),
     m_amount(0),
     m_seatStatus(seatStatus),
-    m_bookingStatus(bookingStatus)
+    m_bookingStatus(Enums::BookingStatus::NOT_BOOKED)
 {
 }
 

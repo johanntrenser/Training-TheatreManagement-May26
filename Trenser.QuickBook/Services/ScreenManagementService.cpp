@@ -93,7 +93,7 @@ std::vector<std::vector<Seat*>> ScreenManagementService::generateSeatGrid(Screen
 		for (int column = 0; column < seatColumns; ++column)
 		{
 			std::string seatId = std::string(1, rowCharacter) + std::to_string(column);
-			Seat* seat = Factory::getObject<Seat>(seatId, screen, rowCharacter, column, seatAmount, Enums::SeatStatus::AVAILABLE, Enums::BookingStatus::PENDING);
+			Seat* seat = Factory::getObject<Seat>(seatId, screen, rowCharacter, column, seatAmount, Enums::SeatStatus::AVAILABLE);
 			if (seat != nullptr)
 			{
 				seatRow.push_back(seat);

@@ -225,7 +225,7 @@ std::map<std::string, Show*>& DataStore::getShowsForUpdation()
  */
 const std::map<std::string, Screen*>& DataStore::getScreens() const
 {
-    return m_screen;
+    return m_screens;
 }
 
 /*
@@ -238,8 +238,8 @@ const std::map<std::string, Screen*>& DataStore::getScreens() const
  */
 Theatre* DataStore::getTheatreById(const std::string& theatreId) const
 {
-    std::map<std::string, Theatre*>::const_iterator iterator = m_theatre.find(theatreId);
-    if (iterator == m_theatre.end())
+    std::map<std::string, Theatre*>::const_iterator iterator = m_theatres.find(theatreId);
+    if (iterator == m_theatres.end())
     {
         return nullptr;
     }
@@ -256,23 +256,12 @@ Theatre* DataStore::getTheatreById(const std::string& theatreId) const
  */
 Screen* DataStore::getScreenById(const std::string& screenId) const
 {
-    std::map<std::string, Screen*>::const_iterator iterator = m_screen.find(screenId);
-    if (iterator == m_screen.end())
+    std::map<std::string, Screen*>::const_iterator iterator = m_screens.find(screenId);
+    if (iterator == m_screens.end())
     {
         return nullptr;
     }
     return iterator->second;
-}
-
-/*
-* Function Name : getShows
-* Description   : Returns all shows stored in the datastore.
-* Parameters    : None
-* Return Type   : const std::map<std::string, Show*>&
-*/
-const std::map<std::string, Show*>& DataStore::getShows() const
-{
-    return m_show;
 }
 
 /*
