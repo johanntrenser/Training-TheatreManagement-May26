@@ -317,15 +317,10 @@ void MovieManagementService::saveMovieData()
 	{
 		throw std::runtime_error("Cannot open file: " + PATH);
 	}
-	movieFile << "MOVIE ID,MOVIE TITLE,LANGUAGE,GENRE,DURATION,STATUS";
+	movieFile << config::Header::MOVIE_HEADER<<"\n";
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
-		movieFile << (iterator->second)->getMovieId() << ","
-			<< (iterator->second)->getTitle() << ","
-			<< (iterator->second)->getLanguage() << ","
-			<< (iterator->second)->getGenre() << ","
-			<< (iterator->second)->getDuration() << ","
-			<< Enums::getMovieStatusString((iterator->second)->getStatus()) << "\n";
+		movieFile << (iterator->second)->serialize() << "\n";
 	}
 	movieFile.close();
 }
