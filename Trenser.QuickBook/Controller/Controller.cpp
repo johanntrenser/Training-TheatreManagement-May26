@@ -194,6 +194,18 @@ Controller::~Controller()
     delete m_refundManagementService;
 }
 
+/*
+ * Function: Controller::saveData
+ * Description: Centralized method to persist all application data into CSV files.
+ *              Delegates saving responsibilities to each management service, ensuring
+ *              that users, theatres, movies, tickets, screens, payments, notifications,
+ *              logs, refunds, seats, shows, and bookings are all written to storage.
+ *              This provides a single entry point for saving the entire system state.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if any underlying service fails to open its file)
+ */
 void Controller::saveData()
 {
     m_userManagementService->saveUserData();
