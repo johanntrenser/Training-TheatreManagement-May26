@@ -18,7 +18,7 @@ class ShowManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::SHOW_FILEPATH;
+	const std::string& PATH = config::File::SHOW_FILEPATH;
 public:
 	ShowManagementService() : m_dataStore(DataStore::getInstance()) {}
 	void saveShowData();

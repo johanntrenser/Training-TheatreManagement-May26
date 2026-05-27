@@ -17,7 +17,7 @@ class LogManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::LOG_FILEPATH;
+	const std::string& PATH = config::File::LOG_FILEPATH;
 public:
 	LogManagementService();
 	void saveLogData();

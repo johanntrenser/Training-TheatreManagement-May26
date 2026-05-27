@@ -15,7 +15,7 @@
 class RefundManagementService
 {
 private:
-    const std::string& PATH = config::REFUND_FILEPATH;
+    const std::string& PATH = config::File::REFUND_FILEPATH;
     DataStore& m_dataStore;
 public:
     RefundManagementService();

@@ -424,5 +424,3 @@ void UserInterface::exit()
 {
 	m_controller->saveData();
 }
-
-

@@ -19,7 +19,7 @@
 class TheatreManagementService
 {
     DataStore& m_dataStore;
-    const std::string& PATH = config::THEATRE_FILEPATH;
+    const std::string& PATH = config::File::THEATRE_FILEPATH;
 public:
     TheatreManagementService();
     bool addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phone, const std::string& email);

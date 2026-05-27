@@ -15,7 +15,7 @@
 class PaymentManagementService
 {
 private:
-    const std::string& PATH = config::PAYMENT__FILEPATH;
+    const std::string& PATH = config::File::PAYMENT_FILEPATH;
     DataStore& m_dataStore;
 public:
     PaymentManagementService();

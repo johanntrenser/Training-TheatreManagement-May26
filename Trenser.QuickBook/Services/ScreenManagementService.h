@@ -18,7 +18,7 @@ class ScreenManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::SCREEN_FILEPATH;
+	const std::string& PATH = config::File::SCREEN_FILEPATH;
 public:
 	ScreenManagementService();
 	void saveScreenData();

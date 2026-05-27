@@ -133,85 +133,16 @@ void UserManagementService::changePassword(const std::string& userId,
  */
 void UserManagementService::saveUserData()
 {
-    const std::map<std::string, User*> users = m_dataStore.getUsers();
     std::ofstream userFile(PATH, std::ios::trunc);
     if (!userFile.is_open())
     {
         throw std::runtime_error("Cannot open file: " + PATH);
     }
-    userFile << "USER ID,USER NAME,EMAIL,PASSWORD,PHONE NUMBER,USER TYPE,STATUS\n";
+    userFile << config::Header::USER_HEADER<<"\n";
+    const std::map<std::string, User*> users = m_dataStore.getUsers();
     for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
-
-        std::string pasword = (iterator->second)->getPassword();
-        encryption(pasword);
-        userFile << (iterator->second)->getUserId() << ","
-            << (iterator->second)->getUserName() << ","
-            << (iterator->second)->getEmail() << ","
-            << pasword << ","
-            << (iterator->second)->getPhoneNumber() << ","
-            << Enums::getUserTypeString((iterator->second)->getUserType()) << ","
-            << Enums::getUserStatusString((iterator->second)->getStatus()) << "\n";
+        userFile << (iterator->second)->serialize()<<"\n";
     }
     userFile.close();
-}
-
-/*
- * Function: UserManagementService::reverseString
- * Description: Reverses the given string in place.
- * Parameters:
- *    password - Reference to the string to reverse
- * Returns:
- *    None (modifies the string directly)
- */
-void UserManagementService::reverseString(std::string& password)
-{
-    int left = 0, right = password.length() - 1;
-    while (left < right)
-    {
-        char temp = password[left];
-        password[left] = password[right];
-        password[right] = temp;
-        left++;
-        right--;
-    }
-}
-
-/*
- * Function: UserManagementService::encryption
- * Description: Encrypts the given password by shifting each character by +10 in ASCII
- *              and then reversing the string.
- * Parameters:
- *    password - Reference to the string to encrypt
- * Returns:
- *    None (modifies the string directly)
- */
-void UserManagementService::encryption(std::string& password)
-{
-    int index = 0;
-    while (password[index] != '\0')
-    {
-        password[index] = char(int(password[index]) + 10);
-        index++;
-    }
-    reverseString(password);
-}
-
-/*
- * Function: UserManagementService::decryption
- * Description: Decrypts the given password by reversing the string and shifting each character by -10 in ASCII.
- * Parameters:
- *    password - Reference to the string to decrypt
- * Returns:
- *    None (modifies the string directly)
- */
-void UserManagementService::decryption(std::string& password)
-{
-    int index = 0;
-    while (password[index] != '\0')
-    {
-        password[index] = char(int(password[index]) - 10);
-        index++;
-    }
-    reverseString(password);
 }

@@ -213,3 +213,83 @@ void User::setStatus(Enums::UserStatus status)
 {
     m_status = status;
 }
+
+
+/*
+ * Function: UserManagementService::reverseString
+ * Description: Reverses the given string in place.
+ * Parameters:
+ *    password - Reference to the string to reverse
+ * Returns:
+ *    None (modifies the string directly)
+ */
+void User::reverseString(std::string& password)
+{
+    int left = 0, right = password.length() - 1;
+    while (left < right)
+    {
+        char temp = password[left];
+        password[left] = password[right];
+        password[right] = temp;
+        left++;
+        right--;
+    }
+}
+
+/*
+ * Function: UserManagementService::encryption
+ * Description: Encrypts the given password by shifting each character by +10 in ASCII
+ *              and then reversing the string.
+ * Parameters:
+ *    password - Reference to the string to encrypt
+ * Returns:
+ *    None (modifies the string directly)
+ */
+std::string& User::encryption(std::string& password)
+{
+    int index = 0;
+    while (password[index] != '\0')
+    {
+        password[index] = char(int(password[index]) + 10);
+        index++;
+    }
+    reverseString(password);
+    return password;
+}
+
+/*
+ * Function: UserManagementService::decryption
+ * Description: Decrypts the given password by reversing the string and shifting each character by -10 in ASCII.
+ * Parameters:
+ *    password - Reference to the string to decrypt
+ * Returns:
+ *    None (modifies the string directly)
+ */
+std::string& User::decryption(std::string& password)
+{
+    int index = 0;
+    while (password[index] != '\0')
+    {
+        password[index] = char(int(password[index]) - 10);
+        index++;
+    }
+    reverseString(password);
+    return password;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts User object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string User::serialize()
+{
+    return m_userId + config::delimeter::comma +
+        m_userName + config::delimeter::comma +
+        m_email + config::delimeter::comma +
+        encryption(m_password)+config::delimeter::comma +
+        m_phoneNumber + config::delimeter::comma +
+        Enums::getUserTypeString(m_userType) + config::delimeter::comma +
+        Enums::getUserStatusString(m_status);
+}

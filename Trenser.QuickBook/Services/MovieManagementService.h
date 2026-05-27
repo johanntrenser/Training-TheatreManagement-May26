@@ -15,7 +15,7 @@ class MovieManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::MOVIE_FILEPATH;
+	const std::string& PATH = config::File::MOVIE_FILEPATH;
 public:
 	MovieManagementService();
 	Enums::ProcessStatus addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);

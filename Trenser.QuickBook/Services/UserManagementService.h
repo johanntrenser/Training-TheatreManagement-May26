@@ -21,7 +21,7 @@ class UserManagementService
 {
 private:
     DataStore& m_dataStore; 
-    const std::string& PATH = config::USER_FILEPATH;
+    const std::string& PATH = config::File::USER_FILEPATH;
 public:
     UserManagementService();
     bool createUser(const std::string& name,
@@ -46,7 +46,4 @@ public:
     void changePassword(const std::string& userId,
         const std::string& newPassword);
     void saveUserData();
-    void reverseString(std::string& password);
-    void encryption(std::string& password);
-    void decryption(std::string& password);
 };

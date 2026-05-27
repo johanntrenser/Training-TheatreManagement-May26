@@ -18,7 +18,7 @@ class SeatManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::SEAT_FILEPATH;
+	const std::string& PATH = config::File::SEAT_FILEPATH;
 public:
 	SeatManagementService();
 	void saveSeatData();
