@@ -310,16 +310,25 @@ std::string Theatre::serialize()
         m_city + config::delimeter::comma +
         m_address + config::delimeter::comma +
         m_phoneNumber + config::delimeter::comma +
-        m_email + config::delimeter::comma +
-        m_theatreOwner->getUserId() + config::delimeter::comma +
+        m_email + config::delimeter::comma;
+        if (m_theatreOwner)
+        {
+            result += m_theatreOwner->getUserId() + config::delimeter::comma;
+        }
         Enums::getTheatreStatusString(m_status) + config::delimeter::comma;
-    for (std::vector<Screen*>::const_iterator itertor = m_screens.begin(); itertor != m_screens.end(); ++itertor)
-    {
-        result += (*itertor)->getScreenId()+config::delimeter::verticalBar;
-    }
-    for (std::vector<Movie*>::const_iterator itertor = m_movies.begin(); itertor != m_movies.end(); ++itertor)
-    {
-        result += (*itertor)->getMovieId() + config::delimeter::verticalBar;
-    }
+        if (!m_screens.empty())
+        {
+            for (std::vector<Screen*>::const_iterator itertor = m_screens.begin(); itertor != m_screens.end(); ++itertor)
+            {
+                result += (*itertor)->getScreenId() + config::delimeter::verticalBar;
+            }
+        }
+        if (!m_movies.empty())
+        {
+            for (std::vector<Movie*>::const_iterator itertor = m_movies.begin(); itertor != m_movies.end(); ++itertor)
+            {
+                result += (*itertor)->getMovieId() + config::delimeter::verticalBar;
+            }
+        }
     return result;
 }

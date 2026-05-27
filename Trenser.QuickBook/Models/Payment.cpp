@@ -192,3 +192,23 @@ void Payment::setTimeStamp(const std::string& timeStamp)
 {
     m_timeStamp = timeStamp;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Payment object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Payment::serialize()
+{
+    std::string result = m_paymentId + config::delimeter::comma;
+    if (m_booking)
+    {
+        result += m_booking->getBookingId()+config::delimeter::comma;
+    }
+    result += std::to_string(m_amount) + config::delimeter::comma +
+        Enums::getPaymentMethodString(m_paymentMethod) + config::delimeter::comma +
+        Enums::getPaymentStatusString(m_status) + config::delimeter::comma +
+        m_timeStamp;
+    return result;
+}

@@ -166,3 +166,22 @@ void Refund::setStatus(Enums::RefundStatus status)
 {
     m_status = status;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Refund object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Refund::serialize()
+{
+    std::string result = m_refundId + config::delimeter::comma;
+    if (m_bookedTicket)
+    {
+        result += m_bookedTicket->getTicketId()+config::delimeter::comma;
+    }
+    result += std::to_string(m_refundAmount) + config::delimeter::comma +
+        std::to_string(m_time) + config::delimeter::comma +
+        Enums::getRefundStatusString(m_status);
+    return result;
+}

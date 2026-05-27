@@ -115,7 +115,14 @@ void Ticket::setCustomer(User* customer)
  */
 std::string Ticket::serialize()
 {
-	return m_ticketId + config::delimeter::comma +
-		m_payment->getPaymentId() + config::delimeter::comma +
-		m_customer->getUserId();
+	std::string result = m_ticketId + config::delimeter::comma;
+	if (m_payment)
+	{
+		result += m_payment->getPaymentId() + config::delimeter::comma;
+	}
+	if (m_customer)
+	{
+		result+=m_customer->getUserId();
+	}
+	return result;
 }

@@ -33,15 +33,10 @@ void PaymentManagementService::savePaymentData()
     {
         throw std::runtime_error("Cannot open file: " + PATH);
     }
-    paymentFile << "PAYMENT ID,BOOKING ID,AMOUNT,PAYMENT METHOD,STATUS,TIME STAMP\n";
+    paymentFile << config::Header::PAYMENT_HEADER<<"\n";
     for (std::map<std::string, Payment*>::const_iterator iterator = payment.begin(); iterator != payment.end(); ++iterator)
     {
-        paymentFile << (iterator->second)->getPaymentId() << ","
-            << (iterator->second)->getBooking()->getBookingId() << ","
-            << (iterator->second)->getAmount() << ","
-            << Enums::getPaymentMethodString((iterator->second)->getPaymentMethod()) << ","
-            << Enums::getPaymentStatusString((iterator->second)->getStatus()) << ","
-            << (iterator->second)->getTimeStamp()<<"\n";
+        paymentFile << (iterator->second)->serialize()<<"\n";
     }
     paymentFile.close();
 }

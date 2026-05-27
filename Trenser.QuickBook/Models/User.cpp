@@ -216,7 +216,7 @@ void User::setStatus(Enums::UserStatus status)
 
 
 /*
- * Function: UserManagementService::reverseString
+ * Function: User::reverseString
  * Description: Reverses the given string in place.
  * Parameters:
  *    password - Reference to the string to reverse
@@ -237,7 +237,7 @@ void User::reverseString(std::string& password)
 }
 
 /*
- * Function: UserManagementService::encryption
+ * Function: User::encryption
  * Description: Encrypts the given password by shifting each character by +10 in ASCII
  *              and then reversing the string.
  * Parameters:
@@ -258,7 +258,7 @@ std::string& User::encryption(std::string& password)
 }
 
 /*
- * Function: UserManagementService::decryption
+ * Function: User::decryption
  * Description: Decrypts the given password by reversing the string and shifting each character by -10 in ASCII.
  * Parameters:
  *    password - Reference to the string to decrypt

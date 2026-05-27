@@ -24,35 +24,18 @@ ScreenManagementService::ScreenManagementService()
  */
 void ScreenManagementService::saveScreenData()
 {
+    /*Screen* screenss = new Screen("SC001", nullptr, "Screen123", 50, 60, {{},{}});
+    m_dataStore.addScreen(screenss);
     const std::map<std::string, Screen*> screens = m_dataStore.getScreens();
     std::ofstream screenFile(PATH, std::ios::trunc);
     if (!screenFile.is_open())
     {
         throw std::runtime_error("Cannot open file: " + PATH);
     }
-    screenFile << "SCREEN ID,THEATRE ID,NAME,TOTAL ROWS,TOTAL COLUMNS,SEAT ID,SCREEN STATUS\n";
+    screenFile << config::Header::SCREEN_HEADER<<"\n";
     for (std::map<std::string, Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
     {
-        screenFile << (iterator->second)->getScreenId() << ","
-            << (iterator->second)->getTheatre()->getTheatreId() << ","
-            << (iterator->second)->getName() << ","
-            << (iterator->second)->getTotalRows() << ","
-            << (iterator->second)->getTotalColumns() << ",";
-        const std::vector<std::vector<Seat*>>& seats = (iterator->second)->getSeatGrid();
-        for (std::vector<std::vector<Seat*>>::const_iterator seatIterator = seats.begin(); seatIterator != seats.end(); ++seatIterator)
-        {
-            std::vector<Seat*> seatRow = *seatIterator;
-            for (std::vector<Seat*>::const_iterator seat = seatRow.begin(); seat != seatRow.end(); ++seat)
-            {
-                screenFile << (*seat)->getSeatId();
-                if ((seat + 1) != seatRow.end())
-                {
-                    screenFile << "|";
-                }
-            }
-        }
-        screenFile << ","
-            << Enums::getScreenStatusString((iterator->second)->getScreenStatus())
-            << "\n";
+        screenFile << (iterator->second)->serialize()<< "\n";
     }
+    screenFile.close();*/
 }

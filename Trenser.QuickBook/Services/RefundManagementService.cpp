@@ -33,14 +33,10 @@ void RefundManagementService::saveRefundData()
 	{
 		throw std::runtime_error("Cannot open file: " + PATH);
 	}
-	refundFile << "REFUND ID,BOOKED TICKET ID,REFUND AMOUNT,TIME,STATUS\n";
+	refundFile <<config::Header::REFUND_HEADER <<"\n";
 	for (std::map<std::string, Refund*>::const_iterator iterator = refunds.begin(); iterator != refunds.end(); ++iterator)
 	{
-		refundFile << (iterator->second)->getRefundId() << ","
-			<< (iterator->second)->getBookedTicket()->getTicketId() << ","
-			<< (iterator->second)->getRefundAmount() << ","
-			<< (iterator->second)->getTime() << ","
-			<< Enums::getRefundStatusString((iterator->second)->getStatus()) << "\n";
+		refundFile << (iterator->second)->serialize() << "\n";
 	}
 	refundFile.close();
 }

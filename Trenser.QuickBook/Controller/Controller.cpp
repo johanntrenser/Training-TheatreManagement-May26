@@ -200,11 +200,11 @@ void Controller::saveData()
     m_theatreManagementService->saveTheatreData();
     //m_movieManagementService->saveMovieData();
     m_ticketManagementService->saveTicketData();
-    //m_ScreenManagementService->saveScreenData();
-    //m_paymentManagementService->savePaymentData();
+    m_ScreenManagementService->saveScreenData();
+    m_paymentManagementService->savePaymentData();
     //m_notificationManagementService->saveNotificationData();
     //m_logManagementService->saveLogData();
-    //m_refundManagementService->saveRefundData();
+    m_refundManagementService->saveRefundData();
     m_seatManagementService->saveSeatData();
     m_showManagementService->saveShowData();
 }
