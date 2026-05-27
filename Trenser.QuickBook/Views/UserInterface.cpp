@@ -1486,7 +1486,7 @@ void UserInterface::displayAllMovies()
  */
 void UserInterface::deactivateMovie()
 {
-	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	const std::vector<const Movie*> movies = m_controller->getAllInactiveMovies();
 	if (movies.empty())
 	{
 		return;
@@ -1495,10 +1495,8 @@ void UserInterface::deactivateMovie()
 	string title, movieId;
 	cout << "\nEnter the movie title: ";
 	util::readValue(title);
-	const std::vector<const Movie*> movies = m_controller->searchMovieByTitle(title);
 	if (!movies.empty())
 	{
-		displayMovie(movies);
 		const vector<string> movieIdList = getMovieIdFromList(movies);
 		cout << "\nEnter the Movie ID: ";
 		util::readValue(movieId);
@@ -1535,7 +1533,7 @@ void UserInterface::deactivateMovie()
  */
 void UserInterface::activateMovie()
 {
-	if (!displayAllInactiveMovies)
+	if (!displayAllInactiveMovies())
 	{
 		return;
 	}
