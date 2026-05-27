@@ -199,7 +199,7 @@ void DataStore::addMovieToSystem(Movie* movie)
  */
 const std::map<std::string, Show*>& DataStore::getShows() const
 {
-    return m_show;
+    return m_shows;
 }
 
 /*
@@ -212,5 +212,5 @@ const std::map<std::string, Show*>& DataStore::getShows() const
  */
 std::map<std::string, Show*>& DataStore::getShowsForUpdation()
 {
-    return m_show;
+    return m_shows;
 }
