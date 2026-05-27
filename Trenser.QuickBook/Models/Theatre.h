@@ -13,6 +13,7 @@
 #include <vector>
 #include "User.h"
 #include "Movie.h"
+#include "ApplicationConfig.h"
 
 class Screen;
 
@@ -59,4 +60,5 @@ public:
     void setScreens(const std::vector<Screen*>& screens);
     void setMovies(const std::vector<Movie*>& movies);
     void addMovieToTheatre(Movie* movie);
+    std::string serialize();
 };

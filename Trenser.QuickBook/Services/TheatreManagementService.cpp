@@ -167,35 +167,10 @@ void TheatreManagementService::saveTheatreData()
     {
         throw std::runtime_error("Cannot open file: " + PATH);
     }
-    theatreFile << "THEATRE ID,THEATRE NAME,CITY,ADDRESS,PHONE NUMBER,EMAIL,THEATRE OWNER, STATUS, SCREENS NAME, MOVIES TITLE\n";
+    theatreFile <<config::Header::THEATRE_HEADER<<"\n";
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        theatreFile << (iterator->second)->getTheatreId() << ","
-            << (iterator->second)->getName() << ","
-            << (iterator->second)->getCity() << ","
-            << (iterator->second)->getAddress() << ","
-            << (iterator->second)->getTheatrePhoneNumber() << ","
-            << (iterator->second)->getTheatreEmail() << ","
-            << (iterator->second)->getTheatreOwner() << ","
-            << Enums::getTheatreStatusString((iterator->second)->getStatus()) << ",";
-        for (std::vector<Screen*>::const_iterator screenItertor = (iterator->second)->getScreens().begin(); screenItertor != (iterator->second)->getScreens().end(); ++screenItertor)
-        {
-            theatreFile << (*screenItertor)->getName();
-            if (screenItertor + 1 != (iterator->second)->getScreens().end())
-            {
-                theatreFile << "|";
-            }
-        }
-        theatreFile << ",";
-        for (std::vector<Movie*>::const_iterator movieItertor = (iterator->second)->getMovies().begin(); movieItertor != (iterator->second)->getMovies().end(); ++movieItertor)
-        {
-            theatreFile << (*movieItertor)->getTitle();
-            if (movieItertor + 1 != (iterator->second)->getMovies().end())
-            {
-                theatreFile << "|";
-            }
-        }
-        theatreFile << ",";
+        theatreFile << (iterator->second)->serialize()<<"\n";
     }
     theatreFile.close();
 }

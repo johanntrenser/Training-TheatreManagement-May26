@@ -28,12 +28,13 @@ namespace config
         constexpr const char* SCREEN_HEADER = "SCREEN ID,THEATRE ID,NAME,TOTAL ROWS,TOTAL COLUMNS,SEAT ID,SCREEN STATUS";
         constexpr const char* SEAT_HEADER = "SEAT ID,SCREEN ID,SEAT ROW,SEAT COLUMN,STATUS";
         constexpr const char* SHOW_HEADER = "SHOW ID,MOVIE ID,SCREEN ID,STARTING TIME,ENDING TIME,SEAT AVAILABILITY ID,STATUS";
-        constexpr const char* THEATRE_HEADER = "THEATRE ID,THEATRE NAME,CITY,ADDRESS,PHONE NUMBER,EMAIL,THEATRE OWNER, STATUS, SCREENS NAME, MOVIES TITLE";
+        constexpr const char* THEATRE_HEADER = "THEATRE ID,THEATRE NAME,CITY,ADDRESS,PHONE NUMBER,EMAIL,THEATRE OWNER, STATUS, SCREENS ID, MOVIES ID";
         constexpr const char* USER_HEADER = "USER ID,USER NAME,EMAIL,PASSWORD,PHONE NUMBER,USER TYPE,STATUS";
         constexpr const char* TICKET_HEADER = "TICKET ID,PAYMENT ID,CUSTOMER ID";
     }
     namespace delimeter
     {
         constexpr const char* comma = ",";
+        constexpr const char* verticalBar = "|";
     }
 }

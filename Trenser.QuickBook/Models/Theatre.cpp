@@ -296,3 +296,30 @@ void Theatre::addMovieToTheatre(Movie* movie)
 {
     m_movies.push_back(movie);
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Theatre object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Theatre::serialize()
+{
+    std::string result = m_theatreId + config::delimeter::comma +
+        m_name + config::delimeter::comma +
+        m_city + config::delimeter::comma +
+        m_address + config::delimeter::comma +
+        m_phoneNumber + config::delimeter::comma +
+        m_email + config::delimeter::comma +
+        m_theatreOwner->getUserId() + config::delimeter::comma +
+        Enums::getTheatreStatusString(m_status) + config::delimeter::comma;
+    for (std::vector<Screen*>::const_iterator itertor = m_screens.begin(); itertor != m_screens.end(); ++itertor)
+    {
+        result += (*itertor)->getScreenId()+config::delimeter::verticalBar;
+    }
+    for (std::vector<Movie*>::const_iterator itertor = m_movies.begin(); itertor != m_movies.end(); ++itertor)
+    {
+        result += (*itertor)->getMovieId() + config::delimeter::verticalBar;
+    }
+    return result;
+}

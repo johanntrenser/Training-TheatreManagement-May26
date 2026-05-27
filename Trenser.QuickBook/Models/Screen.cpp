@@ -224,3 +224,22 @@ void Screen::setScreenStatus(Enums::ScreenStatus screenStatus)
 {
     m_screenStatus = screenStatus;
 }
+
+std::string Screen::serialize()
+{
+    return m_screenId + config::delimeter::comma +
+        m_theatre->serialize() + config::delimeter::comma +
+        m_name + config::delimeter::comma +
+        std::to_string(m_totalRows) + config::delimeter::comma +
+        std::to_string(m_totalColumns) + config::delimeter::comma;
+
+
+}
+
+std::string m_screenId;
+Theatre* m_theatre;
+std::string m_name;
+int m_totalRows;
+int m_totalColumns;
+std::vector<std::vector<Seat*>> m_seatGrid;
+Enums::ScreenStatus m_screenStatus;

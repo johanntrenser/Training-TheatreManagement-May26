@@ -198,3 +198,12 @@ void Seat::setSeatAmount(double amount)
 {
     m_amount = amount;
 }
+
+std::string Seat::serialize()
+{
+    return m_seatId + config::delimeter::comma +
+        m_screen->getScreenId() + config::delimeter::comma +
+        std::to_string(m_seatColumn) + config::delimeter::comma +
+        std::to_string(m_amount) + config::delimeter::comma +
+        Enums::getSeatStatusString(m_seatStatus);
+}

@@ -10,6 +10,7 @@
 #pragma once
 #include <string>
 #include "Enums.h"
+#include "ApplicationConfig.h"
 
 class Screen;
 
@@ -42,4 +43,5 @@ public:
     void setSeatColumn(int seatColumn);
     void setSeatStatus(Enums::SeatStatus seatStatus);
     void setSeatAmount(double amount);
+    std::string serialize();
 };
