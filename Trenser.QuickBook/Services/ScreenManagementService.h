@@ -25,4 +25,5 @@ public:
 	Enums::ProcessStatus hasActiveShows(const std::string& theatreId, const std::string& screenId);
 	Enums::ProcessStatus reactivateScreen(const std::string& theatreId, const std::string& screenId);
 	const std::vector<const Screen*> viewTheatreScreens(const std::string& theatreId);
+	Enums::UserType getAuthenticatedUserType();
 };

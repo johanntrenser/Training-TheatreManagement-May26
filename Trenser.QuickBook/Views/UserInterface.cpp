@@ -1897,14 +1897,22 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
 	cout << endl;
 	cout << std::left
 		<< std::setw(15) << "Screen ID"
-		<< std::setw(25) << "Screen Name"
-		<< endl;
-	cout << std::string(40, '-') << endl;
+		<< std::setw(25) << "Screen Name";
+	if (m_controller->getAuthenticatedUserType() == Enums::UserType::ADMIN || m_controller->getAuthenticatedUserType() == Enums::UserType::THEATRE_OWNER)
+	{
+		cout << std::setw(25) << "Status";
+	}
+		cout << endl;
+	cout << std::string(65, '-') << endl;
 	for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 	{
 		cout << std::left
 			<< std::setw(15) << (*iterator)->getScreenId()
-			<< std::setw(25) << (*iterator)->getName()
-			<< endl;
+			<< std::setw(25) << (*iterator)->getName();
+		if (m_controller->getAuthenticatedUserType() == Enums::UserType::ADMIN || m_controller->getAuthenticatedUserType() == Enums::UserType::THEATRE_OWNER)
+		{
+			cout << std::setw(25) << Enums::getScreenStatusString((*iterator)->getScreenStatus());
+		}
+			cout << endl;
 	}
 }

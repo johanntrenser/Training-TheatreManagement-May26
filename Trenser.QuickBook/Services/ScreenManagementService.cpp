@@ -256,11 +256,14 @@ Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string
 }
 
 /*
-* Function Name : viewTheatreScreens
-* Description   : Returns screens available in a theatre.
+* Function Name : ScreenManagementService::viewTheatreScreens
+* Description   : Retrieves screens for a given theatre based on user type.
+*                 - Admin and Theatre Owner: all screens (active + inactive)
+*                 - Customer: only active (AVAILABLE) screens
+*                 Returns an empty list if theatre is not found.
 * Parameters    :
-*                  theatre - Theatre whose screens are viewed
-* Return Type   : const std::vector<Screen*>
+*                  theatreId - The unique identifier of the theatre
+* Return Type   : const std::vector<const Screen*>
 */
 const std::vector<const Screen*> ScreenManagementService::viewTheatreScreens(const std::string& theatreId)
 {
@@ -270,17 +273,36 @@ const std::vector<const Screen*> ScreenManagementService::viewTheatreScreens(con
 		return {};
 	}
 	const std::vector<Screen*>& screens = theatre->getScreens();
-	if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::CUSTOMER)
+	std::vector<const Screen*> result;
+	Enums::UserType userType = m_dataStore.getAuthenticatedUserType();
+	if (userType == Enums::UserType::ADMIN || userType == Enums::UserType::THEATRE_OWNER)
 	{
-		std::vector<const Screen*> activeScreens;
-		for (std::vector<Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+		for (auto screen : screens)
 		{
-			if ((*iterator)->getScreenStatus() == Enums::ScreenStatus::AVAILABLE)
+			result.push_back(screen);
+		}
+	}
+	else if (userType == Enums::UserType::CUSTOMER)
+	{
+		for (auto screen : screens)
+		{
+			if (screen->getScreenStatus() == Enums::ScreenStatus::AVAILABLE)
 			{
-				activeScreens.push_back((*iterator));
+				result.push_back(screen);
 			}
 		}
-		return activeScreens;
 	}
-	return {};
+	return result;
+}
+
+/*
+* Function Name : getAuthenticatedUserType
+* Description   : Retrieves the Authenticated User Type.
+* Parameters    :
+*                  None
+* Return Type   : Enums::UserType
+*/
+Enums::UserType ScreenManagementService::getAuthenticatedUserType()
+{
+	return m_dataStore.getAuthenticatedUserType();
 }

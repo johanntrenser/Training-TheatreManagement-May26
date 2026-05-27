@@ -718,6 +718,18 @@ const std::vector<const Screen*> Controller::viewTheatreScreens(const std::strin
 }
 
 /*
+* Function Name : getAuthenticatedUserType
+* Description   : Retrieves the Authenticated User Type.
+* Parameters    :
+*                  None
+* Return Type   : Enums::UserType
+*/
+Enums::UserType Controller::getAuthenticatedUserType()
+{
+    return m_ScreenManagementService->getAuthenticatedUserType();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
