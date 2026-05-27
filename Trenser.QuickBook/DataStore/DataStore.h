@@ -62,4 +62,5 @@ public:
 	void addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability);
 	const Show* getShowById(const std::string& showId);
 	Show* getShowByIdForUpdation(const std::string& showId);
+	const Booking* getBookingById(const std::string& bookingId);
 };

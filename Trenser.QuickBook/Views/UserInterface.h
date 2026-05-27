@@ -74,4 +74,6 @@ public:
 	Enums::UserType getAuthenticatedUserType();
 	void displayCustomerBookings(const std::vector<const Booking*> bookings);
 	void displayTheatreBookings(const std::vector<const Booking*> bookings);
+	void displayBookingDetails();
+	void displayBookingDetail(const Booking* booking);
 };
