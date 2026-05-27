@@ -30,11 +30,10 @@ void LogManagementService::saveLogData()
     {
         throw std::runtime_error("Cannot open file: " + PATH);
     }
-    logFile << "LOG ID,DESCRIPTION\n";
+    logFile << config::Header::LOG_HEADER<<"\n";
     for (std::map<std::string, Log*>::const_iterator iterator = logs.begin(); iterator != logs.end(); ++iterator)
     {
-        logFile << (iterator->second)->getLogId() << ","
-            << (iterator->second)->getDescription() << "\n";
+        logFile << (iterator->second)->serialize() << "\n";
     }
     logFile.close();
 }

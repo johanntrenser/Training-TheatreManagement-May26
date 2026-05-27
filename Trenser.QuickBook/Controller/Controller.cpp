@@ -203,7 +203,7 @@ void Controller::saveData()
     m_ScreenManagementService->saveScreenData();
     m_paymentManagementService->savePaymentData();
     m_notificationManagementService->saveNotificationData();
-    //m_logManagementService->saveLogData();
+    m_logManagementService->saveLogData();
     m_refundManagementService->saveRefundData();
     m_seatManagementService->saveSeatData();
     m_showManagementService->saveShowData();
