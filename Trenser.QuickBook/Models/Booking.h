@@ -20,28 +20,28 @@ private:
     User* m_customer;
     Show* m_show;
     std::vector<Seat*> m_bookedSeats;
-    int m_status; // enum placeholder
-    int m_amount;
+    Enums::BookingStatus m_status; 
+    double m_amount;
 public:
     Booking();
     Booking(const std::string& bookingId,
         User* customer,
         Show* show,
         const std::vector<Seat*>& bookedSeats,
-        int status,
-        int amount);
+        Enums::BookingStatus status,
+        double amount);
     const std::string& getBookingId() const;
     User* getCustomer() const;
     Show* getShow() const;
     const std::vector<Seat*>& getBookedSeats() const;
-    int getStatus() const;
-    int getAmount() const;
+    Enums::BookingStatus getStatus() const;
+    double getAmount() const;
     void setBookingId(const std::string& id);
     void setCustomer(User* customer);
     void setShow(Show* show);
     void setBookedSeats(const std::vector<Seat*>& bookedSeats);
-    void setStatus(int status);
-    void setAmount(int amount);
+    void setStatus(Enums::BookingStatus status);
+    void setAmount(double amount);
 };
 
 

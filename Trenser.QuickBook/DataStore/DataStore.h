@@ -50,6 +50,7 @@ public:
 	void setAuthenticatedUser(User* user);
 	const std::map<std::string, Movie*>& getMovies() const;
 	const std::map<std::string, Theatre*>& getTheatres() const;
+	const std::map<std::string, Booking*>& getBookings() const;
 	User* const getAuthenticatedUser() const;
 	void addTheatre(Theatre* theatre);
 	Theatre* getTheatreById(const std::string& theatreId) const;
