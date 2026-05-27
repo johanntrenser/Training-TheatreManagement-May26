@@ -851,21 +851,25 @@ void UserInterface::viewSeatLayout(const Screen* screen)
 	{
 		for (std::vector<Seat*>::const_iterator iteratorTwo = (*iteratorOne).begin(); iteratorTwo != (*iteratorOne).end(); ++iteratorTwo)
 		{
+			if (!(*iteratorTwo))
+			{
+				cout << (*iteratorTwo)->getSeatId() << "-[NA]" << " ";
+			}
 			if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::AVAILABLE)
 			{
-				cout << (*iteratorTwo)->getSeatId() << " [A]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[A]" << " ";
 			}
 			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BOOKED)
 			{
-				cout << (*iteratorTwo)->getSeatId() << " [B]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[B]" << " ";
 			}
 			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::RESERVED)
 			{
-				cout << (*iteratorTwo)->getSeatId() << " [R]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[R]" << " ";
 			}
 			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
 			{
-				cout << (*iteratorTwo)->getSeatId() << " [D]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[D]" << " ";
 			}
 		}
 		cout << endl;
@@ -1722,3 +1726,29 @@ void UserInterface::reactivateSeat(Screen* screen, const std::string& seatId)
 		cout << "Failure! Seat could not be Reactivated." << endl;
 	}
 }
+
+/*
+* Function Name : viewShowSeatLayout
+* Description   : Displays the seat layout for a given show.
+*                 Iterates through the 2D seat layout matrix retrieved from the controller
+*                 and prints each seat. Also displays the seat status codes 
+*				  (Available, Booked, Reserved, Blocked, Invalid).
+* Parameters    :
+*                  show - Pointer to the Show object whose seat layout is to be displayed
+* Return Type   : void
+*/
+void UserInterface::viewShowSeatLayout(const Show* show)
+{
+	const std::vector<std::vector<std::string>> layout = m_controller->viewShowSeatLayout(show);
+	for (std::vector<std::vector<std::string>>::const_iterator rowIterator = layout.begin(); rowIterator != layout.end(); ++rowIterator)
+	{
+		for (std::vector<std::string>::const_iterator columnIterator = (*rowIterator).begin(); columnIterator != (*rowIterator).end(); ++columnIterator)
+		{
+			std::cout << *columnIterator << "\t";
+		}
+		std::cout << std::endl;
+	}
+	cout << endl;
+	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked  [NA] - Invalid Seat" << endl;
+}
+

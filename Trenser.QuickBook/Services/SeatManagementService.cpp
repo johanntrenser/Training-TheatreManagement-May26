@@ -209,3 +209,76 @@ Enums::ProcessStatus SeatManagementService::reactivateSeat(Screen* screen, const
 	}
 	return Enums::ProcessStatus::FAILED;
 }
+
+/*
+* Function Name : getShowsSeatLayout
+* Description   : Builds and returns a 2D display layout for the given show’s seats.
+*                 Delegates seat status evaluation to helper functions.
+* Parameters    :
+*                  show - Pointer to the Show object whose seat layout is to be generated
+* Return Type   : const std::vector<std::vector<std::string>>
+*/
+const std::vector<std::vector<std::string>> SeatManagementService::getShowsSeatLayout(const Show* show)
+{
+	std::vector<std::vector<std::string>> displayLayout;
+	if (!show)
+	{
+		return displayLayout;
+	}
+	const Screen* screen = show->getScreen();
+	if (!screen)
+	{
+		return displayLayout;
+	}
+	const std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGrid();
+	const std::map<std::string, Enums::BookingStatus>& availabilityMap = show->getSeatAvailability()->getSeatAvailabilityMap();
+	for (auto rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
+	{
+		std::vector<std::string> rowDisplay;
+		for (auto seatIterator = rowIterator->begin(); seatIterator != rowIterator->end(); ++seatIterator)
+		{
+			rowDisplay.push_back(formatSeatDisplay(*seatIterator, availabilityMap));
+		}
+		displayLayout.push_back(rowDisplay);
+	}
+	return displayLayout;
+}
+
+/*
+* Function Name : formatSeatDisplay
+* Description   : Formats the display string for a single seat based on its status
+*                 and booking availability.
+* Parameters    :
+*                  seat            - Pointer to the Seat object
+*                  availabilityMap - Map of seat IDs to booking statuses
+* Return Type   : std::string
+*/
+std::string SeatManagementService::formatSeatDisplay(const Seat* seat, const std::map<std::string, Enums::BookingStatus>& availabilityMap)
+{
+	if (!seat)
+	{
+		return "-[NA] ";
+	}
+	std::string seatId = seat->getSeatId();
+	if (seat->getSeatStatus() == Enums::SeatStatus::BLOCKED)
+	{
+		return seatId + "-[D] ";
+	}
+	if (seat->getSeatStatus() == Enums::SeatStatus::RESERVED)
+	{
+		return seatId + "-[R] ";
+	}
+	std::map<std::string, Enums::BookingStatus>::const_iterator availabilityIterator = availabilityMap.find(seatId);
+	if (availabilityIterator != availabilityMap.end())
+	{
+		if (availabilityIterator->second == Enums::BookingStatus::CONFIRMED)
+		{
+			return seatId + "-[B] ";
+		}
+		else
+		{
+			return seatId + "-[A] ";
+		}	
+	}
+	return seatId + "-[A] ";
+}

@@ -67,4 +67,5 @@ public:
 	void viewSeatLayout(const Screen* screen);
 	void deactivateSeat(Screen* screen, const std::string& seatId);
 	void reactivateSeat(Screen* screen, const std::string& seatId);
+	void viewShowSeatLayout(const Show* show);
 };

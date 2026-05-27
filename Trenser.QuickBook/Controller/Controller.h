@@ -90,5 +90,6 @@ public:
 	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
 	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
 	Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
+	const std::vector<std::vector<std::string>> viewShowSeatLayout(const Show* show);
 	~Controller();
 };

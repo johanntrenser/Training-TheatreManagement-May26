@@ -24,4 +24,6 @@ public:
 	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
 	Enums::ProcessStatus hasActiveSeatBooking(Screen* screen, const std::string& seatId);
 	Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
+	const std::vector<std::vector<std::string>> getShowsSeatLayout(const Show* show);
+	std::string formatSeatDisplay(const Seat* seat, const std::map<std::string, Enums::BookingStatus>& availabilityMap);
 };

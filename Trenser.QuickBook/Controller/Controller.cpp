@@ -637,6 +637,20 @@ Enums::ProcessStatus Controller::reactivateSeat(Screen* screen, const std::strin
 }
 
 /*
+* Function Name : viewShowSeatLayout
+* Description   : Retrieves the seat layout for a given show by passing
+*                 the call to SeatManagementService. Returns a 2D vector
+*                 representing the seat arrangement.
+* Parameters    :
+*                  show - Pointer to the Show object whose seat layout is to be retrieved
+* Return Type   : const std::vector<std::vector<std::string>>
+*/
+const std::vector<std::vector<std::string>> Controller::viewShowSeatLayout(const Show* show)
+{
+    return m_seatManagementService->getShowsSeatLayout(show);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
