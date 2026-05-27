@@ -101,7 +101,7 @@ Enums::ProcessStatus MovieManagementService::isMovieUniqueInSystem(const std::st
 const std::vector<const Movie*> MovieManagementService::searchMovieByTitle(const std::string& title)
 {
 	std::vector<const Movie*> resultantMovies;
-	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getTitle() == title && (iterator->second)->getStatus() == Enums::MovieStatus::ACTIVE)
@@ -124,7 +124,7 @@ const std::vector<const Movie*> MovieManagementService::searchMovieByTitle(const
  */
 Enums::ProcessStatus MovieManagementService::setMovieTitleByID(const std::string& movieId, const std::string& title)
 {
-	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getMovieId() == movieId)
@@ -148,7 +148,7 @@ Enums::ProcessStatus MovieManagementService::setMovieTitleByID(const std::string
  */
 Enums::ProcessStatus MovieManagementService::setMovieLanguageByID(const std::string& movieId, const std::string& language)
 {
-	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getMovieId() == movieId)
@@ -172,7 +172,7 @@ Enums::ProcessStatus MovieManagementService::setMovieLanguageByID(const std::str
  */
 Enums::ProcessStatus MovieManagementService::setMovieGenreByID(const std::string& movieId, const std::string& genre)
 {
-	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getMovieId() == movieId)
@@ -196,7 +196,7 @@ Enums::ProcessStatus MovieManagementService::setMovieGenreByID(const std::string
  */
 Enums::ProcessStatus MovieManagementService::setMovieDurationByID(const std::string& movieId, const int& duration)
 {
-	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getMovieId() == movieId)
@@ -219,7 +219,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDurationByID(const std::str
 std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
 {
 	std::vector<const Movie*> allActiveMovies;
-	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getStatus() == Enums::MovieStatus::ACTIVE)
@@ -241,7 +241,7 @@ std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
  */
 Enums::ProcessStatus MovieManagementService::setMovieDeactive(const std::string& movieId)
 {
-	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getMovieId() == movieId)
@@ -265,7 +265,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDeactive(const std::string&
  */
 Enums::ProcessStatus MovieManagementService::setMovieActive(const std::string& movieId)
 {
-	std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getMovieId() == movieId)
@@ -288,7 +288,7 @@ Enums::ProcessStatus MovieManagementService::setMovieActive(const std::string& m
 const std::vector<const Movie*> MovieManagementService::searchDeactivatedMovieByTitle(const std::string& title)
 {
 	std::vector<const Movie*> resultantMovies;
-	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((iterator->second)->getTitle() == title && (iterator->second)->getStatus() == Enums::MovieStatus::INACTIVE)

@@ -959,7 +959,7 @@ const std::vector<std::string> UserInterface::getMovieIdFromList(const std::vect
  *    Enums::ProcessStatus::SUCCESS if the ID is valid,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus UserInterface::checkMovieIdIsValid(string movieId, const std::vector<string> movieIdList)
+Enums::ProcessStatus UserInterface::checkMovieIdIsValid(const string& movieId, const std::vector<string>& movieIdList)
 {
 	bool flag = false;
 	for (string id : movieIdList)
@@ -985,7 +985,7 @@ Enums::ProcessStatus UserInterface::checkMovieIdIsValid(string movieId, const st
  * Returns:
  *    None
  */
-void UserInterface::displayCurrentMovieDetails(string& movieId, const std::vector<const Movie*>& movies)
+void UserInterface::displayCurrentMovieDetails(const string& movieId, const std::vector<const Movie*>& movies)
 {
 	cout << "\n-------------------------------------------------------------\n";
 	cout << left << setw(10) << "ID"
@@ -1017,7 +1017,7 @@ void UserInterface::displayCurrentMovieDetails(string& movieId, const std::vecto
  * Returns:
  *    Pointer to the Movie object if found, otherwise nullptr
  */
-const Movie* UserInterface::getCurrentMovie(string& movieId, const std::vector<const Movie*>& movies)
+const Movie* UserInterface::getCurrentMovie(const string& movieId, const std::vector<const Movie*>& movies)
 {
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{

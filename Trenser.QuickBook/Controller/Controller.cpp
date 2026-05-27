@@ -97,7 +97,7 @@ Controller::Controller(AuthenticationManagementService* authService,
  * Returns:
  *    Enums::ProcessStatus - SUCCESS if the user is registered, FAILED otherwise
  */
-Enums::ProcessStatus Controller::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
+Enums::ProcessStatus Controller::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
     if (m_authenticationManagementService->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
     {
@@ -202,7 +202,7 @@ Enums::ProcessStatus Controller::isMovieUnique(const std::string& title, const s
  * Returns:
  *    A vector of constant Movie pointers representing the matching movies
  */
-const std::vector<const Movie*> Controller::searchMovieByTitle(std::string& title)
+const std::vector<const Movie*> Controller::searchMovieByTitle(const std::string& title)
 {
     return m_movieManagementService->searchMovieByTitle(title);
 }
