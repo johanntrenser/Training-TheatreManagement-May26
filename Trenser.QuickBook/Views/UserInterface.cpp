@@ -771,6 +771,66 @@ void UserInterface::reactivateUser()
 	util::pressEnter();
 	util::clear();
 }
+/*
+ * Function: UserInterface::viewLogsByType
+ * Description: Displays logs filtered by type. Prompts the user to select a log type
+ *              and retrieves matching logs from the controller. Each log entry is
+ *              printed to the console.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::viewLogsByType()
+{
+	int choice;
+	logsTypeMenu();
+	util::readValue(choice);
+	std::vector<const Log*> logs;
+	switch (choice)
+	{
+	case 1:
+		logs = m_controller->getLogsByType(Enums::LogType::SYSTEM_ACTIVITY);
+		break;
+	case 2:
+		logs = m_controller->getLogsByType(Enums::LogType::ERROR);
+		break;
+	case 3:
+		logs = m_controller->getLogsByType(Enums::LogType::UNKNOWN);
+		break;
+	default:
+		cout << "Invalid choice. Please try again!" << endl;
+		util::pressEnter();
+		util::clear();
+		break;
+	}
+	util::clear();
+	if (logs.empty())
+	{
+		cout << "No logs available!" << endl;
+	}
+	for (std::vector<const Log*>::const_iterator iterator = logs.begin(); iterator != logs.end(); ++iterator)
+	{
+		cout << (*iterator)->toString() << endl;
+	}
+	util::pressEnter();
+}
+
+/*
+ * Function: UserInterface::logsTypeMenu
+ * Description: Displays the menu of available log types for user selection.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::logsTypeMenu()
+{
+	util::clear();
+	cout << "----------------Log Types Menu---------------" << endl;
+	cout << "1. " << Enums::getLogTypeString(Enums::LogType::SYSTEM_ACTIVITY) << endl;
+	cout << "2. " << Enums::getLogTypeString(Enums::LogType::ERROR) << endl;
+	cout << "3. " << Enums::getLogTypeString(Enums::LogType::UNKNOWN) << endl;
+	cout << "Select a type: ";
+}
+
+
 
 /*
  * Function: UserInterface::viewAllUsers

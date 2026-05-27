@@ -5,7 +5,9 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
+#include <sstream>
 #include "Log.h"
+#include "TimeStamp.h"
 
  /*
   * Function: Log::Log
@@ -14,7 +16,8 @@
   */
 Log::Log()
     : m_logId(""),
-    m_description("")
+    m_description(""),
+    m_logType(Enums::LogType::UNKNOWN)
 {}
 
 /*
@@ -27,9 +30,12 @@ Log::Log()
  * Returns: None
  */
 Log::Log(const std::string& logId,
-    const std::string& description)
+    const std::string& description,
+    const Enums::LogType logType)
     : m_logId(logId),
-    m_description(description)
+    m_description(description),
+    m_logType(logType),
+    m_timestamp(util::Timestamp())
 {}
 
 /*
@@ -55,6 +61,28 @@ const std::string& Log::getDescription() const
 }
 
 /*
+ * Function: Log::getLogType
+ * Description: Retrieves the log type.
+ * Returns:
+ *    const Enums::LogType - Log type enumeration value
+ */
+const Enums::LogType Log::getLogType() const
+{
+    return m_logType;
+}
+
+/*
+ * Function: Log::getTimestamp
+ * Description: Retrieves the timestamp of the log entry.
+ * Returns:
+ *    const util::Timestamp& - Timestamp object
+ */
+const util::Timestamp& Log::getTimestamp() const
+{
+    return m_timestamp;
+}
+
+/*
  * Function: Log::setLogId
  * Description: Updates the log ID.
  * Parameters:
@@ -77,3 +105,44 @@ void Log::setDescription(const std::string& description)
 {
     m_description = description;
 }
+
+/*
+ * Function: Log::setLogType
+ * Description: Updates the log type.
+ * Parameters:
+ *    const Enums::LogType logType - New log type
+ * Returns: None
+ */
+void Log::setLogType(const Enums::LogType logType)
+{
+    m_logType = logType;
+}
+
+/*
+ * Function: Log::setTimestamp
+ * Description: Updates the timestamp of the log entry.
+ * Parameters:
+ *    const util::Timestamp& timestamp - New timestamp
+ * Returns: None
+ */
+void Log::setTimestamp(const util::Timestamp& timestamp)
+{
+    m_timestamp = timestamp;
+}
+
+/*
+ * Function: Log::toString
+ * Description: Converts the log entry to a formatted string representation.
+ * Returns:
+ *    std::string - String containing timestamp, log type, ID, and description
+ */
+std::string Log::toString() const
+{
+    std::ostringstream buffer;
+    buffer << "<" << m_timestamp.toString() << "> ";
+    buffer << Enums::getLogTypeString(m_logType) << ": ";
+    buffer << m_logId << " - ";
+    buffer << m_description << std::endl;
+    return buffer.str();
+}
+

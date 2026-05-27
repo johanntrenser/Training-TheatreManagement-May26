@@ -39,4 +39,6 @@ public:
 	void changePassword();
 	void viewUserStatus();
 	void viewNotifications();
+	void viewLogsByType();
+	void logsTypeMenu();
 };
