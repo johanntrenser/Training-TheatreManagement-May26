@@ -244,6 +244,19 @@ const std::map<std::string, Theatre*>& DataStore::getTheatres() const
 }
 
 /*
+ * Function: DataStore::getBookings
+ * Description: Provides access to the collection of bookings stored in the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::map<std::string, Booking*>& - Map of booking IDs to Booking pointers
+ */
+const std::map<std::string, Booking*>& DataStore::getBookings() const
+{
+    return m_bookings;
+}
+
+/*
  * Function: DataStore::addTheatre
  * Description: Adds a new theatre object to the data store using
  *              the theatre ID as the key.

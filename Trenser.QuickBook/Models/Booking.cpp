@@ -19,7 +19,7 @@ Booking::Booking()
     m_customer(nullptr),
     m_show(nullptr),
     m_bookedSeats(),
-    m_status(0),
+    m_status(Enums::BookingStatus::PENDING),
     m_amount(0)
 {}
 
@@ -40,8 +40,8 @@ Booking::Booking(const std::string& id,
     User* customer,
     Show* show,
     const std::vector<Seat*>& bookedSeats,
-    int status,
-    int amount)
+    Enums::BookingStatus status,
+    double amount)
     : m_bookingId(id),
     m_customer(customer),
     m_show(show),
@@ -98,9 +98,9 @@ const std::vector<Seat*>& Booking::getBookedSeats() const
  * Function: Booking::getStatus
  * Description: Retrieves the booking status.
  * Returns:
- *    int - Booking status
+ *    Enums::BookingStatus - Booking status
  */
-int Booking::getStatus() const
+Enums::BookingStatus Booking::getStatus() const
 {
     return m_status;
 }
@@ -109,9 +109,9 @@ int Booking::getStatus() const
  * Function: Booking::getAmount
  * Description: Retrieves the booking amount.
  * Returns:
- *    int - Booking amount
+ *    double - Booking amount
  */
-int Booking::getAmount() const
+double Booking::getAmount() const
 {
     return m_amount;
 }
@@ -168,10 +168,10 @@ void Booking::setBookedSeats(const std::vector<Seat*>& bookedSeats)
  * Function: Booking::setStatus
  * Description: Updates the booking status.
  * Parameters:
- *    int status - New booking status
+ *    Enums::BookingStatus status - New booking status
  * Returns: None
  */
-void Booking::setStatus(int status)
+void Booking::setStatus(Enums::BookingStatus status)
 {
     m_status = status;
 }
@@ -180,10 +180,10 @@ void Booking::setStatus(int status)
  * Function: Booking::setAmount
  * Description: Updates the booking amount.
  * Parameters:
- *    int amount - New booking amount
+ *    double amount - New booking amount
  * Returns: None
  */
-void Booking::setAmount(int amount)
+void Booking::setAmount(double amount)
 {
     m_amount = amount;
 }

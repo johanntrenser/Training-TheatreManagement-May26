@@ -135,4 +135,8 @@ public:
 	int displayPaymentOptions();
 	void viewPaymentStatus();
 	void displayPaymentStatus(const std::string& paymentId);
+	void viewAllBookings();
+	Enums::UserType getAuthenticatedUserType();
+	void displayCustomerBookings(const std::vector<const Booking*> bookings);
+	void displayTheatreBookings(const std::vector<const Booking*> bookings);
 };

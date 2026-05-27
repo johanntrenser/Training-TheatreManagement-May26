@@ -62,6 +62,7 @@ public:
 	std::map<std::string, Show*>& getShowsForUpdation();
 	const std::map<std::string, Screen*>& getScreens() const;
 	const std::map<std::string, Theatre*>& getTheatres() const;
+	const std::map<std::string, Booking*>& getBookings() const;
 	void addTheatre(Theatre* theatre);
 	Theatre* getTheatreById(const std::string& theatreId) const;
 	Movie* getMovieById(const std::string& movieId) const;

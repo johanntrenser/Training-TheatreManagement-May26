@@ -12,3 +12,103 @@ BookingManagementService::BookingManagementService() :
 {
 }
 
+/*
+ * Function: BookingManagementService::getAllBookings
+ * Description: Retrieves bookings based on authenticated user type (customer or theatre owner).
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::vector<const Booking*> - List of bookings
+ */
+const std::vector<const Booking*> BookingManagementService::getAllBookings()
+{
+    std::vector<const Booking*> bookings;
+    const User* user = m_dataStore.getAuthenticatedUser();
+    Enums::UserType userType = Enums::UserType::USER_NOT_FOUND;
+    if (user != nullptr)
+    {
+        userType = user->getUserType();
+    }
+    switch (userType)
+    {
+    case Enums::UserType::CUSTOMER:
+        bookings = getCustomerBookings();
+        break;
+    case Enums::UserType::THEATRE_OWNER:
+        bookings = getTheatreBookings();
+        break;
+    default:
+        break;
+    }
+    return bookings;
+}
+
+/*
+ * Function: BookingManagementService::getTheatreBookings
+ * Description: Retrieves bookings associated with theatres owned by the authenticated user.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::vector<const Booking*> - List of theatre bookings
+ */
+const std::vector<const Booking*> BookingManagementService::getTheatreBookings() const
+{
+    std::vector<const Booking*> filteredBookings;
+    const std::map<std::string, Booking*> bookings = m_dataStore.getBookings();
+    const User* user = m_dataStore.getAuthenticatedUser();
+    std::string userId;;
+    if (user != nullptr)
+    {
+        userId = user->getUserId();
+    }
+    for (std::map<std::string, Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getShow() && iterator->second->getShow()->getScreen() && iterator->second->getShow()->getScreen()->getTheatre())
+        {
+            const Theatre* theatre = iterator->second->getShow()->getScreen()->getTheatre();
+            if (theatre->getTheatreOwner())
+            {
+                const std::string& theatreOwnerId = theatre->getTheatreOwner()->getUserId();
+                if (userId == theatreOwnerId)
+                {
+                    filteredBookings.push_back(iterator->second);
+                }
+            }
+        }
+    }
+    return filteredBookings;
+}
+
+/*
+ * Function: BookingManagementService::getCustomerBookings
+ * Description: Retrieves bookings associated with the authenticated customer.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::vector<const Booking*> - List of customer bookings
+ */
+const std::vector<const Booking*> BookingManagementService::getCustomerBookings() const
+{
+    std::vector<const Booking*> filteredBookings;
+    const std::map<std::string, Booking*> bookings = m_dataStore.getBookings();
+    const User* user = m_dataStore.getAuthenticatedUser();
+    std::string userId;;
+    if (user != nullptr)
+    {
+        userId = user->getUserId();
+    }
+    for (std::map<std::string, Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getCustomer())
+        {
+            const User* customer = iterator->second->getCustomer();
+            const std::string& bookingCustomerId = customer->getUserId();
+            if (userId == bookingCustomerId)
+            {
+                filteredBookings.push_back(iterator->second);
+            }
+        }
+    }
+    return filteredBookings;
+}
+
