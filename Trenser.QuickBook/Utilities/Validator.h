@@ -19,4 +19,5 @@ namespace util
 	void isPhoneNumberValid(std::string&);
 	void isEmailValid(std::string&);
 	void isPasswordValid(std::string&);
+	void isMovieDurationValid(int& value);
 }

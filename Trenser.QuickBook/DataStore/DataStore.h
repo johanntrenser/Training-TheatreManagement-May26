@@ -56,4 +56,6 @@ public:
 	void setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
 	void setAuthenticatedUserName(const std::string& userName);
 	std::map<std::string, Notification*>& getNotifications();
+	const std::map<std::string, Movie*>& getMovies() const;
+	void addMovieToSystem(Movie* movie);
 };

@@ -57,10 +57,21 @@ public:
 		SeatManagementService* seatService,
 		RefundManagementService* refundService);
 	std::pair<Enums::LoginStatus, Enums::UserType> login(std::string email, std::string password);
-	Enums::ProcessStatus registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType);
+	Enums::ProcessStatus registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	const std::vector<const Log*> getLogsByType(const Enums::LogType logType);
+	Enums::ProcessStatus addMovie(const std::string& title, const std::string& language, const std::string& genre, const int duration);
+	Enums::ProcessStatus isMovieUnique(const std::string& title, const std::string& language, const std::string& genre, const int duration);
+	const std::vector<const Movie*> searchMovieByTitle(const std::string& title);
+	Enums::ProcessStatus setMovieTitleByID(const std::string& movieId, const std::string& title);
+	Enums::ProcessStatus setMovieLanguageByID(const std::string& movieId, const std::string& language);
+	Enums::ProcessStatus setMovieGenreByID(const std::string& movieId, const std::string& genre);
+	Enums::ProcessStatus setMovieDurationByID(const std::string& movieId, const int& duration);
+	std::vector<const Movie*> getAllActiveMovies();
+	Enums::ProcessStatus setMovieDeactivate(const std::string& movieId);
+	Enums::ProcessStatus setMovieActivate(const std::string& movieId);
+	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	void logout();
 	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	const std::vector<const User*> getActiveUsers() const;
@@ -74,6 +85,6 @@ public:
 	Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
 	Enums::UserStatus getUserStatus(const std::string& userId);
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
+	std::vector<const Movie*> getAllInactiveMovies();
 	~Controller();
 };
-

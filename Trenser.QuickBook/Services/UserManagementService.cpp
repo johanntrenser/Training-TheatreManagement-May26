@@ -259,5 +259,5 @@ Enums::UserStatus UserManagementService::getUserStatus(const std::string& userId
             return iterator->second->getStatus();
         }
     }
-    return Enums::UserStatus::INACTIVE;
+    return Enums::UserStatus::NOT_FOUND;
 }
