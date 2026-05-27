@@ -11,6 +11,7 @@
 #include <ctime>
 #include "Movie.h"
 #include "Screen.h"
+#include "Enums.h"
 
 class ShowSeatAvailability;
 

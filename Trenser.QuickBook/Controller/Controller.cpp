@@ -651,6 +651,85 @@ const std::vector<std::vector<std::string>> Controller::viewShowSeatLayout(const
 }
 
 /*
+* Function Name : addScreen
+* Description   : Adds a new screen to the theatre through the screen management service.
+* Parameters    :
+*                  theatre     - Theatre where the screen is added
+*                  name        - Name of the screen
+*                  seatRows    - Number of seat rows
+*                  seatColumns - Number of seat columns
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus Controller::addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount)
+{
+    return m_ScreenManagementService->addScreen(theatreId, name, seatRows, seatColumns, seatAmount);
+}
+
+/*
+* Function Name : updateScreenName
+* Description   : Updates the name of a screen through the service.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+*                  name     - New screen name
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus Controller::updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name)
+{
+    return m_ScreenManagementService->updateScreenName(theatreId, screenId, name);
+}
+
+/*
+* Function Name : deactivateScreen
+* Description   : Deactivates a screen through the service.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus Controller::deactivateScreen(const std::string& theatreId, const std::string& screenId)
+{
+    return m_ScreenManagementService->deactivateScreen(theatreId, screenId);
+}
+
+/*
+* Function Name : reactivateScreen
+* Description   : Reactivates an inactive screen through the service.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus Controller::reactivateScreen(const std::string& theatreId, const std::string& screenId)
+{
+    return m_ScreenManagementService->reactivateScreen(theatreId, screenId);
+}
+
+/*
+* Function Name : viewTheatreScreens
+* Description   : Retrieves all screens available in the theatre.
+* Parameters    :
+*                  theatre - Theatre whose screens are viewed
+* Return Type   : const std::vector<Screen*>
+*/
+const std::vector<const Screen*> Controller::viewTheatreScreens(const std::string& theatreId)
+{
+    return m_ScreenManagementService->viewTheatreScreens(theatreId);
+}
+
+/*
+* Function Name : getAuthenticatedUserType
+* Description   : Retrieves the Authenticated User Type.
+* Parameters    :
+*                  None
+* Return Type   : Enums::UserType
+*/
+Enums::UserType Controller::getAuthenticatedUserType()
+{
+    return m_ScreenManagementService->getAuthenticatedUserType();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

@@ -1752,3 +1752,167 @@ void UserInterface::viewShowSeatLayout(const Show* show)
 	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked  [NA] - Invalid Seat" << endl;
 }
 
+/*
+* Function Name : addScreen
+* Description   : Adds a new screen to the theatre.
+* Parameters    :
+*                  theatre     - Theatre where the screen is added
+*                  name        - Name of the screen
+*                  seatRows    - Number of seat rows
+*                  seatColumns - Number of seat columns
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount)
+{
+	Enums::ProcessStatus status =  m_controller->addScreen(theatreId, name, seatRows, seatColumns, seatAmount);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Screen with Name : " << name << " Added Successfully." << endl;
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	if (status == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Failed! Could not add screen." << endl;
+	}
+	if (status == Enums::ProcessStatus::NOT_FOUND)
+	{
+		cout << "Theatre with ID : " << theatreId << " not found" << endl;
+	}
+	if (status == Enums::ProcessStatus::ALREADY_EXISTS)
+	{
+		cout << "Screen with name " << name << " already exists." << endl;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+* Function Name : updateScreenName
+* Description   : Updates the name of a screen.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+*                  name     - New screen name
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name)
+{
+	Enums::ProcessStatus status =  m_controller->updateScreenName(theatreId, screenId, name);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Screen with Name : " << name << " Updated Successfully." << endl;
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	if (status == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Failed! Could not find theatre with Id : " << theatreId << endl;
+	}
+	if (status == Enums::ProcessStatus::NOT_FOUND)
+	{
+		cout << "Screen with ID : " << screenId << " not found in Theatre " << theatreId << endl;
+	}
+	if (status == Enums::ProcessStatus::ALREADY_EXISTS)
+	{
+		cout << "Screen with name " << name << " already exists in Theatre " << theatreId << endl;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+* Function Name : deactivateScreen
+* Description   : Deactivates a screen.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::deactivateScreen(const std::string& theatreId, const std::string& screenId)
+{
+	Enums::ProcessStatus status =  m_controller->deactivateScreen(theatreId, screenId);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Screen with Id : " << screenId << " deactivated Successfully." << endl;
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	if (status == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Failed! Could not deactivate screen with Id " << screenId << endl;
+	}
+	if (status == Enums::ProcessStatus::NOT_FOUND)
+	{
+		cout << "Screen with ID : " << screenId << " not found." << endl;
+	}
+	if (status == Enums::ProcessStatus::ALREADY_EXISTS)
+	{
+		cout << "Screen with ID " << screenId << " already been deactivated." << endl;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+* Function Name : reactivateScreen
+* Description   : Reactivates an inactive screen.
+* Parameters    :
+*                  theatre - Theatre containing the screen
+*                  screenId - ID of the screen
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::reactivateScreen(const std::string& theatreId, const std::string& screenId)
+{
+	Enums::ProcessStatus status =  m_controller->reactivateScreen(theatreId, screenId);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Screen with Id : " << screenId << " reactivated Successfully." << endl;
+		return Enums::ProcessStatus::SUCCESS;
+	}
+	if (status == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Failed! Could not reactivate screen with Id " << screenId << endl;
+	}
+	if (status == Enums::ProcessStatus::NOT_FOUND)
+	{
+		cout << "Screen with ID : " << screenId << " not found." << endl;
+	}
+	if (status == Enums::ProcessStatus::ALREADY_EXISTS)
+	{
+		cout << "Screen with ID " << screenId << " is active." << endl;
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+* Function Name : viewTheatreScreens
+* Description   : Displays all screens available in the theatre.
+* Parameters    :
+*                  theatre - Theatre whose screens are viewed
+* Return Type   : void
+*/
+void UserInterface::viewTheatreScreens(const std::string& theatreId)
+{
+	const std::vector<const Screen*> screens = m_controller->viewTheatreScreens(theatreId);
+	if (screens.empty())
+	{
+		cout << "No screens available." << endl;
+		return;
+	}
+	cout << endl;
+	cout << std::left
+		<< std::setw(15) << "Screen ID"
+		<< std::setw(25) << "Screen Name";
+	if (m_controller->getAuthenticatedUserType() == Enums::UserType::ADMIN || m_controller->getAuthenticatedUserType() == Enums::UserType::THEATRE_OWNER)
+	{
+		cout << std::setw(25) << "Status";
+	}
+		cout << endl;
+	cout << std::string(65, '-') << endl;
+	for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+	{
+		cout << std::left
+			<< std::setw(15) << (*iterator)->getScreenId()
+			<< std::setw(25) << (*iterator)->getName();
+		if (m_controller->getAuthenticatedUserType() == Enums::UserType::ADMIN || m_controller->getAuthenticatedUserType() == Enums::UserType::THEATRE_OWNER)
+		{
+			cout << std::setw(25) << Enums::getScreenStatusString((*iterator)->getScreenStatus());
+		}
+			cout << endl;
+	}
+}

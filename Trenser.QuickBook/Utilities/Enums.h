@@ -47,7 +47,8 @@ namespace Enums {
         CONFIRMED,
         CANCELLED,
         PENDING,
-        COMPLETED
+        COMPLETED,
+        NOT_BOOKED
     };
 
     enum class PaymentStatus
@@ -108,7 +109,9 @@ namespace Enums {
     enum class ProcessStatus
     {
         FAILED,
-        SUCCESS
+        SUCCESS,
+        ALREADY_EXISTS,
+        NOT_FOUND
     };
 
     enum class LoginStatus

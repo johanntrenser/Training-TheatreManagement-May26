@@ -61,4 +61,6 @@ public:
     void setStatus(int status);
     void setScreens(const std::vector<Screen*>& screens);
     void setMovies(const std::vector<Movie*>& movies);
+    void setScreen(Screen* screen);
+    std::vector<Screen*>& getScreensForUpdation();
 };

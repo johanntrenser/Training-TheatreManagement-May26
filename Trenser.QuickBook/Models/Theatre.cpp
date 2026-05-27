@@ -190,6 +190,18 @@ void Theatre::setName(const std::string& name)
 }
 
 /*
+* Function Name : setScreen
+* Description   : Adds a screen to the theatre.
+* Parameters    :
+*                  screen - Screen to be added
+* Return Type   : void
+*/
+void Theatre::setScreen(Screen* screen)
+{
+    m_screens.push_back(screen);
+}
+
+/*
  * Function: Theatre::setCity
  * Description: Sets the theatre city.
  * Parameters:
@@ -291,4 +303,15 @@ void Theatre::setScreens(const std::vector<Screen*>& screens)
 void Theatre::setMovies(const std::vector<Movie*>& movies)
 {
     m_movies = movies;
+}
+
+/*
+* Function Name : getScreensForUpdation
+* Description   : Returns the list of screens for modification.
+* Parameters    : None
+* Return Type   : std::vector<Screen*>&
+*/
+std::vector<Screen*>& Theatre::getScreensForUpdation()
+{
+    return m_screens;
 }
