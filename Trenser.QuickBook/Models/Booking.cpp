@@ -19,9 +19,10 @@ Booking::Booking()
     m_customer(nullptr),
     m_show(nullptr),
     m_bookedSeats(),
-    m_status(0),
+    m_status(Enums::BookingStatus::PENDING),
     m_amount(0)
-{}
+{
+}
 
 /*
  * Function: Booking::Booking
@@ -40,15 +41,16 @@ Booking::Booking(const std::string& id,
     User* customer,
     Show* show,
     const std::vector<Seat*>& bookedSeats,
-    int status,
-    int amount)
+    Enums::BookingStatus status,
+    double amount)
     : m_bookingId(id),
     m_customer(customer),
     m_show(show),
     m_bookedSeats(bookedSeats),
     m_status(status),
     m_amount(amount)
-{}
+{
+}
 
 /*
  * Function: Booking::getBookingId
@@ -98,9 +100,9 @@ const std::vector<Seat*>& Booking::getBookedSeats() const
  * Function: Booking::getStatus
  * Description: Retrieves the booking status.
  * Returns:
- *    int - Booking status
+ *    Enums::BookingStatus - Booking status
  */
-int Booking::getStatus() const
+Enums::BookingStatus Booking::getStatus() const
 {
     return m_status;
 }
@@ -109,9 +111,9 @@ int Booking::getStatus() const
  * Function: Booking::getAmount
  * Description: Retrieves the booking amount.
  * Returns:
- *    int - Booking amount
+ *    double - Booking amount
  */
-int Booking::getAmount() const
+double Booking::getAmount() const
 {
     return m_amount;
 }
@@ -168,10 +170,10 @@ void Booking::setBookedSeats(const std::vector<Seat*>& bookedSeats)
  * Function: Booking::setStatus
  * Description: Updates the booking status.
  * Parameters:
- *    int status - New booking status
+ *    Enums::BookingStatus status - New booking status
  * Returns: None
  */
-void Booking::setStatus(int status)
+void Booking::setStatus(Enums::BookingStatus status)
 {
     m_status = status;
 }
@@ -180,10 +182,39 @@ void Booking::setStatus(int status)
  * Function: Booking::setAmount
  * Description: Updates the booking amount.
  * Parameters:
- *    int amount - New booking amount
+ *    double amount - New booking amount
  * Returns: None
  */
-void Booking::setAmount(int amount)
+void Booking::setAmount(double amount)
 {
     m_amount = amount;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Bookig object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Booking::serialize()
+{
+    std::string result = m_bookingId + config::delimeter::comma;
+    if (m_customer)
+    {
+        result += m_customer->getUserId() + config::delimeter::comma;
+    }
+    if (m_show)
+    {
+        result += m_show->getShowId() + config::delimeter::comma;
+    }
+    if (!m_bookedSeats.empty())
+    {
+        for (std::vector<Seat*>::const_iterator iterator = m_bookedSeats.begin(); iterator != m_bookedSeats.end(); ++iterator)
+        {
+            result += (*iterator)->getSeatId() + config::delimeter::verticalBar;
+        }
+    }
+    result += Enums::getBookingStatusString(m_status) + config::delimeter::comma +
+        std::to_string(m_amount);
+    return result;
 }

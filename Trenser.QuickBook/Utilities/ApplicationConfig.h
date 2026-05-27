@@ -4,7 +4,7 @@ namespace config
 {
     namespace File
     {
-        constexpr const char* BOOKING_FILEPATH = "File/Booking.csv";
+        constexpr const char* BOOKING_FILEPATH = "Files/Booking.csv";
         constexpr const char* LOG_FILEPATH = "Files/Log.csv";
         constexpr const char* MOVIE_FILEPATH = "Files/Movie.csv";
         constexpr const char* NOTIFICATION_FILEPATH = "Files/Notification.csv";
@@ -19,7 +19,7 @@ namespace config
     }
     namespace Header
     {
-        constexpr const char* BOOKING_HEADER = "USER ID, USER NAME, EMAIL, PASSWORD, PHONE NUMBER, USER TYPE, STATUS";
+        constexpr const char* BOOKING_HEADER = "BOOKING ID, CUSTOMER ID, SHOW ID, BOOKED SEAT ID, STATUS, AMOUNT";
         constexpr const char* LOG_HEADER = "LOG ID,DESCRIPTION";
         constexpr const char* MOVIE_HEADER = "MOVIE ID,MOVIE TITLE,LANGUAGE,GENRE,DURATION,STATUS";
         constexpr const char* NOTIFICATION_HEADER = "NOTIFICATION ID,RECEIVER ID,MESSAGE,STATUS,TIME";

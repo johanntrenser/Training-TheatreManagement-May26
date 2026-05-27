@@ -199,3 +199,16 @@ const std::map<std::string, Show*>& DataStore::getShows() const
 {
     return m_shows;
 }
+
+/*
+ * Function: DataStore::getBookings
+ * Description: Provides access to the collection of bookings stored in the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::map<std::string, Booking*>& - Map of booking IDs to Booking pointers
+ */
+const std::map<std::string, Booking*>& DataStore::getBookings() const
+{
+    return m_bookings;
+}

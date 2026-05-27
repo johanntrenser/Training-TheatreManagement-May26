@@ -8,13 +8,19 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <fstream>
+#include <map>
 #include "DataStore.h"
+#include "ApplicationConfig.h"
+#include "Enums.h"
 
 class BookingManagementService
 {
 private:
 	DataStore& m_dataStore;
+	const std::string& PATH = config::File::BOOKING_FILEPATH;
 public:
 	BookingManagementService();
+	void saveBookingData();
 };
 
