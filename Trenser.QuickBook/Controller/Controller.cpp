@@ -581,6 +581,76 @@ std::vector<const Movie*> Controller::getAllInactiveMovies()
 }
 
 /*
+ * Function: updateSeatLayout
+ * Description: Passes seat layout update request to SeatManagementService.
+ * Parameters:
+ *    screen  - Target screen object
+ *    rows    - Number of rows
+ *    columns - Number of columns
+ * Returns:
+ *    enum - ProcessStatus
+ */
+Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
+{
+    return m_seatManagementService->updateSeatLayout(screen, rows, columns, amount);
+}
+
+/*
+ * Function: getSeatLayout
+ * Description: Retrieves the seating grid for a given screen from SeatManagementService.
+ * Parameters:
+ *    Screen* - Target screen
+ * Returns:
+ *    Const reference to 2D vector of Seat pointers
+ */
+const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const Screen* screen) const
+{
+    return m_seatManagementService->getSeatLayout(screen);
+}
+
+/*
+ * Function: deactivateSeat
+ * Description: Delegates seat deactivation request to SeatManagementService.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    enum - ProcessStatus
+ */
+Enums::ProcessStatus Controller::deactivateSeat(Screen* screen, const std::string& seatId)
+{
+    return m_seatManagementService->deactivateSeat(screen, seatId);
+}
+
+/*
+ * Function: reactivateSeat
+ * Description: Delegates seat reactivation request to SeatManagementService.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    ProcessStatus indicating success or failure
+ */
+Enums::ProcessStatus Controller::reactivateSeat(Screen* screen, const std::string& seatId)
+{
+    return m_seatManagementService->reactivateSeat(screen, seatId);
+}
+
+/*
+* Function Name : viewShowSeatLayout
+* Description   : Retrieves the seat layout for a given show by passing
+*                 the call to SeatManagementService. Returns a 2D vector
+*                 representing the seat arrangement.
+* Parameters    :
+*                  show - Pointer to the Show object whose seat layout is to be retrieved
+* Return Type   : const std::vector<std::vector<std::string>>
+*/
+const std::vector<std::vector<std::string>> Controller::viewShowSeatLayout(const Show* show)
+{
+    return m_seatManagementService->getShowsSeatLayout(show);
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

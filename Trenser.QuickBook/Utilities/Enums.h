@@ -87,7 +87,7 @@ namespace Enums {
         AVAILABLE,
         BOOKED,
         RESERVED,
-        BROKEN
+        BLOCKED
     };
 
     enum class RefundStatus
@@ -441,8 +441,8 @@ namespace Enums {
             return "BOOKED";
         case SeatStatus::RESERVED:
             return "RESERVED";
-        case SeatStatus::BROKEN:
-            return "BROKEN";
+        case SeatStatus::BLOCKED:
+            return "BLOCKED";
         default:
             return "UNKNOWN";
         }
@@ -462,9 +462,9 @@ namespace Enums {
         {
             return SeatStatus::RESERVED;
         }
-        if (input == "BROKEN")
+        if (input == "BLOCKED")
         {
-            return SeatStatus::BROKEN;
+            return SeatStatus::BLOCKED;
         }
         return SeatStatus::AVAILABLE;
     }

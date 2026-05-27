@@ -62,4 +62,9 @@ public:
 	void activateMovie();
 	void searchMovie();
 	bool displayAllInactiveMovies();
+	void updateSeatLayout(Screen* screen, int rows, int columns, double amount);
+	void viewSeatLayout(const Screen* screen);
+	void deactivateSeat(Screen* screen, const std::string& seatId);
+	void reactivateSeat(Screen* screen, const std::string& seatId);
+	void viewShowSeatLayout(const Show* show);
 };

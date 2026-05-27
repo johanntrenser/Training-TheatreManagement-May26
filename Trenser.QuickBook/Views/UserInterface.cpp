@@ -502,6 +502,34 @@ void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
 }
 
 /*
+ * Function: UserInterface::updateSeatLayout
+ * Description: Prompts the user to enter the number of rows and columns for a
+ *              given screen’s seating layout. Passes the update request to
+ *              the Controller
+ * Parameters:
+ *    screen  - A pointer to the Screen object whose seat layout is to be updated
+ *    rows    - The number of rows in the seating layout
+ *    columns - The number of columns in the seating layout
+ * Returns:
+ *    None
+ */
+void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
+{
+	cout << "Enter Number of Rows: ";
+	util::readValue(rows);
+	cout << "Enter Number of Columns: ";
+	util::readValue(columns);
+	if (m_controller->updateSeatLayout(screen, rows, columns, amount) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Seat Layout Updated Successfully" << endl;
+	}
+	else
+	{
+		cout << "Failed! Seat Layout could not be updated" << endl;
+	}
+}
+
+/*
  * Function: handleUserDetailsInput
  * Description: Collects and validates user details including username, email,
  *              password, and phone number. Ensures uniqueness of email and
@@ -806,6 +834,48 @@ void UserInterface::viewInactiveUsers()
 Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& title, const std::string& language, const std::string& genre, const int duration)
 {
 	return m_controller->isMovieUnique(title, language, genre, duration);
+}
+/*
+ * Function: viewSeatLayout
+ * Description: Displays the seating grid of a given screen.
+ * Parameters:
+ *    Screen* - Target screen
+ * Returns:
+ *    None
+ */
+void UserInterface::viewSeatLayout(const Screen* screen)
+{
+	const std::vector<std::vector<Seat*>>& seatGrid = m_controller->getSeatLayout(screen);
+	cout << "<------ Seat Grid ------>" << endl << endl;
+	for (std::vector<std::vector<Seat*>>::const_iterator iteratorOne = seatGrid.begin(); iteratorOne != seatGrid.end(); ++iteratorOne)
+	{
+		for (std::vector<Seat*>::const_iterator iteratorTwo = (*iteratorOne).begin(); iteratorTwo != (*iteratorOne).end(); ++iteratorTwo)
+		{
+			if (!(*iteratorTwo))
+			{
+				cout << (*iteratorTwo)->getSeatId() << "-[NA]" << " ";
+			}
+			if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::AVAILABLE)
+			{
+				cout << (*iteratorTwo)->getSeatId() << "-[A]" << " ";
+			}
+			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BOOKED)
+			{
+				cout << (*iteratorTwo)->getSeatId() << "-[B]" << " ";
+			}
+			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::RESERVED)
+			{
+				cout << (*iteratorTwo)->getSeatId() << "-[R]" << " ";
+			}
+			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
+			{
+				cout << (*iteratorTwo)->getSeatId() << "-[D]" << " ";
+			}
+		}
+		cout << endl;
+	}
+	cout << endl;
+	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked" << endl;
 }
 
 /*
@@ -1613,3 +1683,72 @@ bool UserInterface::displayAllInactiveMovies()
 	displayMovie(movies);
 	return true;
 }
+/*
+ * Function: deactivateSeat
+ * Description: Deactivates a specific seat in the given screen and shows result.
+ * Parameters:
+ *    Screen* - Target screen
+ *    seatId (string) - Identifier of the seat
+ * Returns:
+ *    None
+ */
+void UserInterface::deactivateSeat(Screen* screen, const std::string& seatId)
+{
+	Enums::ProcessStatus status = m_controller->deactivateSeat(screen, seatId);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Seat Number " << seatId << " Deactivated!" << endl;
+	}
+	else
+	{
+		cout << "Failure! Seat could not be deactivated." << endl;
+	}
+}
+
+/*
+ * Function: reactivateSeat
+ * Description: Reactivates a specific seat in the given screen and shows result.
+ * Parameters:
+ *    screen - Target screen
+ *    seatId - Identifier of the seat
+ * Returns:
+ *    None
+ */
+void UserInterface::reactivateSeat(Screen* screen, const std::string& seatId)
+{
+	Enums::ProcessStatus status = m_controller->reactivateSeat(screen, seatId);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "Seat Number " << seatId << " Reactivated!" << endl;
+	}
+	else
+	{
+		cout << "Failure! Seat could not be Reactivated." << endl;
+	}
+}
+
+/*
+* Function Name : viewShowSeatLayout
+* Description   : Displays the seat layout for a given show.
+*                 Iterates through the 2D seat layout matrix retrieved from the controller
+*                 and prints each seat. Also displays the seat status codes 
+*				  (Available, Booked, Reserved, Blocked, Invalid).
+* Parameters    :
+*                  show - Pointer to the Show object whose seat layout is to be displayed
+* Return Type   : void
+*/
+void UserInterface::viewShowSeatLayout(const Show* show)
+{
+	const std::vector<std::vector<std::string>> layout = m_controller->viewShowSeatLayout(show);
+	for (std::vector<std::vector<std::string>>::const_iterator rowIterator = layout.begin(); rowIterator != layout.end(); ++rowIterator)
+	{
+		for (std::vector<std::string>::const_iterator columnIterator = (*rowIterator).begin(); columnIterator != (*rowIterator).end(); ++columnIterator)
+		{
+			std::cout << *columnIterator << "\t";
+		}
+		std::cout << std::endl;
+	}
+	cout << endl;
+	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked  [NA] - Invalid Seat" << endl;
+}
+

@@ -86,5 +86,10 @@ public:
 	Enums::UserStatus getUserStatus(const std::string& userId);
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
 	std::vector<const Movie*> getAllInactiveMovies();
+	Enums::ProcessStatus updateSeatLayout(Screen* screen, int rows, int columns, double amount);
+	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
+	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
+	Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
+	const std::vector<std::vector<std::string>> viewShowSeatLayout(const Show* show);
 	~Controller();
 };
