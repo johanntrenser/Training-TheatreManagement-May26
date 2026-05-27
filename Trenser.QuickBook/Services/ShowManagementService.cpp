@@ -19,15 +19,10 @@ void ShowManagementService::saveShowData()
 	{
 		throw std::runtime_error("Cannot open file: " + PATH);
 	}
-	showFile << "SHOW ID,MOVIE ID,SCREEN ID,STARTING TIME,ENDING TIME,SEAT AVAILABILITY ID,STATUS\n";
+	showFile << config::Header::SHOW_HEADER<<"\n";
 	for (std::map<std::string, Show*>::const_iterator iterator = show.begin(); iterator != show.end(); ++iterator)
 	{
-		showFile << (iterator->second)->getShowId() << ","
-			<< (iterator->second)->getMovie()->getMovieId() << ","
-			<< (iterator->second)->getScreen()->getScreenId() << ","
-			<< (iterator->second)->getStartTime() << ","
-			<< (iterator->second)->getEndTime() << ","
-			<< Enums::getShowStatusString((iterator->second)->getShowStatus()) << "\n";
+		showFile << (iterator->second)->serialize()<< "\n";
 	}
 	showFile.close();
 }

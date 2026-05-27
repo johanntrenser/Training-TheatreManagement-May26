@@ -46,5 +46,6 @@ public:
     void setEndTime(time_t endTime);
     void setSeatAvailability(ShowSeatAvailability* seatAvailability);
     void setShowStatus(Enums::ShowStatus showStatus);
+    std::string serialize();
     ~Show() = default;
 };

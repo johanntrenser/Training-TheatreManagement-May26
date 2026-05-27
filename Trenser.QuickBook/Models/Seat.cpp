@@ -199,6 +199,12 @@ void Seat::setSeatAmount(double amount)
     m_amount = amount;
 }
 
+/*
+ * Function: serialize
+ * Description: Converts Seat object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
 std::string Seat::serialize()
 {
     return m_seatId + config::delimeter::comma +

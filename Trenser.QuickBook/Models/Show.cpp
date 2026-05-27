@@ -224,3 +224,20 @@ void Show::setShowStatus(Enums::ShowStatus showStatus)
 {
     m_showStatus = showStatus;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Show object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Show::serialize()
+{
+    return m_showId + config::delimeter::comma +
+        m_movie->getMovieId() + config::delimeter::comma +
+        m_screen->getScreenId() + config::delimeter::comma +
+        std::to_string(m_startTime) + config::delimeter::comma +
+        std::to_string(m_endTime) + config::delimeter::comma +
+        m_seatAvailability->getShowAvailabiltyId() + config::delimeter::comma +
+        Enums::getShowStatusString(m_showStatus);
+}
