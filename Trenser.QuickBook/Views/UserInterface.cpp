@@ -647,7 +647,7 @@ bool UserInterface::isValidDate(int year, int month, int day)
 	{
 		return false;
 	}
-	int daysInMonth[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+	int daysInMonth[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
 	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
 		daysInMonth[1] = 29;
 	}
@@ -3982,10 +3982,11 @@ Enums::UserType UserInterface::getAuthenticatedUserType()
 }
 
 /*
- * Function: UserInterface::displayTheatreBookings
- * Description: Displays theatre bookings in tabular format (currently placeholder).
+ * Function: UserInterface::displayCustomerBookings
+ * Description: Displays customer bookings in tabular format including Movie ID, Movie Name,
+ *              Date, Theatre Name, number of seats booked, and booking status.
  * Parameters:
- *    bookings (const std::vector<const Booking*>) - List of theatre bookings
+ *    bookings (const std::vector<const Booking*>) - List of customer bookings
  * Returns:
  *    void
  */
@@ -3999,10 +4000,12 @@ void UserInterface::displayCustomerBookings(const std::vector<const Booking*> bo
 	}
 	cout << "\n-------------------------------------------------------------\n";
 	cout << left
+		<< setw(20) << "Movie ID"
 		<< setw(20) << "Movie Name"
 		<< setw(15) << "Date"
 		<< setw(25) << "Theater Name"
 		<< setw(15) << "No of Bookings"
+		<< setw(15) << "Booking status"
 		<< endl;
 	cout << "-------------------------------------------------------------\n";
 	for (std::vector<const Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
@@ -4022,10 +4025,12 @@ void UserInterface::displayCustomerBookings(const std::vector<const Booking*> bo
 				if (movie != nullptr && theatre != nullptr)
 				{
 					cout << left
+						<< setw(20) << (*iterator)->getBookingId()
 						<< setw(20) << movie->getTitle()
 						<< setw(15) << displayTimeAndDate(show->getStartTime())
 						<< setw(25) << theatre->getName()
 						<< setw(15) << (*iterator)->getBookedSeats().size()
+						<< setw(15) << Enums::getBookingStatusString((*iterator)->getStatus())
 						<< endl;
 				}
 			}
@@ -4033,9 +4038,84 @@ void UserInterface::displayCustomerBookings(const std::vector<const Booking*> bo
 	}
 }
 
+/*
+ * Function: UserInterface::displayTheatreBookings
+ * Description: Displays theatre bookings grouped by theatres owned by the authenticated user.
+ *              Shows Movie ID, Movie Name, Date, Theatre Name, number of seats booked, and booking status.
+ * Parameters:
+ *    bookings (const std::vector<const Booking*>) - List of theatre bookings
+ * Returns:
+ *    void
+ */
 void UserInterface::displayTheatreBookings(const std::vector<const Booking*> bookings)
 {
-
+	if (bookings.empty())
+	{
+		cout << "No Bookings Available" << endl;
+		util::pressEnter();
+		return;
+	}
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	bool anyBookingsDisplayed = false;
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if ((*iterator) == nullptr)
+		{
+			continue;
+		}
+		std::vector<const Booking*> theatreBookings;
+		for (std::vector<const Booking*>::const_iterator bookingsIterator = bookings.begin(); bookingsIterator != bookings.end(); ++bookingsIterator)
+		{
+			if (*bookingsIterator == nullptr)
+			{
+				continue;
+			}
+			const Show* show = (*bookingsIterator)->getShow();
+			if (show == nullptr)
+			{
+				continue;
+			}
+			const Screen* screen = show->getScreen();
+			if (screen == nullptr)
+			{
+				continue;
+			}
+			const Theatre* theatre = screen->getTheatre();
+			if (theatre != nullptr && theatre->getTheatreId() == (*iterator)->getTheatreId())
+			{
+				theatreBookings.push_back(*bookingsIterator);
+			}
+		}
+		if (theatreBookings.empty())
+		{
+			continue;
+		}
+		cout << (*iterator)->getName() << " Bookings\n---------------------" << endl;
+		cout << "\n-------------------------------------------------------------\n";
+		cout << left
+			<< setw(20) << "Movie ID"
+			<< setw(20) << "Movie Name"
+			<< setw(15) << "Date"
+			<< setw(25) << "Theater Name"
+			<< setw(15) << "No of Bookings"
+			<< setw(15) << "Booking status"
+			<< endl;
+		cout << "-------------------------------------------------------------\n";
+		for (std::vector<const Booking*>::const_iterator bookingsIterator = theatreBookings.begin(); bookingsIterator != theatreBookings.end(); ++bookingsIterator)
+		{
+			const Show* show = (*bookingsIterator)->getShow();
+			const Movie* movie = show->getMovie();
+			const Theatre* theatre = show->getScreen()->getTheatre();
+			cout << left
+				<< setw(20) << (*bookingsIterator)->getBookingId()
+				<< setw(20) << movie->getTitle()
+				<< setw(15) << displayTimeAndDate(show->getStartTime())
+				<< setw(25) << theatre->getName()
+				<< setw(15) << (*bookingsIterator)->getBookedSeats().size()
+				<< setw(15) << Enums::getBookingStatusString((*bookingsIterator)->getStatus())
+				<< endl;
+		}
+	}
 }
 
 
