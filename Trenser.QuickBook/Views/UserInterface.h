@@ -35,9 +35,9 @@ public:
 	void editMovieDetails(const std::string& movieId, const Movie* currentMovie);
 	void displayMovie(const std::vector<const Movie*>& movies);
 	const std::vector<std::string> getMovieIdFromList(const std::vector<const Movie*>& movies);
-	Enums::ProcessStatus checkMovieIdIsValid(std::string movieId, std::vector<std::string> movieIdList);
-	void displayCurrentMovieDetails(std::string& movieId, const std::vector<const Movie*>& movies);
-	const Movie* getCurrentMovie(std::string& movieId, const std::vector<const Movie*>& movies);
+	Enums::ProcessStatus checkMovieIdIsValid(const std::string& movieId, const std::vector<std::string>& movieIdList);
+	void displayCurrentMovieDetails(const std::string& movieId, const std::vector<const Movie*>& movies);
+	const Movie* getCurrentMovie(const std::string& movieId, const std::vector<const Movie*>& movies);
 	void displayEditMovieMenu();
 	void changeMovieTitle(const std::string& movieId, const std::string& title, const Movie*& currentMovie);
 	void changeMovieLanguage(const std::string& movieId, const std::string& Language, const Movie*& currentMovie);
