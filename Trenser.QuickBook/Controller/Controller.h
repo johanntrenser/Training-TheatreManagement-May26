@@ -109,6 +109,8 @@ public:
 	Enums::ProcessStatus viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
 			double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate);
 	const std::vector<const Booking*> getAllBookings();
+	const std::vector<std::string> getAllBookingIds();
+	const Booking* getBookingById(const std::string& bookingId);
 	void logout();
 	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	const std::vector<const User*> getActiveUsers() const;

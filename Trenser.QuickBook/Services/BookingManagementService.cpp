@@ -20,7 +20,7 @@ BookingManagementService::BookingManagementService() :
  * Returns:
  *    const std::vector<const Booking*> - List of bookings
  */
-const std::vector<const Booking*> BookingManagementService::getAllBookings()
+const std::vector<const Booking*> BookingManagementService::getAllBookings() const
 {
     std::vector<const Booking*> bookings;
     const User* user = m_dataStore.getAuthenticatedUser();
@@ -110,5 +110,40 @@ const std::vector<const Booking*> BookingManagementService::getCustomerBookings(
         }
     }
     return filteredBookings;
+}
+
+/*
+ * Function: BookingManagementService::getAllBookingIds
+ * Description: Retrieves all booking IDs for the authenticated user.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::vector<std::string> - List of booking IDs
+ */
+const std::vector<std::string> BookingManagementService::getAllBookingIds() const
+{
+    const std::vector<const Booking*> bookings = getAllBookings();
+    std::vector<std::string> bookingIds;
+    for (std::vector<const Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
+    {
+        if ((*iterator) != nullptr)
+        {
+            bookingIds.push_back((*iterator)->getBookingId());
+        }
+    }
+    return bookingIds;
+}
+
+/*
+ * Function: BookingManagementService::getBookingById
+ * Description: Retrieves a booking object by its unique ID via DataStore.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    const Booking* - Pointer to the booking if found, nullptr otherwise
+ */
+const Booking* BookingManagementService::getBookingById(const std::string& bookingId) const
+{
+    return m_dataStore.getBookingById(bookingId);
 }
 

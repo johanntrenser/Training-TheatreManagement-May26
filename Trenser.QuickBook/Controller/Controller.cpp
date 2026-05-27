@@ -1306,6 +1306,32 @@ const std::vector<const Booking*> Controller::getAllBookings()
 }
 
 /*
+ * Function: Controller::getAllBookingIds
+ * Description: Retrieves all booking IDs for the authenticated user.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::vector<std::string> - List of booking IDs
+ */
+const std::vector<std::string> Controller::getAllBookingIds()
+{
+    return m_bookingManagementService->getAllBookingIds();
+}
+
+/*
+ * Function: Controller::getBookingById
+ * Description: Retrieves a booking object by its unique ID.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    const Booking* - Pointer to the booking if found, nullptr otherwise
+ */
+const Booking* Controller::getBookingById(const std::string& bookingId)
+{
+    return m_bookingManagementService->getBookingById(bookingId);
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

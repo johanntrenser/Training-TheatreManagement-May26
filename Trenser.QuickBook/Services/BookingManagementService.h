@@ -16,8 +16,10 @@ private:
 	DataStore& m_dataStore;
 public:
 	BookingManagementService();
-	const std::vector<const Booking*> getAllBookings();
+	const std::vector<const Booking*> getAllBookings() const;
 	const std::vector<const Booking*> getTheatreBookings() const;
 	const std::vector<const Booking*> getCustomerBookings() const;
+	const std::vector<std::string> getAllBookingIds() const;
+	const Booking* getBookingById(const std::string& bookingId) const;
 };
 
