@@ -78,7 +78,8 @@ namespace Enums {
     enum class UserStatus
     {
         ACTIVE,
-        INACTIVE
+        INACTIVE,
+        NOT_FOUND
     };
 
     enum class SeatStatus

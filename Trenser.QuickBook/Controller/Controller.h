@@ -85,5 +85,6 @@ public:
 	Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
 	Enums::UserStatus getUserStatus(const std::string& userId);
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
+	std::vector<const Movie*> getAllInactiveMovies();
 	~Controller();
 };

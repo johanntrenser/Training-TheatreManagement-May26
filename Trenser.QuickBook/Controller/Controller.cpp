@@ -11,6 +11,7 @@
 #include "Controller.h"
 using namespace::std;
 #include<iostream>
+
  /*
   * Function: Controller::Controller
   * Description: Default constructor. Initializes all management service
@@ -295,7 +296,6 @@ Enums::ProcessStatus Controller::setMovieDurationByID(const std::string& movieId
     }
 }
 
-
 /*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
@@ -565,6 +565,21 @@ const std::vector<const Movie*> Controller::searchDeactivatedMovieByTitle(const 
 {
     return m_movieManagementService->searchDeactivatedMovieByTitle(title);
 }
+
+/*
+ * Function: Controller::getAllInactiveMovies
+ * Description: Retrieves all movies currently marked as INACTIVE in the system by delegating
+ *              the request to the MovieManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of constant Movie pointers representing all inactive movies
+ */
+std::vector<const Movie*> Controller::getAllInactiveMovies()
+{
+    return m_movieManagementService->getAllInactiveMovies();
+}
+
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all

@@ -12,6 +12,8 @@
 #include <limits>
 #include <string>
 #include <stdexcept>
+#include <algorithm>
+#include <cctype>
 
 namespace util
 {
@@ -41,4 +43,19 @@ namespace util
 
 	void readValue(std::string& value);
 	void pressEnter();
+}
+
+namespace utils {
+
+	/**
+	 * @brief Converts a copy of a std::string to lowercase.
+	 * @param str The input string (passed by value to create a copy).
+	 * @return A new lowercase std::string.
+	 */
+	[[nodiscard]] inline std::string to_lower(std::string str) noexcept {
+		std::transform(str.begin(), str.end(), str.begin(),
+			[](unsigned char c) { return std::tolower(c); });
+		return str;
+	}
+
 }

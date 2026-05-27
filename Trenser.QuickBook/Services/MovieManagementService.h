@@ -27,4 +27,5 @@ public:
 	Enums::ProcessStatus setMovieDeactive(const std::string& movieId);
 	Enums::ProcessStatus setMovieActive(const std::string& movieId);
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
+	std::vector<const Movie*> getAllInactiveMovies();
 };

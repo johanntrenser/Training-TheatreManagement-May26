@@ -174,10 +174,25 @@ void UserInterface::login()
  */
 void UserInterface::adminMenu()
 {
-		cout << "Admin Menu" << endl;
-		cout << "------------------------" << endl;
-		cout << "1. Create User\n2. View All Users\n3. Update User Details\n4. Deactivate User\n5. Reactivate User\n6. View Profile\n7. View User Status\n8. Change Password\n9. Logout\n10. Add Movie\n11. Update Movie Details\n12. List All Movies\n13. Deactivate Movie\n14. Reactivate Movie\n15. Search Movie" << endl;
-		cout << "Enter an option: ";
+	cout << "Admin Menu" << endl;
+	cout << "------------------------" << endl;
+	cout << " 1.  Create User" << endl;
+	cout << " 2.  View All Users" << endl;
+	cout << " 3.  Update User Details" << endl;
+	cout << " 4.  Deactivate User" << endl;
+	cout << " 5.  Reactivate User" << endl;
+	cout << " 6.  View Profile" << endl;
+	cout << " 7.  View User Status" << endl;
+	cout << " 8.  Change Password" << endl;
+	cout << " 9.  Logout" << endl;
+	cout << "10.  Add Movie" << endl;
+	cout << "11.  Update Movie Details" << endl;
+	cout << "12.  List All Movies" << endl;
+	cout << "13.  Deactivate Movie" << endl;
+	cout << "14.  Reactivate Movie" << endl;
+	cout << "15.  Search Movie" << endl;
+	cout << "------------------------" << endl;
+	cout << "Enter an option: ";
 }
 
 /*
@@ -192,7 +207,12 @@ void UserInterface::customerMenu()
 {
 	cout << "Customer Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Update User Details\n2. View Profile\n3. Change Password\n4. Logout" << endl;
+	cout << " 1.  Update User Details" << endl;
+	cout << " 2.  View Profile" << endl;
+	cout << " 3.  Change Password" << endl;
+	cout << " 4.  Search Movie" << endl;
+	cout << " 5.  Logout" << endl;
+	cout << "------------------------" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -208,7 +228,11 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Update User Details\n2. View Profile\n3. Change Password\n4. Logout" << endl;
+	cout << " 1.  Update User Details" << endl;
+	cout << " 2.  View Profile" << endl;
+	cout << " 3.  Change Password" << endl;
+	cout << " 4.  Logout" << endl;
+	cout << "------------------------" << endl;
 	cout << "Enter an option: ";
 }
 
@@ -329,7 +353,7 @@ void UserInterface::handleAdminMenuOperation()
 			displayAllMovies();
 			break;
 		case 13:
-			DeactivateMovie();
+			deactivateMovie();
 			break;
 		case 14:
 			activateMovie();
@@ -374,6 +398,9 @@ void UserInterface::handleCustomerMenuOperation()
 			changePassword();
 			break;
 		case 4:
+			searchMovie();
+			break;
+		case 5:
 			isMenuActive = false;
 			break;
 		default:
@@ -531,6 +558,7 @@ void UserInterface::createUser()
 		break;
 	case 3:
 		userType = Enums::UserType::ADMIN;
+		break;
 	default:
 		cout << "Invalid Choice. Please Try again!" << endl;
 		util::pressEnter();
@@ -632,6 +660,8 @@ void UserInterface::updateUserDetails()
 			util::clear();
 		}
 	}
+	util::pressEnter();
+	util::clear();
 }
 
 /*
@@ -677,6 +707,7 @@ void UserInterface::deactivateUser()
 	util::pressEnter();
 	util::clear();
 }
+
 /*
 * Function Name : viewNotifications
 * Description   : Displays unread notifications for the authenticated user in batches.
@@ -895,7 +926,6 @@ void UserInterface::updateMovie()
 	editMovieDetails(movieId, currentMovie);
 }
 
-
 /*
  * Function: UserInterface::displayMovie
  * Description: Displays a formatted list of movies with their details (ID, Title, Language, Genre, Duration).
@@ -925,6 +955,7 @@ void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
 				<< endl;
 		}
 	}
+	cout << endl;
 }
 
 /*
@@ -1167,7 +1198,6 @@ void UserInterface::changeMovieDuration(const string& movieId, int& duration, co
 	}
 }
 
-
 /*
  * Function: UserInterface::addMovie
  * Description: Collects movie details from the user, validates uniqueness, and adds the movie to the system.
@@ -1206,7 +1236,6 @@ void UserInterface::addMovie()
 	}
 }
 
-
 /*
  * Function: UserInterface::reactivateUser
  * Description: Displays all inactive users, prompts the Admin to enter a User ID,
@@ -1235,6 +1264,7 @@ void UserInterface::reactivateUser()
 	util::pressEnter();
 	util::clear();
 }
+
 /*
  * Function: UserInterface::viewLogsByType
  * Description: Displays logs filtered by type. Prompts the user to select a log type
@@ -1293,8 +1323,6 @@ void UserInterface::logsTypeMenu()
 	cout << "3. " << Enums::getLogTypeString(Enums::LogType::UNKNOWN) << endl;
 	cout << "Select a type: ";
 }
-
-
 
 /*
  * Function: UserInterface::viewAllUsers
@@ -1358,6 +1386,7 @@ void UserInterface::viewProfile()
 	util::pressEnter();
 	util::clear();
 }
+
 /*
  * Function: UserInterface::changePassword
  * Description: Prompts the currently authenticated user to change their password.
@@ -1391,6 +1420,7 @@ void UserInterface::changePassword()
 	util::pressEnter();
 	util::clear();
 }
+
 /*
  * Function: UserInterface::viewUserStatus
  * Description: Prompts the user to enter a User ID and retrieves the status
@@ -1422,7 +1452,6 @@ void UserInterface::viewUserStatus()
 	util::pressEnter();
 	util::clear();
 }
-}
 
 /*
  * Function: UserInterface::displayAllMovies
@@ -1435,7 +1464,7 @@ void UserInterface::viewUserStatus()
  */
 void UserInterface::displayAllMovies()
 {
-	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	if (!(movies.empty()))
 	{
 		displayMovie(movies);
@@ -1457,6 +1486,12 @@ void UserInterface::displayAllMovies()
  */
 void UserInterface::deactivateMovie()
 {
+	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	if (movies.empty())
+	{
+		return;
+	}
+	displayMovie(movies);
 	string title, movieId;
 	cout << "\nEnter the movie title: ";
 	util::readValue(title);
@@ -1500,6 +1535,10 @@ void UserInterface::deactivateMovie()
  */
 void UserInterface::activateMovie()
 {
+	if (!displayAllInactiveMovies)
+	{
+		return;
+	}
 	string title, movieId;
 	cout << "\nEnter the movie title: ";
 	util::readValue(title);
@@ -1554,4 +1593,25 @@ void UserInterface::searchMovie()
 	{
 		cout << "No movie exists with name " << title << endl;
 	}
+}
+
+/*
+ * Function: UserInterface::displayAllInactiveMovies
+ * Description: Retrieves and displays all inactive movies in the system. If no inactive movies exist,
+ *              informs the user accordingly.
+ * Parameters:
+ *    None
+ * Returns:
+ *    bool
+ */
+bool UserInterface::displayAllInactiveMovies()
+{
+	const std::vector<const Movie*> movies = m_controller->getAllInactiveMovies();
+	if (movies.empty())
+	{
+		cout << "\nNo inactive movies!.";
+		return false;	
+	}
+	displayMovie(movies);
+	return true;
 }

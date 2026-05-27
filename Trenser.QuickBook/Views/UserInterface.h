@@ -61,4 +61,5 @@ public:
 	void deactivateMovie();
 	void activateMovie();
 	void searchMovie();
+	bool displayAllInactiveMovies();
 };

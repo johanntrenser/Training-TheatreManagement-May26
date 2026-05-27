@@ -12,6 +12,7 @@
 #include <map>
 #include "MovieManagementService.h"
 #include "Factory.h"
+#include "InputHelper.h"
 /*
  * Function: MovieManagementService::MovieManagementService
  * Description: Constructs a MovieManagementService object and initializes the DataStore instance.
@@ -104,7 +105,7 @@ const std::vector<const Movie*> MovieManagementService::searchMovieByTitle(const
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
-		if ((iterator->second)->getTitle() == title && (iterator->second)->getStatus() == Enums::MovieStatus::ACTIVE)
+		if (utils::to_lower((iterator->second)->getTitle()) == utils::to_lower(title) && (iterator->second)->getStatus() == Enums::MovieStatus::ACTIVE)
 		{
 			resultantMovies.push_back(iterator->second);
 		}
@@ -297,4 +298,26 @@ const std::vector<const Movie*> MovieManagementService::searchDeactivatedMovieBy
 		}
 	}
 	return resultantMovies;
+}
+
+/*
+ * Function: MovieManagementService::getAllInactiveMovies
+ * Description: Retrieves all movies from the DataStore that are currently marked as INACTIVE.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of constant Movie pointers representing all inactive movies
+ */
+std::vector<const Movie*> MovieManagementService::getAllInactiveMovies()
+{
+	std::vector<const Movie*> allInactiveMovies;
+	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if ((iterator->second)->getStatus() == Enums::MovieStatus::INACTIVE)
+		{
+			allInactiveMovies.push_back(iterator->second);
+		}
+	}
+	return allInactiveMovies;
 }
