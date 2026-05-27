@@ -17,7 +17,7 @@ class TicketManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::File::THEATRE_FILEPATH;
+	const std::string& PATH = config::File::TICKET_FILEPATH;
 public:
 	TicketManagementService();
 	void saveTicketData();

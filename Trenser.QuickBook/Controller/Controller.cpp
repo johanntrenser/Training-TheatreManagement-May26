@@ -197,14 +197,14 @@ Controller::~Controller()
 void Controller::saveData()
 {
     m_userManagementService->saveUserData();
-    /*m_theatreManagementService->saveTheatreData();
-    m_movieManagementService->saveMovieData();
+    //m_theatreManagementService->saveTheatreData();
+    //m_movieManagementService->saveMovieData();
     m_ticketManagementService->saveTicketData();
-    m_ScreenManagementService->saveScreenData();
-    m_paymentManagementService->savePaymentData();
-    m_notificationManagementService->saveNotificationData();
-    m_logManagementService->saveLogData();
-    m_refundManagementService->saveRefundData();
-    m_seatManagementService->saveSeatData();
-    m_showManagementService->saveShowData();*/
+    //m_ScreenManagementService->saveScreenData();
+    //m_paymentManagementService->savePaymentData();
+    //m_notificationManagementService->saveNotificationData();
+    //m_logManagementService->saveLogData();
+    //m_refundManagementService->saveRefundData();
+    //m_seatManagementService->saveSeatData();
+    //m_showManagementService->saveShowData();
 }

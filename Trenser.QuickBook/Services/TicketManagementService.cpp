@@ -15,7 +15,9 @@ TicketManagementService::TicketManagementService()
 /*
  * Function: TicketManagementService::saveTicketData
  * Description: Saves all ticket data from the DataStore into a CSV file.
- *              Includes ticket details such as Ticket ID, associated Payment ID, and Customer ID.
+ *              Uses a configurable header (from config::Header::TICKET_HEADER)
+ *              and delegates serialization of each Ticket object to its
+ *              serialize() method for consistent formatting.
  *              Overwrites existing file content.
  * Parameters:
  *    None
@@ -30,12 +32,10 @@ void TicketManagementService::saveTicketData()
 	{
 		throw std::runtime_error("Cannot open file: " + PATH);
 	}
-	ticketFile << "TICKET ID,PAYMENT ID,CUSTOMER ID\n";
+	ticketFile << config::Header::TICKET_HEADER<<"\n";
 	for (std::map<std::string, Ticket*>::const_iterator iterator = tickets.begin(); iterator != tickets.end(); ++iterator)
 	{
-		ticketFile << (iterator->second)->getTicketId() << ","
-			<< (iterator->second)->getPayment()->getPaymentId() << ","
-			<< (iterator->second)->getCustomer()->getUserId() << "\n";
+		ticketFile << (iterator->second)->serialize()<< "\n";
 	}
 	ticketFile.close();
 }

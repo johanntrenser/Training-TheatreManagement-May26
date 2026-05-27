@@ -106,3 +106,16 @@ void Ticket::setCustomer(User* customer)
 {
 	m_customer = customer;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Ticket object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Ticket::serialize()
+{
+	return m_ticketId + config::delimeter::comma +
+		m_payment->getPaymentId() + config::delimeter::comma +
+		m_customer->getUserId();
+}

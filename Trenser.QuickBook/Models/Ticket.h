@@ -10,6 +10,7 @@
 #pragma once
 #include "User.h"
 #include "Payment.h"
+#include "ApplicationConfig.h"
 
 class Ticket
 {
@@ -26,6 +27,7 @@ public:
 	void setTicketId(const std::string ticketId);
 	void setPayment(Payment* payment);
 	void setCustomer(User* customer);
+	std::string serialize();
 	~Ticket() = delete;
 };
 
