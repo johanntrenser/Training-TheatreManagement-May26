@@ -24,6 +24,7 @@ SeatManagementService::SeatManagementService()
  * Returns:
  *    None (throws runtime_error if the file cannot be opened)
  */
+#include <iostream>
 void SeatManagementService::saveSeatData()
 {
 	const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
@@ -32,15 +33,10 @@ void SeatManagementService::saveSeatData()
 	{
 		throw std::runtime_error("Cannot open file: " + PATH);
 	}
-	seatFile << "SEAT ID,SCREEN ID,SEAT ROW,SEAT COLUMN,STATUS\n";
+	seatFile << config::Header::SEAT_HEADER<<"\n";
 	for (std::map<std::string, Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
 	{
-		seatFile << (iterator->second)->getSeatId() << ","
-			<< (iterator->second)->getScreen()->getScreenId() << ","
-			<< (iterator->second)->getSeatRow() << ","
-			<< (iterator->second)->getSeatColumn() << ","
-			<< (iterator->second)->getSeatAmount() << ","
-			<< Enums::getSeatStatusString((iterator->second)->getSeatStatus()) << "\n";
+		seatFile << (iterator->second)->serialize() << "\n";
 	}
 	seatFile.close();
 }

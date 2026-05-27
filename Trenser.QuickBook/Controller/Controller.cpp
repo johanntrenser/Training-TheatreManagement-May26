@@ -205,6 +205,6 @@ void Controller::saveData()
     //m_notificationManagementService->saveNotificationData();
     //m_logManagementService->saveLogData();
     //m_refundManagementService->saveRefundData();
-    //m_seatManagementService->saveSeatData();
+    m_seatManagementService->saveSeatData();
     m_showManagementService->saveShowData();
 }
