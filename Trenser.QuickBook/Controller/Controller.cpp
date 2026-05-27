@@ -297,6 +297,73 @@ Enums::ProcessStatus Controller::setMovieDurationByID(const std::string& movieId
 }
 
 /*
+ * Function: Controller::setMovieLanguageById
+ * Description: Updates the language of a movie identified by its unique movie ID.
+ * Parameters:
+ *    movieId  - Unique identifier of the movie
+ *    language - New language to set for the movie
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the update was successful,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setMovieLanguageByID(const std::string& movieId, const std::string& language)
+{
+    if (m_movieManagementService->setMovieLanguageByID(movieId, language) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    else
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+}
+
+/*
+ * Function: Controller::setMovieGenreById
+ * Description: Updates the genre of a movie identified by its unique movie ID.
+ * Parameters:
+ *    movieId - Unique identifier of the movie
+ *    genre   - New genre to set for the movie
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the update was successful,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setMovieGenreByID(const std::string& movieId, const std::string& genre)
+{
+    if (m_movieManagementService->setMovieGenreByID(movieId, genre) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    else
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+}
+
+/*
+ * Function: Controller::setMovieDuration
+ * Description: Updates the duration of a movie identified by its unique movie ID.
+ * Parameters:
+ *    movieId  - Unique identifier of the movie
+ *    duration - New duration (in minutes) to set for the movie
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the update was successful,
+ *    Enums::ProcessStatus::FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setMovieDurationByID(const std::string& movieId, const int& duration)
+{
+    if (m_movieManagementService->setMovieDurationByID(movieId, duration) == Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    else
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+}
+
+
+/*
  * Function: login
  * Description: Passes the login process to the AuthenticationManagementService.
  * Parameters:
