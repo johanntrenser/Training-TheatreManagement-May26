@@ -70,4 +70,8 @@ public:
 	Enums::ProcessStatus checkMovieIdIsValid(std::string movieId, std::vector<std::string> movieIdList);
 	Enums::ProcessStatus validateMovieIdInput(const std::vector<const Movie*>& movies, std::string& movieId);
 	void listShowsForAMovie();
+	void viewAllBookings();
+	Enums::UserType getAuthenticatedUserType();
+	void displayCustomerBookings(const std::vector<const Booking*> bookings);
+	void displayTheatreBookings(const std::vector<const Booking*> bookings);
 };

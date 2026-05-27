@@ -615,6 +615,19 @@ const std::vector<const Show*> Controller::getShowsForMovie(const std::string mo
 }
 
 /*
+ * Function: Controller::getAllBookings
+ * Description: Retrieves all bookings for the authenticated user by delegating to BookingManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::vector<const Booking*> - List of bookings
+ */
+const std::vector<const Booking*> Controller::getAllBookings()
+{
+    return m_bookingManagementService->getAllBookings();
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

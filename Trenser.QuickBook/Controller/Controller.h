@@ -90,6 +90,7 @@ public:
 	Enums::ProcessStatus isShowChangable(const std::string& showId);
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 	const std::vector<const Show*> getShowsForMovie(const std::string movieId);
+	const std::vector<const Booking*> getAllBookings();
 	void logout();
 	~Controller();
 };
