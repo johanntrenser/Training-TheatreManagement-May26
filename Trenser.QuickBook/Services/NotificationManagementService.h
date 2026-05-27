@@ -16,7 +16,7 @@ class NotificationManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::File::MOVIE_FILEPATH;
+	const std::string& PATH = config::File::NOTIFICATION_FILEPATH;
 public:
 	NotificationManagementService();
 	void saveNotificationData();

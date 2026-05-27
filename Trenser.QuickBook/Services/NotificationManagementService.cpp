@@ -30,13 +30,10 @@ void NotificationManagementService::saveNotificationData()
 	{
 		throw std::runtime_error("Cannot open file: " + PATH);
 	}
-	notificationFile << "NOTIFICATION ID,RECEIVER ID,MESSAGE,STATUS,TIME\n";
+	notificationFile << config::Header::NOTIFICATION_HEADER;
 	for (std::map<std::string, Notification*>::const_iterator iterator = notifications.begin(); iterator != notifications.end(); ++iterator)
 	{
-		notificationFile << (iterator->second)->getNotificationId() << ","
-			<< (iterator->second)->getReceiver()->getUserId() << ","
-			<< Enums::getNotificationStatusString((iterator->second)->getStatus()) << ","
-			<< (iterator->second)->getTime() << "\n";
+		notificationFile << (iterator->second)->serialize() << "\n";
 	}
 	notificationFile.close();
 }

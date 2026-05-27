@@ -35,5 +35,6 @@ public:
     void setMessage(const std::string& message);
     void setStatus(Enums::NotificationStatus status);
     void setTime(const std::string& time);
+    std::string serialize();
 };
 
