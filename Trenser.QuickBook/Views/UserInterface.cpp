@@ -1873,7 +1873,7 @@ void UserInterface::displayCustomerBookings(const std::vector<const Booking*> bo
 	}
 	cout << "\n-------------------------------------------------------------\n";
 	cout << left
-		<< setw(20) << "Movie ID"
+		<< setw(20) << "Booking ID"
 		<< setw(20) << "Movie Name"
 		<< setw(15) << "Date"
 		<< setw(25) << "Theater Name"
@@ -1966,7 +1966,7 @@ void UserInterface::displayTheatreBookings(const std::vector<const Booking*> boo
 		cout << (*iterator)->getName() << " Bookings\n---------------------" << endl;
 		cout << "\n-------------------------------------------------------------\n";
 		cout << left
-			<< setw(20) << "Movie ID"
+			<< setw(20) << "Booking ID"
 			<< setw(20) << "Movie Name"
 			<< setw(15) << "Date"
 			<< setw(25) << "Theater Name"
@@ -1986,6 +1986,94 @@ void UserInterface::displayTheatreBookings(const std::vector<const Booking*> boo
 				<< setw(25) << theatre->getName()
 				<< setw(15) << (*bookingsIterator)->getBookedSeats().size()
 				<< setw(15) << Enums::getBookingStatusString((*bookingsIterator)->getStatus())
+				<< endl;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::displayBookingDetails
+ * Description: Displays detailed information for a booking selected by ID.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void UserInterface::displayBookingDetails()
+{
+	viewAllBookings();
+	const std::vector<std::string> bookingIds = m_controller->getAllBookingIds();
+	std::string bookingId;
+	cout << "Enter the booking id to see details for: ";
+	util::readValue(bookingId);
+	bool isBookingIdValid = false;
+	for (std::vector<std::string>::const_iterator iterator = bookingIds.begin(); iterator != bookingIds.end(); ++iterator)
+	{
+		if ((*iterator) == bookingId)
+		{
+			isBookingIdValid = true;
+			break;
+		}
+	}
+	if (!isBookingIdValid)
+	{
+		cout << "Booking id is not valid!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	const Booking* booking = m_controller->getBookingById(bookingId);
+	if (booking == nullptr)
+	{
+		cout << "Booking details could not be found!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	displayBookingDetail(booking);
+}
+
+/*
+ * Function: UserInterface::displayBookingDetail
+ * Description: Displays detailed information for a single booking, including Movie, Date,
+ *              Theatre, number of seats booked, and booking status.
+ * Parameters:
+ *    booking (const Booking*) - Pointer to the booking object
+ * Returns:
+ *    void
+ */
+void UserInterface::displayBookingDetail(const Booking* booking)
+{
+	util::clear();
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left
+		<< setw(20) << "Movie ID"
+		<< setw(20) << "Movie Name"
+		<< setw(15) << "Date"
+		<< setw(25) << "Theater Name"
+		<< setw(15) << "Booked Seats"
+		<< setw(15) << "Booking status"
+		<< endl;
+	cout << "-------------------------------------------------------------\n";
+	const Show* show = booking->getShow();
+	if (show != nullptr)
+	{
+		const Movie* movie = show->getMovie();
+		const Screen* screen = show->getScreen();
+		const Theatre* theatre = nullptr;
+		if (screen != nullptr)
+		{
+			theatre = screen->getTheatre();
+		}
+		if (movie != nullptr && theatre != nullptr)
+		{
+			cout << left
+				<< setw(20) << booking->getBookingId()
+				<< setw(20) << movie->getTitle()
+				<< setw(15) << displayTimeAndDate(show->getStartTime())
+				<< setw(25) << theatre->getName()
+				<< setw(15) << booking->getBookedSeats().size()
+				<< setw(15) << Enums::getBookingStatusString(booking->getStatus())
 				<< endl;
 		}
 	}

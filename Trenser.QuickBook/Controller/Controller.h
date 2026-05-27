@@ -91,6 +91,8 @@ public:
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 	const std::vector<const Show*> getShowsForMovie(const std::string movieId);
 	const std::vector<const Booking*> getAllBookings();
+	const std::vector<std::string> getAllBookingIds();
+	const Booking* getBookingById(const std::string& bookingId);
 	void logout();
 	~Controller();
 };
