@@ -203,7 +203,15 @@ void UserInterface::adminMenu()
 		cout << "Admin Menu" << endl;
 		cout << "------------------------" << endl;
 		cout << "7. Validate Theatre Request" << endl;
-		cout << "8. Deactivate Theatre" << endl;
+		cout << "Admin Menu" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Add movies" << endl;
+		cout << "2. Update movies" << endl;
+		cout << "3. List all movies" << endl;
+		cout << "4. Deactivate movies" << endl;
+		cout << "5. Reactivate movies" << endl;
+		cout << "6. Search movies" << endl;
+		cout << "7. Validate Theatre Request" << endl;
 		cout << "Enter an option: ";
 }
 
@@ -250,6 +258,11 @@ void UserInterface::theatreOwnerMenu()
 	cout << "1. View Theatre Details" << endl;
 	cout << "3. Update Theatre Details" << endl;
 	cout << "4. Deactivate Theatre" << endl;
+	cout << "5. Reactivate Theatre" << endl;
+	cout << "6. Add movie to theatre" << endl;
+	cout << "7. Search theatre" << endl;
+	cout << "8. List all theatre" << endl;
+	cout << "9. View movies in theatre" << endl;
 	cout << "0. Exit" << endl;
 	cout << "Enter an option: ";
 }
@@ -318,7 +331,10 @@ void UserInterface::userTypesMenu()
 
 /*
  * Function: UserInterface::handleAdminMenuOperation
- * Description: Handles the admin menu loop, displaying options and processing user input.
+ * Description: Handles the admin menu operations in a loop until the admin exits.
+ *              Displays the admin menu, reads the choice, and executes the corresponding
+ *              operation such as validating theatre requests, deactivating theatres,
+ *              or reactivating theatres. Provides feedback for invalid choices.
  * Parameters:
  *    None
  * Returns:
@@ -399,7 +415,9 @@ void UserInterface::handleAdminMenuOperation()
 
 /*
  * Function: UserInterface::handleCustomerMenuOperation
- * Description: Handles the customer menu loop, displaying options and processing user input.
+ * Description: Handles the customer menu operations in a loop until the customer exits.
+ *              Displays the customer menu, reads the choice, and executes the corresponding
+ *              operation. Currently supports exiting the menu and provides feedback for invalid choices.
  * Parameters:
  *    None
  * Returns:
@@ -441,7 +459,10 @@ void UserInterface::handleCustomerMenuOperation()
 
 /*
  * Function: UserInterface::handleTheatreOwnerMenuOperation
- * Description: Handles the theatre owner menu loop, displaying options and processing user input.
+ * Description: Handles the theatre owner menu operations in a loop until the owner exits.
+ *              Displays the theatre owner menu, reads the choice, and executes the corresponding
+ *              operation such as adding theatres, viewing details, updating, deactivating/reactivating,
+ *              managing movies, searching, and listing theatres. Provides feedback for invalid choices.
  * Parameters:
  *    None
  * Returns:
@@ -484,6 +505,17 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 			break;
 		case 5:
 			reactivateTheatreByOwner();
+			break;
+		case 6:addMovieToTheatre();
+			break;
+		case 7:
+			searchTheatre();
+			break;
+		case 8: 
+			listAllTheatres();
+			break;
+		case 9:
+			displayMoviesInTheatre();
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -2899,6 +2931,7 @@ const Theatre* UserInterface::getCurrentTheatreById(const std::string& theatreId
 			return *iterator;
 		}
 	}
+	return nullptr;
 }
 
 /*
@@ -2935,7 +2968,7 @@ void UserInterface::validateTheatreRequest()
 			}
 			else if (choice == 0)
 			{
-				exit;
+				exit(0);
 			}
 			else
 			{
@@ -3076,7 +3109,7 @@ void UserInterface::reactivateTheatreByOwner()
 		util::readValue(theatreId);
 		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
 		{
-			setTheatreStatusById(theatreId, Enums::TheatreStatus::ACTIVE);
+			setTheatreStatusById(theatreId, Enums::TheatreStatus::PENDING);
 		}
 		else
 		{
