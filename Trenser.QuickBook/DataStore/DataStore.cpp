@@ -19,7 +19,7 @@ using namespace std;
  */
 const std::map<string, User*>& DataStore::getUsers() const
 {
-        return m_users;
+    return m_users;
 }
 
 /*
@@ -211,4 +211,9 @@ const std::map<std::string, Show*>& DataStore::getShows() const
 const std::map<std::string, Booking*>& DataStore::getBookings() const
 {
     return m_bookings;
+}
+
+void DataStore::addTicket(Ticket* ticket)
+{
+    m_tickets[ticket->getTicketId()] = ticket;
 }

@@ -294,6 +294,17 @@ std::string User::serialize()
         Enums::getUserStatusString(m_status);
 }
 
+/*
+ * Function: User::deserialize
+ * Description: Deserializes a single line of CSV-formatted user data into a User object.
+ *              Extracts fields such as User ID, name, email, encrypted password, phone number,
+ *              type, and status. The password is decrypted before constructing the User object.
+ *              User type and status are converted from string values into their respective enums.
+ * Parameters:
+ *    line - A reference to a string containing one line of CSV user data.
+ * Returns:
+ *    A pointer to a newly created User object populated with the deserialized data.
+ */
 User* User::deserialize(std::string& line)
 {
     std::stringstream lineStream(line);

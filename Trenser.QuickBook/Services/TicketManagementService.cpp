@@ -36,3 +36,45 @@ void TicketManagementService::saveTicketData()
 	FileManagement::writeLines(std::string(config::File::TICKET_FILEPATH), lines);
 }
 
+/*
+ * Function: TicketManagementService::loadTicketData
+ * Description: Loads all ticket data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Ticket object via Ticket::deserialize,
+ *              and restores associations with Payment and Customer objects
+ *              if their IDs are present and found in the DataStore.
+ *              Finally, adds the reconstructed Ticket to the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void TicketManagementService::loadTicketData()
+{
+	std::string paymentId, customerId;
+	std::vector<std::string> lines = FileManagement::readlines(PATH);
+	for (int index = 0; index < lines.size(); index++)
+	{
+		Ticket* ticket = Ticket::deserialize(lines[index]);
+		std::stringstream lineStream(lines[index]);
+		std::getline(lineStream, paymentId, ',');
+		std::getline(lineStream, customerId, ',');
+		if (!paymentId.empty())
+		{
+			const std::map < std::string, Payment*> payment = m_dataStore.getPayments();
+			if (payment.find(paymentId) != payment.end())
+			{
+				ticket->setPayment(payment.at(paymentId));
+			}
+		}
+		if (!customerId.empty())
+		{
+			const std::map<std::string, User*> customer = m_dataStore.getUsers();
+			if (customer.find(customerId) != customer.end())
+			{
+				ticket->setCustomer(customer.at(customerId));
+			}
+		}
+		m_dataStore.addTicket(ticket);
+	}
+}

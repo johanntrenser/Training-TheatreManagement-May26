@@ -174,6 +174,7 @@ void Controller::logout()
 void Controller::loadDataFromFile()
 {
     m_userManagementService->loadUserData();
+    m_ticketManagementService->loadTicketData();
 }
 
 /*

@@ -9,15 +9,17 @@
  * Created: 20 May 2026
  */
 #pragma once
-
 #include <fstream>
 #include <map>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "ApplicationConfig.h"
 #include "DataStore.h"
 #include "FileManagement.h"
 #include "User.h"
+
+
 class UserManagementService
 {
 private:
