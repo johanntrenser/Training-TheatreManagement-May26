@@ -21,5 +21,7 @@ public:
 	const std::vector<const Booking*> getCustomerBookings() const;
 	const std::vector<std::string> getAllBookingIds() const;
 	const Booking* getBookingById(const std::string& bookingId) const;
+	const std::vector<const Booking*> getCancellableCustomerBookings() const;
+	Enums::ProcessStatus cancelBooking(const std::string& bookingId);
 };
 

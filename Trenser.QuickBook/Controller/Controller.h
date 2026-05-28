@@ -93,6 +93,8 @@ public:
 	const std::vector<const Booking*> getAllBookings();
 	const std::vector<std::string> getAllBookingIds();
 	const Booking* getBookingById(const std::string& bookingId);
+	const std::vector<const Booking*> getCancellableCustomerBookings();
+	Enums::ProcessStatus cancelBooking(const std::string& bookingId);
 	void logout();
 	~Controller();
 };

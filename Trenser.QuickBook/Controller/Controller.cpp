@@ -654,6 +654,32 @@ const Booking* Controller::getBookingById(const std::string& bookingId)
 }
 
 /*
+ * Function: Controller::getCancellableCustomerBookings
+ * Description: Retrieves all cancellable bookings for the authenticated customer.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::vector<const Booking*> - List of cancellable bookings
+ */
+const std::vector<const Booking*> Controller::getCancellableCustomerBookings()
+{
+    return m_bookingManagementService->getCancellableCustomerBookings();
+}
+
+/*
+ * Function: Controller::cancelBooking
+ * Description: Cancels a booking by its ID.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if cancelled, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::cancelBooking(const std::string& bookingId)
+{
+    return m_bookingManagementService->cancelBooking(bookingId);
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.
