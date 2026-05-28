@@ -227,16 +227,6 @@ const std::map<std::string, Screen*>& DataStore::getScreens() const
 {
     return m_screens;
 }
-/*
-* Function Name : getAuthenticatedUserType
-* Description   : Returns the type of the currently authenticated user.
-* Parameters    : None
-* Return Type   : Enums::UserType
-*/
-Enums::UserType DataStore::getAuthenticatedUserType()
-{
-    return m_currentUser->getUserType();
-}
 
 /*
  * Function: DataStore::getTheatres
@@ -394,3 +384,42 @@ Show* DataStore::getShowByIdForUpdation(const std::string& showId)
     }
     return iterator->second;
 }
+
+/*
+* Function Name : getTickets
+* Description   : Returns all tickets stored in the datastore.
+* Parameters    : None
+* Return Type   : std::map<std::string, Ticket*>&
+*/
+std::map<std::string, Ticket*>& DataStore::getTickets()
+{
+    return m_tickets;
+}
+
+/*
+* Function Name : addTicket
+* Description   : Adds a ticket to the datastore.
+* Parameters    :
+*                  ticket - Ticket to be added
+* Return Type   : void
+*/
+void DataStore::addTicket(Ticket* ticket)
+{
+    m_tickets[ticket->getTicketId()] = ticket;
+}
+
+/*
+* Function Name : getTicketById
+* Description   : Retrieves a ticket from the datastore based on the provided Ticket ID.
+*                 Returns a pointer to the Ticket if found, otherwise returns nullptr.
+* Parameters    :
+*                  ticketId - The unique identifier of the ticket to be retrieved
+* Return Type   : Ticket*
+*/
+Ticket* DataStore::getTicketById(const std::string& ticketId) const
+{
+    std::map<std::string, Ticket*>::const_iterator ticket = m_tickets.find(ticketId);
+    return ticket->second;
+}
+
+

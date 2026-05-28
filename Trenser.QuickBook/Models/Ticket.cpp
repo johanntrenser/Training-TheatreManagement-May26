@@ -16,8 +16,10 @@
 Ticket::Ticket() :
 	m_ticketId(""),
 	m_payment(nullptr),
-	m_customer(nullptr)
-{}
+	m_customer(nullptr),
+	m_status(Enums::TicketStatus::ACTIVE)
+{
+}
 
 /*
  * Function: Ticket::Ticket
@@ -29,11 +31,13 @@ Ticket::Ticket() :
  * Returns:
  *    Ticket object
  */
-Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) : 
+Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) :
 	m_ticketId(ticketId),
-	m_payment(payment), 
-	m_customer(customer)
-{}
+	m_payment(payment),
+	m_customer(customer),
+	m_status(Enums::TicketStatus::ACTIVE)
+{
+}
 
 /*
  * Function: Ticket::getTicketId
@@ -41,7 +45,7 @@ Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) :
  * Returns:
  *    const std::string& - Ticket ID
  */
-const std::string& Ticket::getTicketId()
+const std::string& Ticket::getTicketId() const
 {
 	return m_ticketId;
 }
@@ -52,7 +56,7 @@ const std::string& Ticket::getTicketId()
  * Returns:
  *    Payment* - Pointer to the payment
  */
-Payment* Ticket::getPayment()
+Payment* Ticket::getPayment() const
 {
 	return m_payment;
 }
@@ -63,9 +67,20 @@ Payment* Ticket::getPayment()
  * Returns:
  *    User* - Pointer to the customer
  */
-User* Ticket::getCustomer()
+User* Ticket::getCustomer() const
 {
 	return m_customer;
+}
+
+/*
+ * Function: getTicketStatus
+ * Description: Retrieves the ticket status.
+ * Returns:
+ *    enum - TicketStatus
+ */
+Enums::TicketStatus Ticket::getTicketStatus() const
+{
+	return m_status;
 }
 
 /*
@@ -105,4 +120,17 @@ void Ticket::setPayment(Payment* payment)
 void Ticket::setCustomer(User* customer)
 {
 	m_customer = customer;
+}
+
+/*
+ * Function: setTicketStatus
+ * Description: Sets the ticket status.
+ * Parameters:
+ *    enum - ticket status
+ * Returns:
+ *    void
+ */
+void Ticket::setTicketStatus(Enums::TicketStatus status)
+{
+	m_status = status;
 }

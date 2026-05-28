@@ -3649,4 +3649,131 @@ void UserInterface::listShowsForAMovie()
 	displayShowDetails(shows);
 }
 
+/*
+* Function Name : UserInterface::viewActiveTicketDetails
+* Description   : Displays all active tickets for the authenticated user.
+*                 Active tickets are retrieved from the controller and shown
+*                 using the viewTicketDetails helper.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::viewActiveTicketDetails()
+{
+	const std::vector<const Ticket*> tickets = m_controller->viewTicketDetails();
+	if (tickets.empty())
+	{
+		cout << "No Tickets Available" << endl;
+		return;
+	}
+	viewTicketDetails(tickets);
+}
 
+/*
+* Function Name : UserInterface::viewAllTickets
+* Description   : Displays all tickets available in the system by retrieving
+*                 them from the controller and showing details.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::viewAllTickets()
+{
+	const std::vector<const Ticket*> tickets = m_controller->viewAllTickets();
+	if (tickets.empty())
+	{
+		cout << "No Tickets Available" << endl;
+		return;
+	}
+	viewTicketDetails(tickets);
+}
+
+/*
+* Function Name : UserInterface::viewTicketHistory
+* Description   : Displays the complete ticket history for the authenticated user.
+*                 Tickets are retrieved from the controller and shown using the helper.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::viewTicketHistory()
+{
+	const std::vector<const Ticket*> tickets = m_controller->viewTicketHistory();
+	if (tickets.empty())
+	{
+		cout << "No Tickets Available" << endl;
+		return;
+	}
+	viewTicketDetails(tickets);
+}
+
+/*
+* Function Name : UserInterface::viewTicketDetails
+* Description   : Helper function to display details of tickets including
+*                 Ticket ID, Payment ID, Amount, Booking ID, and Ticket Status.
+* Parameters    :
+*                  tickets - Vector of Ticket pointers to display
+* Return Type   : void
+*/
+void UserInterface::viewTicketDetails(const std::vector<const Ticket*>& tickets)
+{
+	Enums::UserType type = m_controller->getAuthenticatedUserType();
+	std::cout << std::left
+		<< std::setw(12) << "Ticket ID";
+	if (type == Enums::UserType::ADMIN)
+	{
+		cout << std::setw(15) << "Customer Name";
+	}
+		cout << std::setw(12) << "Payment ID"
+		<< std::setw(10) << "Amount"
+		<< std::setw(12) << "Booking ID"
+		<< std::setw(12) << "Status"
+		<< std::endl;
+	std::cout << std::string(73, '-') << std::endl;
+	for (std::vector<const Ticket*>::const_iterator iterator = tickets.begin(); iterator != tickets.end(); ++iterator)
+	{
+		const Ticket* ticket = *iterator;
+		std::cout << std::left << std::setw(12) << ticket->getTicketId();
+		if (type == Enums::UserType::ADMIN)
+		{
+			std::cout << std::setw(15) << ticket->getCustomer()->getUserName();
+		}
+		else
+		{
+			std::cout << std::setw(15) << "-";
+		}
+		std::cout << std::setw(12) << ticket->getPayment()->getPaymentId()
+			<< std::setw(10) << ticket->getPayment()->getAmount()
+			<< std::setw(12) << ticket->getPayment()->getBooking()->getBookingId()
+			<< std::setw(12) << Enums::getTicketStatusString(ticket->getTicketStatus())
+			<< std::endl;
+	}
+}
+
+/*
+* Function Name : UserInterface::viewTicketStatus
+* Description   : Prompts the user to enter a Ticket ID, retrieves the ticket status
+*                 from the controller, and displays a message based on the status.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::viewTicketStatus()
+{
+	string ticketId;
+	cout << "Enter the Ticket ID:";
+	util::readValue(ticketId);
+	Enums::TicketStatus status = m_controller->viewTicketStatus(ticketId);
+	if (status == Enums::TicketStatus::ACTIVE)
+	{
+		cout << "Ticket is Active." << endl;
+	}
+	else if (status == Enums::TicketStatus::COMPLETED)
+	{
+		cout << "Ticket has been expired." << endl;
+	}
+	else if (status == Enums::TicketStatus::CANCELLED)
+	{
+		cout << "Ticket has been cancelled." << endl;
+	}
+	else
+	{
+		cout << "Ticket with ID : " << ticketId << " not found!" << endl;
+	}
+}

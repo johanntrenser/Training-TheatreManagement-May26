@@ -130,5 +130,10 @@ public:
 	Enums::ProcessStatus reactivateScreen(const std::string& theatreId, const std::string& screenId);
 	const std::vector<const Screen*> viewTheatreScreens(const std::string& theatreId);
 	Enums::UserType getAuthenticatedUserType();
+	const std::vector<const Ticket*> viewTicketDetails();
+	const std::vector<const Ticket*> viewAllTickets();
+	const std::vector<const Ticket*> viewTicketHistory();
+	Enums::UserType getAuthenticatedUserType() const;
+	Enums::TicketStatus viewTicketStatus(const std::string& ticketId);
 	~Controller();
 };
