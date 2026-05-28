@@ -141,4 +141,5 @@ public:
 	void displayTheatreBookings(const std::vector<const Booking*> bookings);
 	void displayBookingDetails();
 	void displayBookingDetail(const Booking* booking);
+	void cancelBooking();
 };

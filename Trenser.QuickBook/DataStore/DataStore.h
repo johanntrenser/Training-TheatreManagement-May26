@@ -81,4 +81,5 @@ public:
 	const std::map<std::string, Refund*>& getRefunds() const;
 	//const std::map < std::string, Ticket*>& getTickets() const;
 	const Booking* getBookingById(const std::string& bookingId);
+	Booking* getBookingByIdForUpdation(const std::string& bookingId);
 };

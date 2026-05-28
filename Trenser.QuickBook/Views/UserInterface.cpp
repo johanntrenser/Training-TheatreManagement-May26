@@ -3996,6 +3996,7 @@ void UserInterface::displayCustomerBookings(const std::vector<const Booking*> bo
 	{
 		cout << "No Bookings Available" << endl;
 		util::pressEnter();
+		util::clear();
 		return;
 	}
 	cout << "\n-------------------------------------------------------------\n";
@@ -4053,6 +4054,7 @@ void UserInterface::displayTheatreBookings(const std::vector<const Booking*> boo
 	{
 		cout << "No Bookings Available" << endl;
 		util::pressEnter();
+		util::clear();
 		return;
 	}
 	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
@@ -4204,5 +4206,47 @@ void UserInterface::displayBookingDetail(const Booking* booking)
 				<< endl;
 		}
 	}
+}
+
+/*
+ * Function: UserInterface::cancelBooking
+ * Description: Allows customers to view cancellable bookings, validate booking ID, and cancel a booking.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void UserInterface::cancelBooking()
+{
+	std::string bookingId;
+	const std::vector<const Booking*> bookings = m_controller->getCancellableCustomerBookings();
+	displayCustomerBookings(bookings);
+	if (bookings.empty())
+	{
+		return;
+	}
+	cout << "Enter Booking Id of booking to cancel: ";
+	util::readValue(bookingId);
+	bool isBookingIdValid = false;
+	for (std::vector<const Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
+	{
+		if ((*iterator) != nullptr && (*iterator)->getBookingId() == bookingId)
+		{
+			isBookingIdValid = true;
+			break;
+		}
+	}
+	if (!isBookingIdValid)
+	{
+		cout << "Invalid Booking Id" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	Enums::ProcessStatus cancelStatus = m_controller->cancelBooking(bookingId);
+	std::string displayMessage = (cancelStatus == Enums::ProcessStatus::SUCCESS) ? "Booking cancelled successfully" : "Failed to cancel Booking";
+	cout << displayMessage;
+	util::pressEnter();
+	util::clear();
 }
 

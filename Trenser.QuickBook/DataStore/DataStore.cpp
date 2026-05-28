@@ -502,3 +502,20 @@ const Booking* DataStore::getBookingById(const std::string& bookingId)
     return iterator->second;
 }
 
+/*
+ * Function: DataStore::getBookingByIdForUpdation
+ * Description: Retrieves a booking object by ID for modification.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    Booking* - Pointer to the booking if found, nullptr otherwise
+ */
+Booking* DataStore::getBookingByIdForUpdation(const std::string& bookingId)
+{
+    std::map<std::string, Booking*>::const_iterator iterator = m_bookings.find(bookingId);
+    if (iterator == m_bookings.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
