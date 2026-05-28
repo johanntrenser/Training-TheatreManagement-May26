@@ -293,3 +293,22 @@ std::string User::serialize()
         Enums::getUserTypeString(m_userType) + config::delimeter::comma +
         Enums::getUserStatusString(m_status);
 }
+
+User* User::deserialize(std::string& line)
+{
+    std::stringstream lineStream(line);
+    std::string userId, userName, email, password, phoneNumber, type, status;
+    getline(lineStream, userId, ',');
+    getline(lineStream, userName, ',');
+    getline(lineStream, email, ',');
+    getline(lineStream, password, ',');
+    getline(lineStream, phoneNumber, ',');
+    getline(lineStream, type, ',');
+    getline(lineStream, status, ',');
+    password = decryption(password);
+    Enums::UserType Usertype = Enums::getUserType(type);
+    Enums::UserStatus userStatus = Enums::getUserStatus(status);
+    User* user = new User(userId, userName, email, password, phoneNumber, Usertype);
+    user->setStatus(userStatus);
+    return user;
+}

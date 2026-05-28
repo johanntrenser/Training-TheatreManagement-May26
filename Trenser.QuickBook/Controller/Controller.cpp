@@ -171,6 +171,11 @@ void Controller::logout()
     m_authenticationManagementService->logout();
 }
 
+void Controller::loadDataFromFile()
+{
+    m_userManagementService->loadUserData();
+}
+
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all

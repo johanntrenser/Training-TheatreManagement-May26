@@ -62,6 +62,7 @@ public:
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	void logout();
 	void saveData();
+	void loadDataFromFile();
 	~Controller();
 };
 

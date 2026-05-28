@@ -380,7 +380,7 @@ namespace Enums {
         }
     }
 
-    inline UserType getUserType(const std::string& input)
+    inline UserType getUserType(std::string& input)
     {
         if (input == "ADMIN")
         {

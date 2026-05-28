@@ -7,7 +7,10 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include "Enums.h"
 #include "ApplicationConfig.h"
 
@@ -43,8 +46,9 @@ public:
     void setPhoneNumber(const std::string& phoneNumber);
     void setUserType(Enums::UserType type);
     void setStatus(Enums::UserStatus status);
-    void reverseString(std::string& password);
+    static void reverseString(std::string& password);
     std::string& encryption(std::string& password);
-    std::string& decryption(std::string& password);
+    static std::string& decryption(std::string& password);
     std::string serialize();
+    static User* deserialize(std::string& line);
 };

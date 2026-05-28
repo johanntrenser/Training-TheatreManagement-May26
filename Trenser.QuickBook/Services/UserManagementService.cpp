@@ -142,3 +142,19 @@ void UserManagementService::saveUserData()
     }
     FileManagement::writeLines(std::string(config::File::USER_FILEPATH), lines);
 }
+
+void UserManagementService::loadUserData()
+{
+    std::string line;
+    std::ifstream userFile(PATH, std::ios::in);
+    if (!userFile.is_open())
+    {
+        throw std::runtime_error("Cannot open file: " + PATH);
+    }
+    std::getline(userFile, line);
+    while(std::getline(userFile, line))
+    {
+        User* user = User::deserialize(line);
+        m_dataStore.addUser(user);
+    }
+}
