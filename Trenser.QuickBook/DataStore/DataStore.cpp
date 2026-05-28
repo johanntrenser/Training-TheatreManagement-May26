@@ -291,20 +291,6 @@ const std::map<std::string, Theatre*>& DataStore::getTheatres() const
 }
 
 /*
- * Function: DataStore::getAuthenticatedUser
- * Description: Retrieves the currently authenticated user from the datastore.
- *              Provides access to the user object representing the active session.
- * Parameters: None
- * Returns:
- *    Pointer to the User object representing the authenticated user, or nullptr
- *    if no user is currently logged in.
- */
-User* const DataStore::getAuthenticatedUser() const
-{
-    return m_currentUser;
-}
-
-/*
  * Function: DataStore::addTheatre
  * Description: Adds a new theatre object to the data store using
  *              the theatre ID as the key.
@@ -316,30 +302,4 @@ User* const DataStore::getAuthenticatedUser() const
 void DataStore::addTheatre(Theatre* theatre)
 {
     m_theatres[theatre->getTheatreId()] = theatre;
-}
-
-/*
- * Function: DataStore::getMovies
- * Description: Retrieves the collection of movies stored in the DataStore.
- * Parameters:
- *    None
- * Returns:
- *    Constant reference to a map of movie IDs to Movie pointers
- */
-const std::map<string, Movie*>& DataStore::getMovies() const
-{
-    return m_movies;
-}
-
-/*
- * Function: DataStore::addMovieToSystem
- * Description: Adds a new movie to the DataStore, indexed by its unique movie ID.
- * Parameters:
- *    movie - Pointer to the Movie object to be added
- * Returns:
- *    None
- */
-void DataStore::addMovieToSystem(Movie* movie)
-{
-    m_movies[movie->getMovieId()] = movie;
 }

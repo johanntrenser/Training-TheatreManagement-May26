@@ -177,8 +177,6 @@ void UserInterface::login()
  */
 void UserInterface::adminMenu()
 {
-	cout << "Admin Menu" << endl;
-	cout << "------------------------" << endl;
 	cout << " 1.  Create User" << endl;
 	cout << " 2.  View All Users" << endl;
 	cout << " 3.  Update User Details" << endl;
@@ -187,32 +185,17 @@ void UserInterface::adminMenu()
 	cout << " 6.  View Profile" << endl;
 	cout << " 7.  View User Status" << endl;
 	cout << " 8.  Change Password" << endl;
-	cout << " 9.  Logout" << endl;
-	cout << "10.  Add Movie" << endl;
-	cout << "11.  Update Movie Details" << endl;
-	cout << "12.  List All Movies" << endl;
-	cout << "13.  Deactivate Movie" << endl;
-	cout << "14.  Reactivate Movie" << endl;
-	cout << "15.  Search Movie" << endl;
+	cout << " 9.  Add Movie" << endl;
+	cout << "10.  Update Movie Details" << endl;
+	cout << "11.  List All Movies" << endl;
+	cout << "12.  Deactivate Movie" << endl;
+	cout << "13.  Reactivate Movie" << endl;
+	cout << "14.  Search Movie" << endl;
+	cout << "15. Validate Theatre Request" << endl;
+	cout << "16. Deactivate theatre byadmin" << endl;
+	cout << "17. Logout" << endl;
 	cout << "------------------------" << endl;
 	cout << "Enter an option: ";
-	cout << "Admin Menu" << endl;
-	cout << "------------------------" << endl;
-	cout << "7. Validate Theatre Request" << endl;
-	cout << "Enter an option: ";
-		cout << "Admin Menu" << endl;
-		cout << "------------------------" << endl;
-		cout << "7. Validate Theatre Request" << endl;
-		cout << "Admin Menu" << endl;
-		cout << "------------------------" << endl;
-		cout << "1. Add movies" << endl;
-		cout << "2. Update movies" << endl;
-		cout << "3. List all movies" << endl;
-		cout << "4. Deactivate movies" << endl;
-		cout << "5. Reactivate movies" << endl;
-		cout << "6. Search movies" << endl;
-		cout << "7. Validate Theatre Request" << endl;
-		cout << "Enter an option: ";
 }
 
 /*
@@ -248,23 +231,22 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. Add Theatre" << endl;
-	cout << "2. View Theatre Details" << endl;
-	cout << " 1.  Update User Details" << endl;
-	cout << " 2.  View Profile" << endl;
-	cout << " 3.  Change Password" << endl;
-	cout << " 4.  Logout" << endl;
+	cout << " 1.  Add Theatre" << endl;
+	cout << " 2.  View Theatre Details" << endl;
+	cout << " 3.  Update Theatre Details" << endl;
+	cout << " 4.  Deactivate Theatre" << endl;
+	cout << " 5.  Reactivate Theatre" << endl;
+	cout << " 6.  Search Theatre" << endl;
+	cout << " 7.  List All Theatres" << endl;
+	cout << " 8.  Add Movie to Theatre" << endl;
+	cout << " 9.  View Movies in Theatre" << endl;
+	cout << "10.  Update User Details" << endl;
+	cout << "11.  View Profile" << endl;
+	cout << "12.  Change Password" << endl;
+	cout << "13.  Logout" << endl;
 	cout << "------------------------" << endl;
-	cout << "1. View Theatre Details" << endl;
-	cout << "3. Update Theatre Details" << endl;
-	cout << "4. Deactivate Theatre" << endl;
-	cout << "5. Reactivate Theatre" << endl;
-	cout << "6. Add movie to theatre" << endl;
-	cout << "7. Search theatre" << endl;
-	cout << "8. List all theatre" << endl;
-	cout << "9. View movies in theatre" << endl;
-	cout << "0. Exit" << endl;
 	cout << "Enter an option: ";
+
 }
 
 /*
@@ -374,35 +356,33 @@ void UserInterface::handleAdminMenuOperation()
 		case 8:
 			changePassword();
 			break;
-		case 0:
-			isMenuActive = false;
-			break;
-		case 10:
+		case 9:
 			addMovie();
 			break;
-		case 11:
+		case 10:
 			updateMovie();
 			break;
-		case 12:
+		case 11:
 			displayAllMovies();
 			break;
-		case 13:
+		case 12:
 			deactivateMovie();
 			break;
-		case 14:
+		case 13:
 			activateMovie();
 			break;
-		case 15:
+		case 14:
 			searchMovie();
 			break;
-		case 16:
+		case 15:
 			validateTheatreRequest();
 			break;
-		case 8:
+		case 16:
 			deactivateTheatreByAdmin();
 			break;
-		case 9:
-			reactivateTheatreByAdmin();
+		case 17:
+			m_controller->logout();
+			isMenuActive = false;
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -478,19 +458,7 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		util::readValue(choice);
 		switch (choice)
 		{
-		case 1:
-			updateUserDetails();
-			break;
-		case 2:
-			viewProfile();
-			break;
-		case 3:
-			changePassword();
-			break;
-		case 4:
-			isMenuActive = false;
-			break;
-		case 5:
+			// Theatre Management
 		case 1:
 			addTheatre();
 			break;
@@ -506,16 +474,30 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		case 5:
 			reactivateTheatreByOwner();
 			break;
-		case 6:addMovieToTheatre();
-			break;
-		case 7:
+		case 6:
 			searchTheatre();
 			break;
-		case 8: 
+		case 7:
 			listAllTheatres();
+			break;
+		case 8:
+			addMovieToTheatre();
 			break;
 		case 9:
 			displayMoviesInTheatre();
+			break;
+		case 10:
+			updateUserDetails();
+			break;
+		case 11:
+			viewProfile();
+			break;
+		case 12:
+			changePassword();
+			break;
+		case 13:
+			m_controller->logout();   // You can implement your logout logic here
+			isMenuActive = false;  // Exit the menu loop
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -1069,38 +1051,6 @@ void UserInterface::updateMovie()
 	displayCurrentMovieDetails(movieId, movies);
 	const Movie* currentMovie = getCurrentMovie(movieId, movies);
 	editMovieDetails(movieId, currentMovie);
-}
-
-/*
- * Function: UserInterface::displayMovie
- * Description: Displays a formatted list of movies with their details (ID, Title, Language, Genre, Duration).
- * Parameters:
- *    movies - Vector of constant Movie pointers to display
- * Returns:
- *    None
- */
-void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
-{
-	cout << "\n-------------------------------------------------------------\n";
-	cout << left << setw(10) << "ID"
-		<< setw(10) << "Title"
-		<< setw(10) << "Language"
-		<< setw(10) << "Genre"
-		<< setw(10) << "Duration" << endl;
-	cout << "-------------------------------------------------------------\n";
-	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
-	{
-		if (*iterator)
-		{
-			cout << left << setw(10) << (*iterator)->getMovieId()
-				<< setw(10) << (*iterator)->getTitle()
-				<< setw(10) << (*iterator)->getLanguage()
-				<< setw(10) << (*iterator)->getGenre()
-				<< setw(10) << (*iterator)->getDuration()
-				<< endl;
-		}
-	}
-	cout << endl;
 }
 
 /*

@@ -107,5 +107,4 @@ public:
 	Enums::ProcessStatus validateTheatreId(const std::string& theatreId, const std::vector<std::string>& theatreIds);
 	const std::vector<std::string> getMovieIds(const std::vector<const Movie*>& movies);
 	Enums::ProcessStatus validateMovieId(const std::string& movieId, const std::vector<std::string>& movieIds);
-	void displayMovie(const std::vector<const Movie*>& movies);
 };

@@ -840,20 +840,6 @@ std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& 
 }
 
 /*
- * Function: Controller::getAllActiveMovies
- * Description: Retrieves all movies currently marked as ACTIVE in the system by delegating
- *              the request to the MovieManagementService.
- * Parameters:
- *    None
- * Returns:
- *    A vector of constant Movie pointers representing all active movies
- */
-std::vector<const Movie*> Controller::getAllActiveMovies()
-{
-    return m_movieManagementService->getAllActiveMovies();
-}
-
-/*
  * Function: Controller::setMovieDeactivate
  * Description: Deactivates a movie in the system by delegating the request to the MovieManagementService.
  * Parameters:
