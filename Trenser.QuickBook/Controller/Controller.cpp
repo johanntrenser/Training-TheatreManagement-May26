@@ -405,6 +405,20 @@ const std::vector<const Theatre*> Controller::getAllTheatres()
 }
 
 /*
+ * Function: Controller::getAllActiveMovies
+ * Description: Retrieves all movies currently marked as ACTIVE in the system by delegating
+ *              the request to the MovieManagementService.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A vector of constant Movie pointers representing all active movies
+ */
+std::vector<const Movie*> Controller::getAllActiveMovies()
+{
+    return m_movieManagementService->getAllActiveMovies();
+}
+
+/*
  * Function: Controller::isTheatrePhoneNumberUnique
  * Description: Validates whether the provided theatre phone number is unique
  *              by checking against existing theatres in the system.
@@ -469,6 +483,34 @@ Enums::ProcessStatus Controller::addTheatre(const std::string& name, const std::
 Enums::ProcessStatus Controller::isTheatreUnique(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email)
 {
     return m_theatreManagementService->isTheatreUniqueInSystem(name, city, address, phoneNumber, email);
+}
+
+/*
+ * Function: Controller::isMovieInTheatre
+ * Description: Checks whether the specified movie is available in the given theatre.
+ * Parameters:
+ *    movieId (const std::string&) - Unique identifier of the movie
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the movie is present in the theatre,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isMovieInTheatre(const std::string& movieId, const std::string& theatreId)
+{
+    return m_showManagementService->isMovieInTheatre(movieId, theatreId);
+}
+
+/*
+ * Function: Controller::getScreensFromTheatre
+ * Description: Retrieves all screens available in the specified theatre.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    std::vector<const Screen*> - List of screens present in the theatre
+ */
+const std::vector<const Screen*> Controller::getScreensFromTheatre(const std::string& theatreId)
+{
+    return m_showManagementService->getScreensFromTheatre(theatreId);
 }
 
 /*
@@ -628,30 +670,25 @@ Enums::ProcessStatus Controller::addMovieToTheatre(const std::string& theatreId,
 }
 
 /*
- * Function: Controller::getAllActiveMovies
- * Description: Retrieves all active movies from the MovieManagementService.
- *              Acts as a passing layer to access the list of movies that
- *              are currently marked as active in the system.
- * Parameters: None
+ * Function: Controller::isShowTimeConflicting
+ * Description: Checks whether a show with the given movie and screen conflicts
+ *              with any existing show's time. Delegates the validation to the
+ *              ShowManagementService.
+ * Parameters:
+ *    movieId  - Unique identifier of the movie
+ *    screenId - Unique identifier of the screen
+ *    year     - Year of the proposed show
+ *    month    - Month of the proposed show
+ *    day      - Day of the proposed show
+ *    hour     - Hour of the proposed show start time
+ *    minute   - Minute of the proposed show start time
  * Returns:
- *    A vector of Movie pointers representing all active movies available
- *    in the datastore. Returns an empty vector if no active movies exist.
+ *    ProcessStatus::SUCCESS if no conflict exists,
+ *    ProcessStatus::FAILED if a conflicting show is found
  */
-std::vector<const Movie*> Controller::getAllActiveMovies()
+Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int hour, int minute)
 {
-    return m_movieManagementService->getAllActiveMovies();
-}
-
-/*
- * Function: Controller::logout
- * Description: Logs out the currently authenticated user by delegating the
- *              operation to the AuthenticationManagementService.
- * Parameters: None
- * Returns: None
- */
-void Controller::logout()
-{
-    m_authenticationManagementService->logout();
+    return m_showManagementService->isShowTimeConflicting(movieId, screenId, year, month, day, hour, minute);
 }
 
 /*
@@ -1042,6 +1079,188 @@ const std::vector<const Screen*> Controller::viewTheatreScreens(const std::strin
 Enums::UserType Controller::getAuthenticatedUserType()
 {
     return m_ScreenManagementService->getAuthenticatedUserType();
+}
+
+/*
+*Function: Controller::isShowTimeConflicting
+* Description : Determines whether the specified show timing conflicts with
+* any existing show on the same screen.
+* Parameters :
+    *movieId(const std::string&) - Unique identifier of the movie
+    * screenId(const std::string&) - Unique identifier of the screen
+    * year(int) - Year of the show
+    * month(int) - Month of the show
+    * day(int) - Day of the show
+    * startTimeHour(int) - Hour component of show start time
+    * startTimeMinute(int) - Minute component of show start time
+    * Returns:
+*Enums::ProcessStatus - FAILED if there is a conflict,
+* SUCCESS otherwise
+* /
+Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string & movieId, const std::string & screenId, int year, int month, int day, int startTimeHour, int startTimeMinute)
+{
+    return m_showManagementService->isShowTimeConflicting(movieId, screenId, year, month, day, startTimeHour, startTimeMinute);
+}
+
+/*
+ * Function: Controller::isNewShowTimeConflicting
+ * Description: Validates whether a new show time conflicts with existing shows on the same screen.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    newTime (const time_t&) - Proposed new start time
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if no conflict, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isNewShowTimeConflicting(const std::string& showId, const time_t& newTime)
+{
+    return m_showManagementService->isNewShowTimeConflicting(showId, newTime);
+}
+
+/*
+ * Function: Controller::addShow
+ * Description: Adds a new show for a given movie and screen after validating
+ *              inputs and checking for conflicts.
+ * Parameters:
+ *    movieId (const std::string&) - Unique identifier of the movie
+ *    screenId (const std::string&) - Unique identifier of the screen
+ *    year (int) - Year of the show
+ *    month (int) - Month of the show
+ *    day (int) - Day of the show
+ *    startTimeHour (int) - Hour component of show start time
+ *    startTimeMinute (int) - Minute component of show start time
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the show is added successfully,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::addShow(const std::string & movieId, const std::string & screenId, int year, int month, int day, int startTimeHour, int startTimeMinutes)
+{
+    return m_showManagementService->addShow(movieId, screenId, year, month, day, startTimeHour, startTimeMinutes);
+}
+
+/*
+ * Function: Controller::updateShow
+ * Description: Updates the start and end time of a show.
+ * Parameters:
+ *    time (const time_t&) - New start time
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if updated, FAILED otherwise
+ */
+Enums::ProcessStatus Controller::updateShow(const time_t& time, const std::string& showId)
+{
+    return m_showManagementService->updateShow(time, showId);
+}
+
+/*
+ * Function: Controller::getActiveShows
+ * Description: Retrieves all active shows (scheduled and not yet started) via ShowManagementService.
+ * Returns:
+ *    const std::vector<const Show*> - List of active shows
+ */
+const std::vector<const Show*> Controller::getActiveShows()
+{
+    return m_showManagementService->getActiveShows();
+}
+
+/*
+ * Function: Controller::getActiveShowIds
+ * Description: Retrieves all active show IDs owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<std::string> - List of show IDs
+ */
+const std::vector<std::string> Controller::getActiveShowIds()
+{
+    return m_showManagementService->getActiveShowIds();
+}
+
+/*
+ * Function: Controller::getAllShows
+ * Description: Retrieves all shows owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<const Show*> - List of shows
+ */
+const std::vector<const Show*> Controller::getAllShows()
+{
+    return m_showManagementService->getAllShows(); 
+}
+
+/*
+ * Function: Controller::getAllShowIds
+ * Description: Retrieves all show IDs owned by the authenticated theatre owner.
+ * Returns:
+ *    const std::vector<std::string> - List of show IDs
+ */
+const std::vector<std::string> Controller::getAllShowIds()
+{
+    return m_showManagementService->getAllShowIds();
+}
+
+/*
+ * Function: Controller::getShowStatus
+ * Description: Retrieves the current status of a show by its ID.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ShowStatus - Current status of the show or NOT_FOUND if invalid
+ */
+Enums::ShowStatus Controller::getShowStatus(const std::string& showId)
+{
+    return m_showManagementService->getShowStatus(showId);
+}
+
+/*
+ * Function: Controller::isShowChangable
+ * Description: Checks whether the specified show can be cancelled or updated by verifying
+ *              booking status through the ShowManagementService.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the show can be cancelled,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::isShowChangable(const std::string& showId)
+{
+    return m_showManagementService->isShowChangable(showId);
+}
+
+/*
+ * Function: Controller::setShowStatusById
+ * Description: Updates the status of a show identified by its ID.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    status (Enums::ShowStatus) - New status to be assigned to the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the status is updated successfully,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus Controller::setShowStatusById(const std::string& showId, Enums::ShowStatus status)
+{
+    return m_showManagementService->setShowStatusById(showId, status);
+}
+
+/*
+ * Function: Controller::getShowsForMovie
+ * Description: Retrieves all scheduled future shows for a given movie ID.
+ * Parameters:
+ *    movieId (const std::string) - Unique identifier of the movie
+ * Returns:
+ *    const std::vector<const Show*> - List of shows for the movie
+ */
+const std::vector<const Show*> Controller::getShowsForMovie(const std::string movieId)
+{
+    return m_showManagementService->getShowsForMovie(movieId);
+}
+
+/*
+ * Function: Controller::logout
+ * Description: Logs out the currently authenticated user by delegating the
+ *              operation to the AuthenticationManagementService.
+ * Parameters: None
+ * Returns: None
+ */
+void Controller::logout()
+{
+    m_authenticationManagementService->logout();
 }
 
 /*

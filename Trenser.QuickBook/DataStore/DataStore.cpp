@@ -227,43 +227,6 @@ const std::map<std::string, Screen*>& DataStore::getScreens() const
 {
     return m_screens;
 }
-
-/*
- * Function: DataStore::getTheatreById
- * Description: Retrieves a theatre object based on its unique identifier.
- * Parameters:
- *    theatreId (const std::string&) - Unique identifier of the theatre
- * Returns:
- *    Theatre* - Pointer to the theatre if found, nullptr otherwise
- */
-Theatre* DataStore::getTheatreById(const std::string& theatreId) const
-{
-    std::map<std::string, Theatre*>::const_iterator iterator = m_theatres.find(theatreId);
-    if (iterator == m_theatres.end())
-    {
-        return nullptr;
-    }
-    return iterator->second;
-}
-
-/*
- * Function: DataStore::getScreenById
- * Description: Retrieves a screen object based on its unique identifier.
- * Parameters:
- *    screenId (const std::string&) - Unique identifier of the screen
- * Returns:
- *    Screen* - Pointer to the screen if found, nullptr otherwise
- */
-Screen* DataStore::getScreenById(const std::string& screenId) const
-{
-    std::map<std::string, Screen*>::const_iterator iterator = m_screens.find(screenId);
-    if (iterator == m_screens.end())
-    {
-        return nullptr;
-    }
-    return iterator->second;
-}
-
 /*
 * Function Name : getAuthenticatedUserType
 * Description   : Returns the type of the currently authenticated user.
@@ -302,4 +265,132 @@ const std::map<std::string, Theatre*>& DataStore::getTheatres() const
 void DataStore::addTheatre(Theatre* theatre)
 {
     m_theatres[theatre->getTheatreId()] = theatre;
+}
+
+/*
+ * Function: DataStore::getTheatreById
+ * Description: Retrieves a theatre object based on its unique identifier.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    Theatre* - Pointer to the theatre if found, nullptr otherwise
+ */
+Theatre* DataStore::getTheatreById(const std::string& theatreId) const
+{
+    std::map<std::string, Theatre*>::const_iterator iterator = m_theatres.find(theatreId);
+    if (iterator == m_theatres.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::getMovieById
+ * Description: Retrieves a movie object based on its unique identifier.
+ * Parameters:
+ *    movieId (const std::string&) - Unique identifier of the movie
+ * Returns:
+ *    Movie* - Pointer to the movie if found, nullptr otherwise
+ */
+Movie* DataStore::getMovieById(const std::string& movieId) const
+{
+    std::map<std::string, Movie*>::const_iterator iterator = m_movies.find(movieId);
+    if (iterator == m_movies.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::getScreenById
+ * Description: Retrieves a screen object based on its unique identifier.
+ * Parameters:
+ *    screenId (const std::string&) - Unique identifier of the screen
+ * Returns:
+ *    Screen* - Pointer to the screen if found, nullptr otherwise
+ */
+Screen* DataStore::getScreenById(const std::string& screenId) const
+{
+    std::map<std::string, Screen*>::const_iterator iterator = m_screens.find(screenId);
+    if (iterator == m_screens.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::addShow
+ * Description: Stores a new show in the data store.
+ * Parameters:
+ *    show (Show*) - Pointer to the show object to be added
+ * Returns:
+ *    void
+ */
+void DataStore::addShow(Show* show)
+{
+    m_shows[show->getShowId()] = show;
+}
+
+/*
+ * Function: DataStore::getShowSeatAvailabilitys
+ * Description: Retrieves the map of ShowSeatAvailability objects keyed by their unique IDs.
+ * Returns:
+ *    const std::map<std::string, ShowSeatAvailability*>& - Map of show seat availability entries
+ */
+const std::map<std::string, ShowSeatAvailability*>& DataStore::getShowSeatAvailabilitys() const
+{
+    return m_showSeatAvailabilitys;
+}
+
+
+/*
+ * Function: DataStore::addShowSeatAvailability
+ * Description: Adds a ShowSeatAvailability object to the datastore, keyed by its availability ID.
+ * Parameters:
+ *    ShowSeatAvailability* showSeatAvailability - Pointer to the ShowSeatAvailability object to add
+ * Returns:
+ *    void
+ */
+void DataStore::addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability)
+{
+    m_showSeatAvailabilitys[showSeatAvailability->getShowAvailabiltyId()] = showSeatAvailability;
+}
+
+/*
+ * Function: DataStore::getShowById
+ * Description: Retrieves a show object in read-only mode using its unique ID.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    const Show* - Pointer to the show if found, nullptr otherwise
+ */
+const Show* DataStore::getShowById(const std::string& showId)
+{
+    std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
+    if (iterator == m_shows.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::getShowByIdForUpdation
+ * Description: Retrieves a modifiable show object using its unique ID for update operations.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ * Returns:
+ *    Show* - Pointer to the show if found, nullptr otherwise
+ */
+Show* DataStore::getShowByIdForUpdation(const std::string& showId)
+{
+    std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
+    if (iterator == m_shows.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
 }

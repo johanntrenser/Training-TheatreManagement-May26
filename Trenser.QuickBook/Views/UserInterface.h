@@ -85,6 +85,7 @@ public:
 	void getUniqueTheatreEmail(std::string& email);
 	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	void displayMoviesInTheatre();
+	void displayMoviesInTheatre(std::string& theatreId);
 	void updateTheatre();
 	Enums::ProcessStatus isValidTheatreID(const std::string& theatreId, const std::vector<const Theatre*>& theatres);
 	void displayEditTheatreMenu();
@@ -107,4 +108,20 @@ public:
 	Enums::ProcessStatus validateTheatreId(const std::string& theatreId, const std::vector<std::string>& theatreIds);
 	const std::vector<std::string> getMovieIds(const std::vector<const Movie*>& movies);
 	Enums::ProcessStatus validateMovieId(const std::string& movieId, const std::vector<std::string>& movieIds);
+	bool isValidTime(int hour, int minute);
+	bool isValidDate(int year, int month, int day);
+	void getValidTime(int& hour, int& minute);
+	void getValidDate(int& year, int& month, int& day);
+	bool isFutureDateTime(int year, int month, int day, int hour, int minute);
+	void addShow();
+	bool getScreenId(const std::vector<const Screen*>& screens, std::string& screenId);
+	void displayActiveShows(); 
+	void displayAllShows();
+	void displayShowDetails(const std::vector<const Show*> shows);
+	std::string displayTimeAndDate(time_t time);
+	void cancelShow();
+	void viewShowStatus();
+	void updateShow();
+	Enums::ProcessStatus getNewDateAndTime(time_t& time);
+	void listShowsForAMovie();
 };

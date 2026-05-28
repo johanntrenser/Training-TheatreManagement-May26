@@ -22,8 +22,7 @@ Seat::Seat()
     m_seatRow('A'),
     m_seatColumn(0),
     m_amount(0),
-    m_seatStatus(Enums::SeatStatus::AVAILABLE),
-    m_bookingStatus(Enums::BookingStatus::NOT_BOOKED)
+    m_seatStatus(Enums::SeatStatus::AVAILABLE)
 {
 }
 
@@ -52,8 +51,7 @@ Seat::Seat(const std::string& id,
     m_seatRow(seatRow),
     m_seatColumn(seatColumn),
     m_amount(0),
-    m_seatStatus(seatStatus),
-    m_bookingStatus(Enums::BookingStatus::NOT_BOOKED)
+    m_seatStatus(seatStatus)
 {
 }
 
@@ -124,17 +122,6 @@ Enums::SeatStatus Seat::getSeatStatus() const
 }
 
 /*
- * Function: Seat::getBookingStatus
- * Description: Retrieves the booking status code.
- * Returns:
- *    enum - Booking status
- */
-Enums::BookingStatus Seat::getBookingStatus() const
-{
-    return m_bookingStatus;
-}
-
-/*
  * Function: Seat::setSeatId
  * Description: Sets the unique seat ID.
  * Parameters:
@@ -197,19 +184,6 @@ void Seat::setSeatColumn(int seatColumn)
 void Seat::setSeatStatus(Enums::SeatStatus seatStatus)
 {
     m_seatStatus = seatStatus;
-}
-
-/*
- * Function: setSeatAmount
- * Description: Sets the seat amount.
- * Parameters:
- *    int amount - New booking amount
- * Returns:
- *    void
- */
-void Seat::setBookingStatus(Enums::BookingStatus bookingStatus)
-{
-    m_bookingStatus = bookingStatus;
 }
 
 /*

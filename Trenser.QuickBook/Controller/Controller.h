@@ -82,6 +82,8 @@ public:
 	Enums::ProcessStatus isTheatreEmailUnique(const std::string& email);
 	Enums::ProcessStatus addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	Enums::ProcessStatus isTheatreUnique(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
+	Enums::ProcessStatus isMovieInTheatre(const std::string& movieId, const std::string& theatreId);
+	const std::vector<const Screen*> getScreensFromTheatre(const std::string& theatreId);
 	Enums::ProcessStatus setTheatreNameById(const std::string& theatreId, const std::string& name);
 	Enums::ProcessStatus setTheatreCityById(const std::string& theatreId, const std::string& city);
 	Enums::ProcessStatus setTheatreAddressById(const std::string& theatreId, const std::string& address);
@@ -91,6 +93,18 @@ public:
 	Enums::ProcessStatus setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus);
 	std::vector<const Theatre*> listAllTheatres() const;
 	Enums::ProcessStatus addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
+	Enums::ProcessStatus isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute);
+	Enums::ProcessStatus isNewShowTimeConflicting(const std::string& showId, const time_t& newTime);
+	Enums::ProcessStatus addShow(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinutes);
+	Enums::ProcessStatus updateShow(const time_t& time, const std::string& showId);
+	const std::vector<const Show*> getActiveShows();
+	const std::vector<std::string> getActiveShowIds();
+	const std::vector<const Show*> getAllShows();
+	const std::vector<std::string> getAllShowIds();
+	Enums::ShowStatus getShowStatus(const std::string& showId);
+	Enums::ProcessStatus isShowChangable(const std::string& showId);
+	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
+	const std::vector<const Show*> getShowsForMovie(const std::string movieId);
 	void logout();
 	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	const std::vector<const User*> getActiveUsers() const;

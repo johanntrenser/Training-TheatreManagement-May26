@@ -22,7 +22,6 @@ private:
     int m_seatColumn;
     double m_amount;
     Enums::SeatStatus m_seatStatus;
-    Enums::BookingStatus m_bookingStatus;
 public:
     Seat();
     Seat(const std::string& seatId,
@@ -37,12 +36,10 @@ public:
     int getSeatColumn() const;
     double getSeatAmount();
     Enums::SeatStatus getSeatStatus() const;
-    Enums::BookingStatus getBookingStatus() const;
     void setSeatId(const std::string& id);
     void setScreen(Screen* screen);
     void setSeatRow(char seatRow);
     void setSeatColumn(int seatColumn);
     void setSeatStatus(Enums::SeatStatus seatStatus);
-    void setBookingStatus(Enums::BookingStatus bookingStatus);
     void setSeatAmount(double amount);
 };

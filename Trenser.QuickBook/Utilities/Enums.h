@@ -33,7 +33,8 @@ namespace Enums {
         SCHEDULED,
         RUNNING,
         COMPLETED,
-        CANCELLED
+        CANCELLED,
+        NOT_FOUND
     };
 
     enum class ScreenStatus
@@ -205,8 +206,10 @@ namespace Enums {
             return "COMPLETED";
         case ShowStatus::CANCELLED:
             return "CANCELLED";
+        case ShowStatus::NOT_FOUND:
+            return "NOT_FOUND";
         default:
-            return "UNKNOWN";
+            return "NOT_FOUND";
         }
     }
 
@@ -228,7 +231,11 @@ namespace Enums {
         {
             return ShowStatus::CANCELLED;
         }
-        return ShowStatus::CANCELLED;
+        if (input == "NOT_FOUND")
+        {
+            return ShowStatus::NOT_FOUND;
+        }
+        return ShowStatus::NOT_FOUND;
     }
 
     inline std::string getScreenStatusString(ScreenStatus status)
