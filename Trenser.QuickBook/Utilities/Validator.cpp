@@ -153,3 +153,29 @@ void util::isPhoneNumberValid(std::string& value)
     }
 }
 
+/*
+* Function Name : validateCard
+* Description   : Validates card details by checking if the card number
+*                 has exactly 16 digits and CVV has exactly 3 digits.
+* Parameters    :
+*                  cardNumber - The card number entered by the user
+*                  expiry     - The expiry date of the card (MM/YY format)
+*                  cvv        - The CVV code of the card
+* Return Type   : bool
+*/
+bool util::validateCard(const std::string& cardNumber, const std::string& expiry, const std::string& cvv)
+{
+    return (cardNumber.size() == 16 && cvv.size() == 3);
+}
+
+/*
+* Function Name : validateUPI
+* Description   : Validates a UPI ID by checking if it contains '@' symbol.
+* Parameters    :
+*                  upiId - The UPI ID entered by the user
+* Return Type   : bool
+*/
+bool util::validateUPI(const std::string& upiId)
+{
+    return (upiId.find('@') != std::string::npos);
+}

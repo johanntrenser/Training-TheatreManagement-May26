@@ -1,3 +1,5 @@
+#include <string>
+#include "DataStore.h"
 /*
  * File: PaymentManagementService.h
  * Description: Declares the PaymentManagementService class, which provides
@@ -10,5 +12,14 @@
 #pragma once
 class PaymentManagementService
 {
+	DataStore& m_dataStore;
+public:
+    PaymentManagementService();
+    const std::string generatePaymentId();
+    Enums::ProcessStatus initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount);
+    Payment* getPaymentById(const std::string& paymentId);
+    Enums::ProcessStatus viewPaymentStatus(const std::string& paymentId, std::string& bookingId, double& amount,
+        Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate);
+    Enums::ProcessStatus refundPayment(Ticket* ticket, Payment* payment);
+    const std::string generateRefundId();
 };
-

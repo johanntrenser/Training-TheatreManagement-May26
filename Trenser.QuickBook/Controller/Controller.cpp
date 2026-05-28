@@ -1252,6 +1252,47 @@ const std::vector<const Show*> Controller::getShowsForMovie(const std::string mo
 }
 
 /*
+*Function: Controller::initiatePayment
+* Description : Initiates the payment process for a given booking by passing
+* the request to the PaymentManagementService.Handles payment
+* creation, validation, and ticket generation through the service layer.
+* Parameters :
+    *bookingId - Unique identifier of the booking for which payment is to be initiated.
+    * paymentMethod - Enum value representing the chosen payment method(e.g., CARD, UPI).
+    * amount - The payment amount to be processed.
+    * Returns :
+    *Enums::ProcessStatus::SUCCESS if the payment and ticket generation were successful.
+    * Enums::ProcessStatus::FAILED if the booking does not exist or if the operation fails.
+*/
+Enums::ProcessStatus Controller::initiatePayment(const std::string & bookingId, Enums::PaymentMethod paymentMethod, double amount)
+{
+    return m_paymentManagementService->initiatePayment(bookingId, paymentMethod, amount);
+}
+
+/*
+ * Function: Controller::viewPaymentStatus
+ * Description: Retrieves the status and details of a payment by passing
+ *              the request to the PaymentManagementService. Populates the
+ *              provided reference parameters with booking ID, amount, payment
+ *              method, payment status, and payment date if the payment exists.
+ * Parameters:
+ *    paymentId    - Unique identifier of the payment to be viewed.
+ *    bookingId    - Reference string to store the associated booking ID.
+ *    amount       - Reference double to store the payment amount.
+ *    paymentMethod- Reference enum to store the payment method used.
+ *    paymentStatus- Reference enum to store the current status of the payment.
+ *    paymentDate  - Reference string to store the payment date.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the payment details were successfully retrieved.
+ *    Enums::ProcessStatus::FAILED if the payment does not exist.
+ */
+Enums::ProcessStatus Controller::viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
+    double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate)
+{
+    return m_paymentManagementService->viewPaymentStatus(paymentId, bookingId, amount, paymentMethod, paymentStatus, paymentDate);
+}
+
+/*
  * Function: Controller::logout
  * Description: Logs out the currently authenticated user by delegating the
  *              operation to the AuthenticationManagementService.

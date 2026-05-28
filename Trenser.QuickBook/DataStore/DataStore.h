@@ -74,4 +74,9 @@ public:
 	std::map<std::string, Ticket*>& getTickets();
 	void addTicket(Ticket* ticket);
 	Ticket* getTicketById(const std::string& ticketId) const;
+	void addPayment(Payment* payment);
+	void addRefund(Refund* refund);
+	const std::map < std::string, Payment*>& getPayments() const;
+	const std::map<std::string, Refund*>& getRefunds() const;
+	//const std::map < std::string, Ticket*>& getTickets() const;
 };

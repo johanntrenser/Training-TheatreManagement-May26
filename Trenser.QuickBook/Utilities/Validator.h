@@ -20,4 +20,6 @@ namespace util
 	void isEmailValid(std::string&);
 	void isPasswordValid(std::string&);
 	void isMovieDurationValid(int& value);
+	bool validateCard(const std::string& cardNumber, const std::string& expiry, const std::string& cvv);
+	bool validateUPI(const std::string& upiId);
 }
