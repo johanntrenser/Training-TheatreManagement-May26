@@ -17,8 +17,8 @@
   */
 Theatre::Theatre()
     : m_theatreId(""), m_name(""), m_city(""), m_address(""),
-    m_contactPhone(""), m_contactEmail(""),
-    m_theatreOwner(nullptr), m_status(0),
+    m_phoneNumber(""), m_email(""),
+    m_theatreOwner(nullptr), m_status(Enums::TheatreStatus::PENDING),
     m_screens(), m_movies() {}
 
 /*
@@ -44,14 +44,12 @@ Theatre::Theatre(const std::string& id,
     const std::string& address,
     const std::string& contactPhone,
     const std::string& contactEmail,
-    User* theatreOwner,
-    int status,
-    const std::vector<Screen*>& screens,
-    const std::vector<Movie*>& movies)
+    User* theatreOwner)
     : m_theatreId(id), m_name(name), m_city(city), m_address(address),
-    m_contactPhone(contactPhone), m_contactEmail(contactEmail),
-    m_theatreOwner(theatreOwner), m_status(status),
-    m_screens(screens), m_movies(movies) {}
+    m_phoneNumber(contactPhone), m_email(contactEmail),
+    m_theatreOwner(theatreOwner), m_status(Enums::TheatreStatus::PENDING),
+    m_screens({}), m_movies({}) {
+}
 
 /*
  * Function: Theatre::getTheatreId
@@ -98,25 +96,25 @@ const std::string& Theatre::getAddress() const
 }
 
 /*
- * Function: Theatre::getContactPhone
+ * Function: Theatre::getTheatrePhoneNumber
  * Description: Retrieves the theatre contact phone.
  * Returns:
  *    const std::string& - Contact phone
  */
-const std::string& Theatre::getContactPhone() const
+const std::string& Theatre::getTheatrePhoneNumber() const
 {
-    return m_contactPhone;
+    return m_phoneNumber;
 }
 
 /*
- * Function: Theatre::getContactEmail
+ * Function: Theatre::getTheatreEmail
  * Description: Retrieves the theatre contact email.
  * Returns:
  *    const std::string& - Contact email
  */
-const std::string& Theatre::getContactEmail() const
+const std::string& Theatre::getTheatreEmail() const
 {
-    return m_contactEmail;
+    return m_email;
 }
 
 /*
@@ -136,7 +134,7 @@ User* Theatre::getTheatreOwner() const
  * Returns:
  *    int - Theatre status
  */
-int Theatre::getStatus() const
+Enums::TheatreStatus Theatre::getStatus() const
 {
     return m_status;
 }
@@ -228,29 +226,29 @@ void Theatre::setAddress(const std::string& address)
 }
 
 /*
- * Function: Theatre::setContactPhone
+ * Function: Theatre::setTheatrePhoneNumber
  * Description: Sets the theatre contact phone.
  * Parameters:
  *    const std::string& contactPhone - New contact phone
  * Returns:
  *    void
  */
-void Theatre::setContactPhone(const std::string& contactPhone)
+void Theatre::setTheatrePhoneNumber(const std::string& contactPhone)
 {
-    m_contactPhone = contactPhone;
+    m_phoneNumber = contactPhone;
 }
 
 /*
- * Function: Theatre::setContactEmail
+ * Function: Theatre::setTheatreEmail
  * Description: Sets the theatre contact email.
  * Parameters:
  *    const std::string& contactEmail - New contact email
  * Returns:
  *    void
  */
-void Theatre::setContactEmail(const std::string& contactEmail)
+void Theatre::setTheatreEmail(const std::string& contactEmail)
 {
-    m_contactEmail = contactEmail;
+    m_email = contactEmail;
 }
 
 /*
@@ -274,7 +272,7 @@ void Theatre::setTheatreOwner(User* theatreOwner)
  * Returns:
  *    void
  */
-void Theatre::setStatus(int status)
+void Theatre::setStatus(Enums::TheatreStatus status)
 {
     m_status = status;
 }
@@ -314,4 +312,9 @@ void Theatre::setMovies(const std::vector<Movie*>& movies)
 std::vector<Screen*>& Theatre::getScreensForUpdation()
 {
     return m_screens;
+}
+
+void Theatre::addMovieToTheatre(Movie* movie)
+{
+    m_movies.push_back(movie);
 }

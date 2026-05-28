@@ -274,3 +274,32 @@ Enums::UserType DataStore::getAuthenticatedUserType()
 {
     return m_currentUser->getUserType();
 }
+
+/*
+ * Function: DataStore::getTheatres
+ * Description: Provides access to the collection of theatres stored in the datastore.
+ *              Returns a reference to the internal map containing all theatre records.
+ * Parameters: None
+ * Returns:
+ *    A constant reference to a map where the key is the theatre ID (string) and
+ *    the value is a pointer to the Theatre object. The map may be empty if no
+ *    theatres are currently stored.
+ */
+const std::map<std::string, Theatre*>& DataStore::getTheatres() const
+{
+    return m_theatres;
+}
+
+/*
+ * Function: DataStore::addTheatre
+ * Description: Adds a new theatre object to the data store using
+ *              the theatre ID as the key.
+ * Parameters:
+ *    theatre (Theatre*) - Pointer to the theatre object to be added
+ * Returns:
+ *    void
+ */
+void DataStore::addTheatre(Theatre* theatre)
+{
+    m_theatres[theatre->getTheatreId()] = theatre;
+}

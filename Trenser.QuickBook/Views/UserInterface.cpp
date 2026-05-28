@@ -5,15 +5,18 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
+#include <iomanip>
+#include <iostream>
 #include <stdexcept>
 #include <string>
-#include <iomanip>
-using namespace std;
+#include "Enums.h"
+#include "Enums.h"
 #include "InputHelper.h"
 #include "OutputHelper.h"
-#include "Enums.h"
-#include "Validator.h"
 #include "UserInterface.h"
+#include "Validator.h"
+
+using namespace std;
 
 /*
  * Function: UserInterface::UserInterface
@@ -125,7 +128,7 @@ void UserInterface::login()
 	cout << "Enter email: ";
 	util::readValue(email);
 	util::isEmailValid(email);
-	cout << "Enter passsword: ";
+	cout << "Enter password: ";
 	util::readValue(password);
 	pair<Enums::LoginStatus, Enums::UserType> authenticationContext = m_controller->login(email, password);
 	Enums::LoginStatus loginStatus = get<0>(authenticationContext);
@@ -174,8 +177,6 @@ void UserInterface::login()
  */
 void UserInterface::adminMenu()
 {
-	cout << "Admin Menu" << endl;
-	cout << "------------------------" << endl;
 	cout << " 1.  Create User" << endl;
 	cout << " 2.  View All Users" << endl;
 	cout << " 3.  Update User Details" << endl;
@@ -184,13 +185,15 @@ void UserInterface::adminMenu()
 	cout << " 6.  View Profile" << endl;
 	cout << " 7.  View User Status" << endl;
 	cout << " 8.  Change Password" << endl;
-	cout << " 9.  Logout" << endl;
-	cout << "10.  Add Movie" << endl;
-	cout << "11.  Update Movie Details" << endl;
-	cout << "12.  List All Movies" << endl;
-	cout << "13.  Deactivate Movie" << endl;
-	cout << "14.  Reactivate Movie" << endl;
-	cout << "15.  Search Movie" << endl;
+	cout << " 9.  Add Movie" << endl;
+	cout << "10.  Update Movie Details" << endl;
+	cout << "11.  List All Movies" << endl;
+	cout << "12.  Deactivate Movie" << endl;
+	cout << "13.  Reactivate Movie" << endl;
+	cout << "14.  Search Movie" << endl;
+	cout << "15. Validate Theatre Request" << endl;
+	cout << "16. Deactivate theatre byadmin" << endl;
+	cout << "17. Logout" << endl;
 	cout << "------------------------" << endl;
 	cout << "Enter an option: ";
 }
@@ -228,12 +231,22 @@ void UserInterface::theatreOwnerMenu()
 {
 	cout << "Theatre Owner Menu" << endl;
 	cout << "------------------------" << endl;
-	cout << " 1.  Update User Details" << endl;
-	cout << " 2.  View Profile" << endl;
-	cout << " 3.  Change Password" << endl;
-	cout << " 4.  Logout" << endl;
+	cout << " 1.  Add Theatre" << endl;
+	cout << " 2.  View Theatre Details" << endl;
+	cout << " 3.  Update Theatre Details" << endl;
+	cout << " 4.  Deactivate Theatre" << endl;
+	cout << " 5.  Reactivate Theatre" << endl;
+	cout << " 6.  Search Theatre" << endl;
+	cout << " 7.  List All Theatres" << endl;
+	cout << " 8.  Add Movie to Theatre" << endl;
+	cout << " 9.  View Movies in Theatre" << endl;
+	cout << "10.  Update User Details" << endl;
+	cout << "11.  View Profile" << endl;
+	cout << "12.  Change Password" << endl;
+	cout << "13.  Logout" << endl;
 	cout << "------------------------" << endl;
 	cout << "Enter an option: ";
+
 }
 
 /*
@@ -247,38 +260,38 @@ void UserInterface::theatreOwnerMenu()
  */
 void UserInterface::registerUser()
 {
-    string userName, email, password, phoneNumber;
-    Enums::UserType userType = Enums::UserType::CUSTOMER;
-    int choice;
-    userTypesMenu();
-    util::readValue(choice);
-    switch (choice)
-    {
-    case 1:
-        userType = Enums::UserType::CUSTOMER;
-        break;
-    case 2:
-        userType = Enums::UserType::THEATRE_OWNER;
+	string userName, email, password, phoneNumber;
+	Enums::UserType userType = Enums::UserType::CUSTOMER;
+	int choice;
+	userTypesMenu();
+	util::readValue(choice);
+	switch (choice)
+	{
+	case 1:
+		userType = Enums::UserType::CUSTOMER;
 		break;
-    default:
-        cout << "Invalid Choice. Please Try again!" << endl;
+	case 2:
+		userType = Enums::UserType::THEATRE_OWNER;
+		break;
+	default:
+		cout << "Invalid Choice. Please Try again!" << endl;
 		util::pressEnter();
 		util::clear();
-        return;
-    }
-    handleUserDetailsInput(userName, email, password, phoneNumber);
-    if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
-    {
-        cout << "User registered successfully!" << endl;
+		return;
+	}
+	handleUserDetailsInput(userName, email, password, phoneNumber);
+	if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "User registered successfully!" << endl;
 		util::pressEnter();
 		util::clear();
-    }
-    else
-    {
-        cout << "User could not be registered!" << endl;
+	}
+	else
+	{
+		cout << "User could not be registered!" << endl;
 		util::pressEnter();
 		util::clear();
-    }
+	}
 }
 
 /*
@@ -292,15 +305,18 @@ void UserInterface::registerUser()
  */
 void UserInterface::userTypesMenu()
 {
-    cout << "-------------------User Type List-------------------" << std::endl;
-    cout << "1. Customer" << std::endl;
-    cout << "2. Theatre Owner" << std::endl;
-    cout << "Enter a choice: " << std::endl;
+	cout << "-------------------User Type List-------------------" << std::endl;
+	cout << "1. Customer" << std::endl;
+	cout << "2. Theatre Owner" << std::endl;
+	cout << "Enter a choice: " << std::endl;
 }
 
 /*
  * Function: UserInterface::handleAdminMenuOperation
- * Description: Handles the admin menu loop, displaying options and processing user input.
+ * Description: Handles the admin menu operations in a loop until the admin exits.
+ *              Displays the admin menu, reads the choice, and executes the corresponding
+ *              operation such as validating theatre requests, deactivating theatres,
+ *              or reactivating theatres. Provides feedback for invalid choices.
  * Parameters:
  *    None
  * Returns:
@@ -341,25 +357,32 @@ void UserInterface::handleAdminMenuOperation()
 			changePassword();
 			break;
 		case 9:
-			isMenuActive = false;
-			break;
-		case 10:
 			addMovie();
 			break;
-		case 11:
+		case 10:
 			updateMovie();
 			break;
-		case 12:
+		case 11:
 			displayAllMovies();
 			break;
-		case 13:
+		case 12:
 			deactivateMovie();
 			break;
-		case 14:
+		case 13:
 			activateMovie();
 			break;
-		case 15:
+		case 14:
 			searchMovie();
+			break;
+		case 15:
+			validateTheatreRequest();
+			break;
+		case 16:
+			deactivateTheatreByAdmin();
+			break;
+		case 17:
+			m_controller->logout();
+			isMenuActive = false;
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -372,7 +395,9 @@ void UserInterface::handleAdminMenuOperation()
 
 /*
  * Function: UserInterface::handleCustomerMenuOperation
- * Description: Handles the customer menu loop, displaying options and processing user input.
+ * Description: Handles the customer menu operations in a loop until the customer exits.
+ *              Displays the customer menu, reads the choice, and executes the corresponding
+ *              operation. Currently supports exiting the menu and provides feedback for invalid choices.
  * Parameters:
  *    None
  * Returns:
@@ -414,7 +439,10 @@ void UserInterface::handleCustomerMenuOperation()
 
 /*
  * Function: UserInterface::handleTheatreOwnerMenuOperation
- * Description: Handles the theatre owner menu loop, displaying options and processing user input.
+ * Description: Handles the theatre owner menu operations in a loop until the owner exits.
+ *              Displays the theatre owner menu, reads the choice, and executes the corresponding
+ *              operation such as adding theatres, viewing details, updating, deactivating/reactivating,
+ *              managing movies, searching, and listing theatres. Provides feedback for invalid choices.
  * Parameters:
  *    None
  * Returns:
@@ -430,17 +458,46 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		util::readValue(choice);
 		switch (choice)
 		{
+			// Theatre Management
 		case 1:
-			updateUserDetails();
+			addTheatre();
 			break;
 		case 2:
-			viewProfile();
+			viewTheatreDetails();
 			break;
 		case 3:
-			changePassword();
+			updateTheatre();
 			break;
 		case 4:
-			isMenuActive = false;
+			deactivateTheatreByOwner();
+			break;
+		case 5:
+			reactivateTheatreByOwner();
+			break;
+		case 6:
+			searchTheatre();
+			break;
+		case 7:
+			listAllTheatres();
+			break;
+		case 8:
+			addMovieToTheatre();
+			break;
+		case 9:
+			displayMoviesInTheatre();
+			break;
+		case 10:
+			updateUserDetails();
+			break;
+		case 11:
+			viewProfile();
+			break;
+		case 12:
+			changePassword();
+			break;
+		case 13:
+			m_controller->logout();   // You can implement your logout logic here
+			isMenuActive = false;  // Exit the menu loop
 			break;
 		default:
 			cout << "Invalid choice. Please try again!" << endl;
@@ -544,18 +601,18 @@ void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns, doub
  */
 void UserInterface::handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber)
 {
-    cout << "Enter user name: ";
-    util::readValue(userName);
-    cout << "Enter email: ";
-    util::readValue(email);
-    util::isEmailValid(email);
+	cout << "Enter user name: ";
+	util::readValue(userName);
+	cout << "Enter email: ";
+	util::readValue(email);
+	util::isEmailValid(email);
 	getUniqueEmail(email);
-    cout << "Enter password: ";
-    util::readValue(password);
-    util::isPasswordValid(password);
-    cout << "Enter phone number: ";
-    util::readValue(phoneNumber);
-    util::isPhoneNumberValid(phoneNumber);
+	cout << "Enter password: ";
+	util::readValue(password);
+	util::isPasswordValid(password);
+	cout << "Enter phone number: ";
+	util::readValue(phoneNumber);
+	util::isPhoneNumberValid(phoneNumber);
 	getUniquePhoneNumber(phoneNumber);
 }
 
@@ -997,38 +1054,6 @@ void UserInterface::updateMovie()
 }
 
 /*
- * Function: UserInterface::displayMovie
- * Description: Displays a formatted list of movies with their details (ID, Title, Language, Genre, Duration).
- * Parameters:
- *    movies - Vector of constant Movie pointers to display
- * Returns:
- *    None
- */
-void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
-{
-	cout << "\n-------------------------------------------------------------\n";
-	cout << left << setw(10) << "ID"
-		<< setw(10) << "Title"
-		<< setw(10) << "Language"
-		<< setw(10) << "Genre"
-		<< setw(10) << "Duration" << endl;
-	cout << "-------------------------------------------------------------\n";
-	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
-	{
-		if (*iterator)
-		{
-			cout << left << setw(10) << (*iterator)->getMovieId()
-				<< setw(10) << (*iterator)->getTitle()
-				<< setw(10) << (*iterator)->getLanguage()
-				<< setw(10) << (*iterator)->getGenre()
-				<< setw(10) << (*iterator)->getDuration()
-				<< endl;
-		}
-	}
-	cout << endl;
-}
-
-/*
  * Function: UserInterface::getMovieIdFromList
  * Description: Extracts and returns a list of movie IDs from the given movie collection.
  * Parameters:
@@ -1205,6 +1230,66 @@ void UserInterface::changeMovieLanguage(const string& movieId, const string& lan
 	{
 		cout << "\nMovie already exist!" << endl;
 		return;
+	}
+}
+/*
+ * Function: UserInterface::viewTheatreDetails
+ * Description: Retrieves and displays details of theatres owned by the current user.
+ *              Queries the Controller for theatres associated with the current owner
+ *              and presents their information if available. If no theatres are found,
+ *              informs the user accordingly.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::viewTheatreDetails()
+{
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatreDetails
+ * Description: Displays detailed information about a list of theatres in a
+ *              formatted tabular view. Outputs theatre attributes such as
+ *              ID, name, city, address, contact phone, and current status.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres
+ *               whose details are to be displayed.
+ * Returns: None
+ */
+void UserInterface::displayTheatreDetails(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n--------------------------------------------------------------------------------------------------\n";
+
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< setw(15) << "Status"
+		<< endl;
+	cout << "--------------------------------------------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left
+				<< setw(15) << (*iterator)->getTheatreId()
+				<< setw(20) << (*iterator)->getName()
+				<< setw(15) << (*iterator)->getCity()
+				<< setw(25) << (*iterator)->getAddress()
+				<< setw(15) << (*iterator)->getTheatrePhoneNumber()
+				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
+				<< endl;
+		}
 	}
 }
 
@@ -1678,7 +1763,7 @@ bool UserInterface::displayAllInactiveMovies()
 	if (movies.empty())
 	{
 		cout << "\nNo inactive movies!.";
-		return false;	
+		return false;
 	}
 	displayMovie(movies);
 	return true;
@@ -1731,7 +1816,7 @@ void UserInterface::reactivateSeat(Screen* screen, const std::string& seatId)
 * Function Name : viewShowSeatLayout
 * Description   : Displays the seat layout for a given show.
 *                 Iterates through the 2D seat layout matrix retrieved from the controller
-*                 and prints each seat. Also displays the seat status codes 
+*                 and prints each seat. Also displays the seat status codes
 *				  (Available, Booked, Reserved, Blocked, Invalid).
 * Parameters    :
 *                  show - Pointer to the Show object whose seat layout is to be displayed
@@ -1764,7 +1849,7 @@ void UserInterface::viewShowSeatLayout(const Show* show)
 */
 Enums::ProcessStatus UserInterface::addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount)
 {
-	Enums::ProcessStatus status =  m_controller->addScreen(theatreId, name, seatRows, seatColumns, seatAmount);
+	Enums::ProcessStatus status = m_controller->addScreen(theatreId, name, seatRows, seatColumns, seatAmount);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Screen with Name : " << name << " Added Successfully." << endl;
@@ -1796,7 +1881,7 @@ Enums::ProcessStatus UserInterface::addScreen(const std::string& theatreId, cons
 */
 Enums::ProcessStatus UserInterface::updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name)
 {
-	Enums::ProcessStatus status =  m_controller->updateScreenName(theatreId, screenId, name);
+	Enums::ProcessStatus status = m_controller->updateScreenName(theatreId, screenId, name);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Screen with Name : " << name << " Updated Successfully." << endl;
@@ -1827,7 +1912,7 @@ Enums::ProcessStatus UserInterface::updateScreenName(const std::string& theatreI
 */
 Enums::ProcessStatus UserInterface::deactivateScreen(const std::string& theatreId, const std::string& screenId)
 {
-	Enums::ProcessStatus status =  m_controller->deactivateScreen(theatreId, screenId);
+	Enums::ProcessStatus status = m_controller->deactivateScreen(theatreId, screenId);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Screen with Id : " << screenId << " deactivated Successfully." << endl;
@@ -1858,7 +1943,7 @@ Enums::ProcessStatus UserInterface::deactivateScreen(const std::string& theatreI
 */
 Enums::ProcessStatus UserInterface::reactivateScreen(const std::string& theatreId, const std::string& screenId)
 {
-	Enums::ProcessStatus status =  m_controller->reactivateScreen(theatreId, screenId);
+	Enums::ProcessStatus status = m_controller->reactivateScreen(theatreId, screenId);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Screen with Id : " << screenId << " reactivated Successfully." << endl;
@@ -1902,7 +1987,7 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
 	{
 		cout << std::setw(25) << "Status";
 	}
-		cout << endl;
+	cout << endl;
 	cout << std::string(65, '-') << endl;
 	for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 	{
@@ -1913,6 +1998,1109 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
 		{
 			cout << std::setw(25) << Enums::getScreenStatusString((*iterator)->getScreenStatus());
 		}
-			cout << endl;
+		cout << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::displayMovieDetails
+ * Description: Displays detailed information about a list of movies in a
+ *              formatted tabular view. Outputs movie attributes such as
+ *              ID, title, language, genre, duration, and status.
+ * Parameters:
+ *    movies - A vector of Movie pointers representing the movies
+ *             whose details are to be displayed.
+ * Returns: None
+ */
+void UserInterface::displayMovieDetails(const std::vector<const Movie*>& movies)
+{
+	cout << "\n--------------------------------------------------------------------------------------------------\n";
+
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Title"
+		<< setw(15) << "Language"
+		<< setw(25) << "Genre"
+		<< setw(15) << "Duration"
+		<< setw(15) << "Status"
+		<< endl;
+
+	cout << "--------------------------------------------------------------------------------------------------\n";
+
+	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left
+				<< setw(15) << (*iterator)->getMovieId()
+				<< setw(20) << (*iterator)->getTitle()
+				<< setw(15) << (*iterator)->getLanguage()
+				<< setw(25) << (*iterator)->getGenre()
+				<< setw(15) << (*iterator)->getDuration()
+				<< setw(15) << Enums::getMovieStatusString((*iterator)->getStatus())
+				<< endl;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::searchTheatre
+ * Description: Allows the user to search for theatres by name. Prompts the user
+ *              to enter a theatre name, retrieves matching theatres from the
+ *              Controller, and displays results based on the authenticated
+ *              user's role. Admin users see detailed theatre information, while
+ *              regular users see a simplified view.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::searchTheatre()
+{
+	std::string theatreName;
+	cout << "Enter theatre name: ";
+	util::readValue(theatreName);
+	const std::vector<const Theatre*> theatres = m_controller->searchTheatreByName(theatreName);
+	if (theatres.empty())
+	{
+		cout << "\nNo theatres found";
+		return;
+	}
+	const User* authenticatedUser = m_controller->getAuthenticatedUser();
+	if (authenticatedUser->getUserType() == Enums::UserType::ADMIN)
+	{
+		displayTheatresForAdmin(theatres);
+	}
+	else
+	{
+		displayTheatresForUsers(theatres);
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatresForAdmin
+ * Description: Displays detailed information about a list of theatres in a
+ *              formatted tabular view specifically for administrators. Outputs
+ *              theatre attributes such as ID, name, city, address, and contact
+ *              phone number in a structured layout for easy review.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres
+ *               whose details are to be displayed for the admin user.
+ * Returns: None
+ */
+void UserInterface::displayTheatresForAdmin(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n---------------------------------------------------------------------------------------\n";
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< endl;
+	cout << "---------------------------------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		cout << left
+			<< setw(15) << (*iterator)->getTheatreId()
+			<< setw(20) << (*iterator)->getName()
+			<< setw(15) << (*iterator)->getCity()
+			<< setw(25) << (*iterator)->getAddress()
+			<< setw(15) << (*iterator)->getTheatrePhoneNumber()
+			<< endl;
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatresForUsers
+ * Description: Displays a simplified view of theatre information tailored for
+ *              regular users. Outputs theatre attributes such as name, city,
+ *              address, and contact phone number in a formatted tabular layout.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres
+ *               whose details are to be displayed for user view.
+ * Returns: None
+ */
+void UserInterface::displayTheatresForUsers(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< endl;
+	cout << "-------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		cout << left
+			<< setw(20) << (*iterator)->getName()
+			<< setw(15) << (*iterator)->getCity()
+			<< setw(25) << (*iterator)->getAddress()
+			<< setw(15) << (*iterator)->getTheatrePhoneNumber()
+			<< endl;
+	}
+}
+
+/*
+ * Function: UserInterface::listAllTheatres
+ * Description: Provides an interactive menu for users to view theatres based on
+ *              their status (Active or Inactive). Prompts the user for a choice,
+ *              retrieves all theatres from the Controller, and displays them
+ *              according to the selected status. Handles invalid input gracefully.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::listAllTheatres()
+{
+	int choice;
+	cout << "\n1. Active Theatres";
+	cout << "\n2.Inactive Theatres";
+	cout << "\n Enter choice: ";
+	util::readValue(choice);
+	const std::vector<const Theatre*>theatres = m_controller->getAllTheatres();
+	if (choice == 1)
+	{
+		bool isActiveTheatreFound = false;
+		for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+		{
+			if ((*iterator)->getStatus() == Enums::TheatreStatus::ACTIVE)
+			{
+				isActiveTheatreFound = true;
+				break;
+			}
+		}
+		if (isActiveTheatreFound)
+		{
+			displayTheatres(theatres, Enums::TheatreStatus::ACTIVE);
+		}
+		else
+		{
+			cout << "\nNo active theatres found!";
+		}
+	}
+	else if (choice == 2)
+	{
+		bool isInactiveTheatreFound = false;
+		for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+		{
+			if ((*iterator)->getStatus() == Enums::TheatreStatus::INACTIVE)
+			{
+				isInactiveTheatreFound = true;
+				break;
+			}
+		}
+		if (isInactiveTheatreFound)
+		{
+			displayTheatres(theatres, Enums::TheatreStatus::INACTIVE);
+		}
+		else
+		{
+			cout << "\nNo inactive theatres found!";
+		}
+	}
+	else
+	{
+		cout << "\nInvalid Choice!";
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatres
+ * Description: Displays a formatted tabular view of theatres filtered by their
+ *              status (Active or Inactive). Outputs theatre attributes such as
+ *              ID, name, city, address, contact phone number, and status string
+ *              for each theatre that matches the given status.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres to be displayed.
+ *    status   - The TheatreStatus enum value used to filter which theatres are shown.
+ * Returns: None
+ */
+void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status)
+{
+	cout << "\n--------------------------------------------------------------------------------------------------\n";
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< setw(25) << "Address"
+		<< setw(15) << "Contact"
+		<< setw(15) << "Status"
+		<< endl;
+	cout << "--------------------------------------------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if ((*iterator)->getStatus() == status)
+		{
+			cout << left
+				<< setw(15) << (*iterator)->getTheatreId()
+				<< setw(20) << (*iterator)->getName()
+				<< setw(15) << (*iterator)->getCity()
+				<< setw(25) << (*iterator)->getAddress()
+				<< setw(15) << (*iterator)->getTheatrePhoneNumber()
+				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
+				<< endl;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::validateMovieId
+ * Description: Validates whether a given movie ID exists within the list of
+ *              available movie IDs. Iterates through the provided IDs and
+ *              checks for a match with the input movie ID.
+ * Parameters:
+ *    movieId  - The movie ID entered by the user to be validated.
+ *    movieIds - A vector of strings containing valid movie IDs.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie ID is found in the list.
+ *    Enums::ProcessStatus::FAILED if the movie ID does not exist.
+ */
+Enums::ProcessStatus UserInterface::validateMovieId(const std::string& movieId, const std::vector<std::string>& movieIds)
+{
+	for (std::vector<std::string>::const_iterator iterator = movieIds.begin(); iterator != movieIds.end(); ++iterator)
+	{
+		if (*iterator == movieId)
+		{
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::getMovieIds
+ * Description: Extracts and returns the list of movie IDs from a given vector
+ *              of Movie pointers. Iterates through the provided movies and
+ *              collects their unique identifiers into a string vector.
+ * Parameters:
+ *    movies - A vector of Movie pointers representing the movies from which
+ *             IDs are to be extracted.
+ * Returns:
+ *    A vector of strings containing the IDs of the provided movies.
+ */
+const std::vector<std::string> UserInterface::getMovieIds(const std::vector<const Movie*>& movies)
+{
+	std::vector<std::string> movieIds;
+	for (std::vector<const Movie*>::const_iterator iterator =movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		movieIds.push_back((*iterator)->getMovieId());
+	}
+	return movieIds;
+}
+
+/*
+ * Function: UserInterface::validateTheatreId
+ * Description: Validates whether a given theatre ID exists within the list of
+ *              available theatre IDs. Iterates through the provided IDs and
+ *              checks for a match with the input theatre ID.
+ * Parameters:
+ *    theatreId  - The theatre ID entered by the user to be validated.
+ *    theatreIds - A vector of strings containing valid theatre IDs.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the theatre ID is found in the list.
+ *    Enums::ProcessStatus::FAILED if the theatre ID does not exist.
+ */
+Enums::ProcessStatus UserInterface::validateTheatreId(const std::string& theatreId, const std::vector<std::string>& theatreIds)
+{
+	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
+	{
+		if (*iterator == theatreId)
+		{
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::getTheatreIds
+ * Description: Extracts and returns the list of theatre IDs from a given vector
+ *              of Theatre pointers. Iterates through the provided theatres and
+ *              collects their unique identifiers into a string vector.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres from
+ *               which IDs are to be extracted.
+ * Returns:
+ *    A vector of strings containing the IDs of the provided theatres.
+ */
+const std::vector<std::string> UserInterface::getTheatreIds(const std::vector<const Theatre*>&theatres)
+{
+	std::vector<std::string> theatreIds;
+	for (std::vector<const Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		theatreIds.push_back((*iterator)->getTheatreId());
+	}
+	return theatreIds;
+}
+
+/*
+ * Function: UserInterface::displayOwnerTheatres
+ * Description: Displays a simplified tabular view of theatres owned by the
+ *              currently authenticated user. Outputs theatre attributes such
+ *              as ID, name, and city for each owned theatre.
+ * Parameters:
+ *    theatres - A vector of Theatre pointers representing the theatres owned
+ *               by the authenticated user.
+ * Returns: None
+ */
+void UserInterface::displayOwnerTheatres(const std::vector<const Theatre*>& theatres)
+{
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left
+		<< setw(15) << "ID"
+		<< setw(20) << "Name"
+		<< setw(15) << "City"
+		<< endl;
+	cout << "-------------------------------------------------------------\n";
+	for (std::vector<const Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		cout << left
+			<< setw(15) << (*iterator)->getTheatreId()
+			<< setw(20) << (*iterator)->getName()
+			<< setw(15) << (*iterator)->getCity()
+			<< endl;
+	}
+}
+
+/*
+ * Function: UserInterface::displayMovie
+ * Description: Displays a formatted list of movies with their details (ID, Title, Language, Genre, Duration).
+ * Parameters:
+ *    movies - Vector of constant Movie pointers to display
+ * Returns:
+ *    None
+ */
+void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
+{
+	cout << "\n-------------------------------------------------------------\n";
+	cout << left << setw(10) << "ID"
+		<< setw(10) << "Title"
+		<< setw(10) << "Language"
+		<< setw(10) << "Genre"
+		<< setw(10) << "Duration" << endl;
+	cout << "-------------------------------------------------------------\n";
+	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		if (*iterator)
+		{
+			cout << left << setw(10) << (*iterator)->getMovieId()
+				<< setw(10) << (*iterator)->getTitle()
+				<< setw(10) << (*iterator)->getLanguage()
+				<< setw(10) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getDuration()
+				<< endl;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::addMovieToTheatre
+ * Description: Allows a theatre owner to add a movie to one of their theatres.
+ *              Prompts the user to select a theatre and a movie from available
+ *              lists, validates the entered IDs, and delegates the addition
+ *              process to the Controller. Provides feedback on success or
+ *              failure (e.g., movie already exists in theatre).
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::addMovieToTheatre()
+{
+	std::string theatreId;
+	std::string movieId;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (theatres.empty())
+	{
+		cout << "\nNo theatres found!";
+		return;
+	}
+	displayOwnerTheatres(theatres);
+	const std::vector<std::string> theatreIds = getTheatreIds(theatres);
+	cout << "\nEnter Theatre ID: ";
+	util::readValue(theatreId);
+	if (validateTheatreId(theatreId, theatreIds) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "\nInvalid Theatre ID!";
+		return;
+	}
+	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	if (movies.empty())
+	{
+		cout << "\nNo active movies found!";
+		return;
+	}
+	displayMovie(movies);
+	const std::vector<std::string> movieIds = getMovieIds(movies);
+	cout << "\nEnter Movie ID: ";
+	util::readValue(movieId);
+	if (validateMovieId(movieId, movieIds) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "\nInvalid Movie ID!";
+		return;
+	}
+	if (m_controller->addMovieToTheatre(theatreId, movieId) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "\nMovie successfully added to theatre!";
+	}
+	else
+	{
+		cout << "\nMovie already exists in theatre!";
+	}
+}
+
+/*
+ * Function: UserInterface::displayMoviesInTheatre
+ * Description: Allows the theatre owner to select a theatre by ID and view
+ *              all movies associated with that theatre. Validates the entered
+ *              theatre ID against the current owner’s theatres before displaying
+ *              movie details.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::displayMoviesInTheatre()
+{
+	std::string theatreId;
+	bool isTheatreIdValid = false;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	displayTheatreDetails(theatres);
+	cout << "Enter theatre id of theatre to select: ";
+	util::readValue(theatreId);
+	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
+	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
+	{
+		if (theatreId == *iterator)
+		{
+			isTheatreIdValid = true;
+			break;
+		}
+	}
+	if (!isTheatreIdValid)
+	{
+		cout << "Invalid Theatre id!" << endl;
+		util::pressEnter();
+		return;
+	}
+	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
+	displayMovieDetails(movies);
+}
+
+/*
+ * Function: UserInterface::handleInputTheatreDetails
+ * Description: Validates the entered theatre details by checking whether
+ *              the theatre already exists in the system.
+ * Parameters:
+ *    name (const std::string&) - Name of the theatre
+ *    city (const std::string&) - City where the theatre is located
+ *    address (const std::string&) - Address of the theatre
+ *    phoneNumber (const std::string&) - Contact phone number of the theatre
+ *    email (const std::string&) - Contact email address of the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the theatre details are unique,
+ *                           FAILED otherwise
+ */
+Enums::ProcessStatus UserInterface::handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email)
+{
+	return m_controller->isTheatreUnique(name, city, address, phoneNumber, email);
+}
+
+/*
+ * Function: UserInterface::addTheatre
+ * Description: Collects theatre details from the user, validates the input,
+ *              ensures unique phone number and email, and sends the theatre
+ *              registration request to the controller for approval.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void UserInterface::addTheatre()
+{
+	std::string name, city, address, phoneNumber, email;
+	cout << "\nEnter the name is Theatre   : ";
+	util::readValue(name);
+	cout << "\nEnter the city              : ";
+	util::readValue(city);
+	cout << "\nEnter the address           : ";
+	util::readValue(address);
+	cout << "\nEnter the phone number      : ";
+	util::readValue(phoneNumber);
+	util::isPhoneNumberValid(phoneNumber);
+	getUniqueTheatrePhoneNumber(phoneNumber);
+	cout << "\nEnter the email             : ";
+	util::readValue(email);
+	util::isEmailValid(email);
+	getUniqueTheatreEmail(email);
+	if (handleInputTheatreDetails(name, city, address, phoneNumber, email) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->addTheatre(name, city, address, phoneNumber, email))
+		{
+			cout << "\nTheatre added successfully.\nYour request has been sent to the admin for approval.\n";
+		}
+		else
+		{
+			cout << "Something went wrong!.";
+		}
+	}
+	else
+	{
+		cout << "\nTheatre already exist!.";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::getUniqueTheatrePhoneNumber
+ * Description: Ensures that the entered theatre phone number is unique
+ *              by repeatedly prompting the user until a unique number is entered.
+ * Parameters:
+ *    phoneNumber (std::string&) - Reference to the theatre phone number
+ * Returns:
+ *    void
+ */
+void UserInterface::getUniqueTheatrePhoneNumber(std::string& phoneNumber)
+{
+	bool isPhoneNumberUnique = (m_controller->isTheatrePhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS) ? true : false;
+	{
+		while (!isPhoneNumberUnique)
+		{
+			cout << "Phone number already exists!. Please enter again: ";
+			util::readValue(phoneNumber);
+			util::isPhoneNumberValid(phoneNumber);
+			if (m_controller->isTheatrePhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
+			{
+				isPhoneNumberUnique = true;
+			}
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::getUniqueTheatreEmail
+ * Description: Ensures that the entered theatre email address is unique
+ *              by repeatedly prompting the user until a unique email is entered.
+ * Parameters:
+ *    email (std::string&) - Reference to the theatre email address
+ * Returns:
+ *    void
+ */
+void UserInterface::getUniqueTheatreEmail(std::string& email)
+{
+	bool isEmailUnique = (m_controller->isTheatreEmailUnique(email) == Enums::ProcessStatus::SUCCESS) ? true : false;
+	while (!isEmailUnique)
+	{
+		cout << "Email already exists!. Please enter again: ";
+		util::readValue(email);
+		util::isEmailValid(email);
+		if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
+		{
+			isEmailUnique = true;
+		}
+	}
+}
+
+/*
+ * Function: UserInterface::isValidTheatreID
+ * Description: Checks whether the given theatre ID exists in the provided
+ *              collection of theatres.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre to validate.
+ *    theatres  - Vector containing theatre objects to search.
+ * Returns:
+ *    ProcessStatus::SUCCESS if the theatre ID exists.
+ *    ProcessStatus::FAILED if the theatre ID is not found.
+ */
+Enums::ProcessStatus UserInterface::isValidTheatreID(const std::string& theatreId, const std::vector<const Theatre*>& theatres)
+{
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if ((*iterator)->getTheatreId()==theatreId)
+		{
+			return Enums::ProcessStatus::SUCCESS;
+		}
+	}
+	return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: UserInterface::displayEditTheatreMenu
+ * Description: Displays the menu options available for editing theatre
+ *              details such as name, city, address, phone number, and email.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::displayEditTheatreMenu()
+{
+	cout << "\n\n1.Name";
+	cout << "\n2.City";
+	cout << "\n3.Address";
+	cout << "\n4.Phone Number";
+	cout << "\n5.Email";
+	cout << "\n0.Exit";
+	cout << "\nEnter which details want to edit: ";
+}
+
+/*
+ * Function: UserInterface::updateTheatre
+ * Description: Allows the current theatre owner to update theatre details.
+ *              Displays available theatres, validates the selected theatre ID,
+ *              and provides options to edit theatre information.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::updateTheatre()
+{
+	std::string theatreId, name, city, address, phoneNumber, email;
+	int choice = 1;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			const Theatre* theatre = getCurrentTheatreById(theatreId, theatres);
+			while (choice != 0)
+			{
+				displayEditTheatreMenu();
+				util::readValue(choice);
+				if (choice == 1) 
+				{
+					cout << "\nEnter the new name: ";
+					util::readValue(name);
+					changeTheatreName(theatreId, name,theatre);
+				}
+				else if (choice == 2) 
+				{
+					cout << "\nEnter the new city: ";
+					util::readValue(city);
+					changeTheatreCity(theatreId, city, theatre);
+				}
+				else if (choice == 3) 
+				{
+					cout << "\nEnter the new address: ";
+					util::readValue(address);
+					changeTheatreAddress(theatreId, address, theatre);
+				}
+				else if (choice == 4)
+				{
+					cout << "\nEnter the new phone number: "; 
+					util::readValue(phoneNumber);
+					util::isPhoneNumberValid(phoneNumber);
+					getUniqueTheatrePhoneNumber(phoneNumber);
+					changeTheatrePhoneNumber(theatreId, phoneNumber, theatre);
+				}
+				else if (choice == 5)
+				{
+					cout << "\nEnter the new email: ";
+					util::isEmailValid(email);
+					getUniqueTheatreEmail(email);
+					changeTheatreEmail(theatreId, email,theatre);
+				}
+				else
+				{
+					cout << "\nEnter a valid choice!.";
+				}
+			}
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found has added" << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreName
+ * Description: Updates the name of the selected theatre after validating
+ *              the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    name      - New theatre name.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreName(const std::string& theatreId, const std::string& name, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(name, theatre->getCity(), theatre->getAddress(), theatre->getTheatrePhoneNumber(), theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreNameById(theatreId, name))
+		{
+			cout << "Name has been updated!.";
+		}
+		else
+		{
+			cout << "\nName can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreCity
+ * Description: Updates the city of the selected theatre after validating
+ *              the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    city      - New city name.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreCity(const std::string& theatreId, const std::string& city, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), city, theatre->getAddress(), theatre->getTheatrePhoneNumber(), theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreCityById(theatreId, city))
+		{
+			cout << "\nCity has been updated!.";
+		}
+		else
+		{
+			cout << "\nCity can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreAddress
+ * Description: Updates the address of the selected theatre after validating
+ *              the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    address   - New address of the theatre.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreAddress(const std::string& theatreId, const std::string& address, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), theatre->getCity(), address, theatre->getTheatrePhoneNumber(), theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreAddressById(theatreId, address))
+		{
+			cout << "\nAddress has been updated!.";
+		}
+		else
+		{
+			cout << "\nAddress can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatrePhoneNumber
+ * Description: Updates the phone number of the selected theatre after
+ *              validating the updated theatre details.
+ * Parameters:
+ *    theatreId   - Unique identifier of the theatre.
+ *    phoneNumber - New phone number of the theatre.
+ *    theatre     - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatrePhoneNumber(const std::string& theatreId, const std::string& phoneNumber, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), theatre->getCity(), theatre->getAddress(), phoneNumber, theatre->getTheatreEmail()) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatrePhoneNumberById(theatreId, phoneNumber))
+		{
+			cout << "\nPhone number has been updated!.";
+		}
+		else
+		{
+			cout << "\nPhone Number can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::changeTheatreEmail
+ * Description: Updates the email address of the selected theatre after
+ *              validating the updated theatre details.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    email     - New email address of the theatre.
+ *    theatre   - Reference to the current theatre object.
+ * Returns: None
+ */
+void UserInterface::changeTheatreEmail(const std::string& theatreId, const std::string& email, const Theatre*& theatre)
+{
+	if (handleInputTheatreDetails(theatre->getName(), theatre->getCity(), theatre->getAddress(), theatre->getTheatrePhoneNumber(), email) == Enums::ProcessStatus::SUCCESS)
+	{
+		if (Enums::ProcessStatus::SUCCESS == m_controller->setTheatreEmailById(theatreId, email))
+		{
+			cout << "\nEmail has been updated!.";
+		}
+		else
+		{
+			cout << "\nEmail can't updated!.";
+		}
+	}
+	else
+	{
+		cout << "\nThis Theatre already exist!.\n";
+		return;
+	}
+}
+
+/*
+ * Function: UserInterface::getCurrentTheatreById
+ * Description: Retrieves the theatre object that matches the given
+ *              theatre ID from the provided theatre collection.
+ * Parameters:
+ *    theatreId - Unique identifier of the theatre.
+ *    theatres  - Vector containing theatre objects.
+ * Returns:
+ *    Pointer to the matching Theatre object if found.
+ */
+const Theatre* UserInterface::getCurrentTheatreById(const std::string& theatreId, const std::vector<const Theatre*>& theatres)
+{
+	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+	{
+		if ((*iterator)->getTheatreId() == theatreId)
+		{
+			return *iterator;
+		}
+	}
+	return nullptr;
+}
+
+/*
+ * Function: UserInterface::validateTheatreRequest
+ * Description: Allows the administrator to validate pending theatre
+ *              requests by approving or rejecting a selected theatre.
+ *              Displays all pending theatres, validates the selected
+ *              theatre ID, and updates the theatre status based on
+ *              the administrator's choice.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::validateTheatreRequest()
+{
+	std::string theatreId;
+	int choice;
+	const std::vector<const Theatre*> pendingTheatres=m_controller->getPendingTheatres();
+	if(!pendingTheatres.empty())
+	{
+		displayTheatreDetails(pendingTheatres);
+		cout << "\nEnter the theatre Id, which you want to validate: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, pendingTheatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			displayTheatreValidationMenu();
+			util::readValue(choice);
+			if (choice == 1)
+			{
+				setTheatreStatusById(theatreId, Enums::TheatreStatus::ACTIVE);
+			}
+			else if (choice == 2)
+			{
+				setTheatreStatusById(theatreId, Enums::TheatreStatus::PENDING);
+			}
+			else if (choice == 0)
+			{
+				exit(0);
+			}
+			else
+			{
+				cout << "\nEnter a valid choice!.";
+			}
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "\nNo pending theatre request!";
+	}
+}
+
+/*
+ * Function: UserInterface::displayTheatreValidationMenu
+ * Description: Displays the theatre validation menu with options to
+ *              approve, reject, or exit the validation process.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::displayTheatreValidationMenu()
+{
+	cout << "\n1. Approve";
+	cout << "\n2. Reject";
+	cout << "\n0. Exit";
+	cout << "\nEnter the choice: ";
+}
+
+/*
+ * Function: UserInterface::setTheatreStatusById
+ * Description: Updates the status of a theatre identified by the given
+ *              theatre ID. Delegates the status update operation to
+ *              the controller layer.
+ * Parameters:
+ *    theatreId    - Unique identifier of the theatre.
+ *    theatreStatus - New status to be assigned to the theatre.
+ * Returns: None
+ */
+void UserInterface::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus theatreStatus)
+{
+	if (m_controller->setTheatreStatusById(theatreId, theatreStatus) == Enums::ProcessStatus::SUCCESS)
+	{
+		cout << "\nTheatre Status has been updated!.";
+	}
+	else
+	{
+		cout << "\nSomething went wrong!.";
+	}
+}
+
+/*
+ * Function: UserInterface::deactivateTheatreByOwner
+ * Description: Allows the current theatre owner to deactivate one of
+ *              their theatres by selecting a valid theatre ID from
+ *              the list of owned theatres. Updates the selected
+ *              theatre's status to INACTIVE.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::deactivateTheatreByOwner()
+{
+	std::string theatreId;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			setTheatreStatusById(theatreId, Enums::TheatreStatus::INACTIVE);
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::deactivateTheatreByAdmin
+ * Description: Allows the administrator to deactivate a theatre by
+ *              selecting a valid theatre ID from the list of all
+ *              available theatres. Updates the selected theatre's
+ *              status to INACTIVE.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::deactivateTheatreByAdmin()
+{
+	std::string theatreId;
+	const std::vector<const Theatre*> theatres = m_controller->listAllTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			setTheatreStatusById(theatreId, Enums::TheatreStatus::INACTIVE);
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::reactivateTheatreByOwner
+ * Description: Allows the current theatre owner to deactivate one of
+ *              their theatres by selecting a valid theatre ID from
+ *              the list of owned theatres. Updates the selected
+ *              theatre's status to ACTIVE.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::reactivateTheatreByOwner()
+{
+	std::string theatreId;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			setTheatreStatusById(theatreId, Enums::TheatreStatus::PENDING);
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
+	}
+}
+
+/*
+ * Function: UserInterface::reactivateTheatreByAdmin
+ * Description: Allows the administrator to reactivate a theatre by
+ *              selecting a valid theatre ID from the list of all
+ *              available theatres. Updates the selected theatre's
+ *              status to ACTIVE.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::reactivateTheatreByAdmin()
+{
+	std::string theatreId;
+	const std::vector<const Theatre*> theatres = m_controller->listAllTheatres();
+	if (!theatres.empty())
+	{
+		displayTheatreDetails(theatres);
+		cout << "\nEnter the theatre Id, which you want to edit: ";
+		util::readValue(theatreId);
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
+		{
+			setTheatreStatusById(theatreId, Enums::TheatreStatus::ACTIVE);
+		}
+		else
+		{
+			cout << "\nEnter the valid theatre id";
+		}
+	}
+	else
+	{
+		cout << "No theatres found for current owner" << endl;
 	}
 }
