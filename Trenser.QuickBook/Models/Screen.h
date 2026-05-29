@@ -48,5 +48,7 @@ public:
     void setTotalColumns(int totalColumns);
     void setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid);
     void setScreenStatus(Enums::ScreenStatus screenStatus);
+    static Screen* deserialize(std::string& line);
     std::string serialize() const;
+    ~Screen() = default;
 };

@@ -378,3 +378,12 @@ void DataStore::addLog(Log* log)
 {
     m_logs[log->getLogId()] = log;
 }
+
+Theatre* DataStore::getTheatreById(const std::string& theatreId)
+{
+    return nullptr;
+}
+
+void DataStore::addScreen(Screen* screen)
+{
+}

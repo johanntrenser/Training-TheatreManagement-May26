@@ -73,4 +73,6 @@ public:
 	User* getUserById(std::string& id);
 	void addNotification(Notification* notification);
 	void addLog(Log* log);
+	Theatre* getTheatreById(const std::string& theatreId);
+	void addScreen(Screen* screen);
 };

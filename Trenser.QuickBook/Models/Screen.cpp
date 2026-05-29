@@ -9,6 +9,7 @@
 #include "Screen.h"
 #include "Theatre.h"
 #include "Seat.h"
+#include "Factory.h"
 
  /*
   * Function: Screen::Screen
@@ -127,7 +128,7 @@ const std::vector<std::vector<Seat*>>& Screen::getSeatGrid() const
  * Function: Screen::getScreenStatus
  * Description: Retrieves the screen status code.
  * Returns:
- *    int - Screen status
+ *    enum - Screen status
  */
 Enums::ScreenStatus Screen::getScreenStatus() const
 {
@@ -216,7 +217,7 @@ void Screen::setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid)
  * Function: Screen::setScreenStatus
  * Description: Sets the screen status code.
  * Parameters:
- *    int screenStatus - New screen status
+ *    enum screenStatus - New screen status
  * Returns:
  *    void
  */
@@ -239,4 +240,30 @@ std::string Screen::serialize() const
         std::to_string(m_totalRows) + config::delimeter::comma +
         std::to_string(m_totalColumns) + config::delimeter::comma +
         Enums::getScreenStatusString(m_screenStatus);
+}
+
+/*
+ * name        : deserialize
+ * description : Converts a CSV line into a Screen object by parsing screen ID, theatre ID,
+ *               name, total rows, total columns, and status. Initializes a Screen instance
+ *               with parsed values and an empty seat grid.
+ * parameter   : std::string& line - the CSV line containing serialized screen data
+ * return type : Screen* - pointer to a newly created Screen object
+ */
+Screen* Screen::deserialize(std::string& line)
+{
+    std::string screenId, theatreId, name, totalRows, totalColumns, status;
+    std::stringstream lineStream(line);
+    getline(lineStream, screenId, ',');
+    getline(lineStream, theatreId, ',');
+    getline(lineStream, name, ',');
+    getline(lineStream, totalRows, ',');
+    getline(lineStream, totalColumns, ',');
+    getline(lineStream, status, ',');
+    int rows = totalRows.empty() ? 0 : stoi(totalRows);
+    int cols = totalColumns.empty() ? 0 : stoi(totalColumns);
+    std::vector<std::vector<Seat*>> emptyGrid;
+    Screen* screen = Factory::getObject<Screen>(screenId, nullptr, name, rows, cols, emptyGrid);
+    screen->setScreenStatus(Enums::getScreenStatus(status));
+    return screen;
 }

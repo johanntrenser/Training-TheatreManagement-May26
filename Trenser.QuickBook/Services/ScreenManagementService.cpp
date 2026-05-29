@@ -1,17 +1,6 @@
 #include "ScreenManagementService.h"
 
 /*
-* Function Name : ScreenManagementService
-* Description   : Initializes the screen management service and connects it with the datastore.
-* Parameters    : None
-* Return Type   : Constructor
-*/
-ScreenManagementService::ScreenManagementService()
-	: m_dataStore(DataStore::getInstance())
-{
-}
-
-/*
  * Function: ScreenManagementService::saveScreenData
  * Description: Saves all screen data from the DataStore into a CSV file.
  *              Includes screen details such as Screen ID, Theatre ID, name, total rows, total columns,
@@ -35,4 +24,36 @@ void ScreenManagementService::saveScreenData()
         }
     }
     FileManagement::writeLines(std::string(config::File::SCREEN_FILEPATH), lines);
+}
+
+/*
+ * name        : loadScreenData
+ * description : Loads screen data from the CSV file, deserializes each line into a Screen object,
+ *               resolves references to Theatre, sets status, and adds the Screen to datastore.
+ * parameter   : None
+ * return type : void
+ */
+void ScreenManagementService::loadScreenData()
+{
+    std::string screenId, theatreId, name, totalRows, totalColumns, status;
+    std::vector<std::string> lines = FileManagement::readlines(PATH);
+    for (int index = 0; index < lines.size(); index++)
+    {
+        Screen* screen = Screen::deserialize(lines[index]);
+        std::stringstream lineStream(lines[index]);
+        getline(lineStream, screenId, ',');
+        getline(lineStream, theatreId, ',');
+        getline(lineStream, name, ',');
+        getline(lineStream, totalRows, ',');
+        getline(lineStream, totalColumns, ',');
+        getline(lineStream, status, ',');
+        if (!theatreId.empty())
+        {
+            Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+            screen->setTheatre(theatre);
+        }
+        Enums::ScreenStatus screenStatus = Enums::getScreenStatus(status);
+        screen->setScreenStatus(screenStatus);
+        m_dataStore.addScreen(screen);
+    }
 }
