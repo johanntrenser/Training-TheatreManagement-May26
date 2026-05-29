@@ -244,6 +244,19 @@ const std::map<std::string, Theatre*>& DataStore::getTheatres() const
 }
 
 /*
+ * Function: DataStore::getBookings
+ * Description: Provides access to the collection of bookings stored in the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    const std::map<std::string, Booking*>& - Map of booking IDs to Booking pointers
+ */
+const std::map<std::string, Booking*>& DataStore::getBookings() const
+{
+    return m_bookings;
+}
+
+/*
  * Function: DataStore::addTheatre
  * Description: Adds a new theatre object to the data store using
  *              the theatre ID as the key.
@@ -470,3 +483,39 @@ const std::map<std::string, Payment*>& DataStore::getPayments() const
     return m_payments;
 }
 
+
+/*
+ * Function: DataStore::getBookingById
+ * Description: Retrieves a booking object from the DataStore by its unique ID.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    const Booking* - Pointer to the booking if found, nullptr otherwise
+ */
+const Booking* DataStore::getBookingById(const std::string& bookingId)
+{
+    std::map<std::string, Booking*>::const_iterator iterator = m_bookings.find(bookingId);
+    if (iterator == m_bookings.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::getBookingByIdForUpdation
+ * Description: Retrieves a booking object by ID for modification.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    Booking* - Pointer to the booking if found, nullptr otherwise
+ */
+Booking* DataStore::getBookingByIdForUpdation(const std::string& bookingId)
+{
+    std::map<std::string, Booking*>::const_iterator iterator = m_bookings.find(bookingId);
+    if (iterator == m_bookings.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
