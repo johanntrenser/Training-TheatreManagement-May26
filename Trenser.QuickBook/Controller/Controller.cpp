@@ -175,6 +175,8 @@ void Controller::loadDataFromFile()
 {
     m_userManagementService->loadUserData();
     m_ticketManagementService->loadTicketData();
+    m_theatreManagementService->loadTheatreData();
+    m_showManagementService->loadShowData();
 }
 
 /*

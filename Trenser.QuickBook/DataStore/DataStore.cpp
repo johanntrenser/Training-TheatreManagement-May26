@@ -217,3 +217,53 @@ void DataStore::addTicket(Ticket* ticket)
 {
     m_tickets[ticket->getTicketId()] = ticket;
 }
+void DataStore::addTheatre(Theatre* theatre)
+{
+    m_theatres[theatre->getTheatreId()] = theatre;
+}
+
+/*
+ * Function: DataStore::getScreenById
+ * Description: Retrieves a screen object based on its unique identifier.
+ * Parameters:
+ *    screenId (const std::string&) - Unique identifier of the screen
+ * Returns:
+ *    Screen* - Pointer to the screen if found, nullptr otherwise
+ */
+Screen* DataStore::getScreenById(const std::string& screenId) const
+{
+    std::map<std::string, Screen*>::const_iterator iterator = m_screens.find(screenId);
+    if (iterator == m_screens.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+ * Function: DataStore::getMovieById
+ * Description: Retrieves a Movie object from the DataStore by its unique movie ID.
+ *              Looks up the movie in the internal map of movies and returns the pointer
+ *              if found. If the movie ID does not exist in the map, this will return nullptr.
+ * Parameters:
+ *    movieId - A reference to the string containing the unique movie identifier.
+ * Returns:
+ *    A pointer to the Movie object associated with the given ID, or nullptr if not found.
+ */
+Movie* DataStore::getMovieById(std::string& movieId)
+{
+    return m_movies[movieId];
+}
+
+/*
+ * Function: DataStore::addShow
+ * Description: Stores a new show in the data store.
+ * Parameters:
+ *    show (Show*) - Pointer to the show object to be added
+ * Returns:
+ *    void
+ */
+void DataStore::addShow(Show* show)
+{
+    m_shows[show->getShowId()] = show;
+}

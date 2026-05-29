@@ -11,6 +11,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iostream>
 #include "User.h"
 #include "Movie.h"
 #include "ApplicationConfig.h"
@@ -61,4 +63,5 @@ public:
     void setMovies(const std::vector<Movie*>& movies);
     void addMovieToTheatre(Movie* movie);
     std::string serialize();
+    static Theatre* deserialize(std::string& line);
 };

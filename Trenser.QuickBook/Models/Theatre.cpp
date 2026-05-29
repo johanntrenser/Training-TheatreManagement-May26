@@ -332,3 +332,20 @@ std::string Theatre::serialize()
         }
     return result;
 }
+
+Theatre* Theatre::deserialize(std::string& line)
+{
+    std::string theatreId, name, city, address, phoneNumber, email, theatreOwnerId, status, screenIds, movieIds;
+    std::stringstream lineStream(line);
+    getline(lineStream, theatreId, ',');
+    getline(lineStream, name, ',');
+    getline(lineStream, city, ',');
+    getline(lineStream, address, ',');
+    getline(lineStream, phoneNumber, ',');
+    getline(lineStream, email, ',');
+    getline(lineStream, theatreOwnerId, ',');
+    getline(lineStream, status, ',');
+    getline(lineStream, screenIds, ',');
+    getline(lineStream, movieIds, ',');
+    return new Theatre(theatreId, name, city, address, phoneNumber, email, nullptr);
+}

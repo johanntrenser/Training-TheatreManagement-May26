@@ -9,13 +9,14 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <ctime>
 #include <fstream>
 #include <map>
-#include <ctime>
 #include <sstream>
-#include "FileManagement.h"
-#include "DataStore.h"
 #include "ApplicationConfig.h"
+#include "DataStore.h"
+#include "FileManagement.h"
+
 class ShowManagementService
 {
 private:
@@ -24,5 +25,5 @@ private:
 public:
 	ShowManagementService() : m_dataStore(DataStore::getInstance()) {}
 	void saveShowData();
+	void loadShowData();
 };
-
