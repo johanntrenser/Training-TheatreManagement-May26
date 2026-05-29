@@ -19,8 +19,9 @@ Notification::Notification()
     m_receiver(nullptr),
     m_message(""),
     m_status(Enums::NotificationStatus::SENT),
-    m_time("")
-{}
+    m_time(-1)
+{
+}
 
 /*
  * Function: Notification::Notification
@@ -36,13 +37,14 @@ Notification::Notification()
 Notification::Notification(const std::string& id,
     User* receiver,
     const std::string& message,
-    const std::string& time)
+    time_t time)
     : m_notificationId(id),
     m_receiver(receiver),
     m_message(message),
     m_status(Enums::NotificationStatus::SENT),
     m_time(time)
-{}
+{
+}
 
 /*
  * Function: Notification::getNotificationId
@@ -94,7 +96,7 @@ Enums::NotificationStatus Notification::getStatus() const
  * Returns:
  *    const std::string& - Notification time
  */
-const std::string& Notification::getTime() const
+const time_t Notification::getTime() const
 {
     return m_time;
 }
@@ -154,7 +156,7 @@ void Notification::setStatus(Enums::NotificationStatus status)
  *    const std::string& time - New notification time
  * Returns: None
  */
-void Notification::setTime(const std::string& time)
+void Notification::setTime(const time_t time)
 {
     m_time = time;
 }
@@ -176,4 +178,32 @@ std::string Notification::serialize()
         Enums::getNotificationStatusString(m_status) + config::delimeter::comma +
         m_time;
     return result;
+}
+
+/*
+ * Function: Notification::deserialize
+ * Description: Converts a single CSV-formatted line into a Notification object.
+ *              Extracts fields such as notificationId, receiverId, message, status,
+ *              and time. The time string is parsed into its components (year, month,
+ *              day, hour, minute) and converted into a time_t using util::createTime.
+ *              The receiver User pointer is initialized to nullptr and can be set later
+ *              when restoring relationships.
+ * Parameters:
+ *    lines - reference to a CSV-formatted string containing notification data
+ * Returns:
+ *    Pointer to a newly constructed Notification object
+ */
+Notification* Notification::deserialize(std::string& lines)
+{
+    std::string notificationId, receiverId, messgae, status, time, year, dash, space, month, day, hour, colon, minute;
+    std::stringstream lineStream(lines);
+    getline(lineStream, notificationId, ',');
+    getline(lineStream, receiverId,',');
+    getline(lineStream, messgae,',');
+    getline(lineStream, status,',');
+    getline(lineStream, time,','); 
+    std::istringstream streamTime(time);
+    streamTime >> year >> dash >> month >> dash >> day >> space >> hour >> colon >> minute;
+    time_t convertedTime = util::createTime(stoi(year), stoi(month), stoi(day), stoi(hour), stoi(minute));
+    return new Notification(notificationId, nullptr, messgae,convertedTime);
 }

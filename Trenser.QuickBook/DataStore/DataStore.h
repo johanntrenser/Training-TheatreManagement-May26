@@ -70,4 +70,6 @@ public:
 	void addRefund(Refund* refund);
 	Booking* getBookingById(const std::string& bookingId);
 	void addPayment(Payment* payment);
+	User* getUserById(std::string& id);
+	void addNotification(Notification* notification);
 };

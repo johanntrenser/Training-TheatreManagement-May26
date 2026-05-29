@@ -333,3 +333,34 @@ void DataStore::addPayment(Payment* payment)
 {
     m_payments[payment->getPaymentId()] = payment;
 }
+
+/*
+ * Function: DataStore::getUserById
+ * Description: Retrieves a User object from the DataStore by its unique ID.
+ *              Looks up the internal users map using the provided ID key
+ *              and returns the corresponding User pointer.
+ * Parameters:
+ *    id - reference to a string containing the User ID
+ * Returns:
+ *    Pointer to the User object if found, otherwise nullptr
+ */
+User* DataStore::getUserById(std::string& id)
+{
+    return m_users[id];
+}
+
+/*
+ * Function: DataStore::addNotification
+ * Description: Adds or updates a Notification object in the DataStore.
+ *              Uses the Notification’s unique ID as the key in the
+ *              internal notifications map. If a Notification with the
+ *              same ID already exists, it will be replaced.
+ * Parameters:
+ *    notification - pointer to the Notification object to be stored
+ * Returns:
+ *    None
+ */
+void DataStore::addNotification(Notification* notification)
+{
+    m_notifications[notification->getNotificationId()] = notification;
+}
