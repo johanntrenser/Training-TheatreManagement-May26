@@ -22,4 +22,5 @@ private:
 public:
     RefundManagementService();
     void saveRefundData();
+    void loadRefundData();
 };

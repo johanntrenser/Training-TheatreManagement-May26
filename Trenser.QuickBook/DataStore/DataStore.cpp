@@ -282,3 +282,29 @@ void DataStore::addSeat(Seat* seat)
 {
     m_seats[seat->getSeatId()] = seat;
 }
+
+/*
+* Function Name : getTicketById
+* Description   : Retrieves a ticket from the datastore based on the provided Ticket ID.
+*                 Returns a pointer to the Ticket if found, otherwise returns nullptr.
+* Parameters    :
+*                  ticketId - The unique identifier of the ticket to be retrieved
+* Return Type   : Ticket*
+*/
+Ticket* DataStore::getTicketById(const std::string& ticketId) const
+{
+    std::map<std::string, Ticket*>::const_iterator ticket = m_tickets.find(ticketId);
+    return ticket->second;
+}
+
+/*
+ * Function: DataStore::addRefund
+ * Description: Adds a new addRefund object to the DataStore, indexed by its unique addRefund ID.
+ * Parameters:
+ *    payment - Pointer to the addRefund object to be added.
+ * Returns: None
+ */
+void DataStore::addRefund(Refund* refund)
+{
+    m_refunds[refund->getRefundId()] = refund;
+}

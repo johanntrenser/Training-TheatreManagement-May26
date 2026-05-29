@@ -185,3 +185,30 @@ std::string Refund::serialize()
         Enums::getRefundStatusString(m_status);
     return result;
 }
+
+/*
+ * Function: Refund::deserialize
+ * Description: Deserializes a single line of CSV-formatted refund data into a Refund object.
+ *              Extracts fields such as Refund ID, Booked Ticket ID, Refund Amount, Time, and Status.
+ *              Parses the time string into its components (year, month, day, hour, minute) and converts
+ *              it into a time_t object using util::createTime. The Booked Ticket pointer is set to nullptr
+ *              initially and can be linked later when the Ticket object is available in the DataStore.
+ * Parameters:
+ *    lines - A reference to a string containing one line of CSV refund data.
+ * Returns:
+ *    A pointer to a newly created Refund object populated with the deserialized data.
+ */
+Refund* Refund::deserialize(std::string& lines)
+{
+    std::string refundId, bookedTicketId, refundAmount, time, status, year, dash, space, month, day, hour, colon, minute;
+    std::stringstream lineStream(lines);
+    getline(lineStream, refundId, ',');
+    getline(lineStream, bookedTicketId, ',');
+    getline(lineStream, refundAmount, ',');
+    getline(lineStream,time , ',');
+    getline(lineStream,status , ',');
+    std::istringstream streamTime(time);
+    streamTime >> year >> dash >> month >> dash >> day >> space >> hour >> colon >> minute;
+    time_t convertedTime = util::createTime(stoi(year), stoi(month), stoi(day), stoi(hour), stoi(minute));
+    return new Refund(refundId, nullptr, stod(refundAmount), convertedTime);
+}

@@ -66,4 +66,6 @@ public:
 	Movie* getMovieById(std::string& movieId);
 	void addShow(Show* show);
 	void addSeat(Seat* seat);
+	Ticket* getTicketById(const std::string& ticketId) const;
+	void addRefund(Refund* refund);
 };
