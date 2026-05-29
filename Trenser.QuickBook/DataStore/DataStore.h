@@ -68,4 +68,6 @@ public:
 	void addSeat(Seat* seat);
 	Ticket* getTicketById(const std::string& ticketId) const;
 	void addRefund(Refund* refund);
+	Booking* getBookingById(const std::string& bookingId);
+	void addPayment(Payment* payment);
 };

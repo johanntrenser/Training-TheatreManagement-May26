@@ -308,3 +308,28 @@ void DataStore::addRefund(Refund* refund)
 {
     m_refunds[refund->getRefundId()] = refund;
 }
+
+/*
+ * Function: DataStore::getBookingById
+ * Description: Retrieves a booking object from the DataStore by its unique ID.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    const Booking* - Pointer to the booking if found, nullptr otherwise
+ */
+Booking* DataStore::getBookingById(const std::string& bookingId)
+{
+    return m_bookings[bookingId];
+}
+
+/*
+ * Function: DataStore::addPayment
+ * Description: Adds a new payment object to the DataStore, indexed by its unique payment ID.
+ * Parameters:
+ *    payment - Pointer to the Payment object to be added.
+ * Returns: None
+ */
+void DataStore::addPayment(Payment* payment)
+{
+    m_payments[payment->getPaymentId()] = payment;
+}
