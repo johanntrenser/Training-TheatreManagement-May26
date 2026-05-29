@@ -24,5 +24,5 @@ private:
 public:
 	BookingManagementService();
 	void saveBookingData();
+	void loadBookingData();
 };
-

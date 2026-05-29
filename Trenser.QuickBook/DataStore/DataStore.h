@@ -75,4 +75,7 @@ public:
 	void addLog(Log* log);
 	Theatre* getTheatreById(const std::string& theatreId);
 	void addScreen(Screen* screen);
+	Seat* getSeatById(std::string& id);
+	Show* getShowById(std::string& id);
+	void addBooking(Booking* book);
 };

@@ -218,3 +218,29 @@ std::string Booking::serialize()
         std::to_string(m_amount);
     return result;
 }
+
+/*
+ * Function: Booking::deserialize
+ * Description: Deserializes a single line of CSV-formatted booking data into a Booking object. 
+ *              Extracts fields such as Booking ID, Customer ID, Show ID, Booked Seat, Status, and Amount. 
+ *              Converts string values into appropriate types (double for amount, enum for status). 
+ *              The Customer and Show pointers are set to nullptr initially and can be linked later 
+ *              when those objects are available in the DataStore. The booked seats are initialized 
+ *              as an empty container and can be populated afterward.
+ * Parameters:
+ *    lines - A reference to a string containing one line of CSV booking data.
+ * Returns:
+ *    A pointer to a newly created Booking object populated with the deserialized data.
+ */
+Booking* Booking::deserialize(std::string& lines)
+{
+    std::string bookingId, customerId, showId, bookedSeat, status,amount;
+    std::stringstream lineStream(lines);
+    getline(lineStream, bookingId, ',');
+    getline(lineStream, customerId, ',');
+    getline(lineStream, showId, ',');
+    getline(lineStream, bookedSeat, ',');
+    getline(lineStream, status, ',');
+    getline(lineStream, amount, ',');
+    return new Booking(bookingId, nullptr, nullptr, {}, Enums::getBookingStatus(status), stod(amount));
+}

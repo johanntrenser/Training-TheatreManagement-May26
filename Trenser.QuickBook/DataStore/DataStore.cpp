@@ -387,3 +387,49 @@ Theatre* DataStore::getTheatreById(const std::string& theatreId)
 void DataStore::addScreen(Screen* screen)
 {
 }
+
+/*
+ * Function: DataStore::getSeatById
+ * Description: Retrieves a Seat object from the DataStore by its unique seat ID.
+ *              Looks up the seat in the internal map of seats and returns the pointer
+ *              if found. If the seat ID does not exist in the map, this will return nullptr.
+ * Parameters:
+ *    id - A reference to the string containing the unique seat identifier.
+ * Returns:
+ *    A pointer to the Seat object associated with the given ID, or nullptr if not found.
+ */
+Seat* DataStore::getSeatById(std::string& id)
+{
+    return m_seats[id];
+}
+
+/*
+ * Function: DataStore::getShowById
+ * Description: Retrieves a Show object from the DataStore by its unique show ID.
+ *              Looks up the show in the internal map of shows and returns the pointer
+ *              if found. If the show ID does not exist in the map, this will return nullptr.
+ * Parameters:
+ *    id - A reference to the string containing the unique show identifier.
+ * Returns:
+ *    A pointer to the Show object associated with the given ID, or nullptr if not found.
+ */
+Show* DataStore::getShowById(std::string& id)
+{
+    return m_shows[id];
+}
+
+/*
+ * Function: DataStore::addBooking
+ * Description: Adds a Booking object to the DataStore.
+ *              Stores the booking in the internal map of bookings, keyed by its unique Booking ID.
+ *              If a booking with the same ID already exists, it will be overwritten with the new pointer.
+ * Parameters:
+ *    book - A pointer to the Booking object to be added.
+ * Returns:
+ *    None
+ */
+void DataStore::addBooking(Booking* book)
+{
+    m_bookings[book->getBookingId()] = book;
+}
+
