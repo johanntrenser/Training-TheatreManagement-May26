@@ -12,6 +12,8 @@
 #include <fstream>
 #include <map>
 #include <ctime>
+#include <sstream>
+#include "FileManagement.h"
 #include "DataStore.h"
 #include "ApplicationConfig.h"
 class ShowManagementService

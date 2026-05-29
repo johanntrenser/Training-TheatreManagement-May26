@@ -11,6 +11,8 @@
 #pragma once
 #include <fstream>
 #include <map>
+#include <sstream>
+#include "FileManagement.h"
 #include "DataStore.h"
 #include "ApplicationConfig.h"
 

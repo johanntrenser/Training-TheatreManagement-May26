@@ -24,18 +24,15 @@ ScreenManagementService::ScreenManagementService()
  */
 void ScreenManagementService::saveScreenData()
 {
-    /*Screen* screenss = new Screen("SC001", nullptr, "Screen123", 50, 60, {{},{}});
-    m_dataStore.addScreen(screenss);
-    const std::map<std::string, Screen*> screens = m_dataStore.getScreens();
-    std::ofstream screenFile(PATH, std::ios::trunc);
-    if (!screenFile.is_open())
-    {
-        throw std::runtime_error("Cannot open file: " + PATH);
-    }
-    screenFile << config::Header::SCREEN_HEADER<<"\n";
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::SCREEN_HEADER);
+    const std::map<std::string, Screen*>& screens = m_dataStore.getScreens();
     for (std::map<std::string, Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
     {
-        screenFile << (iterator->second)->serialize()<< "\n";
+        if (iterator->second)
+        {
+            lines.push_back((iterator->second)->serialize());
+        }
     }
-    screenFile.close();*/
+    FileManagement::writeLines(std::string(config::File::SCREEN_FILEPATH), lines);
 }

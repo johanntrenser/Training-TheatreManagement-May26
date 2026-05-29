@@ -11,6 +11,8 @@
 #include <map>
 #include <fstream>
 #include <vector>
+#include <sstream>
+#include "FileManagement.h"
 #include "DataStore.h"
 #include "ApplicationConfig.h"
 

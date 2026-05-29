@@ -27,16 +27,12 @@ SeatManagementService::SeatManagementService()
 #include <iostream>
 void SeatManagementService::saveSeatData()
 {
+	std::vector<std::string> lines;
+	lines.push_back(config::Header::SEAT_HEADER);
 	const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
-	std::ofstream seatFile(PATH, std::ios::trunc);
-	if (!seatFile.is_open())
-	{
-		throw std::runtime_error("Cannot open file: " + PATH);
-	}
-	seatFile << config::Header::SEAT_HEADER<<"\n";
 	for (std::map<std::string, Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
 	{
-		seatFile << (iterator->second)->serialize() << "\n";
+		lines.push_back((iterator->second)->serialize());
 	}
-	seatFile.close();
+	FileManagement::writeLines(std::string(config::File::SEAT_FILEPATH), lines);
 }

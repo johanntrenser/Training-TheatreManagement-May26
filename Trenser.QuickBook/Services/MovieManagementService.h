@@ -9,6 +9,8 @@
  */
 #pragma once
 #include <fstream>
+#include <sstream>
+#include "FileManagement.h"
 #include "DataStore.h"
 #include "ApplicationConfig.h"
 class MovieManagementService

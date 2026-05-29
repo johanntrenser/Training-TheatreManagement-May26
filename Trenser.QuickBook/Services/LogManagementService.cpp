@@ -24,16 +24,12 @@ LogManagementService::LogManagementService() :
  */
 void LogManagementService::saveLogData()
 {
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::LOG_HEADER);
     const std::map<std::string, Log*>& logs = m_dataStore.getLogs();
-    std::ofstream logFile(PATH, std::ios::trunc);
-    if (!logFile.is_open())
-    {
-        throw std::runtime_error("Cannot open file: " + PATH);
-    }
-    logFile << config::Header::LOG_HEADER<<"\n";
     for (std::map<std::string, Log*>::const_iterator iterator = logs.begin(); iterator != logs.end(); ++iterator)
     {
-        logFile << (iterator->second)->serialize() << "\n";
+        lines.push_back((iterator->second)->serialize());
     }
-    logFile.close();
+    FileManagement::writeLines(std::string(config::File::LOG_FILEPATH), lines);
 }

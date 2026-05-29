@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <sstream>
+#include "FileManagement.h"
 #include "Theatre.h"
 #include "DataStore.h"
 #include "ApplicationConfig.h"

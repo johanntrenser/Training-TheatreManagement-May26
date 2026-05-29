@@ -13,16 +13,12 @@
  */
 void ShowManagementService::saveShowData()
 {
+	std::vector<std::string> lines;
+	lines.push_back(config::Header::SHOW_HEADER);
 	const std::map<std::string, Show*>& show = m_dataStore.getShows();
-	std::ofstream showFile(PATH, std::ios::trunc);
-	if (!showFile.is_open())
-	{
-		throw std::runtime_error("Cannot open file: " + PATH);
-	}
-	showFile << config::Header::SHOW_HEADER<<"\n";
 	for (std::map<std::string, Show*>::const_iterator iterator = show.begin(); iterator != show.end(); ++iterator)
 	{
-		showFile << (iterator->second)->serialize()<< "\n";
+		lines.push_back((iterator->second)->serialize());
 	}
-	showFile.close();
+	FileManagement::writeLines(std::string(config::File::SHOW_FILEPATH), lines);
 }

@@ -12,6 +12,8 @@
 #include <string>
 #include <map>
 #include <fstream>
+#include <sstream>
+#include "FileManagement.h"
 #include <string>
 #include "User.h"
 #include "DataStore.h"

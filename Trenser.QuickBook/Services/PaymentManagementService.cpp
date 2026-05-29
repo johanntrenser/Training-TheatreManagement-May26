@@ -27,16 +27,12 @@ PaymentManagementService::PaymentManagementService()
  */
 void PaymentManagementService::savePaymentData()
 {
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::PAYMENT_HEADER);
     const std::map<std::string, Payment*>& payment = m_dataStore.getPayments();
-    std::ofstream paymentFile(PATH, std::ios::trunc);
-    if (!paymentFile.is_open())
-    {
-        throw std::runtime_error("Cannot open file: " + PATH);
-    }
-    paymentFile << config::Header::PAYMENT_HEADER<<"\n";
     for (std::map<std::string, Payment*>::const_iterator iterator = payment.begin(); iterator != payment.end(); ++iterator)
     {
-        paymentFile << (iterator->second)->serialize()<<"\n";
+        lines.push_back((iterator->second)->serialize());
     }
-    paymentFile.close();
+    FileManagement::writeLines(std::string(config::File::PAYMENT_FILEPATH), lines);
 }

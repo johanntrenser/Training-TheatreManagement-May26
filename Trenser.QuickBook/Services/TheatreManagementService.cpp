@@ -161,16 +161,13 @@ Theatre* TheatreManagementService::searchByTheatreName(const std::string& name) 
  */
 void TheatreManagementService::saveTheatreData()
 {
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::THEATRE_HEADER);
     const std::map<std::string, Theatre*> theatres = m_dataStore.getTheatres();
-    std::ofstream theatreFile(PATH, std::ios::trunc);
-    if (!theatreFile.is_open())
-    {
-        throw std::runtime_error("Cannot open file: " + PATH);
-    }
-    theatreFile <<config::Header::THEATRE_HEADER<<"\n";
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        theatreFile << (iterator->second)->serialize()<<"\n";
+        lines.push_back((iterator->second)->serialize());
     }
-    theatreFile.close();
+    FileManagement::writeLines(std::string(config::File::THEATRE_FILEPATH), lines);
 }
+

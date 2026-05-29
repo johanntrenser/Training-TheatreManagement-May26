@@ -10,6 +10,8 @@
 #pragma once
 #include <fstream>
 #include <map>
+#include <sstream>
+#include "FileManagement.h"
 #include "ApplicationConfig.h"
 #include "DataStore.h"
 

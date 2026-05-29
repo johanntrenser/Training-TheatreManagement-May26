@@ -27,16 +27,12 @@ RefundManagementService::RefundManagementService()
  */
 void RefundManagementService::saveRefundData()
 {
+	std::vector<std::string> lines;
+	lines.push_back(config::Header::REFUND_HEADER);
 	const std::map<std::string, Refund*>& refunds = m_dataStore.getRefunds();
-	std::ofstream refundFile(PATH, std::ios::trunc);
-	if (!refundFile.is_open())
-	{
-		throw std::runtime_error("Cannot open file: " + PATH);
-	}
-	refundFile <<config::Header::REFUND_HEADER <<"\n";
 	for (std::map<std::string, Refund*>::const_iterator iterator = refunds.begin(); iterator != refunds.end(); ++iterator)
 	{
-		refundFile << (iterator->second)->serialize() << "\n";
+		lines.push_back((iterator->second)->serialize());
 	}
-	refundFile.close();
+	FileManagement::writeLines(std::string(config::File::REFUND_FILEPATH), lines);
 }

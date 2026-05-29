@@ -10,6 +10,8 @@
 #pragma once
 #include <map>
 #include <fstream>
+#include <sstream>
+#include "FileManagement.h"
 #include "DataStore.h"
 #include "ApplicationConfig.h"
 class RefundManagementService

@@ -311,16 +311,12 @@ const std::vector<const Movie*> MovieManagementService::searchDeactivatedMovieBy
  */
 void MovieManagementService::saveMovieData()
 {
+	std::vector<std::string> lines;
+	lines.push_back(config::Header::MOVIE_HEADER);
 	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
-	std::ofstream movieFile(PATH, std::ios::trunc);
-	if (!movieFile.is_open())
-	{
-		throw std::runtime_error("Cannot open file: " + PATH);
-	}
-	movieFile << config::Header::MOVIE_HEADER<<"\n";
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
-		movieFile << (iterator->second)->serialize() << "\n";
+		lines.push_back((iterator->second)->serialize());
 	}
-	movieFile.close();
+	FileManagement::writeLines(std::string(config::File::MOVIE_FILEPATH), lines);
 }

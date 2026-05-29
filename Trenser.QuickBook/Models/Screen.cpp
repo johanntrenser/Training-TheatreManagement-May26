@@ -229,28 +229,14 @@ void Screen::setScreenStatus(Enums::ScreenStatus screenStatus)
  * Function: serialize
  * Description: Converts Screen object into CSV format string
  * Returns:
- *    CSV string representing the user
+ *    CSV string representing the screen
  */
-std::string Screen::serialize()
+std::string Screen::serialize() const
 {
-    std::string result = m_screenId + config::delimeter::comma;
-    if (m_theatre)
-    {
-        result += m_theatre->getTheatreId() + config::delimeter::comma;
-    } 
-    result += m_name + config::delimeter::comma +
+    return m_screenId + config::delimeter::comma +
+        (m_theatre ? m_theatre->getTheatreId() : "") + config::delimeter::comma +
+        m_name + config::delimeter::comma +
         std::to_string(m_totalRows) + config::delimeter::comma +
-        std::to_string(m_totalColumns) + config::delimeter::comma;
-    if (!m_seatGrid.empty())
-    {
-        for (std::vector<std::vector<Seat*>>::const_iterator seatIteratorOne = m_seatGrid.begin(); seatIteratorOne != m_seatGrid.end(); ++seatIteratorOne)
-        {
-            for (std::vector<Seat*>::const_iterator seatIteratorTwo = seatIteratorOne->begin(); seatIteratorTwo != seatIteratorOne->end(); ++seatIteratorTwo)
-            {
-                result += (*seatIteratorTwo)->getSeatId() + config::delimeter::verticalBar;
-            }
-            result += config::delimeter::comma;
-        }
-    }
-    return result;
+        std::to_string(m_totalColumns) + config::delimeter::comma +
+        Enums::getScreenStatusString(m_screenStatus);
 }

@@ -133,16 +133,12 @@ void UserManagementService::changePassword(const std::string& userId,
  */
 void UserManagementService::saveUserData()
 {
-    std::ofstream userFile(PATH, std::ios::trunc);
-    if (!userFile.is_open())
-    {
-        throw std::runtime_error("Cannot open file: " + PATH);
-    }
-    userFile << config::Header::USER_HEADER<<"\n";
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::USER_HEADER);
     const std::map<std::string, User*> users = m_dataStore.getUsers();
     for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
-        userFile << (iterator->second)->serialize()<<"\n";
+        lines.push_back((iterator->second)->serialize());
     }
-    userFile.close();
+    FileManagement::writeLines(std::string(config::File::USER_FILEPATH), lines);
 }

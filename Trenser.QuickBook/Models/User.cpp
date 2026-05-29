@@ -225,7 +225,7 @@ void User::setStatus(Enums::UserStatus status)
  */
 void User::reverseString(std::string& password)
 {
-    int left = 0, right = password.length() - 1;
+    int left = 0, right = int(password.length()) - 1;
     while (left < right)
     {
         char temp = password[left];

@@ -26,16 +26,12 @@ BookingManagementService::BookingManagementService() :
  */
 void BookingManagementService::saveBookingData()
 {
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::BOOKING_HEADER);
     const std::map<std::string, Booking*>& bookings = m_dataStore.getBookings();
-    std::ofstream bookingFile(PATH, std::ios::trunc);
-    if (!bookingFile.is_open())
-    {
-        throw std::runtime_error("Cannot open file: " + PATH);
-    }
-    bookingFile << config::Header::BOOKING_HEADER << "\n";
     for (std::map<std::string, Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
     {
-        bookingFile << (iterator->second)->serialize() << "\n";
+        lines.push_back((iterator->second)->serialize());
     }
-    bookingFile.close();
+    FileManagement::writeLines(std::string(config::File::BOOKING_FILEPATH), lines);
 }

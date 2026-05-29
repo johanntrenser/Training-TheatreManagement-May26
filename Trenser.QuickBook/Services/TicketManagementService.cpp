@@ -26,16 +26,13 @@ TicketManagementService::TicketManagementService()
  */
 void TicketManagementService::saveTicketData()
 {
+	std::vector<std::string> lines;
+	lines.push_back(config::Header::TICKET_HEADER);
 	const std::map<std::string, Ticket*>& tickets = m_dataStore.getTickets();
-	std::ofstream ticketFile(PATH, std::ios::trunc);
-	if (!ticketFile.is_open())
-	{
-		throw std::runtime_error("Cannot open file: " + PATH);
-	}
-	ticketFile << config::Header::TICKET_HEADER<<"\n";
 	for (std::map<std::string, Ticket*>::const_iterator iterator = tickets.begin(); iterator != tickets.end(); ++iterator)
 	{
-		ticketFile << (iterator->second)->serialize()<< "\n";
+		lines.push_back((iterator->second)->serialize());
 	}
-	ticketFile.close();
+	FileManagement::writeLines(std::string(config::File::TICKET_FILEPATH), lines);
 }
+
