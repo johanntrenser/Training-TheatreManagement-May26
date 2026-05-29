@@ -9,6 +9,7 @@
 
 #pragma once
 #include <string>
+#include <sstream>
 #include "Enums.h"
 #include "ApplicationConfig.h"
 
@@ -44,4 +45,5 @@ public:
     void setSeatStatus(Enums::SeatStatus seatStatus);
     void setSeatAmount(double amount);
     std::string serialize();
+    static Seat* deserialize(std::string& line);
 };

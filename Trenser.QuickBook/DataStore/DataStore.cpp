@@ -267,3 +267,18 @@ void DataStore::addShow(Show* show)
 {
     m_shows[show->getShowId()] = show;
 }
+
+/*
+ * Function: DataStore::addSeat
+ * Description: Adds a Seat object to the DataStore.
+ *              Stores the seat in the internal map of seats, keyed by its unique Seat ID.
+ *              If a seat with the same ID already exists, it will be overwritten with the new pointer.
+ * Parameters:
+ *    seat - A pointer to the Seat object to be added.
+ * Returns:
+ *    None
+ */
+void DataStore::addSeat(Seat* seat)
+{
+    m_seats[seat->getSeatId()] = seat;
+}

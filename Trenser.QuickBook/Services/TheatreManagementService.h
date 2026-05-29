@@ -37,4 +37,3 @@ public:
     void saveTheatreData();
     void loadTheatreData();
 };
-
