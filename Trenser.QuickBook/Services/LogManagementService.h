@@ -14,6 +14,7 @@
 #include "FileManagement.h"
 #include "ApplicationConfig.h"
 #include "DataStore.h"
+#include "FileManagement.h"
 
 class LogManagementService
 {
@@ -23,5 +24,5 @@ private:
 public:
 	LogManagementService();
 	void saveLogData();
+	void loadLogData();
 };
-

@@ -364,3 +364,17 @@ void DataStore::addNotification(Notification* notification)
 {
     m_notifications[notification->getNotificationId()] = notification;
 }
+
+/*
+ * Function: DataStore::addLog
+ * Description: Adds a new log entry to the DataStore by inserting the log object
+ *              into the internal map keyed by the log's unique ID.
+ * Parameters:
+ *    log (Log*) - Pointer to the Log object to be added
+ * Returns:
+ *    None
+ */
+void DataStore::addLog(Log* log)
+{
+    m_logs[log->getLogId()] = log;
+}

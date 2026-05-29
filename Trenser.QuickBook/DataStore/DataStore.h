@@ -72,4 +72,5 @@ public:
 	void addPayment(Payment* payment);
 	User* getUserById(std::string& id);
 	void addNotification(Notification* notification);
+	void addLog(Log* log);
 };
