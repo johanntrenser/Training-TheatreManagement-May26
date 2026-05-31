@@ -21,7 +21,7 @@ Payment::Payment()
     m_amount(0.0),
     m_paymentMethod(Enums::PaymentMethod::UPI),
     m_status(Enums::PaymentStatus::PENDING),
-    m_timeStamp("")
+    m_timeStamp(std::time(nullptr))
 {}
 
 /*
@@ -40,7 +40,7 @@ Payment::Payment(const std::string& paymentId,
     Booking* booking,
     double amount,
     Enums::PaymentMethod paymentMethod,
-    const std::string& timeStamp)
+    time_t timeStamp)
     : m_paymentId(paymentId),
     m_booking(booking),
     m_amount(amount),
@@ -108,9 +108,9 @@ Enums::PaymentStatus Payment::getStatus() const
  * Function: Payment::getTimeStamp
  * Description: Retrieves the timestamp of the payment.
  * Returns:
- *    const std::string& - Payment timestamp
+ *    time_t - Payment timestamp
  */
-const std::string& Payment::getTimeStamp() const
+const time_t Payment::getTimeStamp() const
 {
     return m_timeStamp;
 }
@@ -184,11 +184,11 @@ void Payment::setStatus(Enums::PaymentStatus status)
  * Function: Payment::setTimeStamp
  * Description: Sets the timestamp of the payment.
  * Parameters:
- *    const std::string& timeStamp - New payment timestamp
+ *    const time_t timeStamp - New payment timestamp
  * Returns:
  *    void
  */
-void Payment::setTimeStamp(const std::string& timeStamp)
+void Payment::setTimeStamp(const time_t timeStamp)
 {
     m_timeStamp = timeStamp;
 }

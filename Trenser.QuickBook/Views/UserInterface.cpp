@@ -241,6 +241,7 @@ void UserInterface::theatreOwnerMenu()
 	cout << " 7.  List All Theatres" << endl;
 	cout << " 8.  Add Movie to Theatre" << endl;
 	cout << " 9.  View Movies in Theatre" << endl;
+	cout << " 10. Add show for movie" << endl;
 	cout << "10.  Update User Details" << endl;
 	cout << "11.  View Profile" << endl;
 	cout << "12.  Change Password" << endl;
@@ -2000,7 +2001,7 @@ void UserInterface::reactivateSeat(Screen* screen, const std::string& seatId)
 */
 void UserInterface::viewShowSeatLayout(const Show* show)
 {
-	const std::vector<std::vector<std::string>> layout = m_controller->viewShowSeatLayout(show);
+	const std::vector<std::vector<std::string>> layout = m_controller->getShowSeatLayout(show);
 	for (std::vector<std::vector<std::string>>::const_iterator rowIterator = layout.begin(); rowIterator != layout.end(); ++rowIterator)
 	{
 		for (std::vector<std::string>::const_iterator columnIterator = (*rowIterator).begin(); columnIterator != (*rowIterator).end(); ++columnIterator)
@@ -3650,6 +3651,49 @@ void UserInterface::listShowsForAMovie()
 }
 
 /*
+* Function Name : listShowsForAMovie
+* Description   : Displays available shows for the selected movie and
+*                 allows the user to choose a show for booking.
+* Parameters    :
+*                  movieId - Reference used to store the selected movie ID
+*                  showId  - Reference used to store the selected show ID
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus UserInterface::listShowsForAMovie(std::string& movieId, std::string& showId)
+{
+	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
+	displayAllMovies();
+	cout << "Enter the id of a movie to search shows for: ";
+	util::readValue(movieId);
+	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "Invalid movie id!" << endl;
+		util::pressEnter();
+		return Enums::ProcessStatus::FAILED;
+	}
+	const std::vector<const Show*> shows = m_controller->getShowsForMovie(movieId);
+	displayShowDetails(shows);
+	cout << "Select the show to book seats for: ";
+	util::readValue(showId);
+	bool isShowIdValid = false;
+	for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	{
+		if ((*iterator) != nullptr && (*iterator)->getShowId() == showId);
+		{
+			isShowIdValid = true;
+			break;
+		}
+	}
+	if (!isShowIdValid)
+	{
+		cout << "Invalid show id!" << endl;
+		util::pressEnter();
+		return Enums::ProcessStatus::FAILED;
+	}
+	return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
 * Function Name : UserInterface::viewActiveTicketDetails
 * Description   : Displays all active tickets for the authenticated user.
 *                 Active tickets are retrieved from the controller and shown
@@ -3870,8 +3914,8 @@ void UserInterface::displayPaymentStatus(const std::string& paymentId)
 	std::cout << "\nPayment ID   : " << paymentId;
 	std::cout << "\nBooking ID   : " << bookingId;
 	std::cout << "\nAmount       : " << amount;
-	std::cout << "\nMethod       : " << static_cast<int>(paymentMethod);
-	std::cout << "\nStatus       : " << static_cast<int>(paymentStatus);
+	std::cout << "\nMethod       : " << Enums::getPaymentMethodString(paymentMethod);
+	std::cout << "\nStatus       : " << Enums::getPaymentStatusString(paymentStatus);
 	std::cout << "\nPayment Date : " << paymentDate;
 }
 
@@ -3891,16 +3935,15 @@ void UserInterface::viewPaymentStatus()
 }
 
 /*
-Function Name : selectPaymentMethod
-Description   : Allows the user to select a payment method, validates
-				the input, and initiates payment through the controller.
-				Generates a ticket upon successful payment.
-Parameters    :
-				 bookingId - The unique identifier of the booking
-				 amount    - The payment amount
-Return Type   : void
+* Function Name : initiatePayment
+* Description   : Allows the user to choose a payment method and initiates
+*                 payment for the specified booking amount.
+* Parameters    :
+*                  bookingId - Unique identifier of the booking
+*                  amount    - Amount to be paid
+* Return Type   : void
 */
-void UserInterface::selectPaymentMethod(const std::string& bookingId, double amount)
+void UserInterface::initiatePayment(const std::string& bookingId, double amount)
 {
 	int choice = displayPaymentOptions();
 	Enums::PaymentMethod type = Enums::PaymentMethod::CREDIT_CARD;
@@ -3926,14 +3969,14 @@ void UserInterface::selectPaymentMethod(const std::string& bookingId, double amo
 	}
 	std::cout << "Payment method selected successfully.\n";
 	Enums::ProcessStatus result = Enums::ProcessStatus::FAILED;
-	//result = m_controller->initiatePayment(bookingId, type, amount);
+	result = m_controller->initiatePayment(bookingId, type, amount);
 	if (result == Enums::ProcessStatus::SUCCESS)
 	{
 		std::cout << "Payment completed and ticket generated.\n";
 	}
 	else
 	{
-		std::cout << "Payment failed.\n";
+		std::cout << "Payment failed. Please book again\n";
 	}
 }
 
@@ -4244,9 +4287,167 @@ void UserInterface::cancelBooking()
 		return;
 	}
 	Enums::ProcessStatus cancelStatus = m_controller->cancelBooking(bookingId);
-	std::string displayMessage = (cancelStatus == Enums::ProcessStatus::SUCCESS) ? "Booking cancelled successfully" : "Failed to cancel Booking";
+	std::string displayMessage = (cancelStatus == Enums::ProcessStatus::SUCCESS) ? "Booking cancelled successfully and payment refunded!" : "Failed to cancel Booking!";
 	cout << displayMessage;
 	util::pressEnter();
 	util::clear();
+}
+
+/*
+* Function Name : createBooking
+* Description   : Allows the customer to select a movie, choose a show,
+*                 select seats, create a booking, and initiate payment.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::createBooking()
+{
+	std::string showId, movieId;
+	Enums::ProcessStatus status = listShowsForAMovie(movieId, showId);
+	if (status == Enums::ProcessStatus::FAILED)
+	{
+		return;
+	}
+	const Show* show = m_controller->getShowById(showId);
+	if (show == nullptr)
+	{
+		cout << "Failed to get show seat layout!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	viewShowSeatLayout(show);
+	int numberOfSeats;
+	cout << "Enter the number of seats to book (1 - 10):";
+	util::readValue(numberOfSeats);
+	validateNumberOfSeats(numberOfSeats);
+	std::vector<std::string> bookedSeatIds;
+	selectSeats(numberOfSeats, bookedSeatIds, show);
+	const Booking* booking = m_controller->bookSelectedSeats(showId, bookedSeatIds);
+	std::string message = (booking == nullptr) ? "Failed to complete booking!" : "Booking completed Successfully!";
+	cout << message;
+	util::pressEnter();
+	std::string bookingId = "";
+	double amount = 0.0;
+	if (booking != nullptr)
+	{
+		bookingId = booking->getBookingId();
+		amount = booking->getAmount();
+		initiatePayment(bookingId, amount);
+	}
+}
+
+/*
+* Function Name : validateNumberOfSeats
+* Description   : Validates the number of seats entered by the user.
+*                 Ensures the value falls within the supported booking limit.
+* Parameters    :
+*                  numberOfSeats - Number of seats requested for booking
+* Return Type   : void
+*/
+void UserInterface::validateNumberOfSeats(int& numberOfSeats)
+{
+	bool isNumberOfSeatsValid = false;
+	while (!isNumberOfSeatsValid)
+	{
+		if (numberOfSeats > 0 && numberOfSeats <= 10)
+		{
+			isNumberOfSeatsValid = true;
+		}
+		else
+		{
+			cout << "Please enter a valid number of seats: ";
+			util::readValue(numberOfSeats);
+		}
+	}
+}
+
+/*
+* Function Name : selectSeats
+* Description   : Allows the user to select seats for booking and validates
+*                 seat availability before adding them to the booking list.
+* Parameters    :
+*                  numberOfSeats - Number of seats to be selected
+*                  bookedSeatIds - Collection of selected seat IDs
+*                  show          - Show for which seats are being booked
+* Return Type   : void
+*/
+void UserInterface::selectSeats(int numberOfSeats, std::vector<std::string>& bookedSeatIds, const Show* show)
+{
+	const ShowSeatAvailability* seatAvailability = show->getSeatAvailability();
+	if (seatAvailability == nullptr)
+	{
+		cout << "Failed to select seats!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
+	const std::map<std::string, Enums::BookingStatus>& seatMap = seatAvailability->getSeatAvailabilityMap();
+	std::string seatId;
+	for (int seatIndex = 0; seatIndex < numberOfSeats; ++seatIndex)
+	{
+		cout << "Enter the seat id of seat number " << seatIndex + 1 << ": ";
+		util::readValue(seatId);
+		checkSelectedSeatAvailability(seatMap, seatId, bookedSeatIds);
+		bookedSeatIds.push_back(seatId);
+	}
+}
+
+/*
+* Function Name : checkSelectedSeatAvailability
+* Description   : Validates whether a selected seat is available for booking.
+*                 Prompts the user until an available seat is selected.
+* Parameters    :
+*                  seatMap - Seat availability map of the show
+*                  seatId  - Seat identifier selected by the user
+* Return Type   : void
+*/
+void UserInterface::checkSelectedSeatAvailability(const std::map<std::string, Enums::BookingStatus> seatMap, std::string& seatId, const std::vector<std::string>& bookedSeatIds)
+{
+	bool isSeatAvailable = false;
+	while (!isSeatAvailable)
+	{
+		std::map<std::string, Enums::BookingStatus>::const_iterator seat = seatMap.find(seatId);
+		if (seat == seatMap.end())
+		{
+			cout << "Invalid seat id. Please select again: ";
+			util::readValue(seatId);
+		}
+		else if (isSeatAlreadySelected(seatId, bookedSeatIds))
+		{
+			cout << "The seat is already selected for booking! Please select again:";
+			util::readValue(seatId);
+		}
+		else if (seat->second != Enums::BookingStatus::NOT_BOOKED)
+		{
+			cout << "The selected seat is not available for booking! Please select again:";
+			util::readValue(seatId);
+		}
+		else
+		{
+			isSeatAvailable = true;
+		}
+	}
+}
+
+/*
+* Function Name : isSeatAlreadySelected
+* Description   : Checks whether the specified seat has already been
+*                 selected by the user during the current booking process.
+* Parameters    :
+*                  seatId        - Seat identifier to validate
+*                  bookedSeatIds - Collection of already selected seat IDs
+* Return Type   : bool
+*/
+bool UserInterface::isSeatAlreadySelected(const std::string& seatId, const std::vector<std::string>& bookedSeatIds)
+{
+	for (std::vector<std::string>::const_iterator iterator = bookedSeatIds.begin(); iterator != bookedSeatIds.end(); ++iterator)
+	{
+		if (*iterator == seatId)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
