@@ -176,7 +176,7 @@ std::string Notification::serialize()
     }
     result += m_message + config::delimeter::comma +
         Enums::getNotificationStatusString(m_status) + config::delimeter::comma +
-        m_time;
+        std::to_string(m_time);
     return result;
 }
 
