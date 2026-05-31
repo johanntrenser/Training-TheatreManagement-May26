@@ -124,12 +124,13 @@ public:
 	void updateShow();
 	Enums::ProcessStatus getNewDateAndTime(time_t& time);
 	void listShowsForAMovie();
+	Enums::ProcessStatus listShowsForAMovie(std::string& movieId, std::string& showId);
 	void viewActiveTicketDetails();
 	void viewAllTickets();
 	void viewTicketHistory();
 	void viewTicketDetails(const std::vector<const Ticket*>& tickets);
 	void viewTicketStatus();
-	void selectPaymentMethod(const std::string& bookingId, double amount);
+	void initiatePayment(const std::string& bookingId, double amount);
 	Enums::ProcessStatus handleCardPayment(Enums::PaymentMethod type);
 	Enums::ProcessStatus handleUPIPayment(Enums::PaymentMethod type);
 	int displayPaymentOptions();
@@ -142,4 +143,9 @@ public:
 	void displayBookingDetails();
 	void displayBookingDetail(const Booking* booking);
 	void cancelBooking();
+	void createBooking();
+	void validateNumberOfSeats(int& numberOfSeats);
+	void selectSeats(int numberOfSeats, std::vector<std::string>& bookedSeatIds, const Show* show);
+	void checkSelectedSeatAvailability(const std::map<std::string, Enums::BookingStatus> seatMap, std::string& seatId, const std::vector<std::string>& bookedSeatIds);
+	bool isSeatAlreadySelected(const std::string& seatId, const std::vector<std::string>& bookedSeatIds);
 };

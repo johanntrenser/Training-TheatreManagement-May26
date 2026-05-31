@@ -224,7 +224,7 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
         std::vector<Seat*> rows = *(row);
         for (std::vector<Seat*>::iterator seat = rows.begin(); seat != rows.end(); ++seat)
         {
-            seatAvailabilityMap[(*seat)->getSeatId()] = Enums::BookingStatus::PENDING;
+            seatAvailabilityMap[(*seat)->getSeatId()] = Enums::BookingStatus::NOT_BOOKED;
         }
     }
     ShowSeatAvailability* showSeatAvailability = Factory::getObject<ShowSeatAvailability>(generateShowSeatAvailabilityId(), show, seatAvailabilityMap);
@@ -480,4 +480,16 @@ Enums::ProcessStatus ShowManagementService::setShowStatusById(const std::string&
     }
     show->setShowStatus(status);
     return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+* Function Name : getShowById
+* Description   : Retrieves a show using the provided show ID.
+* Parameters    :
+*                  showId - Unique identifier of the show
+* Return Type   : const Show*
+*/
+const Show* ShowManagementService::getShowById(const std::string& showId)
+{
+    return m_dataStore.getShowById(showId);
 }

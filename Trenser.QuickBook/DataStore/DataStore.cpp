@@ -519,3 +519,70 @@ Booking* DataStore::getBookingByIdForUpdation(const std::string& bookingId)
     }
     return iterator->second;
 }
+
+/*
+* Function Name : getSeatById
+* Description   : Retrieves a seat using the provided seat ID.
+* Parameters    :
+*                  seatId - Unique identifier of the seat
+* Return Type   : Seat*
+*/
+Seat* DataStore::getSeatById(const std::string seatId)
+{
+    std::map<std::string, Seat*>::const_iterator iterator = m_seats.find(seatId);
+    if (iterator == m_seats.end())
+    {
+        return nullptr;
+    }
+    return iterator->second;
+}
+
+/*
+* Function Name : addBooking
+* Description   : Adds a booking object to the datastore.
+* Parameters    :
+*                  booking - Pointer to the booking object to be stored
+* Return Type   : void
+*/
+void DataStore::addBooking(Booking* booking)
+{
+    m_bookings[booking->getBookingId()] = booking;
+}
+
+/*
+* Function Name : getTicketForBooking
+* Description   : Retrieves the ticket associated with the provided booking.
+*                 Searches for the payment linked to the booking and returns
+*                 the corresponding ticket if found.
+* Parameters    :
+*                  booking - Booking whose ticket is to be retrieved
+* Return Type   : const Ticket*
+*/
+const Ticket* DataStore::getTicketForBooking(const Booking* booking)
+{
+    Payment* payment = nullptr;
+    std::string bookingId = booking->getBookingId();
+    for (std::map<std::string, Payment*>::iterator iterator = m_payments.begin(); iterator != m_payments.end(); ++iterator)
+    {
+        if (iterator->second != nullptr)
+        {
+            Booking* booking = iterator->second->getBooking();
+            if (booking != nullptr && booking->getBookingId() == bookingId)
+            {
+                payment = iterator->second;
+            }
+        }
+    }
+    if (payment == nullptr)
+    {
+        return nullptr;
+    }
+    for (std::map<std::string, Ticket*>::iterator iterator = m_tickets.begin(); iterator != m_tickets.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getPayment() && iterator->second->getPayment()->getPaymentId() == payment->getPaymentId())
+        {
+            return iterator->second;
+        }
+    }
+    return nullptr;
+}

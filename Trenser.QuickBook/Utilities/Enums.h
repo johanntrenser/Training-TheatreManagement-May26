@@ -104,10 +104,10 @@ namespace Enums {
     {
         UPI,
         CREDIT_CARD,
-        DEBIT_CARD
+        DEBIT_CARD,
+        UNKNOWN
     };
 
-    //Represent the Result of Process Execution.
     enum class ProcessStatus
     {
         FAILED,
@@ -588,6 +588,38 @@ namespace Enums {
         default:
             return "UNKNOWN";
         }
+    }
+
+    inline std::string getPaymentMethodString(PaymentMethod method)
+    {
+        switch (method)
+        {
+        case PaymentMethod::CREDIT_CARD:
+            return "CREDIT_CARD";
+        case PaymentMethod::DEBIT_CARD:
+            return "DEBIT_CARD";
+        case PaymentMethod::UPI:
+            return "UPI";
+        default:
+            return "UNKNOWN";
+        }
+    }
+
+    inline PaymentMethod getPaymentMethod(const std::string& input)
+    {
+        if (input == "CREDIT_CARD")
+        {
+            return PaymentMethod::CREDIT_CARD;
+        }
+        if (input == "DEBIT_CARD")
+        {
+            return PaymentMethod::DEBIT_CARD;
+        }
+        if (input == "UPI")
+        {
+            return PaymentMethod::UPI;
+        }
+        return PaymentMethod::UNKNOWN;
     }
 
 }
