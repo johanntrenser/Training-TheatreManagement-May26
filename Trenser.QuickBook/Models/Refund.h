@@ -17,24 +17,23 @@ private:
     std::string m_refundId;
     Ticket* m_bookedTicket;
     double m_refundAmount;
-    std::string m_time;
-    int m_status; // enum placeholder
+    time_t m_time;
+    Enums::RefundStatus m_status;
 public:
     Refund();
     Refund(const std::string& refundId,
         Ticket* bookedTicket,
         double refundAmount,
-        const std::string& time,
-        int status);
+        time_t time);
     const std::string& getRefundId() const;
     Ticket* getBookedTicket() const;
     double getRefundAmount() const;
-    const std::string& getTime() const;
-    int getStatus() const;
+    time_t getTime() const;
+    Enums::RefundStatus getStatus() const;
     void setRefundId(const std::string& id);
     void setBookedTicket(Ticket* bookedTicket);
     void setRefundAmount(double refundAmount);
-    void setTime(const std::string& time);
-    void setStatus(int status);
+    void setTime(time_t time);
+    void setStatus(Enums::RefundStatus status);
+    std::string serialize();
 };
-

@@ -77,3 +77,15 @@ void Log::setDescription(const std::string& description)
 {
     m_description = description;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Log object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Log::serialize()
+{
+    return m_logId + config::delimeter::comma +
+        m_description;
+}

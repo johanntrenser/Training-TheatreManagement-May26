@@ -158,3 +158,22 @@ void Notification::setTime(const std::string& time)
 {
     m_time = time;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Notification object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Notification::serialize()
+{
+    std::string result = m_notificationId + config::delimeter::comma;
+    if (m_receiver)
+    {
+        result += m_receiver->getUserId() + config::delimeter::comma;
+    }
+    result += m_message + config::delimeter::comma +
+        Enums::getNotificationStatusString(m_status) + config::delimeter::comma +
+        m_time;
+    return result;
+}

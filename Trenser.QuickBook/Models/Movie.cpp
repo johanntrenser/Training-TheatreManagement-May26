@@ -185,3 +185,19 @@ void Movie::setStatus(Enums::MovieStatus status)
 {
     m_status = status;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Movie object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Movie::serialize()
+{
+    return m_movieId + config::delimeter::comma +
+        m_title + config::delimeter::comma +
+        m_language + config::delimeter::comma +
+        m_genre + config::delimeter::comma +
+        std::to_string(m_duration) + config::delimeter::comma +
+        Enums::getMovieStatusString(m_status);
+}

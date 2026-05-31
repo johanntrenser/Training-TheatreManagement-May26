@@ -34,6 +34,9 @@
     <Filter Include="Views">
       <UniqueIdentifier>{c324e043-7d8e-4719-9945-0ff34b66fe75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Files">
+      <UniqueIdentifier>{0cd57e89-7ce5-46c8-8634-3ddaa35e7041}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Trenser.QuickBook.cpp">
@@ -153,6 +156,12 @@
     <ClCompile Include="Services\NotificationManagementService.cpp">
       <Filter>Services</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities\ApplicationConfig.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\FileManagement.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h">
@@ -269,5 +278,49 @@
     <ClInclude Include="Services\NotificationManagementService.h">
       <Filter>Services</Filter>
     </ClInclude>
+    <ClInclude Include="Utilities\ApplicationConfig.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\FileManagement.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\Booking.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Log.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Movie.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Notification.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Payment.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Refund.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Screen.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Seat.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Show.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Theatre.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\Ticket.csv">
+      <Filter>Files</Filter>
+    </None>
+    <None Include="Files\User.csv">
+      <Filter>Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

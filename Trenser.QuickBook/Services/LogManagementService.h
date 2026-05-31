@@ -8,13 +8,20 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <fstream>
+#include <map>
+#include <sstream>
+#include "FileManagement.h"
+#include "ApplicationConfig.h"
 #include "DataStore.h"
 
 class LogManagementService
 {
 private:
 	DataStore& m_dataStore;
+	const std::string& PATH = config::File::LOG_FILEPATH;
 public:
 	LogManagementService();
+	void saveLogData();
 };
 

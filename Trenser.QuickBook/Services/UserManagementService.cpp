@@ -1,5 +1,4 @@
 #include "UserManagementService.h"
-
 /*
      * Function: UserManagementService
      * Description: Default constructor that initializes the user management
@@ -9,6 +8,7 @@
      * Returns: None
      */
 UserManagementService::UserManagementService()
+    : m_dataStore(DataStore::getInstance())
 {
 }
 
@@ -120,4 +120,25 @@ int UserManagementService::viewUserStatus(const std::string& userId) const
 void UserManagementService::changePassword(const std::string& userId,
     const std::string& newPassword)
 {
+}
+
+/*
+ * Function: UserManagementService::saveData
+ * Description: Saves all user data from the DataStore into a CSV file.
+ *              Encrypts passwords before writing and overwrites existing file content.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened)
+ */
+void UserManagementService::saveUserData()
+{
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::USER_HEADER);
+    const std::map<std::string, User*> users = m_dataStore.getUsers();
+    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+    {
+        lines.push_back((iterator->second)->serialize());
+    }
+    FileManagement::writeLines(std::string(config::File::USER_FILEPATH), lines);
 }

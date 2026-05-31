@@ -148,3 +148,26 @@ Theatre* TheatreManagementService::searchByTheatreName(const std::string& name) 
 {
     return nullptr;
 }
+
+/*
+ * Function: TheatreManagementService::saveTheatreData
+ * Description: Saves all theatre data from the DataStore into a CSV file.
+ *              Includes theatre details, status, associated screens, and movies.
+ *              Overwrites existing file content.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened)
+ */
+void TheatreManagementService::saveTheatreData()
+{
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::THEATRE_HEADER);
+    const std::map<std::string, Theatre*> theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        lines.push_back((iterator->second)->serialize());
+    }
+    FileManagement::writeLines(std::string(config::File::THEATRE_FILEPATH), lines);
+}
+

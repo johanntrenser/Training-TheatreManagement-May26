@@ -39,5 +39,5 @@ public:
     void setPaymentMethod(Enums::PaymentMethod paymentMethod);
     void setStatus(Enums::PaymentStatus status);
     void setTimeStamp(const std::string& timeStamp);
+    std::string serialize();
 };
-

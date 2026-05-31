@@ -9,6 +9,7 @@
 #pragma once
 #include <string>
 #include "Enums.h"
+#include "ApplicationConfig.h"
 
 class User
 {
@@ -42,4 +43,8 @@ public:
     void setPhoneNumber(const std::string& phoneNumber);
     void setUserType(Enums::UserType type);
     void setStatus(Enums::UserStatus status);
+    void reverseString(std::string& password);
+    std::string& encryption(std::string& password);
+    std::string& decryption(std::string& password);
+    std::string serialize();
 };

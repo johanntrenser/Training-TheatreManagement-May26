@@ -9,6 +9,7 @@
 #pragma once
 #include <string>
 #include "Enums.h"
+#include "ApplicationConfig.h"
 
 class Movie
 {
@@ -38,7 +39,5 @@ public:
     void setGenre(const std::string& genre);
     void setDuration(int duration);
     void setStatus(Enums::MovieStatus status);
+    std::string serialize();
 };
-
-
-
