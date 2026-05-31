@@ -23,5 +23,11 @@ public:
 	const Booking* getBookingById(const std::string& bookingId) const;
 	const std::vector<const Booking*> getCancellableCustomerBookings() const;
 	Enums::ProcessStatus cancelBooking(const std::string& bookingId);
+	const Booking* bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectSeatIds);
+	const std::string generateBookingId();
+	void getSeatsFromSeatIds(std::vector<Seat*>& seats, const std::vector<std::string>& seatIds);
+	double getBookingAmount(const std::vector<Seat*>& seats);
+	Enums::ProcessStatus cancelTicketAndProcessRefund(const Booking* booking);
+	void cancelBookingForFailedPayment(const std::string& bookingId);
 };
 

@@ -65,36 +65,42 @@ Payment* PaymentManagementService::getPaymentById(const std::string& paymentId)
 }
 
 /*
- * Function: PaymentManagementService::initiatePayment
- * Description: Initiates a payment process for a given booking. Generates a unique payment ID,
- *              creates a Payment object, stores it in the DataStore, and triggers ticket generation
- *              for the authenticated user. Validates booking existence before proceeding.
- * Parameters:
- *    bookingId     - Unique identifier of the booking for which payment is to be initiated.
- *    paymentMethod - Enum value representing the chosen payment method (e.g., CARD, UPI).
- *    amount        - The payment amount to be processed.
- * Returns:
- *    Enums::ProcessStatus::SUCCESS if the payment and ticket generation were successful.
- *    Enums::ProcessStatus::FAILED if the booking does not exist or ticket generation fails.
- */
+* Function Name : initiatePayment
+* Description   : Creates a payment for the specified booking, generates
+*                 the associated ticket, and updates the booking status
+*                 upon successful completion. Rolls back the booking if
+*                 payment processing or ticket generation fails.
+* Parameters    :
+*                  bookingId     - Unique identifier of the booking
+*                  paymentMethod - Selected payment method
+*                  amount        - Payment amount
+* Return Type   : Enums::ProcessStatus
+*/
 Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount)
 {
     TicketManagementService ticketManagementService;
-    Booking* booking = nullptr;
-    //Booking* booking = m_dataStore.getBookingById(bookingId);
+    BookingManagementService bookingManagementService;
+    Booking* booking = m_dataStore.getBookingByIdForUpdation(bookingId);
     if (booking == nullptr)
     {
         return Enums::ProcessStatus::FAILED;
     }
     std::string paymentId = generatePaymentId();
-    Payment* payment = Factory::getObject<Payment>(paymentId, booking, amount, paymentMethod, "nil"); //add timestamp here
-    m_dataStore.addPayment(payment);
+    Payment* payment = Factory::getObject<Payment>(paymentId, booking, amount, paymentMethod, std::time(nullptr));
+    if (payment == nullptr)
+    {
+        bookingManagementService.cancelBookingForFailedPayment(bookingId);
+        return Enums::ProcessStatus::FAILED;
+    }
     User* currentUser = m_dataStore.getAuthenticatedUser();
     Enums::ProcessStatus status = ticketManagementService.generateTicket(payment, currentUser);
     if (status == Enums::ProcessStatus::FAILED)
     {
+        bookingManagementService.cancelBookingForFailedPayment(booking->getBookingId());
         return Enums::ProcessStatus::FAILED;
     }
+    m_dataStore.addPayment(payment);
+    booking->setStatus(Enums::BookingStatus::COMPLETED);
     return Enums::ProcessStatus::SUCCESS;
 }
 
@@ -110,7 +116,7 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
  *    amount        - Reference double to store the payment amount.
  *    paymentMethod - Reference enum to store the payment method used.
  *    paymentStatus - Reference enum to store the current status of the payment.
- *    paymentDate   - Reference string to store the payment date.
+ *    paymentDate   - time_t to store the payment date.
  * Returns:
  *    Enums::ProcessStatus::SUCCESS if the payment exists, belongs to the current user,
  *    and details were successfully retrieved.
@@ -171,13 +177,6 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Pay
     Booking* booking = payment->getBooking();
     if (booking == nullptr)
     {
-        return Enums::ProcessStatus::FAILED;
-    }
-    BookingManagementService bookingManagementService;
-    Enums::ProcessStatus status = Enums::ProcessStatus::FAILED;
-    //status =  bookingManagementService.cancelBooking(booking);
-    if(status == Enums::ProcessStatus::FAILED)
-    { 
         return Enums::ProcessStatus::FAILED;
     }
     Refund* refund = Factory::getObject<Refund>(generateRefundId(), ticket, payment->getAmount(), std::time(0));

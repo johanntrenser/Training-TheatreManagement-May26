@@ -1,4 +1,8 @@
+#include <sstream>
+#include <iomanip>
 #include "BookingManagementService.h"
+#include "Factory.h"
+#include "TicketManagementService.h"
 
 /*
  * Function: BookingManagementService
@@ -216,7 +220,173 @@ Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& 
     {
         if ((*iterator) != nullptr)
         {
-            seatMap[(*iterator)->getSeatId()] = Enums::BookingStatus::PENDING;
+            seatMap[(*iterator)->getSeatId()] = Enums::BookingStatus::NOT_BOOKED;
+            ++numberOfSeatsCancelled;
+        }
+    }
+    Enums::ProcessStatus ticketCancellationAndRefundStatus = Enums::ProcessStatus::FAILED;
+    ticketCancellationAndRefundStatus = cancelTicketAndProcessRefund(booking);
+    if (numberOfBookedSeats == numberOfSeatsCancelled && ticketCancellationAndRefundStatus == Enums::ProcessStatus::SUCCESS)
+    {
+        showSeatAvailability->setSeatAvailabilityMap(seatMap);
+        booking->setStatus(Enums::BookingStatus::CANCELLED);
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+* Function Name : bookSelectedSeats
+* Description   : Creates a booking for the selected seats of a show.
+*                 Marks seats as booked, calculates the booking amount,
+*                 creates a Booking object, and stores it in the datastore.
+* Parameters    :
+*                  showId          - Unique identifier of the show
+*                  selectedSeatIds - List of selected seat identifiers
+* Return Type   : const Booking*
+*/
+const Booking* BookingManagementService::bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds)
+{
+    Show* show = m_dataStore.getShowByIdForUpdation(showId);
+    if (show == nullptr)
+    {
+        return nullptr;
+    }
+    ShowSeatAvailability* showSeatAvailability = show->getSeatAvailability();
+    if (showSeatAvailability == nullptr)
+    {
+        return nullptr;
+    }
+    std::map<std::string, Enums::BookingStatus> seatMap = showSeatAvailability->getSeatAvailabilityMap();
+    for (std::vector<std::string>::const_iterator iterator = selectedSeatIds.begin(); iterator != selectedSeatIds.end(); ++iterator)
+    {
+        seatMap[(*iterator)] = Enums::BookingStatus::CONFIRMED;
+    }
+    std::vector<Seat*> seats;
+    getSeatsFromSeatIds(seats, selectedSeatIds);
+    User* customer = m_dataStore.getAuthenticatedUser();
+    double amount = getBookingAmount(seats);
+    Booking* booking = Factory::getObject<Booking>(generateBookingId(), customer, show, seats, Enums::BookingStatus::PENDING, amount);
+    if (booking != nullptr)
+    {
+        m_dataStore.addBooking(booking);
+        showSeatAvailability->setSeatAvailabilityMap(seatMap);
+        return booking;
+    }
+    return nullptr;
+}
+
+/*
+* Function Name : generateBookingId
+* Description   : Generates a unique booking ID for a new booking.
+* Parameters    : None
+* Return Type   : const std::string
+*/
+const std::string BookingManagementService::generateBookingId()
+{
+    const std::map<std::string, Booking*>& bookings = m_dataStore.getBookings();
+    int idNumber = static_cast<int>(bookings.size()) + 1;
+    std::ostringstream buffer;
+    buffer << "BKG" << std::setw(3) << std::setfill('0') << idNumber;
+    return buffer.str();
+}
+
+/*
+* Function Name : getSeatsFromSeatIds
+* Description   : Retrieves Seat objects corresponding to the provided seat IDs.
+* Parameters    :
+*                  seats   - Output vector to store retrieved Seat pointers
+*                  seatIds - List of seat identifiers
+* Return Type   : void
+*/
+void BookingManagementService::getSeatsFromSeatIds(std::vector<Seat*>& seats, const std::vector<std::string>& seatIds)
+{
+    for (std::vector<std::string>::const_iterator iterator = seatIds.begin(); iterator != seatIds.end(); ++iterator)
+    {
+        Seat* seat = m_dataStore.getSeatById(*iterator);
+        if (seat != nullptr)
+        {
+            seats.push_back(seat);
+        }
+    }
+}
+
+/*
+* Function Name : getBookingAmount
+* Description   : Calculates the total booking amount for the provided seats.
+* Parameters    :
+*                  seats - Collection of seats included in the booking
+* Return Type   : double
+*/
+double BookingManagementService::getBookingAmount(const std::vector<Seat*>& seats)
+{
+    double amount = 0.0;
+    for (std::vector<Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
+    {
+        if ((*iterator) != nullptr)
+        {
+            amount += (*iterator)->getSeatAmount();
+        }
+    }
+    return amount;
+}
+
+/*
+* Function Name : cancelTicketAndProcessRefund
+* Description   : Cancels the ticket associated with the provided booking
+*                 and processes the corresponding refund.
+* Parameters    :
+*                  booking - Booking whose ticket must be cancelled
+*                            and refunded
+* Return Type   : Enums::ProcessStatus
+*/
+Enums::ProcessStatus BookingManagementService::cancelTicketAndProcessRefund(const Booking* booking)
+{
+    TicketManagementService ticketManagementService;
+    const Ticket* ticket = m_dataStore.getTicketForBooking(booking);
+    if (ticket == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    std::string ticketId = ticket->getTicketId();
+    return ticketManagementService.cancelTicket(ticketId);
+}
+
+/*
+* Function Name : cancelBookingForFailedPayment
+* Description   : Cancels a booking created during the booking workflow
+*                 when payment processing or ticket generation fails.
+*                 Restores seat availability and updates the booking status.
+* Parameters    :
+*                  bookingId - Unique identifier of the booking
+* Return Type   : void
+*/
+void BookingManagementService::cancelBookingForFailedPayment(const std::string& bookingId)
+{
+    Booking* booking = m_dataStore.getBookingByIdForUpdation(bookingId);
+    if (booking == nullptr)
+    {
+        return;
+    }
+    Show* show = booking->getShow();
+    if (show == nullptr)
+    {
+        return;
+    }
+    ShowSeatAvailability* showSeatAvailability = show->getSeatAvailability();
+    if (showSeatAvailability == nullptr)
+    {
+        return;
+    }
+    std::map<std::string, Enums::BookingStatus> seatMap = showSeatAvailability->getSeatAvailabilityMap();
+    const std::vector<Seat*>& bookedSeats = booking->getBookedSeats();
+    int numberOfBookedSeats = bookedSeats.size();
+    int numberOfSeatsCancelled = 0;
+    for (std::vector<Seat*>::const_iterator iterator = bookedSeats.begin(); iterator != bookedSeats.end(); ++iterator)
+    {
+        if ((*iterator) != nullptr)
+        {
+            seatMap[(*iterator)->getSeatId()] = Enums::BookingStatus::NOT_BOOKED;
             ++numberOfSeatsCancelled;
         }
     }
@@ -224,8 +394,6 @@ Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& 
     {
         showSeatAvailability->setSeatAvailabilityMap(seatMap);
         booking->setStatus(Enums::BookingStatus::CANCELLED);
-        return Enums::ProcessStatus::SUCCESS;
     }
-    return Enums::ProcessStatus::FAILED;
 }
 

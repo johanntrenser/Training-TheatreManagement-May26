@@ -73,7 +73,7 @@ Enums::ProcessStatus TicketManagementService::generateTicket(Payment* payment, U
 	if (ticket)
 	{
 		m_dataStore.addTicket(ticket);
-		Enums::ProcessStatus::SUCCESS;
+		return Enums::ProcessStatus::SUCCESS;
 	}
 	return Enums::ProcessStatus::FAILED;
 }
@@ -184,9 +184,8 @@ Enums::ProcessStatus TicketManagementService::cancelTicket(const std::string& ti
 	}
 	Payment* payment = ticket->getPayment();
 	Enums::ProcessStatus status = Enums::ProcessStatus::FAILED;
-	PaymentManagementService* paymentManagementService = new PaymentManagementService();
-	//status = paymentManagementService->cancelPayment(payment);
-	delete paymentManagementService;
+	PaymentManagementService paymentManagementService;
+	status = paymentManagementService.refundPayment(ticket, payment);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		return Enums::ProcessStatus::SUCCESS;

@@ -997,7 +997,7 @@ Enums::ProcessStatus Controller::reactivateSeat(Screen* screen, const std::strin
 *                  show - Pointer to the Show object whose seat layout is to be retrieved
 * Return Type   : const std::vector<std::vector<std::string>>
 */
-const std::vector<std::vector<std::string>> Controller::viewShowSeatLayout(const Show* show)
+const std::vector<std::vector<std::string>> Controller::getShowSeatLayout(const Show* show)
 {
     return m_seatManagementService->getShowsSeatLayout(show);
 }
@@ -1430,6 +1430,32 @@ Enums::TicketStatus Controller::viewTicketStatus(const std::string& ticketId)
     return m_ticketManagementService->viewTicketStatus(ticketId);
 }
 
+/*
+* Function Name : getShowById
+* Description   : Retrieves a show using the provided show ID.
+* Parameters    :
+*                  showId - Unique identifier of the show
+* Return Type   : const Show*
+*/
+const Show* Controller::getShowById(const std::string& showId)
+{
+    return m_showManagementService->getShowById(showId);
+}
+
+/*
+* Function Name : bookSelectedSeats
+* Description   : Creates a booking for the selected seats in the specified show.
+*                 Updates seat availability and returns the created booking.
+* Parameters    :
+*                  showId          - Unique identifier of the show
+*                  selectedSeatIds - List of selected seat identifiers
+* Return Type   : const Booking*
+*/
+const Booking* Controller::bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds)
+{
+    return m_bookingManagementService->bookSelectedSeats(showId, selectedSeatIds);
+}
+  
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all

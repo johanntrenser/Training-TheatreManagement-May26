@@ -82,4 +82,7 @@ public:
 	//const std::map < std::string, Ticket*>& getTickets() const;
 	const Booking* getBookingById(const std::string& bookingId);
 	Booking* getBookingByIdForUpdation(const std::string& bookingId);
+	Seat* getSeatById(const std::string seatId);
+	void addBooking(Booking* booking);
+	const Ticket* getTicketForBooking(const Booking* booking);
 };

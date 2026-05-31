@@ -131,7 +131,7 @@ public:
 	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
 	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
 	Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
-	const std::vector<std::vector<std::string>> viewShowSeatLayout(const Show* show);
+	const std::vector<std::vector<std::string>> getShowSeatLayout(const Show* show);
 	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 	Enums::ProcessStatus updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name);
 	Enums::ProcessStatus deactivateScreen(const std::string& theatreId, const std::string& screenId);
@@ -143,5 +143,7 @@ public:
 	const std::vector<const Ticket*> viewTicketHistory();
 	Enums::UserType getAuthenticatedUserType() const;
 	Enums::TicketStatus viewTicketStatus(const std::string& ticketId);
+	const Show* getShowById(const std::string& showId);
+	const Booking* bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds);
 	~Controller();
 };
