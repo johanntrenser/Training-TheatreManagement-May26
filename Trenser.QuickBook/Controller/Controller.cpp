@@ -172,6 +172,35 @@ void Controller::logout()
 }
 
 /*
+ * Function: Controller::loadDataFromFile
+ * Description: Loads all application data from persistent storage into memory.
+ *              Delegates the responsibility of loading each entity type to its
+ *              corresponding management service. This ensures that users, tickets,
+ *              theatres, shows, seats, screens, refunds, payments, notifications,
+ *              movies, logs, and bookings are all reconstructed from CSV files
+ *              and restored into the DataStore with their associations.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if any underlying file cannot be opened or read)
+ */
+void Controller::loadDataFromFile()
+{
+    m_userManagementService->loadUserData();
+    m_ticketManagementService->loadTicketData();
+    m_theatreManagementService->loadTheatreData();
+    m_showManagementService->loadShowData();
+    m_seatManagementService->loadSeatData();
+    m_ScreenManagementService->loadScreenData();
+    m_refundManagementService->loadRefundData();
+    m_paymentManagementService->loadPaymentData();
+    m_notificationManagementService->loadtNotificationData();
+    m_movieManagementService->loadMovieData();
+    m_logManagementService->loadLogData();
+    m_bookingManagementService->loadBookingData();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

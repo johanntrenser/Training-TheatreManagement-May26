@@ -292,6 +292,16 @@ void Theatre::setMovies(const std::vector<Movie*>& movies)
     m_movies = movies;
 }
 
+/*
+ * Function: Theatre::addMovieToTheatre
+ * Description: Adds a Movie object to the Theatre’s movie list.
+ *              The Movie pointer is appended to the internal vector
+ *              of movies associated with the Theatre.
+ * Parameters:
+ *    movie - pointer to the Movie object to be added
+ * Returns:
+ *    None
+ */
 void Theatre::addMovieToTheatre(Movie* movie)
 {
     m_movies.push_back(movie);
@@ -331,4 +341,35 @@ std::string Theatre::serialize()
             }
         }
     return result;
+}
+
+
+/*
+ * Function: Theatre::deserialize
+ * Description: Converts a single CSV-formatted line into a Theatre object.
+ *              Extracts fields such as theatreId, name, city, address,
+ *              phoneNumber, email, theatreOwnerId, status, screenIds, and movieIds.
+ *              The TheatreOwner pointer and associations with Screens and Movies
+ *              are initialized to nullptr or left empty, and can be restored later
+ *              by higher-level services.
+ * Parameters:
+ *    line - reference to a CSV-formatted string containing theatre data
+ * Returns:
+ *    Pointer to a newly constructed Theatre object
+ */
+Theatre* Theatre::deserialize(std::string& line)
+{
+    std::string theatreId, name, city, address, phoneNumber, email, theatreOwnerId, status, screenIds, movieIds;
+    std::stringstream lineStream(line);
+    getline(lineStream, theatreId, ',');
+    getline(lineStream, name, ',');
+    getline(lineStream, city, ',');
+    getline(lineStream, address, ',');
+    getline(lineStream, phoneNumber, ',');
+    getline(lineStream, email, ',');
+    getline(lineStream, theatreOwnerId, ',');
+    getline(lineStream, status, ',');
+    getline(lineStream, screenIds, ',');
+    getline(lineStream, movieIds, ',');
+    return new Theatre(theatreId, name, city, address, phoneNumber, email, nullptr);
 }

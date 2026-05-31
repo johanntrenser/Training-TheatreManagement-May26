@@ -11,6 +11,7 @@
 #pragma once
 #include <fstream>
 #include <map>
+#include <vector>
 #include <sstream>
 #include "FileManagement.h"
 #include "DataStore.h"
@@ -24,5 +25,5 @@ private:
 public:
 	SeatManagementService();
 	void saveSeatData();
+	void loadSeatData();
 };
-

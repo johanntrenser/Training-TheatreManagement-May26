@@ -241,3 +241,23 @@ std::string Show::serialize()
         m_seatAvailability->getShowAvailabiltyId() + config::delimeter::comma +
         Enums::getShowStatusString(m_showStatus);
 }
+
+Show* Show::deserialize(std::string& line)
+{
+    std::string showId, movieId, screenId, startTime, endTime, seatAvailabilityId, status,year,dash,space,month,day,hour,colon,minute;
+    std::stringstream lineStream(line);
+    getline(lineStream, showId, ',');
+    getline(lineStream, movieId, ',');
+    getline(lineStream, screenId, ',');
+    getline(lineStream, startTime, ',');
+    getline(lineStream, endTime, ',');
+    getline(lineStream, seatAvailabilityId, ',');
+    getline(lineStream, status, ',');
+    std::istringstream stringStreamStartTime(startTime);
+    std::istringstream stringStreamEndTime(endTime);
+    stringStreamStartTime >> year >> dash >> month >> dash >> day >> space >> hour >> colon >> minute;
+    time_t convertedStartTime = util::createTime(stoi(year), stoi(month), stoi(day), stoi(hour), stoi(minute));
+    stringStreamEndTime >> year >> dash >> month >> dash >> day >> space >> hour >> colon >> minute;
+    time_t convertedEndTime = util::createTime(stoi(year), stoi(month), stoi(day), stoi(hour), stoi(minute));
+    return new Show(showId, nullptr, nullptr, convertedStartTime, convertedEndTime, nullptr);
+}

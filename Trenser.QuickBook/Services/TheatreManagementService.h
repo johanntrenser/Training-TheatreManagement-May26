@@ -35,5 +35,5 @@ public:
     std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
     Theatre* searchByTheatreName(const std::string& name) const;
     void saveTheatreData();
+    void loadTheatreData();
 };
-

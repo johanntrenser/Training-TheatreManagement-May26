@@ -7,6 +7,7 @@
  */
 #pragma once
 #include <string>
+#include <sstream>
 #include "ApplicationConfig.h"
 
 class Log
@@ -22,6 +23,5 @@ public:
     void setLogId(const std::string& id);
     void setDescription(const std::string& description);
     std::string serialize();
+    static Log* deserialize(std::string& lines);
 };
-
-

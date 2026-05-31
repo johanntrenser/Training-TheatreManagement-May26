@@ -17,7 +17,8 @@ Ticket::Ticket() :
 	m_ticketId(""),
 	m_payment(nullptr),
 	m_customer(nullptr)
-{}
+{
+}
 
 /*
  * Function: Ticket::Ticket
@@ -29,11 +30,12 @@ Ticket::Ticket() :
  * Returns:
  *    Ticket object
  */
-Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) : 
+Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) :
 	m_ticketId(ticketId),
-	m_payment(payment), 
+	m_payment(payment),
 	m_customer(customer)
-{}
+{
+}
 
 /*
  * Function: Ticket::getTicketId
@@ -125,4 +127,14 @@ std::string Ticket::serialize()
 		result+=m_customer->getUserId();
 	}
 	return result;
+}
+
+Ticket* Ticket::deserialize(std::string& line)
+{
+	std::stringstream lineStream(line);
+	std::string ticketId, paymentId, customerId;
+	std::getline(lineStream, ticketId, ',');
+	std::getline(lineStream, paymentId, ',');
+	std::getline(lineStream, customerId, ',');
+	return new Ticket(ticketId, nullptr, nullptr);
 }

@@ -380,7 +380,7 @@ namespace Enums {
         }
     }
 
-    inline UserType getUserType(const std::string& input)
+    inline UserType getUserType(std::string& input)
     {
         if (input == "ADMIN")
         {
@@ -506,5 +506,21 @@ namespace Enums {
         default:
             return "UNKNOWN";
         }
+    }
+    inline PaymentMethod getPaymentMethod(const std::string& input)
+    {
+        if (input == "UPI")
+        {
+            return PaymentMethod::UPI;
+        }
+        if (input == "CREDIT_CARD")
+        {
+            return PaymentMethod::CREDIT_CARD;
+        }
+        if (input == "DEBIT_CARD")
+        {
+            return PaymentMethod::DEBIT_CARD;
+        }
+        return PaymentMethod::DEBIT_CARD;
     }
 }

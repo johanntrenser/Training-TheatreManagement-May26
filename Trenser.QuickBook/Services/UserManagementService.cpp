@@ -142,3 +142,26 @@ void UserManagementService::saveUserData()
     }
     FileManagement::writeLines(std::string(config::File::USER_FILEPATH), lines);
 }
+
+/*
+ * Function: UserManagementService::loadUserData
+ * Description: Loads all user data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a User object via User::deserialize,
+ *              and adds the User to the DataStore.
+ *              This restores user information such as ID, name, email, password,
+ *              phone number, type, and status into the system.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void UserManagementService::loadUserData()
+{
+    std::vector<std::string> lines = FileManagement::readlines(PATH);
+    for (int index = 0; index < lines.size(); index++)
+    {
+        User* user = User::deserialize(lines[index]);
+        m_dataStore.addUser(user);
+    }
+}

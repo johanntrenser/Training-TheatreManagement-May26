@@ -24,7 +24,6 @@ SeatManagementService::SeatManagementService()
  * Returns:
  *    None (throws runtime_error if the file cannot be opened)
  */
-#include <iostream>
 void SeatManagementService::saveSeatData()
 {
 	std::vector<std::string> lines;
@@ -35,4 +34,40 @@ void SeatManagementService::saveSeatData()
 		lines.push_back((iterator->second)->serialize());
 	}
 	FileManagement::writeLines(std::string(config::File::SEAT_FILEPATH), lines);
+}
+
+/*
+ * Function: SeatManagementService::loadSeatData
+ * Description: Loads all seat data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Seat object via Seat::deserialize,
+ *              and restores the association with its Screen if the Screen ID
+ *              is present and found in the DataStore.
+ *              Finally, adds the reconstructed Seat to the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void SeatManagementService::loadSeatData()
+{
+	std::vector<std::string> lines = FileManagement::readlines(PATH);
+	for (int index = 0; index < lines.size(); ++index)
+	{
+		Seat* seat = Seat::deserialize(lines[index]);
+		std::string seatId, screenId, seatRow, seatColumn, amount, seatStatus;
+		std::stringstream lineStream(lines[index]);
+		getline(lineStream, seatId, ',');
+		getline(lineStream, screenId, ',');
+		getline(lineStream, seatRow, ',');
+		getline(lineStream, seatColumn, ',');
+		getline(lineStream, amount, ',');
+		getline(lineStream, seatStatus, ',');
+		if (!screenId.empty())
+		{
+			Screen* screen = m_dataStore.getScreenById(screenId);
+			seat->setScreen(screen);
+		}
+		m_dataStore.addSeat(seat);
+	}
 }

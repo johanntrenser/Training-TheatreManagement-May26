@@ -36,3 +36,38 @@ void RefundManagementService::saveRefundData()
 	}
 	FileManagement::writeLines(std::string(config::File::REFUND_FILEPATH), lines);
 }
+
+/*
+ * Function: RefundManagementService::loadRefundData
+ * Description: Loads all refund data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Refund object via Refund::deserialize,
+ *              and restores the association with its booked Ticket if the Ticket ID
+ *              is present and found in the DataStore.
+ *              Finally, adds the reconstructed Refund to the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void RefundManagementService::loadRefundData()
+{
+	std::vector<std::string> lines = FileManagement::readlines(PATH);
+	std::string refundId, bookedTicketId, refundAmount, time, status;
+	for (int index = 0; index < lines.size(); ++index)
+	{
+		Refund* refund = Refund::deserialize(lines[index]);
+		std::stringstream lineStream(lines[index]);
+		getline(lineStream, refundId, ',');
+		getline(lineStream, bookedTicketId, ',');
+		getline(lineStream, refundAmount, ',');
+		getline(lineStream, time, ',');
+		getline(lineStream, status, ',');
+		if (!bookedTicketId.empty())
+		{
+			Ticket* ticket = m_dataStore.getTicketById(bookedTicketId);
+			refund->setBookedTicket(ticket);
+		}
+		m_dataStore.addRefund(refund);
+	}
+}

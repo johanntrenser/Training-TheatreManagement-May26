@@ -9,15 +9,16 @@
  * Created: 20 May 2026
  */
 #pragma once
-#include <string>
-#include <map>
 #include <fstream>
+#include <map>
 #include <sstream>
-#include "FileManagement.h"
 #include <string>
-#include "User.h"
-#include "DataStore.h"
+#include <vector>
 #include "ApplicationConfig.h"
+#include "DataStore.h"
+#include "FileManagement.h"
+#include "User.h"
+
 
 class UserManagementService
 {
@@ -47,5 +48,6 @@ public:
 
     void changePassword(const std::string& userId,
         const std::string& newPassword);
+    void loadUserData();
     void saveUserData();
 };

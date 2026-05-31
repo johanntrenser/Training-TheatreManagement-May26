@@ -320,3 +320,35 @@ void MovieManagementService::saveMovieData()
 	}
 	FileManagement::writeLines(std::string(config::File::MOVIE_FILEPATH), lines);
 }
+
+/*
+ * Function: MovieManagementService::loadMovieData
+ * Description: Loads all movie data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Movie object via Movie::deserialize,
+ *              and sets the Movie status using Enums::getMovieStatus.
+ *              Finally, adds the reconstructed Movie to the DataStore
+ *              through addMovieToSystem.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void MovieManagementService::loadMovieData()
+{
+	std::string movieId, title, language, genre, duration, status;
+	std::vector<std::string> lines = FileManagement::readlines(PATH);
+	for (int index = 0; index < lines.size(); ++index)
+	{
+		Movie* movie = Movie::deserialize(lines[index]);
+		std::stringstream lineStream(lines[index]);
+		getline(lineStream, movieId, ',');
+		getline(lineStream, title, ',');
+		getline(lineStream, language, ',');
+		getline(lineStream, genre, ',');
+		getline(lineStream, duration, ',');
+		getline(lineStream, status, ',');
+		movie->setStatus(Enums::getMovieStatus(status));
+		m_dataStore.addMovieToSystem(movie);
+	}
+}

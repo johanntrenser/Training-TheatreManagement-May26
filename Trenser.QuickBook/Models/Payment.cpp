@@ -22,7 +22,8 @@ Payment::Payment()
     m_paymentMethod(Enums::PaymentMethod::UPI),
     m_status(Enums::PaymentStatus::PENDING),
     m_timeStamp("")
-{}
+{
+}
 
 /*
  * Function: Payment::Payment
@@ -47,7 +48,8 @@ Payment::Payment(const std::string& paymentId,
     m_paymentMethod(paymentMethod),
     m_status(Enums::PaymentStatus::PENDING),
     m_timeStamp(timeStamp)
-{}
+{
+}
 
 /*
  * Function: Payment::getPaymentId
@@ -211,4 +213,31 @@ std::string Payment::serialize()
         Enums::getPaymentStatusString(m_status) + config::delimeter::comma +
         m_timeStamp;
     return result;
+}
+
+/*
+ * Function: Payment::deserialize
+ * Description: Converts a single CSV-formatted line into a Payment object.
+ *              Extracts fields such as paymentId, bookingId, amount,
+ *              paymentMethod, paymentStatus, and timeStamp.
+ *              Maps the paymentMethod string to its corresponding enum
+ *              using Enums::getPaymentMethod. The associated Booking
+ *              pointer is initialized to nullptr and can be set later
+ *              when restoring relationships.
+ * Parameters:
+ *    lines - reference to a CSV-formatted string containing payment data
+ * Returns:
+ *    Pointer to a newly constructed Payment object
+ */
+Payment* Payment::deserialize(std::string& lines)
+{
+    std::string paymentId, bookingId, amount, paymentMethod, paymentStatus, timeStamp;
+    std::stringstream lineStream(lines);
+    getline(lineStream,paymentId , ',');
+    getline(lineStream,bookingId , ',');
+    getline(lineStream,amount , ',');
+    getline(lineStream, paymentMethod, ',');
+    getline(lineStream, paymentStatus, ',');
+    getline(lineStream, timeStamp, ',');
+    return new Payment(paymentId, nullptr, stod(amount), Enums::getPaymentMethod(paymentMethod), timeStamp);
 }

@@ -9,7 +9,9 @@
  */
 #pragma once
 #include <string>
+#include <sstream>
 #include "Ticket.h"
+#include "TimeStamp.h"
 
 class Refund
 {
@@ -36,4 +38,5 @@ public:
     void setTime(time_t time);
     void setStatus(Enums::RefundStatus status);
     std::string serialize();
+    static Refund* deserialize(std::string& line);
 };

@@ -32,4 +32,5 @@ namespace util
         bool operator<=(const Timestamp&) const;
         bool operator==(const Timestamp&) const;
     };
+    time_t createTime(int year, int month, int day, int hour, int minute);
 }

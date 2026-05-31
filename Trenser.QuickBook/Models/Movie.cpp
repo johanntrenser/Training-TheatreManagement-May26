@@ -201,3 +201,29 @@ std::string Movie::serialize()
         std::to_string(m_duration) + config::delimeter::comma +
         Enums::getMovieStatusString(m_status);
 }
+
+/*
+ * Function: Movie::deserialize
+ * Description: Converts a single CSV-formatted line into a Movie object.
+ *              Extracts fields such as movieId, title, language, genre,
+ *              duration, and status. The duration string is converted
+ *              into an integer using stoi. The Movie status and any
+ *              associations (e.g., with Theatre or Shows) are initialized
+ *              separately by higher-level services after deserialization.
+ * Parameters:
+ *    lines - reference to a CSV-formatted string containing movie data
+ * Returns:
+ *    Pointer to a newly constructed Movie object
+ */
+Movie* Movie::deserialize(std::string& lines)
+{
+    std::string movieId, title, language, genre, duration, status;
+    std::stringstream lineStream(lines);
+    getline(lineStream, movieId, ',');
+    getline(lineStream, title, ',');
+    getline(lineStream, language, ',');
+    getline(lineStream, genre, ',');
+    getline(lineStream, duration, ',');
+    getline(lineStream, status, ',');
+    return new Movie(movieId, title, language, genre, stoi(duration));
+}

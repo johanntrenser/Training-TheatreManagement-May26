@@ -7,6 +7,8 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <iostream>
+#include <sstream>
 #include <string>
 #include "Enums.h"
 #include "ApplicationConfig.h"
@@ -40,4 +42,5 @@ public:
     void setDuration(int duration);
     void setStatus(Enums::MovieStatus status);
     std::string serialize();
+    static Movie* deserialize(std::string& lines);
 };

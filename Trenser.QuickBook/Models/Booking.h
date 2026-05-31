@@ -43,4 +43,5 @@ public:
     void setStatus(Enums::BookingStatus status);
     void setAmount(double amount);
     std::string serialize();
+    static Booking* deserialize(std::string& lines);
 };

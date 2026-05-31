@@ -36,3 +36,41 @@ void PaymentManagementService::savePaymentData()
     }
     FileManagement::writeLines(std::string(config::File::PAYMENT_FILEPATH), lines);
 }
+
+/*
+ * Function: PaymentManagementService::loadPaymentData
+ * Description: Loads all payment data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Payment object via Payment::deserialize,
+ *              and restores associations with its related Booking if the Booking ID
+ *              is present and found in the DataStore. Also sets the Payment status
+ *              using Enums::getPaymentStatus before adding the reconstructed Payment
+ *              to the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void PaymentManagementService::loadPaymentData()
+{
+    std::string paymentId, bookingId, amount, paymentMethod, paymentStatus, timeStamp;
+    std::vector<std::string> lines = FileManagement::readlines(PATH);
+    for (int index = 0; index < lines.size(); ++index)
+    {
+        Payment* payment = Payment::deserialize(lines[index]);
+        std::stringstream lineStream(lines[index]);
+        getline(lineStream, paymentId, ',');
+        getline(lineStream, bookingId, ',');
+        getline(lineStream, amount, ',');
+        getline(lineStream, paymentMethod, ',');
+        getline(lineStream, paymentStatus, ',');
+        getline(lineStream, timeStamp, ',');
+        if (!bookingId.empty())
+        {
+            Booking* booking = m_dataStore.getBookingById(bookingId);
+            payment->setBooking(booking);
+        }
+        payment->setStatus(Enums::getPaymentStatus(paymentStatus));
+        m_dataStore.addPayment(payment);
+    }
+}

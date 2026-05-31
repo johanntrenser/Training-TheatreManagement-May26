@@ -22,4 +22,5 @@ private:
 public:
 	NotificationManagementService();
 	void saveNotificationData();
+	void loadtNotificationData();
 };
