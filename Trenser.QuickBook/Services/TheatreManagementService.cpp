@@ -148,3 +148,92 @@ Theatre* TheatreManagementService::searchByTheatreName(const std::string& name) 
 {
     return nullptr;
 }
+
+/*
+ * Function: TheatreManagementService::saveTheatreData
+ * Description: Saves all theatre data from the DataStore into a CSV file.
+ *              Includes theatre details, status, associated screens, and movies.
+ *              Overwrites existing file content.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened)
+ */
+void TheatreManagementService::saveTheatreData()
+{
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::THEATRE_HEADER);
+    const std::map<std::string, Theatre*> theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        lines.push_back((iterator->second)->serialize());
+    }
+    FileManagement::writeLines(std::string(config::File::THEATRE_FILEPATH), lines);
+}
+
+/*
+ * Function: TheatreManagementService::loadTheatreData
+ * Description: Loads all theatre data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Theatre object via Theatre::deserialize,
+ *              and restores associations with Screen and Movie objects if their IDs
+ *              are present and found in the DataStore.
+ *              Finally, adds the reconstructed Theatre to the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void TheatreManagementService::loadTheatreData()
+{
+    std::string theatreId, name, city, address, phoneNumber, email, theatreOwnerId, status, screenIds, movieIds;
+    std::vector<std::string> lines = FileManagement::readlines(PATH);
+    for (int index = 0; index < lines.size(); index++)
+    {
+        Theatre* theatre = Theatre::deserialize(lines[index]);
+        std::stringstream lineStream(lines[index]);
+        getline(lineStream, theatreId, ',');
+        getline(lineStream, name, ',');
+        getline(lineStream, city, ',');
+        getline(lineStream, address, ',');
+        getline(lineStream, phoneNumber, ',');
+        getline(lineStream, email, ',');
+        getline(lineStream, theatreOwnerId, ',');
+        getline(lineStream, status, ',');
+        getline(lineStream, screenIds, ',');
+        getline(lineStream, movieIds, ',');
+        Enums::TheatreStatus theatreStatus = Enums::getTheatreStatus(status);
+        theatre->setStatus(theatreStatus);
+        if (!screenIds.empty())
+        {
+            std::vector<Screen*> screens;
+            std::stringstream screenStream(screenIds);
+            std::string screenId;
+            while (getline(screenStream, screenId, '|'))
+            {
+                Screen* screen = m_dataStore.getScreenById(screenId);
+                if (screen != nullptr)
+                {
+                    screens.push_back(screen);
+                }
+            }
+            theatre->setScreens(screens);
+        }
+        if (!movieIds.empty())
+        {
+            std::vector<Movie*> movies;
+            std::stringstream movieStream(movieIds);
+            std::string movieId;
+            while (getline(movieStream, movieId, '|'))
+            {
+                Movie* movie = m_dataStore.getMovieById(movieId);
+                if (movie != nullptr)
+                {
+                    movies.push_back(movie);
+                }
+            }
+            theatre->setMovies(movies);
+        }
+        m_dataStore.addTheatre(theatre);
+    }
+}

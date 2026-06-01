@@ -53,6 +53,7 @@ UserInterface::UserInterface()
  */
 void UserInterface::run()
 {
+	loadData();
 	bool isMenuActive = true;
 	while (isMenuActive)
 	{
@@ -99,6 +100,7 @@ bool UserInterface::handleOperation(int choice)
 		registerUser();
 		break;
 	case 3:
+		exit();
 		std::cout << "Exiting..." << std::endl;
 		return false;
 	default:
@@ -419,4 +421,25 @@ void UserInterface::handleUserDetailsInput(std::string& userName, std::string& e
 	getUniquePhoneNumber(phoneNumber);
 }
 
+/*
+ * Function: UserInterface::loadData
+ * Description: Loads all application data from persistent storage into memory.
+ *              Delegates the responsibility to the Controller, which coordinates
+ *              loading across all management services (users, theatres, movies,
+ *              tickets, screens, payments, notifications, logs, refunds, seats,
+ *              shows, and bookings). Provides a single entry point for restoring
+ *              the system state when the application starts.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if any underlying service fails to open its file)
+ */
+void UserInterface::loadData()
+{
+	m_controller->loadDataFromFile();
+}
 
+void UserInterface::exit()
+{
+	m_controller->saveData();
+}

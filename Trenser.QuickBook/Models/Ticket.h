@@ -8,8 +8,12 @@
  */
 
 #pragma once
+#include <string>
+#include <iostream>
+#include <sstream>
 #include "User.h"
 #include "Payment.h"
+#include "ApplicationConfig.h"
 
 class Ticket
 {
@@ -17,7 +21,7 @@ private:
 	std::string m_ticketId;
 	Payment* m_payment;
 	User* m_customer;
-public: 
+public:
 	Ticket();
 	Ticket(const std::string& ticketId, Payment* payment, User* customer);
 	const std::string& getTicketId();
@@ -26,6 +30,7 @@ public:
 	void setTicketId(const std::string ticketId);
 	void setPayment(Payment* payment);
 	void setCustomer(User* customer);
+	std::string serialize();
+	static Ticket* deserialize(std::string& line);
 	~Ticket() = delete;
 };
-

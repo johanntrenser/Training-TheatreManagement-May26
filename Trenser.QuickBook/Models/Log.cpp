@@ -77,3 +77,36 @@ void Log::setDescription(const std::string& description)
 {
     m_description = description;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Log object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Log::serialize()
+{
+    return m_logId + config::delimeter::comma +
+        m_description;
+}
+
+/*
+ * Function: Log::deserialize
+ * Description: Converts a single CSV-formatted line into a Log object.
+ *              Extracts fields such as logId and logDescription from the line.
+ *              The Log object is constructed with these values, while any
+ *              additional associations (e.g., with User or System events)
+ *              can be restored later by higher-level services.
+ * Parameters:
+ *    lines - reference to a CSV-formatted string containing log data
+ * Returns:
+ *    Pointer to a newly constructed Log object
+ */
+Log* Log::deserialize(std::string& lines)
+{
+    std::string logId, logDescription;
+    std::stringstream lineStream(lines);
+    getline(lineStream, logId, ',');
+    getline(lineStream, logDescription, ',');
+    return new Log(logId, logDescription);
+}

@@ -8,7 +8,19 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <map>
+#include <fstream>
+#include <sstream>
+#include "FileManagement.h"
+#include "DataStore.h"
+#include "ApplicationConfig.h"
 class PaymentManagementService
 {
+private:
+    const std::string& PATH = config::File::PAYMENT_FILEPATH;
+    DataStore& m_dataStore;
+public:
+    PaymentManagementService();
+    void savePaymentData();
+    void loadPaymentData();
 };
-

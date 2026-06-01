@@ -24,8 +24,9 @@ Show::Show()
     m_startTime(0),
     m_endTime(0),
     m_seatAvailability(nullptr),
-    m_showStatus(0)
-{}
+    m_showStatus(Enums::ShowStatus::SCHEDULED)
+{
+}
 
 /*
  * Function: Show::Show
@@ -37,7 +38,6 @@ Show::Show()
  *    time_t startTime - Show start time
  *    time_t endTime - Show end time
  *    ShowSeatAvailability* seatAvailability - Seat availability object
- *    int showStatus - Show status code
  * Returns:
  *    Show object
  */
@@ -46,16 +46,16 @@ Show::Show(const std::string showId,
     Screen* screen,
     time_t startTime,
     time_t endTime,
-    ShowSeatAvailability* seatAvailability,
-    int showStatus)
+    ShowSeatAvailability* seatAvailability)
     : m_showId(showId),
     m_movie(movie),
     m_screen(screen),
     m_startTime(startTime),
     m_endTime(endTime),
     m_seatAvailability(seatAvailability),
-    m_showStatus(showStatus)
-{}
+    m_showStatus(Enums::ShowStatus::SCHEDULED)
+{
+}
 
 /*
  * Function: Show::getShowId
@@ -74,7 +74,7 @@ const std::string Show::getShowId() const
  * Returns:
  *    Movie* - Pointer to the movie
  */
-Movie* Show::getMovie() const
+const Movie* Show::getMovie() const
 {
     return m_movie;
 }
@@ -85,7 +85,7 @@ Movie* Show::getMovie() const
  * Returns:
  *    Screen* - Pointer to the screen
  */
-Screen* Show::getScreen() const
+const Screen* Show::getScreen() const
 {
     return m_screen;
 }
@@ -127,9 +127,9 @@ ShowSeatAvailability* Show::getSeatAvailability() const
  * Function: Show::getShowStatus
  * Description: Retrieves the show status code.
  * Returns:
- *    int - Show status
+ *    Enum - Show status
  */
-int Show::getShowStatus() const
+Enums::ShowStatus Show::getShowStatus() const
 {
     return m_showStatus;
 }
@@ -216,11 +216,48 @@ void Show::setSeatAvailability(ShowSeatAvailability* seatAvailability)
  * Function: Show::setShowStatus
  * Description: Sets the show status code.
  * Parameters:
- *    int showStatus - New show status
+ *    Enum showStatus - New show status
  * Returns:
  *    void
  */
-void Show::setShowStatus(int showStatus)
+void Show::setShowStatus(Enums::ShowStatus showStatus)
 {
     m_showStatus = showStatus;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Show object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Show::serialize()
+{
+    return m_showId + config::delimeter::comma +
+        m_movie->getMovieId() + config::delimeter::comma +
+        m_screen->getScreenId() + config::delimeter::comma +
+        std::to_string(m_startTime) + config::delimeter::comma +
+        std::to_string(m_endTime) + config::delimeter::comma +
+        m_seatAvailability->getShowAvailabiltyId() + config::delimeter::comma +
+        Enums::getShowStatusString(m_showStatus);
+}
+
+Show* Show::deserialize(std::string& line)
+{
+    std::string showId, movieId, screenId, startTime, endTime, seatAvailabilityId, status,year,dash,space,month,day,hour,colon,minute;
+    std::stringstream lineStream(line);
+    getline(lineStream, showId, ',');
+    getline(lineStream, movieId, ',');
+    getline(lineStream, screenId, ',');
+    getline(lineStream, startTime, ',');
+    getline(lineStream, endTime, ',');
+    getline(lineStream, seatAvailabilityId, ',');
+    getline(lineStream, status, ',');
+    std::istringstream stringStreamStartTime(startTime);
+    std::istringstream stringStreamEndTime(endTime);
+    stringStreamStartTime >> year >> dash >> month >> dash >> day >> space >> hour >> colon >> minute;
+    time_t convertedStartTime = util::createTime(stoi(year), stoi(month), stoi(day), stoi(hour), stoi(minute));
+    stringStreamEndTime >> year >> dash >> month >> dash >> day >> space >> hour >> colon >> minute;
+    time_t convertedEndTime = util::createTime(stoi(year), stoi(month), stoi(day), stoi(hour), stoi(minute));
+    return new Show(showId, nullptr, nullptr, convertedStartTime, convertedEndTime, nullptr);
 }

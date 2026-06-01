@@ -21,10 +21,10 @@ Seat::Seat()
     m_screen(nullptr),
     m_seatRow('A'),
     m_seatColumn(0),
-    m_seatType(0),
-    m_seatStatus(0),
-    m_bookingStatus(0)
-{}
+    m_amount(0),
+    m_seatStatus(Enums::SeatStatus::AVAILABLE)
+{
+}
 
 /*
  * Function: Seat::Seat
@@ -44,17 +44,16 @@ Seat::Seat(const std::string& id,
     Screen* screen,
     char seatRow,
     int seatColumn,
-    int seatType,
-    int seatStatus,
-    int bookingStatus)
+    double m_amount,
+    Enums::SeatStatus seatStatus)
     : m_seatId(id),
     m_screen(screen),
     m_seatRow(seatRow),
     m_seatColumn(seatColumn),
-    m_seatType(seatType),
-    m_seatStatus(seatStatus),
-    m_bookingStatus(bookingStatus)
-{}
+    m_amount(0),
+    m_seatStatus(seatStatus)
+{
+}
 
 /*
  * Function: Seat::getSeatId
@@ -101,36 +100,25 @@ int Seat::getSeatColumn() const
 }
 
 /*
- * Function: Seat::getSeatType
- * Description: Retrieves the seat type code.
+ * Function: getSeatAmount
+ * Description: Retrieves the seat amount.
  * Returns:
- *    int - Seat type
+ *    double - Seat amount
  */
-int Seat::getSeatType() const
+double Seat::getSeatAmount()
 {
-    return m_seatType;
+    return m_amount;
 }
 
 /*
  * Function: Seat::getSeatStatus
  * Description: Retrieves the seat status code.
  * Returns:
- *    int - Seat status
+ *    enum - Seat status
  */
-int Seat::getSeatStatus() const
+Enums::SeatStatus Seat::getSeatStatus() const
 {
     return m_seatStatus;
-}
-
-/*
- * Function: Seat::getBookingStatus
- * Description: Retrieves the booking status code.
- * Returns:
- *    int - Booking status
- */
-int Seat::getBookingStatus() const
-{
-    return m_bookingStatus;
 }
 
 /*
@@ -186,19 +174,6 @@ void Seat::setSeatColumn(int seatColumn)
 }
 
 /*
- * Function: Seat::setSeatType
- * Description: Sets the seat type code.
- * Parameters:
- *    int seatType - New seat type
- * Returns:
- *    void
- */
-void Seat::setSeatType(int seatType)
-{
-    m_seatType = seatType;
-}
-
-/*
  * Function: Seat::setSeatStatus
  * Description: Sets the seat status code.
  * Parameters:
@@ -206,20 +181,62 @@ void Seat::setSeatType(int seatType)
  * Returns:
  *    void
  */
-void Seat::setSeatStatus(int seatStatus)
+void Seat::setSeatStatus(Enums::SeatStatus seatStatus)
 {
     m_seatStatus = seatStatus;
 }
 
 /*
- * Function: Seat::setBookingStatus
- * Description: Sets the booking status code.
+ * Function: setSeatAmount
+ * Description: Sets the seat amount.
  * Parameters:
- *    int bookingStatus - New booking status
+ *    int amount - New booking amount
  * Returns:
  *    void
  */
-void Seat::setBookingStatus(int bookingStatus)
+void Seat::setSeatAmount(double amount)
 {
-    m_bookingStatus = bookingStatus;
+    m_amount = amount;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Seat object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Seat::serialize()
+{
+    return m_seatId + config::delimeter::comma +
+        m_screen->getScreenId() + config::delimeter::comma +
+        m_seatRow+ config::delimeter::comma +
+        std::to_string(m_seatColumn) + config::delimeter::comma +
+        std::to_string(m_amount) + config::delimeter::comma +
+        Enums::getSeatStatusString(m_seatStatus);
+}
+
+/*
+ * Function: Seat::deserialize
+ * Description: Deserializes a single line of CSV-formatted seat data into a Seat object.
+ *              Extracts fields such as Seat ID, Screen ID, row, column, amount, and status.
+ *              Converts string values into appropriate types (char, int, double, enum).
+ *              The Screen pointer is set to nullptr initially and can be linked later
+ *              when the Screen object is available in the DataStore.
+ * Parameters:
+ *    line - A reference to a string containing one line of CSV seat data.
+ * Returns:
+ *    A pointer to a newly created Seat object populated with the deserialized data.
+ */
+Seat* Seat::deserialize(std::string& line)
+{
+    std::string seatId, screenId, seatRow, seatColumn, amount, seatStatus;
+    std::stringstream lineStream(line);
+    getline(lineStream, seatId, ',');
+    getline(lineStream, screenId, ',');
+    getline(lineStream, seatRow, ',');
+    getline(lineStream, seatColumn, ',');
+    getline(lineStream, amount, ',');
+    getline(lineStream, seatStatus, ',');
+    Enums::SeatStatus status = Enums::getSeatStatus(seatStatus);
+    return new Seat(seatId, nullptr, seatRow[0], stoi(seatColumn), stod(amount), status);
 }

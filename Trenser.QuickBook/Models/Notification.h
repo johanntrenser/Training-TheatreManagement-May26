@@ -9,6 +9,7 @@
 #pragma once
 #include <string>
 #include "User.h"
+#include "TimeStamp.h"
 
 class Notification
 {
@@ -17,23 +18,24 @@ private:
     User* m_receiver;
     std::string m_message;
     Enums::NotificationStatus m_status;
-    std::string m_time;
+    time_t m_time;
 public:
     Notification();
     Notification(const std::string& notificationId,
         User* receiver,
         const std::string& message,
-        const std::string& time);
-
+        time_t time);
     const std::string& getNotificationId() const;
     User* getReceiver() const;
     const std::string& getMessage() const;
     Enums::NotificationStatus getStatus() const;
-    const std::string& getTime() const;
+    const time_t getTime() const;
     void setNotificationId(const std::string& id);
     void setReceiver(User* receiver);
     void setMessage(const std::string& message);
     void setStatus(Enums::NotificationStatus status);
-    void setTime(const std::string& time);
+    void setTime(const time_t time);
+    std::string serialize();
+    static Notification* deserialize(std::string& lines);
 };
 

@@ -17,7 +17,8 @@ Ticket::Ticket() :
 	m_ticketId(""),
 	m_payment(nullptr),
 	m_customer(nullptr)
-{}
+{
+}
 
 /*
  * Function: Ticket::Ticket
@@ -29,11 +30,12 @@ Ticket::Ticket() :
  * Returns:
  *    Ticket object
  */
-Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) : 
+Ticket::Ticket(const std::string& ticketId, Payment* payment, User* customer) :
 	m_ticketId(ticketId),
-	m_payment(payment), 
+	m_payment(payment),
 	m_customer(customer)
-{}
+{
+}
 
 /*
  * Function: Ticket::getTicketId
@@ -105,4 +107,34 @@ void Ticket::setPayment(Payment* payment)
 void Ticket::setCustomer(User* customer)
 {
 	m_customer = customer;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Ticket object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Ticket::serialize()
+{
+	std::string result = m_ticketId + config::delimeter::comma;
+	if (m_payment)
+	{
+		result += m_payment->getPaymentId() + config::delimeter::comma;
+	}
+	if (m_customer)
+	{
+		result+=m_customer->getUserId();
+	}
+	return result;
+}
+
+Ticket* Ticket::deserialize(std::string& line)
+{
+	std::stringstream lineStream(line);
+	std::string ticketId, paymentId, customerId;
+	std::getline(lineStream, ticketId, ',');
+	std::getline(lineStream, paymentId, ',');
+	std::getline(lineStream, customerId, ',');
+	return new Ticket(ticketId, nullptr, nullptr);
 }

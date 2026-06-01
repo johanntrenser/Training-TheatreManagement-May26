@@ -18,9 +18,10 @@ Refund::Refund()
     : m_refundId(""),
     m_bookedTicket(nullptr),
     m_refundAmount(0.0),
-    m_time(""),
-    m_status(0)
-{}
+    m_time(-1),
+    m_status(Enums::RefundStatus::COMPLETED)
+{
+}
 
 /*
  * Function: Refund::Refund
@@ -37,14 +38,14 @@ Refund::Refund()
 Refund::Refund(const std::string& id,
     Ticket* bookedTicket,
     double refundAmount,
-    const std::string& time,
-    int status)
+    time_t time)
     : m_refundId(id),
     m_bookedTicket(bookedTicket),
     m_refundAmount(refundAmount),
     m_time(time),
-    m_status(status)
-{}
+    m_status(Enums::RefundStatus::COMPLETED)
+{
+}
 
 /*
  * Function: Refund::getRefundId
@@ -85,7 +86,7 @@ double Refund::getRefundAmount() const
  * Returns:
  *    const std::string& - Refund timestamp
  */
-const std::string& Refund::getTime() const
+time_t Refund::getTime() const
 {
     return m_time;
 }
@@ -94,9 +95,9 @@ const std::string& Refund::getTime() const
  * Function: Refund::getStatus
  * Description: Retrieves the refund status code.
  * Returns:
- *    int - Refund status
+ *    enum - Refund status
  */
-int Refund::getStatus() const
+Enums::RefundStatus Refund::getStatus() const
 {
     return m_status;
 }
@@ -148,7 +149,7 @@ void Refund::setRefundAmount(double refundAmount)
  * Returns:
  *    void
  */
-void Refund::setTime(const std::string& time)
+void Refund::setTime(time_t time)
 {
     m_time = time;
 }
@@ -157,11 +158,57 @@ void Refund::setTime(const std::string& time)
  * Function: Refund::setStatus
  * Description: Sets the refund status code.
  * Parameters:
- *    int status - New refund status
+ *    enum status - New refund status
  * Returns:
  *    void
  */
-void Refund::setStatus(int status)
+void Refund::setStatus(Enums::RefundStatus status)
 {
     m_status = status;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Refund object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Refund::serialize()
+{
+    std::string result = m_refundId + config::delimeter::comma;
+    if (m_bookedTicket)
+    {
+        result += m_bookedTicket->getTicketId()+config::delimeter::comma;
+    }
+    result += std::to_string(m_refundAmount) + config::delimeter::comma +
+        std::to_string(m_time) + config::delimeter::comma +
+        Enums::getRefundStatusString(m_status);
+    return result;
+}
+
+/*
+ * Function: Refund::deserialize
+ * Description: Deserializes a single line of CSV-formatted refund data into a Refund object.
+ *              Extracts fields such as Refund ID, Booked Ticket ID, Refund Amount, Time, and Status.
+ *              Parses the time string into its components (year, month, day, hour, minute) and converts
+ *              it into a time_t object using util::createTime. The Booked Ticket pointer is set to nullptr
+ *              initially and can be linked later when the Ticket object is available in the DataStore.
+ * Parameters:
+ *    lines - A reference to a string containing one line of CSV refund data.
+ * Returns:
+ *    A pointer to a newly created Refund object populated with the deserialized data.
+ */
+Refund* Refund::deserialize(std::string& lines)
+{
+    std::string refundId, bookedTicketId, refundAmount, time, status, year, dash, space, month, day, hour, colon, minute;
+    std::stringstream lineStream(lines);
+    getline(lineStream, refundId, ',');
+    getline(lineStream, bookedTicketId, ',');
+    getline(lineStream, refundAmount, ',');
+    getline(lineStream,time , ',');
+    getline(lineStream,status , ',');
+    std::istringstream streamTime(time);
+    streamTime >> year >> dash >> month >> dash >> day >> space >> hour >> colon >> minute;
+    time_t convertedTime = util::createTime(stoi(year), stoi(month), stoi(day), stoi(hour), stoi(minute));
+    return new Refund(refundId, nullptr, stod(refundAmount), convertedTime);
 }

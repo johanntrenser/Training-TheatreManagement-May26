@@ -17,7 +17,8 @@ namespace Enums {
     {
         ACTIVE,
         INACTIVE,
-        UNDER_MAINTENANCE
+        UNDER_MAINTENANCE,
+        PENDING
     };
 
     enum class MovieStatus
@@ -379,7 +380,7 @@ namespace Enums {
         }
     }
 
-    inline UserType getUserType(const std::string& input)
+    inline UserType getUserType(std::string& input)
     {
         if (input == "ADMIN")
         {
@@ -491,6 +492,35 @@ namespace Enums {
         }
         return RefundStatus::FAILED;
     }
+
+    inline std::string getPaymentMethodString(PaymentMethod status)
+    {
+        switch (status)
+        {
+        case PaymentMethod::UPI:
+            return "UPI";
+        case PaymentMethod::CREDIT_CARD:
+            return "CREDIT_CARD";
+        case PaymentMethod::DEBIT_CARD:
+            return "DEBIT_CARD";
+        default:
+            return "UNKNOWN";
+        }
+    }
+    inline PaymentMethod getPaymentMethod(const std::string& input)
+    {
+        if (input == "UPI")
+        {
+            return PaymentMethod::UPI;
+        }
+        if (input == "CREDIT_CARD")
+        {
+            return PaymentMethod::CREDIT_CARD;
+        }
+        if (input == "DEBIT_CARD")
+        {
+            return PaymentMethod::DEBIT_CARD;
+        }
+        return PaymentMethod::DEBIT_CARD;
+    }
 }
-
-

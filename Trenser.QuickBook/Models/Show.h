@@ -9,7 +9,10 @@
 #pragma once
 #include <string>
 #include <ctime>
+#include <sstream>
+#include <iomanip>
 #include "Movie.h"
+#include "TimeStamp.h"
 #include "Screen.h"
 
 class ShowSeatAvailability;
@@ -23,7 +26,7 @@ private:
     time_t m_startTime;
     time_t m_endTime;
     ShowSeatAvailability* m_seatAvailability;
-    int m_showStatus; // enum placeholder
+    Enums::ShowStatus m_showStatus;
 public:
     Show();
     Show(const std::string showId,
@@ -31,20 +34,22 @@ public:
         Screen* screen,
         time_t startTime,
         time_t endTime,
-        ShowSeatAvailability* seatAvailability,
-        int showStatus);
+        ShowSeatAvailability* seatAvailability);
     const std::string getShowId() const;
-    Movie* getMovie() const;
-    Screen* getScreen() const;
+    const Movie* getMovie() const;
+    const Screen* getScreen() const;
     time_t getStartTime() const;
     time_t getEndTime() const;
     ShowSeatAvailability* getSeatAvailability() const;
-    int getShowStatus() const;
+    Enums::ShowStatus getShowStatus() const;
     void setShowId(const std::string& showId);
     void setMovie(Movie* movie);
     void setScreen(Screen* screen);
     void setStartTime(time_t startTime);
     void setEndTime(time_t endTime);
     void setSeatAvailability(ShowSeatAvailability* seatAvailability);
-    void setShowStatus(int showStatus);
+    void setShowStatus(Enums::ShowStatus showStatus);
+    std::string serialize();
+    static Show* deserialize(std::string& line);
+    ~Show() = default;
 };

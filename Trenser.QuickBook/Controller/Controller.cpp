@@ -172,6 +172,35 @@ void Controller::logout()
 }
 
 /*
+ * Function: Controller::loadDataFromFile
+ * Description: Loads all application data from persistent storage into memory.
+ *              Delegates the responsibility of loading each entity type to its
+ *              corresponding management service. This ensures that users, tickets,
+ *              theatres, shows, seats, screens, refunds, payments, notifications,
+ *              movies, logs, and bookings are all reconstructed from CSV files
+ *              and restored into the DataStore with their associations.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if any underlying file cannot be opened or read)
+ */
+void Controller::loadDataFromFile()
+{
+    m_userManagementService->loadUserData();
+    m_ticketManagementService->loadTicketData();
+    m_theatreManagementService->loadTheatreData();
+    m_showManagementService->loadShowData();
+    m_seatManagementService->loadSeatData();
+    m_ScreenManagementService->loadScreenData();
+    m_refundManagementService->loadRefundData();
+    m_paymentManagementService->loadPaymentData();
+    m_notificationManagementService->loadtNotificationData();
+    m_movieManagementService->loadMovieData();
+    m_logManagementService->loadLogData();
+    m_bookingManagementService->loadBookingData();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.
@@ -194,6 +223,30 @@ Controller::~Controller()
     delete m_refundManagementService;
 }
 
-
-
-
+/*
+ * Function: Controller::saveData
+ * Description: Centralized method to persist all application data into CSV files.
+ *              Delegates saving responsibilities to each management service, ensuring
+ *              that users, theatres, movies, tickets, screens, payments, notifications,
+ *              logs, refunds, seats, shows, and bookings are all written to storage.
+ *              This provides a single entry point for saving the entire system state.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if any underlying service fails to open its file)
+ */
+void Controller::saveData()
+{
+    m_userManagementService->saveUserData();
+    m_theatreManagementService->saveTheatreData();
+    m_movieManagementService->saveMovieData();
+    m_ticketManagementService->saveTicketData();
+    m_ScreenManagementService->saveScreenData();
+    m_paymentManagementService->savePaymentData();
+    m_notificationManagementService->saveNotificationData();
+    m_logManagementService->saveLogData();
+    m_refundManagementService->saveRefundData();
+    m_seatManagementService->saveSeatData();
+    m_showManagementService->saveShowData();
+    m_bookingManagementService->saveBookingData();
+}

@@ -9,6 +9,7 @@
 #include "Screen.h"
 #include "Theatre.h"
 #include "Seat.h"
+#include "Factory.h"
 
  /*
   * Function: Screen::Screen
@@ -23,8 +24,9 @@ Screen::Screen()
     m_totalRows(0),
     m_totalColumns(0),
     m_seatGrid(),
-    m_screenStatus(0)
-{}
+    m_screenStatus(Enums::ScreenStatus::AVAILABLE)
+{
+}
 
 /*
  * Function: Screen::Screen
@@ -45,16 +47,16 @@ Screen::Screen(const std::string& screenId,
     const std::string& name,
     int totalRows,
     int totalColumns,
-    const std::vector<std::vector<Seat*>>& seatGrid,
-    int screenStatus)
+    const std::vector<std::vector<Seat*>>& seatGrid)
     : m_screenId(screenId),
     m_theatre(theatre),
     m_name(name),
     m_totalRows(totalRows),
     m_totalColumns(totalColumns),
     m_seatGrid(seatGrid),
-    m_screenStatus(screenStatus)
-{}
+    m_screenStatus(Enums::ScreenStatus::AVAILABLE)
+{
+}
 
 /*
  * Function: Screen::getScreenId
@@ -126,9 +128,9 @@ const std::vector<std::vector<Seat*>>& Screen::getSeatGrid() const
  * Function: Screen::getScreenStatus
  * Description: Retrieves the screen status code.
  * Returns:
- *    int - Screen status
+ *    enum - Screen status
  */
-int Screen::getScreenStatus() const
+Enums::ScreenStatus Screen::getScreenStatus() const
 {
     return m_screenStatus;
 }
@@ -215,11 +217,53 @@ void Screen::setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid)
  * Function: Screen::setScreenStatus
  * Description: Sets the screen status code.
  * Parameters:
- *    int screenStatus - New screen status
+ *    enum screenStatus - New screen status
  * Returns:
  *    void
  */
-void Screen::setScreenStatus(int screenStatus)
+void Screen::setScreenStatus(Enums::ScreenStatus screenStatus)
 {
     m_screenStatus = screenStatus;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Screen object into CSV format string
+ * Returns:
+ *    CSV string representing the screen
+ */
+std::string Screen::serialize() const
+{
+    return m_screenId + config::delimeter::comma +
+        (m_theatre ? m_theatre->getTheatreId() : "") + config::delimeter::comma +
+        m_name + config::delimeter::comma +
+        std::to_string(m_totalRows) + config::delimeter::comma +
+        std::to_string(m_totalColumns) + config::delimeter::comma +
+        Enums::getScreenStatusString(m_screenStatus);
+}
+
+/*
+ * name        : deserialize
+ * description : Converts a CSV line into a Screen object by parsing screen ID, theatre ID,
+ *               name, total rows, total columns, and status. Initializes a Screen instance
+ *               with parsed values and an empty seat grid.
+ * parameter   : std::string& line - the CSV line containing serialized screen data
+ * return type : Screen* - pointer to a newly created Screen object
+ */
+Screen* Screen::deserialize(std::string& line)
+{
+    std::string screenId, theatreId, name, totalRows, totalColumns, status;
+    std::stringstream lineStream(line);
+    getline(lineStream, screenId, ',');
+    getline(lineStream, theatreId, ',');
+    getline(lineStream, name, ',');
+    getline(lineStream, totalRows, ',');
+    getline(lineStream, totalColumns, ',');
+    getline(lineStream, status, ',');
+    int rows = totalRows.empty() ? 0 : stoi(totalRows);
+    int cols = totalColumns.empty() ? 0 : stoi(totalColumns);
+    std::vector<std::vector<Seat*>> emptyGrid;
+    Screen* screen = Factory::getObject<Screen>(screenId, nullptr, name, rows, cols, emptyGrid);
+    screen->setScreenStatus(Enums::getScreenStatus(status));
+    return screen;
 }

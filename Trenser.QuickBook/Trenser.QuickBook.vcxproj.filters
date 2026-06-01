@@ -159,6 +159,9 @@
     <ClCompile Include="Utilities\ApplicationConfig.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities\FileManagement.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h">
@@ -276,6 +279,9 @@
       <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\ApplicationConfig.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\FileManagement.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

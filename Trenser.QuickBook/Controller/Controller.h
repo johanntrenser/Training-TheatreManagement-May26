@@ -61,6 +61,8 @@ public:
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
 	void logout();
+	void saveData();
+	void loadDataFromFile();
 	~Controller();
 };
 

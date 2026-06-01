@@ -9,12 +9,22 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <fstream>
+#include <map>
+#include <sstream>
 #include <string>
 #include <vector>
+#include "ApplicationConfig.h"
+#include "DataStore.h"
+#include "FileManagement.h"
 #include "User.h"
+
 
 class UserManagementService
 {
+private:
+    DataStore& m_dataStore; 
+    const std::string& PATH = config::File::USER_FILEPATH;
 public:
     UserManagementService();
     bool createUser(const std::string& name,
@@ -38,5 +48,6 @@ public:
 
     void changePassword(const std::string& userId,
         const std::string& newPassword);
+    void loadUserData();
+    void saveUserData();
 };
-

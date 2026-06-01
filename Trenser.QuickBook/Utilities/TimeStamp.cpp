@@ -183,3 +183,15 @@ bool util::Timestamp::operator==(const Timestamp& other) const
 {
     return m_time == other.m_time;
 }
+
+time_t util::createTime(int year, int month, int day, int hour, int minute)
+{
+    tm time = {};
+    time.tm_year = year - 1900;
+    time.tm_mon = month - 1;
+    time.tm_mday = day;
+    time.tm_hour = hour;
+    time.tm_min = minute;
+    time.tm_sec = 0;
+    return mktime(&time);
+}

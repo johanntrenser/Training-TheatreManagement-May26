@@ -17,7 +17,7 @@ private:
     std::string m_paymentId;
     Booking* m_booking;
     double m_amount;
-    Enums::PaymentMethod m_paymentMethod; 
+    Enums::PaymentMethod m_paymentMethod;
     Enums::PaymentStatus m_status;
     std::string m_timeStamp;
 public:
@@ -39,5 +39,6 @@ public:
     void setPaymentMethod(Enums::PaymentMethod paymentMethod);
     void setStatus(Enums::PaymentStatus status);
     void setTimeStamp(const std::string& timeStamp);
+    std::string serialize();
+    static Payment* deserialize(std::string& lines);
 };
-
