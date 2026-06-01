@@ -201,29 +201,6 @@ void Controller::loadDataFromFile()
 }
 
 /*
- * Function: Controller::~Controller
- * Description: Destructor. Cleans up allocated memory by deleting all
- *              management service pointers.
- * Returns: None
- */
-Controller::~Controller()
-{
-    delete m_authenticationManagementService;
-    delete m_userManagementService;
-    delete m_theatreManagementService;
-    delete m_movieManagementService;
-    delete m_showManagementService;
-    delete m_bookingManagementService;
-    delete m_paymentManagementService;
-    delete m_ticketManagementService;
-    delete m_notificationManagementService;
-    delete m_logManagementService;
-    delete m_ScreenManagementService;
-    delete m_seatManagementService;
-    delete m_refundManagementService;
-}
-
-/*
  * Function: Controller::saveData
  * Description: Centralized method to persist all application data into CSV files.
  *              Delegates saving responsibilities to each management service, ensuring
@@ -249,4 +226,27 @@ void Controller::saveData()
     m_seatManagementService->saveSeatData();
     m_showManagementService->saveShowData();
     m_bookingManagementService->saveBookingData();
+}
+
+/*
+ * Function: Controller::~Controller
+ * Description: Destructor. Cleans up allocated memory by deleting all
+ *              management service pointers.
+ * Returns: None
+ */
+Controller::~Controller()
+{
+    delete m_authenticationManagementService;
+    delete m_userManagementService;
+    delete m_theatreManagementService;
+    delete m_movieManagementService;
+    delete m_showManagementService;
+    delete m_bookingManagementService;
+    delete m_paymentManagementService;
+    delete m_ticketManagementService;
+    delete m_notificationManagementService;
+    delete m_logManagementService;
+    delete m_ScreenManagementService;
+    delete m_seatManagementService;
+    delete m_refundManagementService;
 }

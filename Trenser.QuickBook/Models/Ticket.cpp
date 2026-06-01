@@ -129,6 +129,17 @@ std::string Ticket::serialize()
 	return result;
 }
 
+/*
+ * Function: Ticket::deserialize
+ * Description: Deserializes a single line of CSV-formatted ticket data into a Ticket object.
+ *              Extracts fields such as Ticket ID, Payment ID, and Customer ID.
+ *              Initializes the Payment and Customer pointers as nullptr initially,
+ *              to be linked later when those objects are available in the DataStore.
+ * Parameters:
+ *    line - A reference to a string containing one line of CSV ticket data.
+ * Returns:
+ *    A pointer to a newly created Ticket object populated with the deserialized data.
+ */
 Ticket* Ticket::deserialize(std::string& line)
 {
 	std::stringstream lineStream(line);

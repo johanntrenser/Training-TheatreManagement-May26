@@ -213,10 +213,31 @@ const std::map<std::string, Booking*>& DataStore::getBookings() const
     return m_bookings;
 }
 
+/*
+ * Function: DataStore::addTicket
+ * Description: Adds a Ticket object to the DataStore.
+ *              Stores the ticket in the internal map of tickets, keyed by its unique Ticket ID.
+ *              If a ticket with the same ID already exists, it will be overwritten with the new pointer.
+ * Parameters:
+ *    ticket - A pointer to the Ticket object to be added.
+ * Returns:
+ *    None
+ */
 void DataStore::addTicket(Ticket* ticket)
 {
     m_tickets[ticket->getTicketId()] = ticket;
 }
+
+/*
+ * Function: DataStore::addTheatre
+ * Description: Adds a Theatre object to the DataStore.
+ *              Stores the theatre in the internal map of theatres, keyed by its unique Theatre ID.
+ *              If a theatre with the same ID already exists, it will be overwritten with the new pointer.
+ * Parameters:
+ *    theatre - A pointer to the Theatre object to be added.
+ * Returns:
+ *    None
+ */
 void DataStore::addTheatre(Theatre* theatre)
 {
     m_theatres[theatre->getTheatreId()] = theatre;
