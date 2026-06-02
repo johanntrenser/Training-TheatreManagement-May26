@@ -13,4 +13,12 @@
 
 class Admin : public User
 {
+public:
+    Admin() = default;
+    Admin(const std::string& userId,
+        const std::string& userName,
+        const std::string& email,
+        const std::string& password,
+        const std::string& phoneNumber,
+        Enums::UserType type);
 };

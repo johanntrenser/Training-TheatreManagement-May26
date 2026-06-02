@@ -187,3 +187,74 @@ void Booking::setAmount(double amount)
 {
     m_amount = amount;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Bookig object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Booking::serialize()
+{
+    std::string result = m_bookingId + config::delimeter::comma;
+    if (m_customer)
+    {
+        result += m_customer->getUserId() + config::delimeter::comma;
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    if (m_show)
+    {
+        result += m_show->getShowId() + config::delimeter::comma;
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    if (!m_bookedSeats.empty())
+    {
+        for (std::vector<Seat*>::const_iterator iterator = m_bookedSeats.begin(); iterator != m_bookedSeats.end(); ++iterator)
+        {
+            result += (*iterator)->getSeatId();
+            if (std::next(iterator) != m_bookedSeats.end())
+            {
+                result += config::delimeter::verticalBar;
+            }
+        }
+    }
+    result += config::delimeter::comma;
+    result += Enums::getBookingStatusString(m_status) +
+        config::delimeter::comma +
+        std::to_string(m_amount);
+    return result;
+}
+
+/*
+ * Function: Booking::deserialize
+ * Description: Deserializes a single line of CSV-formatted booking data into a Booking object.
+ *              Extracts fields such as Booking ID, Customer ID, Show ID, Booked Seat, Status, and Amount.
+ *              Converts string values into appropriate types (double for amount, enum for status).
+ *              The Customer and Show pointers are set to nullptr initially and can be linked later
+ *              when those objects are available in the DataStore. The booked seats are initialized
+ *              as an empty container and can be populated afterward.
+ * Parameters:
+ *    lines - A reference to a string containing one line of CSV booking data.
+ * Returns:
+ *    A pointer to a newly created Booking object populated with the deserialized data.
+ */
+Booking* Booking::deserialize(std::string& lines)
+{
+    std::string bookingId, customerId, showId, bookedSeat, status, amount;
+    std::stringstream lineStream(lines);
+    getline(lineStream, bookingId, ',');
+    getline(lineStream, customerId, ',');
+    getline(lineStream, showId, ',');
+    getline(lineStream, bookedSeat, ',');
+    getline(lineStream, status, ',');
+    getline(lineStream, amount, ',');
+    util::trimWhitespace(amount);
+    Booking* booking = Factory::getObject<Booking>(bookingId, nullptr, nullptr, std::vector<Seat*>{}, Enums::getBookingStatus(status), stod(amount));
+    return booking;
+}

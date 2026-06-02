@@ -9,9 +9,11 @@
 #pragma once
 #include <string>
 #include <ctime>
+#include "TimeStamp.h"
 #include "Movie.h"
 #include "Screen.h"
 #include "Enums.h"
+#include "Factory.h"
 
 class ShowSeatAvailability;
 
@@ -47,5 +49,7 @@ public:
     void setEndTime(time_t endTime);
     void setSeatAvailability(ShowSeatAvailability* seatAvailability);
     void setShowStatus(Enums::ShowStatus showStatus);
+    std::string serialize();
+    static Show* deserialize(std::string& line);
     ~Show() = default;
 };

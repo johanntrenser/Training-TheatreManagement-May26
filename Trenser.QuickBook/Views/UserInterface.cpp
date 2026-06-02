@@ -57,6 +57,7 @@ UserInterface::UserInterface()
  */
 void UserInterface::run()
 {
+	m_controller->loadDataFromFile();
 	bool isMenuActive = true;
 	while (isMenuActive)
 	{
@@ -64,8 +65,7 @@ void UserInterface::run()
 		{
 			int choice;
 			util::clear();
-			cout << "Quick Book - Theatre Management System\n1. Login\n2. Register\n3. Exit\nEnter Your Choice: ";
-			util::readValue(choice);
+			util::readValueWithRetry(choice, "Quick Book - Theatre Management System\n1. Login\n2. Register\n3. Exit\nEnter Your Choice: ");
 			if (!handleOperation(choice))
 			{
 				isMenuActive = false;
@@ -103,6 +103,7 @@ bool UserInterface::handleOperation(int choice)
 		registerUser();
 		break;
 	case 3:
+		m_controller->saveData();
 		std::cout << "Exiting..." << std::endl;
 		return false;
 	default:
@@ -126,11 +127,9 @@ void UserInterface::login()
 {
 	string email, password;
 	util::clear();
-	cout << "Enter email: ";
-	util::readValue(email);
+	util::readValueWithRetry(email, "Enter email: ");
 	util::isEmailValid(email);
-	cout << "Enter password: ";
-	util::readValue(password);
+	util::readValueWithRetry(password, "Enter password: ");
 	pair<Enums::LoginStatus, Enums::UserType> authenticationContext = m_controller->login(email, password);
 	Enums::LoginStatus loginStatus = get<0>(authenticationContext);
 	Enums::UserType userType = get<1>(authenticationContext);
@@ -169,89 +168,6 @@ void UserInterface::login()
 };
 
 /*
- * Function: adminMenu
- * Description: Displays the menu options available to an Admin user.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
-void UserInterface::adminMenu()
-{
-	cout << " 1.  Create User" << endl;
-	cout << " 2.  View All Users" << endl;
-	cout << " 3.  Update User Details" << endl;
-	cout << " 4.  Deactivate User" << endl;
-	cout << " 5.  Reactivate User" << endl;
-	cout << " 6.  View Profile" << endl;
-	cout << " 7.  View User Status" << endl;
-	cout << " 8.  Change Password" << endl;
-	cout << " 9.  Add Movie" << endl;
-	cout << "10.  Update Movie Details" << endl;
-	cout << "11.  List All Movies" << endl;
-	cout << "12.  Deactivate Movie" << endl;
-	cout << "13.  Reactivate Movie" << endl;
-	cout << "14.  Search Movie" << endl;
-	cout << "15. Validate Theatre Request" << endl;
-	cout << "16. Deactivate theatre byadmin" << endl;
-	cout << "17. Logout" << endl;
-	cout << "------------------------" << endl;
-	cout << "Enter an option: ";
-}
-
-/*
- * Function: customerMenu
- * Description: Displays the menu options available to a Customer user.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
-void UserInterface::customerMenu()
-{
-	cout << "Customer Menu" << endl;
-	cout << "------------------------" << endl;
-	cout << " 1.  Update User Details" << endl;
-	cout << " 2.  View Profile" << endl;
-	cout << " 3.  Change Password" << endl;
-	cout << " 4.  Search Movie" << endl;
-	cout << " 5.  Logout" << endl;
-	cout << "------------------------" << endl;
-	cout << "Enter an option: ";
-}
-
-/*
-  * Function: theatreOwnerMenu
-  * Description: Displays the menu options available to a Theatre Owner user.
-  * Parameters:
-  *    None
-  * Returns:
-  *    None
-  */
-void UserInterface::theatreOwnerMenu()
-{
-	cout << "Theatre Owner Menu" << endl;
-	cout << "------------------------" << endl;
-	cout << " 1.  Add Theatre" << endl;
-	cout << " 2.  View Theatre Details" << endl;
-	cout << " 3.  Update Theatre Details" << endl;
-	cout << " 4.  Deactivate Theatre" << endl;
-	cout << " 5.  Reactivate Theatre" << endl;
-	cout << " 6.  Search Theatre" << endl;
-	cout << " 7.  List All Theatres" << endl;
-	cout << " 8.  Add Movie to Theatre" << endl;
-	cout << " 9.  View Movies in Theatre" << endl;
-	cout << " 10. Add show for movie" << endl;
-	cout << "10.  Update User Details" << endl;
-	cout << "11.  View Profile" << endl;
-	cout << "12.  Change Password" << endl;
-	cout << "13.  Logout" << endl;
-	cout << "------------------------" << endl;
-	cout << "Enter an option: ";
-
-}
-
-/*
  * Function: registerUser
  * Description: Prompts the user to select a user type, collects user details,
  *              and registers the user through the Controller.
@@ -266,7 +182,7 @@ void UserInterface::registerUser()
 	Enums::UserType userType = Enums::UserType::CUSTOMER;
 	int choice;
 	userTypesMenu();
-	util::readValue(choice);
+	util::readValueWithRetry(choice, "Enter a choice: ");
 	switch (choice)
 	{
 	case 1:
@@ -310,202 +226,1223 @@ void UserInterface::userTypesMenu()
 	cout << "-------------------User Type List-------------------" << std::endl;
 	cout << "1. Customer" << std::endl;
 	cout << "2. Theatre Owner" << std::endl;
-	cout << "Enter a choice: " << std::endl;
 }
 
 /*
- * Function: UserInterface::handleAdminMenuOperation
- * Description: Handles the admin menu operations in a loop until the admin exits.
- *              Displays the admin menu, reads the choice, and executes the corresponding
- *              operation such as validating theatre requests, deactivating theatres,
- *              or reactivating theatres. Provides feedback for invalid choices.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
+Function Name : UserInterface::adminMenu
+Description   : Displays the main menu options available to Admin users.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::adminMenu()
+{
+	cout << "Admin Menu" << endl;
+	cout << "------------------------" << endl;
+	cout << " 1.  User Management" << endl;
+	cout << " 2.  Movie Management" << endl;
+	cout << " 3.  Theatre Management" << endl;
+	cout << " 4.  Show Management" << endl;
+	cout << " 5.  Ticket Management" << endl;
+	cout << " 6.  View Logs" << endl;
+	cout << " 7.  View Profile" << endl;
+	cout << " 8.  Change Password" << endl;
+	cout << " 9.  Logout" << endl;
+	cout << "------------------------" << endl;
+}
+
+/*
+Function Name : UserInterface::handleAdminMenuOperation
+Description   : Handles Admin menu operations in a loop until logout.
+				Routes to submenus for user, movie, theatre, show, and ticket management.
+Parameters    : None
+Return Type   : void
+*/
 void UserInterface::handleAdminMenuOperation()
 {
 	bool isMenuActive = true;
 	int choice;
 	while (isMenuActive)
 	{
+		util::clear();
 		adminMenu();
-		util::readValue(choice);
+		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
 		case 1:
-			createUser();
+		{
+			adminUserManagementMenu();
 			break;
+		}
 		case 2:
-			viewAllUsers();
+		{
+			adminMovieManagementMenu();
 			break;
+		}
 		case 3:
-			updateUserDetails();
+		{
+			adminTheatreManagementMenu();
 			break;
+		}
 		case 4:
-			deactivateUser();
+		{
+			adminShowManagementMenu();
 			break;
+		}
 		case 5:
-			reactivateUser();
+		{
+			adminTicketManagementMenu();
 			break;
+		}
 		case 6:
+		{
+			viewLogsByType();
+			break;
+		}
+		case 7:
+		{
 			viewProfile();
 			break;
-		case 7:
-			viewUserStatus();
-			break;
+		}
 		case 8:
+		{
 			changePassword();
 			break;
+		}
 		case 9:
-			addMovie();
-			break;
-		case 10:
-			updateMovie();
-			break;
-		case 11:
-			displayAllMovies();
-			break;
-		case 12:
-			deactivateMovie();
-			break;
-		case 13:
-			activateMovie();
-			break;
-		case 14:
-			searchMovie();
-			break;
-		case 15:
-			validateTheatreRequest();
-			break;
-		case 16:
-			deactivateTheatreByAdmin();
-			break;
-		case 17:
+		{
 			m_controller->logout();
 			isMenuActive = false;
 			break;
+		}
 		default:
+		{
 			cout << "Invalid choice. Please try again!" << endl;
 			util::pressEnter();
-			util::clear();
 			break;
+		}
 		}
 	}
 }
 
 /*
- * Function: UserInterface::handleCustomerMenuOperation
- * Description: Handles the customer menu operations in a loop until the customer exits.
- *              Displays the customer menu, reads the choice, and executes the corresponding
- *              operation. Currently supports exiting the menu and provides feedback for invalid choices.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
-void UserInterface::handleCustomerMenuOperation()
+Function Name : UserInterface::adminUserManagementMenu
+Description   : Displays the Admin User Management submenu and handles operations
+				interactively in a loop until the user chooses to go back.
+				Provides options to create, view, update, deactivate, reactivate,
+				and check user status, as well as view notifications.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::adminUserManagementMenu()
 {
 	bool isMenuActive = true;
 	int choice;
 	while (isMenuActive)
 	{
-		customerMenu();
-		util::readValue(choice);
+		util::clear();
+		cout << "User Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Create User" << endl;
+		cout << "2. View All Users" << endl;
+		cout << "3. Update User Details" << endl;
+		cout << "4. Deactivate User" << endl;
+		cout << "5. Reactivate User" << endl;
+		cout << "6. View User Status" << endl;
+		cout << "7. View Notifications" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
 		case 1:
+		{
+			createUser();
+			break;
+		}
+		case 2:
+		{
+			viewAllUsers();
+			break;
+		}
+		case 3:
+		{
 			updateUserDetails();
 			break;
-		case 2:
-			viewProfile();
-			break;
-		case 3:
-			changePassword();
-			break;
+		}
 		case 4:
-			searchMovie();
+		{
+			deactivateUser();
 			break;
+		}
 		case 5:
+		{
+			reactivateUser();
+			break;
+		}
+		case 6:
+		{
+			viewUserStatus();
+			break;
+		}
+		case 7:
+		{
+			viewNotifications();
+			break;
+		}
+		case 0:
+		{
 			isMenuActive = false;
 			break;
+		}
 		default:
-			cout << "Invalid choice. Please try again!" << endl;
+		{
+			cout << "Invalid choice!" << endl;
 			util::pressEnter();
-			util::clear();
 			break;
+		}
 		}
 	}
 }
 
 /*
- * Function: UserInterface::handleTheatreOwnerMenuOperation
- * Description: Handles the theatre owner menu operations in a loop until the owner exits.
- *              Displays the theatre owner menu, reads the choice, and executes the corresponding
- *              operation such as adding theatres, viewing details, updating, deactivating/reactivating,
- *              managing movies, searching, and listing theatres. Provides feedback for invalid choices.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
+* Function Name : UserInterface::adminMovieManagementMenu
+* Description   : Displays the Admin Movie Management submenu and handles operations
+*                 interactively in a loop until the user chooses to go back.
+*                 Provides options to add, update, list, search, deactivate, and
+*                 reactivate movies. Uses input retry logic to ensure valid menu
+*                 selection.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::adminMovieManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Movie Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Add Movie" << endl;
+		cout << "2. Update Movie" << endl;
+		cout << "3. List All Movies" << endl;
+		cout << "4. Search Movie" << endl;
+		cout << "5. Deactivate Movie" << endl;
+		cout << "6. Reactivate Movie" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			addMovie();
+			break;
+		}
+		case 2:
+		{
+			updateMovie();
+			break;
+		}
+		case 3:
+		{
+			displayAllMovies();
+			break;
+		}
+		case 4:
+		{
+			searchMovie();
+			break;
+		}
+		case 5:
+		{
+			deactivateMovie();
+			break;
+		}
+		case 6:
+		{
+			activateMovie();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::adminMovieManagementMenu
+Description   : Displays the Admin Movie Management submenu and handles operations
+				interactively in a loop until the user chooses to go back.
+				Provides options to add, update, list, search, deactivate, and
+				reactivate movies.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::adminTheatreManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Theatre Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Validate Theatre Request" << endl;
+		cout << "2. Deactivate Theatre" << endl;
+		cout << "3. Reactivate Theatre" << endl;
+		cout << "4. Search Theatre" << endl;
+		cout << "5. List All Theatres" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			validateTheatreRequest();
+			break;
+		}
+		case 2:
+		{
+			deactivateTheatreByAdmin();
+			break;
+		}
+		case 3:
+		{
+			reactivateTheatreByAdmin();
+			break;
+		}
+		case 4:
+		{
+			searchTheatre();
+			break;
+		}
+		case 5:
+		{
+			listAllTheatres();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::adminShowManagementMenu
+Description   : Displays the Admin Show Management submenu and handles operations
+				interactively in a loop until the user chooses to go back.
+				Provides options to view all shows, check show status, and
+				list shows for a specific movie.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::adminShowManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Show Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. View All Shows" << endl;
+		cout << "2. View Show Status" << endl;
+		cout << "3. List Shows For a Movie" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			displayAllShows();
+			break;
+		}
+		case 2:
+		{
+			viewShowStatus();
+			break;
+		}
+		case 3:
+		{
+			listShowsForAMovie();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::adminTicketManagementMenu
+Description   : Displays the Admin Ticket Management submenu and handles operations
+				interactively in a loop until the user chooses to go back.
+				Provides options to view all tickets and check ticket status.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::adminTicketManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Ticket Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. View All Tickets" << endl;
+		cout << "2. View Ticket Status" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			viewAllTickets();
+			break;
+		}
+		case 2:
+		{
+			viewTicketStatus();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::theatreOwnerMenu
+Description   : Displays the main menu options available to Theatre Owner users.
+				Provides access to theatre, show, and booking management, as well
+				as notifications, profile, user details update, password change,
+				and logout.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::theatreOwnerMenu()
+{
+	cout << "Theatre Owner Menu" << endl;
+	cout << "------------------------" << endl;
+	cout << "1. Theatre Management" << endl;
+	cout << "2. Show Management" << endl;
+	cout << "3. Booking Management" << endl;
+	cout << "4. View Notifications" << endl;
+	cout << "5. View Profile" << endl;
+	cout << "6. Update User Details" << endl;
+	cout << "7. Change Password" << endl;
+	cout << "8. Logout" << endl;
+	cout << "------------------------" << endl;
+}
+
+/*
+Function Name : UserInterface::handleTheatreOwnerMenuOperation
+Description   : Handles Theatre Owner menu operations in a loop until logout.
+				Routes to submenus for theatre, show, and booking management,
+				as well as notifications, profile viewing, user detail updates,
+				and password changes. Provides a logout option to exit the menu.
+Parameters    : None
+Return Type   : void
+*/
 void UserInterface::handleTheatreOwnerMenuOperation()
 {
 	bool isMenuActive = true;
 	int choice;
 	while (isMenuActive)
 	{
+		util::clear();
 		theatreOwnerMenu();
-		util::readValue(choice);
+		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-			// Theatre Management
 		case 1:
-			addTheatre();
+		{
+			ownerTheatreManagementMenu();
 			break;
+		}
 		case 2:
-			viewTheatreDetails();
+		{
+			ownerShowManagementMenu();
 			break;
+		}
 		case 3:
-			updateTheatre();
+		{
+			ownerBookingManagementMenu();
 			break;
+		}
 		case 4:
-			deactivateTheatreByOwner();
+		{
+			viewNotifications();
 			break;
+		}
 		case 5:
-			reactivateTheatreByOwner();
-			break;
-		case 6:
-			searchTheatre();
-			break;
-		case 7:
-			listAllTheatres();
-			break;
-		case 8:
-			addMovieToTheatre();
-			break;
-		case 9:
-			displayMoviesInTheatre();
-			break;
-		case 10:
-			updateUserDetails();
-			break;
-		case 11:
+		{
 			viewProfile();
 			break;
-		case 12:
+		}
+		case 6:
+		{
+			updateUserDetails();
+			break;
+		}
+		case 7:
+		{
 			changePassword();
 			break;
-		case 13:
+		}
+		case 8:
+		{
 			m_controller->logout();
 			isMenuActive = false;
 			break;
+		}
 		default:
+		{
 			cout << "Invalid choice. Please try again!" << endl;
 			util::pressEnter();
-			util::clear();
 			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::ownerTheatreManagementMenu
+Description   : Displays the Theatre Owner Theatre Management submenu and handles
+				operations interactively in a loop until the user chooses to go back.
+				Provides options to add, view, update, deactivate, reactivate, search,
+				and list theatres, as well as manage movies within a theatre.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::ownerTheatreManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Theatre Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Add Theatre" << endl;
+		cout << "2. View Theatre Details" << endl;
+		cout << "3. Update Theatre Details" << endl;
+		cout << "4. Deactivate Theatre" << endl;
+		cout << "5. Reactivate Theatre" << endl;
+		cout << "6. Search Theatre" << endl;
+		cout << "7. List All Theatres" << endl;
+		cout << "8. Add Movie to Theatre" << endl;
+		cout << "9. View Movies in Theatre" << endl;
+		cout << "10. Remove Movies in Theatre" << endl;
+		cout << "11. Screen Management" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			addTheatre();
+			break;
+		}
+		case 2:
+		{
+			viewTheatreDetails();
+			break;
+		}
+		case 3:
+		{
+			updateTheatre();
+			break;
+		}
+		case 4:
+		{
+			deactivateTheatreByOwner();
+			break;
+		}
+		case 5:
+		{
+			reactivateTheatreByOwner();
+			break;
+		}
+		case 6:
+		{
+			searchTheatre();
+			break;
+		}
+		case 7:
+		{
+			listAllTheatres();
+			break;
+		}
+		case 8:
+		{
+			addMovieToTheatre();
+			break;
+		}
+		case 9:
+		{
+			displayMoviesInTheatre();
+			break;
+		}
+		case 10:
+		{
+			removeMovieFromTheatre();
+			break;
+		}
+		case 11:
+		{
+			ownerScreenManagementMenu();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+* Function Name : UserInterface::ownerScreenManagementMenu
+* Description   : Displays the Theatre Owner Screen Management submenu and handles
+*                 operations interactively in a loop until the user chooses to go back.
+*                 Provides options to add, view, update, deactivate, and reactivate screens,
+*                 as well as manage seats within a selected screen. Ensures that the
+*                 theatre ID is validated before performing operations and prompts
+*                 the user for necessary input values such as screen name, dimensions,
+*                 and seat price.
+* Parameters    : None
+* Return Type   : void
+*/
+void UserInterface::ownerScreenManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Screen Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Add Screen" << endl;
+		cout << "2. View Screens" << endl;
+		cout << "3. Update Screen Name" << endl;
+		cout << "4. Deactivate Screen" << endl;
+		cout << "5. Reactivate Screen" << endl;
+		cout << "6. Seat Management" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		if (choice == 0)
+		{
+			isMenuActive = false;
+			break;
+		}
+		std::string theatreId;
+		const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+		if (theatres.empty())
+		{
+			cout << "No theatres found!" << endl;
+			util::pressEnter();
+			break;
+		}
+		displayTheatreDetails(theatres);
+		util::readValueWithRetry(theatreId, "Enter Theatre ID: ");
+		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::FAILED)
+		{
+			cout << "Invalid Theatre ID!" << endl;
+			util::pressEnter();
+			continue;
+		}
+
+		switch (choice)
+		{
+		case 1:
+		{
+			std::string name;
+			int rows, columns;
+			double amount;
+			util::readValueWithRetry(name, "Enter Screen Name: ");
+			util::readValueWithRetry(rows, "Enter Number of Rows: ");
+			util::readValueWithRetry(columns, "Enter Number of Columns: ");
+			util::readValueWithRetry(amount, "Enter Seat Price: ");
+			addScreen(theatreId, name, rows, columns, amount);
+			util::pressEnter();
+			break;
+		}
+		case 2:
+		{
+			viewTheatreScreens(theatreId);
+			util::pressEnter();
+			break;
+		}
+		case 3:
+		{
+			std::string screenId, name;
+			viewTheatreScreens(theatreId);
+			util::readValueWithRetry(screenId, "Enter Screen ID: ");
+			util::readValueWithRetry(name, "Enter New Name: ");
+			updateScreenName(theatreId, screenId, name);
+			util::pressEnter();
+			break;
+		}
+		case 4:
+		{
+			std::string screenId;
+			viewTheatreScreens(theatreId);
+			util::readValueWithRetry(screenId, "Enter Screen ID to deactivate: ");
+			deactivateScreen(theatreId, screenId);
+			util::pressEnter();
+			break;
+		}
+		case 5:
+		{
+			std::string screenId;
+			viewTheatreScreens(theatreId);
+			util::readValueWithRetry(screenId, "Enter Screen ID to reactivate: ");
+			reactivateScreen(theatreId, screenId);
+			util::pressEnter();
+			break;
+		}
+		case 6:
+		{
+			std::string screenId;
+			viewTheatreScreens(theatreId);
+			util::readValueWithRetry(screenId, "Enter Screen ID for seat management: ");
+			const std::vector<const Screen*> screens = m_controller->getScreensFromTheatre(theatreId);
+			Screen* selectedScreen = nullptr;
+			for (std::vector<const Screen*>::const_iterator it = screens.begin(); it != screens.end(); ++it)
+			{
+				if ((*it)->getScreenId() == screenId)
+				{
+					selectedScreen = const_cast<Screen*>(*it);
+					break;
+				}
+			}
+			if (selectedScreen == nullptr)
+			{
+				cout << "Invalid Screen ID!" << endl;
+				util::pressEnter();
+				break;
+			}
+			ownerSeatManagementMenu(selectedScreen);
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+* Function Name : UserInterface::ownerSeatManagementMenu
+* Description   : Displays the Theatre Owner Seat Management submenu and handles operations
+*                 interactively in a loop until the user chooses to go back.
+*                 Provides options to view and update seat layout, deactivate or reactivate
+*                 specific seats, and ensures user input is validated before performing actions.
+* Parameters    :
+*     - Screen* screen : Pointer to the screen object whose seats are being managed.
+* Return Type   : void
+*/
+void UserInterface::ownerSeatManagementMenu(Screen* screen)
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Seat Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. View Seat Layout" << endl;
+		cout << "2. Update Seat Layout" << endl;
+		cout << "3. Deactivate Seat" << endl;
+		cout << "4. Reactivate Seat" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			viewSeatLayout(screen);
+			util::pressEnter();
+			break;
+		}
+		case 2:
+		{
+			int rows = 0, columns = 0;
+			double amount = 0.0;
+			util::readValueWithRetry(amount, "Enter Seat Price: ");
+			updateSeatLayout(screen, rows, columns, amount);
+			util::pressEnter();
+			break;
+		}
+		case 3:
+		{
+			std::string seatId;
+			viewSeatLayout(screen);
+			util::readValueWithRetry(seatId, "Enter Seat ID to deactivate: ");
+			deactivateSeat(screen, seatId);
+			util::pressEnter();
+			break;
+		}
+		case 4:
+		{
+			std::string seatId;
+			viewSeatLayout(screen);
+			util::readValueWithRetry(seatId, "Enter Seat ID to reactivate: ");
+			reactivateSeat(screen, seatId);
+			util::pressEnter();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::ownerShowManagementMenu
+Description   : Displays the Theatre Owner Show Management submenu and handles
+				operations interactively in a loop until the user chooses to go back.
+				Provides options to add, update, cancel, view, and list shows,
+				as well as check show status and list shows for a specific movie.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::ownerShowManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Show Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Add Show" << endl;
+		cout << "2. Update Show" << endl;
+		cout << "3. Cancel Show" << endl;
+		cout << "4. View All Shows" << endl;
+		cout << "5. View Show Status" << endl;
+		cout << "6. List Shows For a Movie" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			addShow();
+			break;
+		}
+		case 2:
+		{
+			updateShow();
+			break;
+		}
+		case 3:
+		{
+			cancelShow();
+			break;
+		}
+		case 4:
+		{
+			displayAllShows();
+			break;
+		}
+		case 5:
+		{
+			viewShowStatus();
+			break;
+		}
+		case 6:
+		{
+			listShowsForAMovie();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::ownerBookingManagementMenu
+Description   : Displays the Theatre Owner Booking Management submenu and handles
+				operations interactively in a loop until the user chooses to go back.
+				Provides options to view all bookings and display booking details.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::ownerBookingManagementMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Booking Management" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. View All Bookings" << endl;
+		cout << "2. View Booking Details" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			viewAllBookings();
+			break;
+		}
+		case 2:
+		{
+			displayBookingDetails();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::customerMenu
+Description   : Displays the main menu options available to Customer users.
+				Provides access to browsing and booking movies/shows, viewing
+				bookings and tickets, notifications, profile, user details update,
+				password change, and logout.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::customerMenu()
+{
+	cout << "Customer Menu" << endl;
+	cout << "------------------------" << endl;
+	cout << "1. Browse & Book" << endl;
+	cout << "2. My Bookings" << endl;
+	cout << "3. My Tickets" << endl;
+	cout << "4. View Notifications" << endl;
+	cout << "5. View Profile" << endl;
+	cout << "6. Update User Details" << endl;
+	cout << "7. Change Password" << endl;
+	cout << "8. Logout" << endl;
+	cout << "------------------------" << endl;
+}
+
+/*
+Function Name : UserInterface::handleCustomerMenuOperation
+Description   : Handles Customer menu operations in a loop until logout.
+				Routes to submenus for browsing and booking movies/shows,
+				viewing bookings and tickets, notifications, profile viewing,
+				user detail updates, and password changes. Provides a logout
+				option to exit the menu gracefully.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::handleCustomerMenuOperation()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		customerMenu();
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			customerBrowseMenu();
+			break;
+		}
+		case 2:
+		{
+			customerBookingMenu();
+			break;
+		}
+		case 3:
+		{
+			customerTicketMenu();
+			break;
+		}
+		case 4:
+		{
+			viewNotifications();
+			break;
+		}
+		case 5:
+		{
+			viewProfile();
+			break;
+		}
+		case 6:
+		{
+			updateUserDetails();
+			break;
+		}
+		case 7:
+		{
+			changePassword();
+			break;
+		}
+		case 8:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice. Please try again!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::customerBrowseMenu
+Description   : Displays the Customer Browse & Book submenu and handles operations
+				interactively in a loop until the user chooses to go back.
+				Provides options to search movies, list shows for a movie,
+				search theatres, and create bookings.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::customerBrowseMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "Browse & Book" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. Search Movie" << endl;
+		cout << "2. List Shows For a Movie" << endl;
+		cout << "3. Search Theatre" << endl;
+		cout << "4. Create Booking" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			searchMovie();
+			break;
+		}
+		case 2:
+		{
+			listShowsForAMovie();
+			break;
+		}
+		case 3:
+		{
+			searchTheatre();
+			break;
+		}
+		case 4:
+		{
+			createBooking();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::customerBookingMenu
+Description   : Displays the Customer Booking Management submenu and handles operations
+				interactively in a loop until the user chooses to go back.
+				Provides options to view all bookings, view booking details,
+				cancel bookings, and check payment status.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::customerBookingMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "My Bookings" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. View All Bookings" << endl;
+		cout << "2. View Booking Details" << endl;
+		cout << "3. Cancel Booking" << endl;
+		cout << "4. View Payment Status" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			viewAllBookings();
+			break;
+		}
+		case 2:
+		{
+			displayBookingDetails();
+			break;
+		}
+		case 3:
+		{
+			cancelBooking();
+			break;
+		}
+		case 4:
+		{
+			viewPaymentStatus();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
+		}
+	}
+}
+
+/*
+Function Name : UserInterface::customerTicketMenu
+Description   : Displays the Customer Ticket Management submenu and handles operations
+				interactively in a loop until the user chooses to go back.
+				Provides options to view active tickets, view ticket history,
+				and check ticket status.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::customerTicketMenu()
+{
+	bool isMenuActive = true;
+	int choice;
+	while (isMenuActive)
+	{
+		util::clear();
+		cout << "My Tickets" << endl;
+		cout << "------------------------" << endl;
+		cout << "1. View Active Tickets" << endl;
+		cout << "2. View Ticket History" << endl;
+		cout << "3. View Ticket Status" << endl;
+		cout << "0. Back" << endl;
+		util::readValueWithRetry(choice, "Enter an option: ");
+		switch (choice)
+		{
+		case 1:
+		{
+			viewActiveTicketDetails();
+			break;
+		}
+		case 2:
+		{
+			viewTicketHistory();
+			break;
+		}
+		case 3:
+		{
+			viewTicketStatus();
+			break;
+		}
+		case 0:
+		{
+			isMenuActive = false;
+			break;
+		}
+		default:
+		{
+			cout << "Invalid choice!" << endl;
+			util::pressEnter();
+			break;
+		}
 		}
 	}
 }
@@ -525,8 +1462,7 @@ void UserInterface::getUniqueEmail(std::string& email)
 	bool isEmailUnique = (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS) ? true : false;
 	while (!isEmailUnique)
 	{
-		cout << "Email already exists!. Please enter again: ";
-		util::readValue(email);
+		util::readValueWithRetry(email, "Email already exists!. Please enter again: ");
 		util::isEmailValid(email);
 		if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
 		{
@@ -550,8 +1486,7 @@ void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
 	bool isPhoneNumberUnique = (m_controller->isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS) ? true : false;
 	while (!isPhoneNumberUnique)
 	{
-		cout << "Phone number already exists!. Please enter again: ";
-		util::readValue(phoneNumber);
+		util::readValueWithRetry(phoneNumber, "Phone number already exists!. Please enter again: ");
 		util::isPhoneNumberValid(phoneNumber);
 		if (m_controller->isPhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
 		{
@@ -574,10 +1509,8 @@ void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
  */
 void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
 {
-	cout << "Enter Number of Rows: ";
-	util::readValue(rows);
-	cout << "Enter Number of Columns: ";
-	util::readValue(columns);
+	util::readValueWithRetry(rows, "Enter Number of Rows: ");
+	util::readValueWithRetry(columns, "Enter Number of Columns: ");
 	if (m_controller->updateSeatLayout(screen, rows, columns, amount) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Layout Updated Successfully" << endl;
@@ -603,17 +1536,13 @@ void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns, doub
  */
 void UserInterface::handleUserDetailsInput(std::string& userName, std::string& email, std::string& password, std::string& phoneNumber)
 {
-	cout << "Enter user name: ";
-	util::readValue(userName);
-	cout << "Enter email: ";
-	util::readValue(email);
+	util::readValueWithRetry(userName, "Enter user name: ");
+	util::readValueWithRetry(email, "Enter email: ");
 	util::isEmailValid(email);
 	getUniqueEmail(email);
-	cout << "Enter password: ";
-	util::readValue(password);
+	util::readValueWithRetry(password, "Enter password: ");
 	util::isPasswordValid(password);
-	cout << "Enter phone number: ";
-	util::readValue(phoneNumber);
+	util::readValueWithRetry(phoneNumber, "Enter phone number: ");
 	util::isPhoneNumberValid(phoneNumber);
 	getUniquePhoneNumber(phoneNumber);
 }
@@ -669,9 +1598,8 @@ void UserInterface::getValidTime(int& hour, int& minute)
 	bool isTimeValid = isValidTime(hour, minute);
 	while (!isTimeValid)
 	{
-		cout << "Please enter a valid time (HH MM) : ";
-		util::readValue(hour);
-		util::readValue(minute);
+		util::readValueWithRetry(hour, "Please enter a valid time (Enter Hour) : ");
+		util::readValueWithRetry(minute, "Please enter a valid time (Enter Minutes) : ");
 		isTimeValid = isValidTime(hour, minute);
 	}
 }
@@ -691,10 +1619,9 @@ void UserInterface::getValidDate(int& year, int& month, int& day)
 	bool isDateValid = isValidDate(year, month, day);
 	while (!isDateValid)
 	{
-		cout << "Please enter a valid date (YYYY MM DD) : ";
-		util::readValue(year);
-		util::readValue(month);
-		util::readValue(day);
+		util::readValueWithRetry(year, "Please enter a valid date (YYYY) : ");
+		util::readValueWithRetry(month, "Please enter a valid month (MM) : ");
+		util::readValueWithRetry(day, "Please enter a valid day (DD) : ");
 		isDateValid = isValidDate(year, month, day);
 	}
 }
@@ -737,8 +1664,7 @@ void UserInterface::addShow()
 	int year, month, day;
 	int startTimeHour, startTimeMinute;
 	displayMoviesInTheatre(theatreId);
-	cout << "Enter Movie ID: ";
-	util::readValue(movieId);
+	util::readValueWithRetry(movieId, "Enter Movie ID: ");
 	Enums::ProcessStatus isMoviePresent = m_controller->isMovieInTheatre(movieId, theatreId);
 	if (isMoviePresent == Enums::ProcessStatus::FAILED)
 	{
@@ -762,14 +1688,13 @@ void UserInterface::addShow()
 		util::clear();
 		return;
 	}
-	cout << "Enter date (YYYY MM DD): ";
-	util::readValue(year);
-	util::readValue(month);
-	util::readValue(day);
+	util::readValueWithRetry(year, "Enter date (YYYY): ");
+	util::readValueWithRetry(month, "Enter month (MM): ");
+	util::readValueWithRetry(day, "Enter day (DD): ");
 	getValidDate(year, month, day);
 	cout << "Enter start time (HH MM): ";
-	util::readValue(startTimeHour);
-	util::readValue(startTimeMinute);
+	util::readValueWithRetry(startTimeHour, "Enter a valid time (Enter Hour) : ");
+	util::readValueWithRetry(startTimeMinute, "Enter a valid time (Enter Minutes) : ");
 	getValidTime(startTimeHour, startTimeMinute);
 	if (!isFutureDateTime(year, month, day, startTimeHour, startTimeMinute))
 	{
@@ -808,7 +1733,7 @@ void UserInterface::createUser()
 	Enums::UserType userType = Enums::UserType::CUSTOMER;
 	int choice;
 	userTypesAdminMenu();
-	util::readValue(choice);
+	util::readValueWithRetry(choice, "Enter a choice: ");
 	switch (choice)
 	{
 	case 1:
@@ -856,7 +1781,7 @@ void UserInterface::userTypesAdminMenu()
 	cout << "1. Customer" << std::endl;
 	cout << "2. Theatre Owner" << std::endl;
 	cout << "3. Admin" << std::endl;
-	cout << "Enter a choice: " << std::endl;
+	cout << "----------------------" << std::endl;
 }
 
 /*
@@ -880,22 +1805,19 @@ void UserInterface::updateUserDetails()
 		Enums::ProcessStatus result = Enums::ProcessStatus::FAILED;
 		viewProfile();
 		updateUserDetailsMenu();
-		util::readValue(choice);
+		util::readValueWithRetry(choice, "Enter a choice: ");
 		switch (choice)
 		{
 		case 1:
-			cout << "Enter username: ";
-			util::readValue(input);
+			util::readValueWithRetry(input, "Enter username: ");
 			result = m_controller->setAuthenticatedUserUserName(input);
 			break;
 		case 2:
-			cout << "Enter email: ";
-			util::readValue(input);
+			util::readValueWithRetry(input, "Enter email: ");
 			result = m_controller->setAuthenticatedUserEmail(input);
 			break;
 		case 3:
-			cout << "Enter phoneNumber: ";
-			util::readValue(input);
+			util::readValueWithRetry(input, "Enter phoneNumber: ");
 			result = m_controller->setAuthenticatedUserPhoneNumber(input);
 			break;
 		case 4:
@@ -937,7 +1859,7 @@ void UserInterface::updateUserDetails()
 void UserInterface::updateUserDetailsMenu()
 {
 	cout << "<--- User Details Menu---->" << endl;
-	cout << "1. User Name\n2. Email\n3. Phone Number\n4. Exit\nEnter Your Choice: ";
+	cout << "1. User Name\n2. Email\n3. Phone Number\n4. Exit\n-----------------\n";
 }
 
 /*
@@ -954,8 +1876,7 @@ void UserInterface::deactivateUser()
 {
 	string userId;
 	viewAllUsers();
-	cout << "Enter the User ID: ";
-	util::readValue(userId);
+	util::readValueWithRetry(userId, "Enter the User ID: ");
 	Enums::ProcessStatus result = m_controller->deactivateUser(userId);
 	if (result == Enums::ProcessStatus::SUCCESS)
 	{
@@ -998,9 +1919,7 @@ void UserInterface::viewNotifications()
 		if (remainingUnreadCount > 0)
 		{
 			cout << remainingUnreadCount << " unread notifications remaining." << endl;
-			cout << "1. View More" << endl;
-			cout << "2. Exit" << endl;
-			util::readValue(choice);
+			util::readValueWithRetry(choice, "\n1. View More\n2. Exit\n");
 			if (choice == 2)
 			{
 				condition = false;
@@ -1068,6 +1987,7 @@ Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& t
 {
 	return m_controller->isMovieUnique(title, language, genre, duration);
 }
+
 /*
  * Function: viewSeatLayout
  * Description: Displays the seating grid of a given screen.
@@ -1086,23 +2006,24 @@ void UserInterface::viewSeatLayout(const Screen* screen)
 		{
 			if (!(*iteratorTwo))
 			{
-				cout << (*iteratorTwo)->getSeatId() << "-[NA]" << " ";
+				cout << "[NA]\t" << " "; //
+				continue; //
 			}
 			if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::AVAILABLE)
 			{
-				cout << (*iteratorTwo)->getSeatId() << "-[A]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[A]\t" << " ";
 			}
 			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BOOKED)
 			{
-				cout << (*iteratorTwo)->getSeatId() << "-[B]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[B]\t" << " ";
 			}
 			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::RESERVED)
 			{
-				cout << (*iteratorTwo)->getSeatId() << "-[R]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[R]\t" << " ";
 			}
 			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
 			{
-				cout << (*iteratorTwo)->getSeatId() << "-[D]" << " ";
+				cout << (*iteratorTwo)->getSeatId() << "-[D]\t" << " ";
 			}
 		}
 		cout << endl;
@@ -1124,8 +2045,7 @@ void UserInterface::viewSeatLayout(const Screen* screen)
 const std::vector<const Movie*> UserInterface::getMoviesByTitleInput()
 {
 	std::string title;
-	cout << "\nEnter the movie title: ";
-	util::readValue(title);
+	util::readValueWithRetry(title, "\nEnter the movie title: ");
 	return m_controller->searchMovieByTitle(title);
 }
 
@@ -1144,8 +2064,7 @@ const std::vector<const Movie*> UserInterface::getMoviesByTitleInput()
 Enums::ProcessStatus UserInterface::validateMovieIdInput(const std::vector<const Movie*>& movies, std::string& movieId)
 {
 	const vector<string> movieIdList = getMovieIdFromList(movies);
-	cout << "\nEnter the Movie ID: ";
-	util::readValue(movieId);
+	util::readValueWithRetry(movieId, "\nEnter the Movie ID: ");
 	Enums::ProcessStatus status = checkMovieIdIsValid(movieId, movieIdList);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
@@ -1173,27 +2092,23 @@ void UserInterface::editMovieDetails(const std::string& movieId, const Movie* cu
 	while (choice != 0)
 	{
 		displayEditMovieMenu();
-		util::readValue(choice);
+		util::readValueWithRetry(choice, "\nEnter which details want to edit: ");
 		switch (choice)
 		{
 		case 1:
-			cout << "\nEnter the new Title: ";
-			util::readValue(title);
+			util::readValueWithRetry(title, "\nEnter the new Title: ");
 			changeMovieTitle(movieId, title, currentMovie);
 			break;
 		case 2:
-			cout << "\nEnter the new Language: ";
-			util::readValue(language);
+			util::readValueWithRetry(language, "\nEnter the new Language: ");
 			changeMovieLanguage(movieId, language, currentMovie);
 			break;
 		case 3:
-			cout << "\nEnter the new Genre: ";
-			util::readValue(genre);
+			util::readValueWithRetry(genre, "\nEnter the new Genre: ");
 			changeMovieGenre(movieId, genre, currentMovie);
 			break;
 		case 4:
-			cout << "\nEnter the new Duration: ";
-			util::readValue(duration);
+			util::readValueWithRetry(duration, "\nEnter the new Duration: ");
 			changeMovieDuration(movieId, duration, currentMovie);
 			break;
 		}
@@ -1346,7 +2261,7 @@ void UserInterface::displayEditMovieMenu()
 	cout << "\n3.Genre";
 	cout << "\n4.Duration";
 	cout << "\n0.Exit";
-	cout << "\nEnter which details want to edit: ";
+	cout << "------------------" << endl;
 }
 
 /*
@@ -1542,14 +2457,10 @@ void UserInterface::addMovie()
 {
 	string title, language, genre;
 	int duration;
-	cout << "\nEnter the Movie Title: ";
-	util::readValue(title);
-	cout << "\nLanguage             : ";
-	util::readValue(language);
-	cout << "\nGenre                :";
-	util::readValue(genre);
-	cout << "\nDuration(in minutes) :";
-	util::readValue(duration);
+	util::readValueWithRetry(title, "\nEnter the Movie Title: ");
+	util::readValueWithRetry(language, "\nLanguage             : ");
+	util::readValueWithRetry(genre, "\nGenre                :");
+	util::readValueWithRetry(duration, "\nDuration(in minutes) :");
 	util::isMovieDurationValid(duration);
 	if (Enums::ProcessStatus::SUCCESS == handleMovieDetailsInput(title, language, genre, duration))
 	{
@@ -1582,8 +2493,7 @@ void UserInterface::reactivateUser()
 {
 	string userId;
 	viewInactiveUsers();
-	cout << "Enter the User ID: ";
-	util::readValue(userId);
+	util::readValueWithRetry(userId, "Enter the User ID: ");
 	Enums::ProcessStatus result = m_controller->reactivateUser(userId);
 	if (result == Enums::ProcessStatus::SUCCESS)
 	{
@@ -1609,7 +2519,7 @@ void UserInterface::viewLogsByType()
 {
 	int choice;
 	logsTypeMenu();
-	util::readValue(choice);
+	util::readValueWithRetry(choice, "Select a type: ");
 	std::vector<const Log*> logs;
 	switch (choice)
 	{
@@ -1653,7 +2563,7 @@ void UserInterface::logsTypeMenu()
 	cout << "1. " << Enums::getLogTypeString(Enums::LogType::SYSTEM_ACTIVITY) << endl;
 	cout << "2. " << Enums::getLogTypeString(Enums::LogType::ERROR) << endl;
 	cout << "3. " << Enums::getLogTypeString(Enums::LogType::UNKNOWN) << endl;
-	cout << "Select a type: ";
+	cout << "--------------------------" << endl;
 }
 
 /*
@@ -1714,7 +2624,7 @@ void UserInterface::viewProfile()
 	cout << "User Id: " << currentUser->getUserId() << endl;
 	cout << "Name : " << currentUser->getUserName() << endl;
 	cout << "Email: " << currentUser->getEmail() << endl;
-	cout << "Phone Number: " << currentUser->getUserId() << endl;
+	cout << "Phone Number: " << currentUser->getPhoneNumber() << endl; //
 	util::pressEnter();
 	util::clear();
 }
@@ -1735,10 +2645,8 @@ void UserInterface::viewProfile()
 void UserInterface::changePassword()
 {
 	string currentPassword, newPassword;
-	cout << "Enter the current password: ";
-	util::readValue(currentPassword);
-	cout << "Enter the new Password: ";
-	util::readValue(newPassword);
+	util::readValueWithRetry(currentPassword, "Enter the current password: ");
+	util::readValueWithRetry(newPassword, "Enter the new Password: ");
 	util::isPasswordValid(newPassword);
 	Enums::ProcessStatus result = m_controller->changePassword(currentPassword, newPassword);
 	if (result == Enums::ProcessStatus::SUCCESS)
@@ -1766,8 +2674,7 @@ void UserInterface::changePassword()
 void UserInterface::viewUserStatus()
 {
 	string userId;
-	cout << "Enter User ID: ";
-	util::readValue(userId);
+	util::readValueWithRetry(userId, "Enter User ID: ");
 	Enums::UserStatus status = m_controller->getUserStatus(userId);
 	if (status == Enums::UserStatus::ACTIVE)
 	{
@@ -1825,13 +2732,11 @@ void UserInterface::deactivateMovie()
 	}
 	displayMovie(movies);
 	string title, movieId;
-	cout << "\nEnter the movie title: ";
-	util::readValue(title);
+	util::readValueWithRetry(title, "\nEnter the movie title: ");
 	if (!movies.empty())
 	{
 		const vector<string> movieIdList = getMovieIdFromList(movies);
-		cout << "\nEnter the Movie ID: ";
-		util::readValue(movieId);
+		util::readValueWithRetry(movieId, "\nEnter the Movie ID: ");
 		if (checkMovieIdIsValid(movieId, movieIdList) == Enums::ProcessStatus::SUCCESS)
 		{
 			if (m_controller->setMovieDeactivate(movieId) == Enums::ProcessStatus::SUCCESS)
@@ -1870,15 +2775,13 @@ void UserInterface::activateMovie()
 		return;
 	}
 	string title, movieId;
-	cout << "\nEnter the movie title: ";
-	util::readValue(title);
+	util::readValueWithRetry(title, "\nEnter the movie title: ");
 	const std::vector<const Movie*> movies = m_controller->searchDeactivatedMovieByTitle(title);
 	if (!movies.empty())
 	{
 		displayMovie(movies);
 		const vector<string> movieIdList = getMovieIdFromList(movies);
-		cout << "\nEnter the Movie ID: ";
-		util::readValue(movieId);
+		util::readValueWithRetry(movieId, "\nEnter the Movie ID: ");
 		if (checkMovieIdIsValid(movieId, movieIdList) == Enums::ProcessStatus::SUCCESS)
 		{
 			if (m_controller->setMovieActivate(movieId) == Enums::ProcessStatus::SUCCESS)
@@ -1912,8 +2815,7 @@ void UserInterface::activateMovie()
 void UserInterface::searchMovie()
 {
 	std::string title;
-	cout << "\nEnter the movie title: ";
-	util::readValue(title);
+	util::readValueWithRetry(title, "\nEnter the movie title: ");
 	const std::vector<const Movie*> movies = m_controller->searchMovieByTitle(title);
 	if (!movies.empty())
 	{
@@ -1945,6 +2847,7 @@ bool UserInterface::displayAllInactiveMovies()
 	displayMovie(movies);
 	return true;
 }
+
 /*
  * Function: deactivateSeat
  * Description: Deactivates a specific seat in the given screen and shows result.
@@ -2192,7 +3095,6 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
 void UserInterface::displayMovieDetails(const std::vector<const Movie*>& movies)
 {
 	cout << "\n--------------------------------------------------------------------------------------------------\n";
-
 	cout << left
 		<< setw(15) << "ID"
 		<< setw(20) << "Title"
@@ -2201,9 +3103,7 @@ void UserInterface::displayMovieDetails(const std::vector<const Movie*>& movies)
 		<< setw(15) << "Duration"
 		<< setw(15) << "Status"
 		<< endl;
-
 	cout << "--------------------------------------------------------------------------------------------------\n";
-
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if (*iterator)
@@ -2233,8 +3133,7 @@ void UserInterface::displayMovieDetails(const std::vector<const Movie*>& movies)
 void UserInterface::searchTheatre()
 {
 	std::string theatreName;
-	cout << "Enter theatre name: ";
-	util::readValue(theatreName);
+	util::readValueWithRetry(theatreName, "Enter theatre name: ");
 	const std::vector<const Theatre*> theatres = m_controller->searchTheatreByName(theatreName);
 	if (theatres.empty())
 	{
@@ -2331,8 +3230,7 @@ void UserInterface::listAllTheatres()
 	int choice;
 	cout << "\n1. Active Theatres";
 	cout << "\n2.Inactive Theatres";
-	cout << "\n Enter choice: ";
-	util::readValue(choice);
+	util::readValueWithRetry(choice, "\n Enter choice: ");
 	const std::vector<const Theatre*>theatres = m_controller->getAllTheatres();
 	if (choice == 1)
 	{
@@ -2433,8 +3331,7 @@ void UserInterface::displayMoviesInTheatre()
 	bool isTheatreIdValid = false;
 	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
 	displayTheatreDetails(theatres);
-	cout << "Enter theatre id of theatre to select: ";
-	util::readValue(theatreId);
+	util::readValueWithRetry(theatreId, "Enter theatre id of theatre to select: ");
 	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
 	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
 	{
@@ -2467,8 +3364,7 @@ void UserInterface::displayMoviesInTheatre(std::string& theatreId)
 	bool isTheatreIdValid = false;
 	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
 	displayTheatreDetails(theatres);
-	cout << "Enter theatre id of theatre to select: ";
-	util::readValue(theatreId);
+	util::readValueWithRetry(theatreId, "Enter theatre id of theatre to select: ");
 	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
 	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
 	{
@@ -2660,8 +3556,7 @@ void UserInterface::addMovieToTheatre()
 	}
 	displayOwnerTheatres(theatres);
 	const std::vector<std::string> theatreIds = getTheatreIds(theatres);
-	cout << "\nEnter Theatre ID: ";
-	util::readValue(theatreId);
+	util::readValueWithRetry(theatreId, "\nEnter Theatre ID: ");
 	if (validateTheatreId(theatreId, theatreIds) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "\nInvalid Theatre ID!";
@@ -2675,8 +3570,7 @@ void UserInterface::addMovieToTheatre()
 	}
 	displayMovie(movies);
 	const std::vector<std::string> movieIds = getMovieIds(movies);
-	cout << "\nEnter Movie ID: ";
-	util::readValue(movieId);
+	util::readValueWithRetry(movieId, "\nEnter Movie ID: ");
 	if (validateMovieId(movieId, movieIds) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "\nInvalid Movie ID!";
@@ -2710,8 +3604,7 @@ bool UserInterface::getScreenId(const std::vector<const Screen*>& screens, std::
 		cout << (*iterator)->getScreenId() << "   " << (*iterator)->getName() << endl;
 		screenIds.push_back((*iterator)->getScreenId());
 	}
-	cout << "Enter screen id of screen to add to: ";
-	util::readValue(screenId);
+	util::readValueWithRetry(screenId, "Enter screen id of screen to add to: ");
 	for (std::vector<std::string>::iterator iterator = screenIds.begin(); iterator != screenIds.end(); ++iterator)
 	{
 		if ((*iterator) == screenId)
@@ -2754,18 +3647,13 @@ Enums::ProcessStatus UserInterface::handleInputTheatreDetails(const std::string&
 void UserInterface::addTheatre()
 {
 	std::string name, city, address, phoneNumber, email;
-	cout << "\nEnter the name is Theatre   : ";
-	util::readValue(name);
-	cout << "\nEnter the city              : ";
-	util::readValue(city);
-	cout << "\nEnter the address           : ";
-	util::readValue(address);
-	cout << "\nEnter the phone number      : ";
-	util::readValue(phoneNumber);
+	util::readValueWithRetry(name, "\nEnter the name is Theatre   : ");
+	util::readValueWithRetry(city, "\nEnter the city              : ");
+	util::readValueWithRetry(address, "\nEnter the address           : ");
+	util::readValueWithRetry(phoneNumber, "\nEnter the phone number      : ");
 	util::isPhoneNumberValid(phoneNumber);
 	getUniqueTheatrePhoneNumber(phoneNumber);
-	cout << "\nEnter the email             : ";
-	util::readValue(email);
+	util::readValueWithRetry(email, "\nEnter the email             : ");
 	util::isEmailValid(email);
 	getUniqueTheatreEmail(email);
 	if (handleInputTheatreDetails(name, city, address, phoneNumber, email) == Enums::ProcessStatus::SUCCESS)
@@ -2801,8 +3689,7 @@ void UserInterface::getUniqueTheatrePhoneNumber(std::string& phoneNumber)
 	{
 		while (!isPhoneNumberUnique)
 		{
-			cout << "Phone number already exists!. Please enter again: ";
-			util::readValue(phoneNumber);
+			util::readValueWithRetry(phoneNumber, "Phone number already exists!. Please enter again: ");
 			util::isPhoneNumberValid(phoneNumber);
 			if (m_controller->isTheatrePhoneNumberUnique(phoneNumber) == Enums::ProcessStatus::SUCCESS)
 			{
@@ -2826,8 +3713,7 @@ void UserInterface::getUniqueTheatreEmail(std::string& email)
 	bool isEmailUnique = (m_controller->isTheatreEmailUnique(email) == Enums::ProcessStatus::SUCCESS) ? true : false;
 	while (!isEmailUnique)
 	{
-		cout << "Email already exists!. Please enter again: ";
-		util::readValue(email);
+		util::readValueWithRetry(email, "Email already exists!. Please enter again: ");
 		util::isEmailValid(email);
 		if (m_controller->isEmailUnique(email) == Enums::ProcessStatus::SUCCESS)
 		{
@@ -2874,7 +3760,7 @@ void UserInterface::displayEditTheatreMenu()
 	cout << "\n4.Phone Number";
 	cout << "\n5.Email";
 	cout << "\n0.Exit";
-	cout << "\nEnter which details want to edit: ";
+	cout << "-----------------------" << endl;
 }
 
 /*
@@ -2893,45 +3779,39 @@ void UserInterface::updateTheatre()
 	if (!theatres.empty())
 	{
 		displayTheatreDetails(theatres);
-		cout << "\nEnter the theatre Id, which you want to edit: ";
-		util::readValue(theatreId);
+		util::readValueWithRetry(theatreId, "\nEnter the theatre Id, which you want to edit: ");
 		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
 		{
 			const Theatre* theatre = getCurrentTheatreById(theatreId, theatres);
 			while (choice != 0)
 			{
 				displayEditTheatreMenu();
-				util::readValue(choice);
+				util::readValueWithRetry(choice, "\nEnter which details want to edit: ");
 				if (choice == 1)
 				{
-					cout << "\nEnter the new name: ";
-					util::readValue(name);
+					util::readValueWithRetry(name, "\nEnter the new name: ");
 					changeTheatreName(theatreId, name, theatre);
 				}
 				else if (choice == 2)
 				{
-					cout << "\nEnter the new city: ";
-					util::readValue(city);
+					util::readValueWithRetry(city, "\nEnter the new city: ");
 					changeTheatreCity(theatreId, city, theatre);
 				}
 				else if (choice == 3)
 				{
-					cout << "\nEnter the new address: ";
-					util::readValue(address);
+					util::readValueWithRetry(address, "\nEnter the new address: ");
 					changeTheatreAddress(theatreId, address, theatre);
 				}
 				else if (choice == 4)
 				{
-					cout << "\nEnter the new phone number: ";
-					util::readValue(phoneNumber);
+					util::readValueWithRetry(phoneNumber, "\nEnter the new phone number: ");
 					util::isPhoneNumberValid(phoneNumber);
 					getUniqueTheatrePhoneNumber(phoneNumber);
 					changeTheatrePhoneNumber(theatreId, phoneNumber, theatre);
 				}
 				else if (choice == 5)
 				{
-					cout << "\nEnter the new email: ";
-					util::isEmailValid(email);
+					util::readValueWithRetry(email, "\nEnter the new email: ");
 					getUniqueTheatreEmail(email);
 					changeTheatreEmail(theatreId, email, theatre);
 				}
@@ -3142,8 +4022,7 @@ void UserInterface::validateTheatreRequest()
 	if (!pendingTheatres.empty())
 	{
 		displayTheatreDetails(pendingTheatres);
-		cout << "\nEnter the theatre Id, which you want to validate: ";
-		util::readValue(theatreId);
+		util::readValueWithRetry(theatreId, "\nEnter the theatre Id, which you want to validate: ");
 		if (isValidTheatreID(theatreId, pendingTheatres) == Enums::ProcessStatus::SUCCESS)
 		{
 			displayTheatreValidationMenu();
@@ -3229,8 +4108,7 @@ void UserInterface::deactivateTheatreByOwner()
 	if (!theatres.empty())
 	{
 		displayTheatreDetails(theatres);
-		cout << "\nEnter the theatre Id, which you want to edit: ";
-		util::readValue(theatreId);
+		util::readValueWithRetry(theatreId, "\nEnter the theatre Id, which you want to edit: ");
 		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
 		{
 			setTheatreStatusById(theatreId, Enums::TheatreStatus::INACTIVE);
@@ -3262,8 +4140,7 @@ void UserInterface::deactivateTheatreByAdmin()
 	if (!theatres.empty())
 	{
 		displayTheatreDetails(theatres);
-		cout << "\nEnter the theatre Id, which you want to edit: ";
-		util::readValue(theatreId);
+		util::readValueWithRetry(theatreId, "\nEnter the theatre Id, which you want to edit: ");
 		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
 		{
 			setTheatreStatusById(theatreId, Enums::TheatreStatus::INACTIVE);
@@ -3295,8 +4172,7 @@ void UserInterface::reactivateTheatreByOwner()
 	if (!theatres.empty())
 	{
 		displayTheatreDetails(theatres);
-		cout << "\nEnter the theatre Id, which you want to edit: ";
-		util::readValue(theatreId);
+		util::readValueWithRetry(theatreId, "\nEnter the theatre Id, which you want to edit: ");
 		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
 		{
 			setTheatreStatusById(theatreId, Enums::TheatreStatus::PENDING);
@@ -3328,8 +4204,7 @@ void UserInterface::reactivateTheatreByAdmin()
 	if (!theatres.empty())
 	{
 		displayTheatreDetails(theatres);
-		cout << "\nEnter the theatre Id, which you want to edit: ";
-		util::readValue(theatreId);
+		util::readValueWithRetry(theatreId, "\nEnter the theatre Id, which you want to edit: ");
 		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::SUCCESS)
 		{
 			setTheatreStatusById(theatreId, Enums::TheatreStatus::ACTIVE);
@@ -3451,8 +4326,7 @@ void UserInterface::cancelShow()
 {
 	std::string showId;
 	displayActiveShows();
-	cout << "Enter the show id of show to cancel: ";
-	util::readValue(showId);
+	util::readValueWithRetry(showId, "Enter the show id of show to cancel: ");
 	const std::vector<std::string> showIds = m_controller->getActiveShowIds();
 	bool isShowIdValid = false;
 	for (std::vector<std::string>::const_iterator iterator = showIds.begin(); iterator != showIds.end(); ++iterator)
@@ -3502,8 +4376,7 @@ void UserInterface::viewShowStatus()
 {
 	std::string showId;
 	displayAllShows();
-	cout << "Enter the show id of show to see status of: ";
-	util::readValue(showId);
+	util::readValueWithRetry(showId, "Enter the show id of show to see status of: ");
 	const std::vector<std::string> showIds = m_controller->getAllShowIds();
 	bool isShowIdValid = false;
 	for (std::vector<std::string>::const_iterator iterator = showIds.begin(); iterator != showIds.end(); ++iterator)
@@ -3536,8 +4409,7 @@ void UserInterface::updateShow()
 {
 	std::string showId;
 	displayAllShows();
-	cout << "Enter the show id of show to update: ";
-	util::readValue(showId);
+	util::readValueWithRetry(showId, "Enter the show id of show to update: ");
 	const std::vector<std::string> showIds = m_controller->getAllShowIds();
 	bool isShowIdValid = false;
 	for (std::vector<std::string>::const_iterator iterator = showIds.begin(); iterator != showIds.end(); ++iterator)
@@ -3601,13 +4473,12 @@ Enums::ProcessStatus UserInterface::getNewDateAndTime(time_t& time)
 {
 	int year, month, day, startTimeHour, startTimeMinute;
 	cout << "Enter date (YYYY MM DD): ";
-	util::readValue(year);
-	util::readValue(month);
-	util::readValue(day);
+	util::readValueWithRetry(year, "Enter date - Year (YYYY): ");
+	util::readValueWithRetry(month, "Enter date - Month (MM): ");
+	util::readValueWithRetry(day, "Enter day - Day (DD): ");
 	getValidDate(year, month, day);
-	cout << "Enter start time (HH MM): ";
-	util::readValue(startTimeHour);
-	util::readValue(startTimeMinute);
+	util::readValueWithRetry(startTimeHour, "Enter start time - Hour (HH): ");
+	util::readValueWithRetry(startTimeMinute, "Enter start time - Minute (Minute): ");
 	getValidTime(startTimeHour, startTimeMinute);
 	if (!isFutureDateTime(year, month, day, startTimeHour, startTimeMinute))
 	{
@@ -3637,8 +4508,7 @@ void UserInterface::listShowsForAMovie()
 	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	std::string movieId;
 	displayAllMovies();
-	cout << "Enter the id of a movie to search shows for: ";
-	util::readValue(movieId);
+	util::readValueWithRetry(movieId, "Enter the id of a movie to search shows for: ");
 	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Invalid movie id!" << endl;
@@ -3663,8 +4533,7 @@ Enums::ProcessStatus UserInterface::listShowsForAMovie(std::string& movieId, std
 {
 	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	displayAllMovies();
-	cout << "Enter the id of a movie to search shows for: ";
-	util::readValue(movieId);
+	util::readValueWithRetry(movieId, "Enter the id of a movie to search shows for: ");
 	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Invalid movie id!" << endl;
@@ -3673,12 +4542,11 @@ Enums::ProcessStatus UserInterface::listShowsForAMovie(std::string& movieId, std
 	}
 	const std::vector<const Show*> shows = m_controller->getShowsForMovie(movieId);
 	displayShowDetails(shows);
-	cout << "Select the show to book seats for: ";
-	util::readValue(showId);
+	util::readValueWithRetry(showId, "Select the show to book seats for: ");
 	bool isShowIdValid = false;
 	for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
 	{
-		if ((*iterator) != nullptr && (*iterator)->getShowId() == showId);
+		if ((*iterator) != nullptr && (*iterator)->getShowId() == showId)
 		{
 			isShowIdValid = true;
 			break;
@@ -3801,8 +4669,7 @@ void UserInterface::viewTicketDetails(const std::vector<const Ticket*>& tickets)
 void UserInterface::viewTicketStatus()
 {
 	string ticketId;
-	cout << "Enter the Ticket ID:";
-	util::readValue(ticketId);
+	util::readValueWithRetry(ticketId, "Enter the Ticket ID:");
 	Enums::TicketStatus status = m_controller->viewTicketStatus(ticketId);
 	if (status == Enums::TicketStatus::ACTIVE)
 	{
@@ -3859,14 +4726,12 @@ Enums::ProcessStatus UserInterface::handleUPIPayment(Enums::PaymentMethod type)
 {
 	type = Enums::PaymentMethod::UPI;
 	std::string upiId;
-
 	util::readValueWithRetry(upiId, "Enter UPI ID: ");
 	while (!util::validateUPI(upiId))
 	{
 		std::cout << "Error: Invalid UPI ID. Please try again.\n";
 		util::readValueWithRetry(upiId, "Enter UPI ID: ");
 	}
-
 	return Enums::ProcessStatus::SUCCESS;
 }
 
@@ -3883,9 +4748,9 @@ int UserInterface::displayPaymentOptions()
 	std::cout << "1. Credit Card\n";
 	std::cout << "2. Debit Card\n";
 	std::cout << "3. UPI\n";
-	std::cout << "Enter choice: ";
+	std::cout << "--------------------------" << endl;
 	int choice;
-	util::readValue(choice);
+	util::readValueWithRetry(choice, "Enter choice: ");
 	return choice;
 }
 
@@ -3929,8 +4794,7 @@ void UserInterface::displayPaymentStatus(const std::string& paymentId)
 void UserInterface::viewPaymentStatus()
 {
 	std::string paymentId;
-	cout << "\nEnter payment Id: ";
-	util::readValue(paymentId);
+	util::readValueWithRetry(paymentId, "\nEnter payment Id: ");
 	displayPaymentStatus(paymentId);
 }
 
@@ -4176,8 +5040,7 @@ void UserInterface::displayBookingDetails()
 	viewAllBookings();
 	const std::vector<std::string> bookingIds = m_controller->getAllBookingIds();
 	std::string bookingId;
-	cout << "Enter the booking id to see details for: ";
-	util::readValue(bookingId);
+	util::readValueWithRetry(bookingId, "Enter the booking id to see details for: ");
 	bool isBookingIdValid = false;
 	for (std::vector<std::string>::const_iterator iterator = bookingIds.begin(); iterator != bookingIds.end(); ++iterator)
 	{
@@ -4268,8 +5131,7 @@ void UserInterface::cancelBooking()
 	{
 		return;
 	}
-	cout << "Enter Booking Id of booking to cancel: ";
-	util::readValue(bookingId);
+	util::readValueWithRetry(bookingId, "Enter Booking Id of booking to cancel: ");
 	bool isBookingIdValid = false;
 	for (std::vector<const Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
 	{
@@ -4318,8 +5180,7 @@ void UserInterface::createBooking()
 	}
 	viewShowSeatLayout(show);
 	int numberOfSeats;
-	cout << "Enter the number of seats to book (1 - 10):";
-	util::readValue(numberOfSeats);
+	util::readValueWithRetry(numberOfSeats, "Enter the number of seats to book (1 - 10):");
 	validateNumberOfSeats(numberOfSeats);
 	std::vector<std::string> bookedSeatIds;
 	selectSeats(numberOfSeats, bookedSeatIds, show);
@@ -4356,8 +5217,7 @@ void UserInterface::validateNumberOfSeats(int& numberOfSeats)
 		}
 		else
 		{
-			cout << "Please enter a valid number of seats: ";
-			util::readValue(numberOfSeats);
+			util::readValueWithRetry(numberOfSeats, "Please enter a valid number of seats: ");
 		}
 	}
 }
@@ -4386,8 +5246,7 @@ void UserInterface::selectSeats(int numberOfSeats, std::vector<std::string>& boo
 	std::string seatId;
 	for (int seatIndex = 0; seatIndex < numberOfSeats; ++seatIndex)
 	{
-		cout << "Enter the seat id of seat number " << seatIndex + 1 << ": ";
-		util::readValue(seatId);
+		util::readValueWithRetry(seatId, "Enter the seat id of seat number " + std::to_string(seatIndex + 1) + ": ");
 		checkSelectedSeatAvailability(seatMap, seatId, bookedSeatIds);
 		bookedSeatIds.push_back(seatId);
 	}
@@ -4410,18 +5269,15 @@ void UserInterface::checkSelectedSeatAvailability(const std::map<std::string, En
 		std::map<std::string, Enums::BookingStatus>::const_iterator seat = seatMap.find(seatId);
 		if (seat == seatMap.end())
 		{
-			cout << "Invalid seat id. Please select again: ";
-			util::readValue(seatId);
+			util::readValueWithRetry(seatId, "Invalid seat id. Please select again: ");
 		}
 		else if (isSeatAlreadySelected(seatId, bookedSeatIds))
 		{
-			cout << "The seat is already selected for booking! Please select again:";
-			util::readValue(seatId);
+			util::readValueWithRetry(seatId, "The seat is already selected for booking! Please select again:");
 		}
 		else if (seat->second != Enums::BookingStatus::NOT_BOOKED)
 		{
-			cout << "The selected seat is not available for booking! Please select again:";
-			util::readValue(seatId);
+			util::readValueWithRetry(seatId, "The selected seat is not available for booking! Please select again:");
 		}
 		else
 		{
@@ -4451,3 +5307,47 @@ bool UserInterface::isSeatAlreadySelected(const std::string& seatId, const std::
 	return false;
 }
 
+void UserInterface::removeMovieFromTheatre()
+{
+	std::string theatreId;
+	std::string movieId;
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	if (theatres.empty())
+	{
+		cout << "\nNo theatres found!";
+		return;
+	}
+	displayOwnerTheatres(theatres);
+	const std::vector<std::string> theatreIds = getTheatreIds(theatres);
+	cout << "\nEnter Theatre ID: ";
+	util::readValue(theatreId);
+	if (validateTheatreId(theatreId, theatreIds) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "\nInvalid Theatre ID!";
+		return;
+	}
+	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
+	if (movies.empty())
+	{
+		cout << "\nNo active movies found!";
+		return;
+	}
+	displayMovie(movies);
+	const std::vector<std::string> movieIds = getMovieIds(movies);
+	cout << "\nEnter Movie ID: ";
+	util::readValue(movieId);
+	if (validateMovieId(movieId, movieIds) == Enums::ProcessStatus::FAILED)
+	{
+		cout << "\nInvalid Movie ID!";
+		return;
+	}
+	Enums::ProcessStatus status = m_controller->removeMovieFromTheatre(theatreId, movieId);
+	if (status == Enums::ProcessStatus::SUCCESS)
+	{
+		std::cout << "Movie removed successfully\n";
+	}
+	else
+	{
+		std::cout << "Failed to remove movie\n";
+	}
+}

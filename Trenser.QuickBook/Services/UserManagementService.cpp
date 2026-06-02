@@ -2,6 +2,9 @@
 #include <iomanip>
 #include <sstream>
 #include "UserManagementService.h"
+#include "Admin.h"
+#include "TheatreOwner.h"
+#include "Customer.h"
 #include "Factory.h"
 
 /*
@@ -51,12 +54,32 @@ const std::string UserManagementService::generateUserId()
  */
 Enums::ProcessStatus UserManagementService::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
-    User* user = Factory::getObject<User>(generateUserId(), userName, email, password, phoneNumber, userType);
+    User* user = nullptr;
+    if (userType == Enums::UserType::ADMIN)
+    {
+        user = Factory::getObject<Admin>(generateUserId(), userName, email, password, phoneNumber, userType);
+        std::string message = "New User Type - Admin with ID : " + user->getUserId() + " has registered.";
+        logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    }
+    else if (userType == Enums::UserType::THEATRE_OWNER)
+    {
+        user = Factory::getObject<TheatreOwner>(generateUserId(), userName, email, password, phoneNumber, userType);
+        std::string message = "New User Type - Theatre Owner with ID : " + user->getUserId() + " has registered.";
+        logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    }
+    else
+    {
+        user = Factory::getObject<Customer>(generateUserId(), userName, email, password, phoneNumber, userType);
+        std::string message = "New User Type - Customer with ID : " + user->getUserId() + " has registered.";
+        logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    }
     if (user != nullptr)
     {
         m_dataStore.addUser(user);
         return Enums::ProcessStatus::SUCCESS;
     }
+    std::string message = "New user registration failed.";
+    logManagementService.addLog(message, Enums::LogType::ERROR);
     return Enums::ProcessStatus::FAILED;
 }
 
@@ -173,6 +196,8 @@ Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& us
             if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
             {
                 iterator->second->setStatus(Enums::UserStatus::INACTIVE);
+                std::string message = "User with ID : " + iterator->second->getUserId() + " deactivated.";
+                logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
                 return Enums::ProcessStatus::SUCCESS;
             }
             return Enums::ProcessStatus::FAILED;
@@ -198,6 +223,8 @@ Enums::ProcessStatus UserManagementService::reactivateUser(const std::string& us
             if (iterator->second->getStatus() == Enums::UserStatus::INACTIVE)
             {
                 iterator->second->setStatus(Enums::UserStatus::ACTIVE);
+                std::string message = "User with ID : " + iterator->second->getUserId() + " reeactivated.";
+                logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
                 return Enums::ProcessStatus::SUCCESS;
             }
             return Enums::ProcessStatus::FAILED;
@@ -260,4 +287,48 @@ Enums::UserStatus UserManagementService::getUserStatus(const std::string& userId
         }
     }
     return Enums::UserStatus::NOT_FOUND;
+}
+
+/*
+ * Function: UserManagementService::saveData
+ * Description: Saves all user data from the DataStore into a CSV file.
+ *              Encrypts passwords before writing and overwrites existing file content.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened)
+ */
+void UserManagementService::saveUserData()
+{
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::USER_HEADER);
+    const std::map<std::string, User*> users = m_dataStore.getUsers();
+    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+    {
+        lines.push_back((iterator->second)->serialize());
+    }
+    FileManagement::writeLines(std::string(config::File::USER_FILEPATH), lines);
+}
+
+/*
+ * Function: UserManagementService::loadUserData
+ * Description: Loads all user data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a User object via User::deserialize,
+ *              and adds the User to the DataStore.
+ *              This restores user information such as ID, name, email, password,
+ *              phone number, type, and status into the system.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void UserManagementService::loadUserData()
+{
+    std::vector<std::string> lines = FileManagement::readlines(PATH);
+    for (int index = 1; index < lines.size(); index++)
+    {
+        User* user = User::deserialize(lines[index]);
+        m_dataStore.addUser(user);
+    }
 }

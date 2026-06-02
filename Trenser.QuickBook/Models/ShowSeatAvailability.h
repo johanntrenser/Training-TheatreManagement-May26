@@ -11,6 +11,7 @@
 #pragma once
 #include <map>
 #include "Seat.h"
+#include "Factory.h"
 
 class Show;
 
@@ -29,4 +30,6 @@ public:
 	void setShowSeatAvailabilityId(const std::string& showSeatAvailabilityId);
 	void setShow(Show* show);
 	void setSeatAvailabilityMap(std::map<std::string, Enums::BookingStatus>& seatAvailabilityMap);
+	std::string serialize();
+	static ShowSeatAvailability* deserialize(std::string& line);
 };

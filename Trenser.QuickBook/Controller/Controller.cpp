@@ -8,9 +8,10 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
-#include "Controller.h"
-using namespace::std;
 #include<iostream>
+using namespace::std;
+#include "Controller.h"
+#include "Datalinker.h"
 
  /*
   * Function: Controller::Controller
@@ -1455,7 +1456,69 @@ const Booking* Controller::bookSelectedSeats(const std::string& showId, const st
 {
     return m_bookingManagementService->bookSelectedSeats(showId, selectedSeatIds);
 }
-  
+
+/*
+ * Function: Controller::loadDataFromFile
+ * Description: Loads all application data from persistent storage into memory.
+ *              Delegates the responsibility of loading each entity type to its
+ *              corresponding management service. This ensures that users, tickets,
+ *              theatres, shows, seats, screens, refunds, payments, notifications,
+ *              movies, logs, and bookings are all reconstructed from CSV files
+ *              and restored into the DataStore with their associations.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if any underlying file cannot be opened or read)
+ */
+void Controller::loadDataFromFile()
+{
+    m_userManagementService->loadUserData();
+    m_movieManagementService->loadMovieData();
+    m_theatreManagementService->loadTheatreData();
+    m_ScreenManagementService->loadScreenData();
+    m_seatManagementService->loadSeatData();
+    m_showManagementService->loadShowData();
+    m_seatManagementService->loadShowSeatAvailabilityData();
+    m_bookingManagementService->loadBookingData();
+    m_paymentManagementService->loadPaymentData();
+    m_ticketManagementService->loadTicketData();
+    m_refundManagementService->loadRefundData();
+    m_notificationManagementService->loadNotificationData();
+    m_logManagementService->loadLogData();
+    DataLinker linker;
+    linker.linkTheatresAndScreens();
+    linker.linkShowsAndSeatAvailability();
+}
+
+/*
+ * Function: Controller::saveData
+ * Description: Centralized method to persist all application data into CSV files.
+ *              Delegates saving responsibilities to each management service, ensuring
+ *              that users, theatres, movies, tickets, screens, payments, notifications,
+ *              logs, refunds, seats, shows, and bookings are all written to storage.
+ *              This provides a single entry point for saving the entire system state.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if any underlying service fails to open its file)
+ */
+void Controller::saveData()
+{
+    m_userManagementService->saveUserData();
+    m_theatreManagementService->saveTheatreData();
+    m_ScreenManagementService->saveScreenData();
+    m_seatManagementService->saveSeatData();
+    m_movieManagementService->saveMovieData();
+    m_showManagementService->saveShowData();
+    m_ticketManagementService->saveTicketData();
+    m_paymentManagementService->savePaymentData();
+    m_notificationManagementService->saveNotificationData();
+    m_logManagementService->saveLogData();
+    m_refundManagementService->saveRefundData();
+    m_bookingManagementService->saveBookingData();
+    m_seatManagementService->saveShowSeatAvailabilityData();
+}
+
 /*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
@@ -1477,4 +1540,23 @@ Controller::~Controller()
     delete m_ScreenManagementService;
     delete m_seatManagementService;
     delete m_refundManagementService;
+}
+
+/*
+ * Function: Controller::removeMovieFromTheatre
+ * Description: Delegates the removal of a Movie from a Theatre to the TheatreManagementService.
+ *              Acts as a controller-level wrapper that passes the theatreId and movieId
+ *              parameters to the underlying service method. This ensures that the controller
+ *              layer remains clean and focused on orchestration, while the business logic
+ *              resides in the TheatreManagementService.
+ * Parameters:
+ *    theatreId - The unique identifier of the Theatre.
+ *    movieId   - The unique identifier of the Movie to be removed.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was removed successfully.
+ *    Enums::ProcessStatus::FAILED if validation fails or the movie cannot be removed.
+ */
+Enums::ProcessStatus Controller::removeMovieFromTheatre(const std::string& theatreId,const std::string& movieId)
+{
+    return m_theatreManagementService->removeMovieFromTheatre(theatreId,movieId);
 }

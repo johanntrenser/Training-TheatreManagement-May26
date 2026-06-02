@@ -113,7 +113,6 @@ public:
 	const Booking* getBookingById(const std::string& bookingId);
 	const std::vector<const Booking*> getCancellableCustomerBookings();
 	Enums::ProcessStatus cancelBooking(const std::string& bookingId);
-	void logout();
 	Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	const std::vector<const User*> getActiveUsers() const;
 	Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
@@ -145,5 +144,9 @@ public:
 	Enums::TicketStatus viewTicketStatus(const std::string& ticketId);
 	const Show* getShowById(const std::string& showId);
 	const Booking* bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds);
+	void logout();
+	void saveData();
+	void loadDataFromFile();
+	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
 	~Controller();
 };

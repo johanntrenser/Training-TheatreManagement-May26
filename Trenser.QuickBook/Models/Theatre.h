@@ -13,6 +13,7 @@
 #include <vector>
 #include "User.h"
 #include "Movie.h"
+#include "Factory.h"
 
 class Screen;
 
@@ -61,4 +62,7 @@ public:
     void setScreen(Screen* screen);
     std::vector<Screen*>& getScreensForUpdation();
     void addMovieToTheatre(Movie* movie);
+    std::string serialize();
+    static Theatre* deserialize(std::string& line);
+    std::vector<Movie*>& getMovies();
 };

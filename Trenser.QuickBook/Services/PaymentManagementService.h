@@ -1,5 +1,3 @@
-#include <string>
-#include "DataStore.h"
 /*
  * File: PaymentManagementService.h
  * Description: Declares the PaymentManagementService class, which provides
@@ -10,9 +8,18 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <string>
+#include "DataStore.h"
+#include "FileManagement.h"
+#include "LogManagementService.h"
+#include "NotificationManagementService.h"
+
 class PaymentManagementService
 {
 	DataStore& m_dataStore;
+    LogManagementService logManagementService;
+    NotificationManagementService m_notificationManagementService;
+    const std::string& PATH = config::File::PAYMENT_FILEPATH;
 public:
     PaymentManagementService();
     const std::string generatePaymentId();
@@ -22,4 +29,6 @@ public:
         Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate);
     Enums::ProcessStatus refundPayment(Ticket* ticket, Payment* payment);
     const std::string generateRefundId();
+    void savePaymentData();
+    void loadPaymentData();
 };

@@ -213,3 +213,112 @@ void User::setStatus(Enums::UserStatus status)
 {
     m_status = status;
 }
+
+/*
+ * Function: User::encryption
+ * Description: Encrypts the given password by shifting each character by +10 in ASCII
+ *              and then reversing the string.
+ * Parameters:
+ *    password - Reference to the string to encrypt
+ * Returns:
+ *    None (modifies the string directly)
+ */
+std::string& User::encryption(std::string& password)
+{
+    int index = 0;
+    while (password[index] != '\0')
+    {
+        password[index] = char(int(password[index]) + 10);
+        index++;
+    }
+    reverseString(password);
+    return password;
+}
+
+/*
+ * Function: User::reverseString
+ * Description: Reverses the given string in place.
+ * Parameters:
+ *    password - Reference to the string to reverse
+ * Returns:
+ *    None (modifies the string directly)
+ */
+void User::reverseString(std::string& password)
+{
+    int left = 0, right = int(password.length()) - 1;
+    while (left < right)
+    {
+        char temp = password[left];
+        password[left] = password[right];
+        password[right] = temp;
+        left++;
+        right--;
+    }
+}
+
+/*
+ * Function: User::decryption
+ * Description: Decrypts the given password by reversing the string and shifting each character by -10 in ASCII.
+ * Parameters:
+ *    password - Reference to the string to decrypt
+ * Returns:
+ *    None (modifies the string directly)
+ */
+std::string User::decryption(std::string& password)
+{
+    int index = 0;
+    while (password[index] != '\0')
+    {
+        password[index] = char(int(password[index]) - 10);
+        index++;
+    }
+    reverseString(password);
+    return password;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts User object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string User::serialize()
+{
+    return m_userId + config::delimeter::comma +
+        m_userName + config::delimeter::comma +
+        m_email + config::delimeter::comma +
+        encryption(m_password) + config::delimeter::comma +
+        m_phoneNumber + config::delimeter::comma +
+        Enums::getUserTypeString(m_userType) + config::delimeter::comma +
+        Enums::getUserStatusString(m_status);
+}
+
+/*
+ * Function: User::deserialize
+ * Description: Deserializes a single line of CSV-formatted user data into a User object.
+ *              Extracts fields such as User ID, name, email, encrypted password, phone number,
+ *              type, and status. The password is decrypted before constructing the User object.
+ *              User type and status are converted from string values into their respective enums.
+ * Parameters:
+ *    line - A reference to a string containing one line of CSV user data.
+ * Returns:
+ *    A pointer to a newly created User object populated with the deserialized data.
+ */
+User* User::deserialize(std::string& line)
+{
+    std::stringstream lineStream(line);
+    std::string userId, userName, email, password, phoneNumber, type, status;
+    getline(lineStream, userId, ',');
+    getline(lineStream, userName, ',');
+    getline(lineStream, email, ',');
+    getline(lineStream, password, ',');
+    getline(lineStream, phoneNumber, ',');
+    getline(lineStream, type, ',');
+    getline(lineStream, status, ',');
+    password = decryption(password);
+    Enums::UserType Usertype = Enums::getUserType(type);
+    Enums::UserStatus userStatus = Enums::getUserStatus(status);
+    User* user = Factory::getObject<User>(userId, userName, email, password, phoneNumber, Usertype);
+    user->setStatus(userStatus);
+    return user;
+}

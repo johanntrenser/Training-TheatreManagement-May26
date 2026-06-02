@@ -7,8 +7,11 @@
  */
 #pragma once
 #include <string>
+#include <sstream>
+#include "ApplicationConfig.h"
 #include "Enums.h"
 #include "TimeStamp.h"
+#include "Factory.h"
 
 class Log
 {
@@ -29,6 +32,6 @@ public:
     void setLogType(const Enums::LogType logType);
     void setTimestamp(const util::Timestamp& timestamp);
     std::string toString() const;
+    std::string serialize();
+    static Log* deserialize(std::string& lines);
 };
-
-

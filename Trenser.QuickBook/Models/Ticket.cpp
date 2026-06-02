@@ -134,3 +134,53 @@ void Ticket::setTicketStatus(Enums::TicketStatus status)
 {
 	m_status = status;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Ticket object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Ticket::serialize()
+{
+	std::string result = m_ticketId + config::delimeter::comma;
+	if (m_payment)
+	{
+		result += m_payment->getPaymentId() + config::delimeter::comma;
+	}
+	else
+	{
+		result += config::delimeter::comma;
+	}
+	if (m_customer)
+	{
+		result += m_customer->getUserId();
+	}
+	else
+	{
+		result += config::delimeter::comma;
+	}
+	return result;
+}
+
+/*
+ * Function: Ticket::deserialize
+ * Description: Deserializes a single line of CSV-formatted ticket data into a Ticket object.
+ *              Extracts fields such as Ticket ID, Payment ID, and Customer ID.
+ *              Initializes the Payment and Customer pointers as nullptr initially,
+ *              to be linked later when those objects are available in the DataStore.
+ * Parameters:
+ *    line - A reference to a string containing one line of CSV ticket data.
+ * Returns:
+ *    A pointer to a newly created Ticket object populated with the deserialized data.
+ */
+Ticket* Ticket::deserialize(std::string& line)
+{
+	std::stringstream lineStream(line);
+	std::string ticketId, paymentId, customerId;
+	std::getline(lineStream, ticketId, ',');
+	std::getline(lineStream, paymentId, ',');
+	std::getline(lineStream, customerId, ',');
+	Ticket* ticket = Factory::getObject<Ticket>(ticketId, nullptr, nullptr);
+	return ticket;
+}

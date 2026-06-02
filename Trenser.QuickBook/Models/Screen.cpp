@@ -24,7 +24,8 @@ Screen::Screen()
     m_totalColumns(0),
     m_seatGrid(),
     m_screenStatus(Enums::ScreenStatus::AVAILABLE)
-{}
+{
+}
 
 /*
  * Function: Screen::Screen
@@ -53,7 +54,8 @@ Screen::Screen(const std::string& screenId,
     m_totalColumns(totalColumns),
     m_seatGrid(seatGrid),
     m_screenStatus(Enums::ScreenStatus::AVAILABLE)
-{}
+{
+}
 
 /*
  * Function: Screen::getScreenId
@@ -234,4 +236,46 @@ void Screen::setScreenStatus(Enums::ScreenStatus screenStatus)
 std::vector<std::vector<Seat*>>& Screen::getSeatGridForUpdation()
 {
     return m_seatGrid;
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Screen object into CSV format string
+ * Returns:
+ *    CSV string representing the screen
+ */
+std::string Screen::serialize() const
+{
+    return m_screenId + config::delimeter::comma +
+        (m_theatre ? m_theatre->getTheatreId() : "") + config::delimeter::comma +
+        m_name + config::delimeter::comma +
+        std::to_string(m_totalRows) + config::delimeter::comma +
+        std::to_string(m_totalColumns) + config::delimeter::comma +
+        Enums::getScreenStatusString(m_screenStatus);
+}
+
+/*
+ * name        : deserialize
+ * description : Converts a CSV line into a Screen object by parsing screen ID, theatre ID,
+ *               name, total rows, total columns, and status. Initializes a Screen instance
+ *               with parsed values and an empty seat grid.
+ * parameter   : std::string& line - the CSV line containing serialized screen data
+ * return type : Screen* - pointer to a newly created Screen object
+ */
+Screen* Screen::deserialize(std::string& line)
+{
+    std::string screenId, theatreId, name, totalRows, totalColumns, status;
+    std::stringstream lineStream(line);
+    getline(lineStream, screenId, ',');
+    getline(lineStream, theatreId, ',');
+    getline(lineStream, name, ',');
+    getline(lineStream, totalRows, ',');
+    getline(lineStream, totalColumns, ',');
+    getline(lineStream, status, ',');
+    int rows = totalRows.empty() ? 0 : stoi(totalRows);
+    int cols = totalColumns.empty() ? 0 : stoi(totalColumns);
+    std::vector<std::vector<Seat*>> emptyGrid;
+    Screen* screen = Factory::getObject<Screen>(screenId, nullptr, name, rows, cols, emptyGrid);
+    screen->setScreenStatus(Enums::getScreenStatus(status));
+    return screen;
 }

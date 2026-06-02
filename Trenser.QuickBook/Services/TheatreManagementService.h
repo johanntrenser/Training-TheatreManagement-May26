@@ -11,12 +11,14 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "FileManagement.h"
 #include "Theatre.h"
 #include "DataStore.h"
 
 class TheatreManagementService
 {
     DataStore& m_dataStore;
+    const std::string& PATH = config::File::THEATRE_FILEPATH;
 public:
     TheatreManagementService();
     bool updateTheatreDetails(const std::string& theatreId, const std::string& name, const std::string& address, const std::string& phone, const std::string& email);
@@ -48,5 +50,7 @@ public:
     Theatre* getTheatreById(const std::string& theatreId);
     Movie* getMovieById(const std::string& movieId);
     bool isMovieAlreadyExistsInTheatre(Theatre* theatre, const std::string& movieId);
+    Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
+    void saveTheatreData();
+    void loadTheatreData();
 };
-

@@ -146,3 +146,46 @@ std::string Log::toString() const
     return buffer.str();
 }
 
+/*
+ * Function: serialize
+ * Description: Converts Log object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Log::serialize()
+{
+    return m_logId + config::delimeter::comma +
+        m_description+config::delimeter::comma+
+        Enums::getLogTypeString(m_logType)+config::delimeter::comma+
+        m_timestamp.toString();
+}
+
+/*
+ * Function: Log::deserialize
+ * Description: Converts a single CSV-formatted line into a Log object.
+ *              Extracts fields such as logId and logDescription from the line.
+ *              The Log object is constructed with these values, while any
+ *              additional associations (e.g., with User or System events)
+ *              can be restored later by higher-level services.
+ * Parameters:
+ *    lines - reference to a CSV-formatted string containing log data
+ * Returns:
+ *    Pointer to a newly constructed Log object
+ */
+Log* Log::deserialize(std::string& lines)
+{
+    std::string logId, logDescription,type,time;
+    std::stringstream lineStream(lines);
+    getline(lineStream, logId, ',');
+    getline(lineStream, logDescription, ',');
+    getline(lineStream, type, ',');
+    getline(lineStream, time, ',');
+    Enums::LogType logType = Enums::getLogType(type);
+    Log* log = Factory::getObject<Log>(logId, logDescription, logType);
+    if (!time.empty())
+    {
+        util::Timestamp timeStamp = util::Timestamp::fromString(time);
+        log->setTimestamp(timeStamp);
+    }
+    return log;
+}

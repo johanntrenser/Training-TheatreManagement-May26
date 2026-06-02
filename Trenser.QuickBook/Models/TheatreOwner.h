@@ -13,4 +13,12 @@
 
 class TheatreOwner : public User
 {
+public:
+    TheatreOwner() = default;
+    TheatreOwner(const std::string& userId,
+        const std::string& userName,
+        const std::string& email,
+        const std::string& password,
+        const std::string& phoneNumber,
+        Enums::UserType type);
 };

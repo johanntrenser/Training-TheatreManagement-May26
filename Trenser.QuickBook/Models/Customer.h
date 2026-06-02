@@ -12,5 +12,13 @@
 
 class Customer : public User
 {
+public:
+    Customer() = default;
+    Customer(const std::string& userId,
+        const std::string& userName,
+        const std::string& email,
+        const std::string& password,
+        const std::string& phoneNumber,
+        Enums::UserType type);
 };
 

@@ -184,6 +184,21 @@ bool util::Timestamp::operator==(const Timestamp& other) const
     return m_time == other.m_time;
 }
 
+/*
+ * Function: createTime
+ * Description: Constructs a time_t value from individual date and time components.
+ *              Adjusts year and month to tm struct conventions (year since 1900,
+ *              zero-indexed month) before converting using mktime.
+ * Parameters:
+ *    year   - Full year (e.g. 2025)
+ *    month  - Month as 1-12
+ *    day    - Day of the month as 1-31
+ *    hour   - Hour as 0-23
+ *    minute - Minute as 0-59
+ * Returns:
+ *    time_t representing the specified date and time in local time,
+ *    or -1 if the conversion fails.
+ */
 time_t util::createTime(int year, int month, int day, int hour, int minute)
 {
     tm time = {};
@@ -194,4 +209,42 @@ time_t util::createTime(int year, int month, int day, int hour, int minute)
     time.tm_min = minute;
     time.tm_sec = 0;
     return mktime(&time);
+}
+
+/*
+    * Function: serializeTime
+    * Description: Converts a time_t value into a formatted string "YYYY-MM-DD HH:MM"
+    * Parameters:
+    *    t - time_t value to convert
+    * Returns:
+    *    Formatted date-time string
+ */
+std::string util::serializeTime(time_t time)
+{
+    struct tm timeInfo = {};
+    localtime_s(&timeInfo, &time);
+    char buffer[20];
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M", &timeInfo);
+    return std::string(buffer);
+}
+
+/*
+    * Function: deserializeTime
+    * Description: Parses a formatted string "YYYY-MM-DD HH:MM" into a time_t value
+    * Parameters:
+    *    timeStr - date-time string to parse
+    * Returns:
+    *    Converted time_t value, or -1 if parsing fails
+ */
+time_t util::deserializeTime(const std::string& timeString)
+{
+    struct tm timeInfo = {};
+    std::istringstream ss(timeString);
+    ss >> std::get_time(&timeInfo, "%Y-%m-%d %H:%M");
+    if (ss.fail())
+    {
+
+        return -1;
+    }
+    return mktime(&timeInfo);
 }

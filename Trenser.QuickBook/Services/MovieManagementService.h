@@ -9,11 +9,13 @@
  */
 #pragma once
 #include "DataStore.h"
+#include "FileManagement.h"
 
 class MovieManagementService
 {
 private:
 	DataStore& m_dataStore;
+	const std::string& PATH = config::File::MOVIE_FILEPATH;
 public:
 	MovieManagementService();
 	Enums::ProcessStatus addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);
@@ -29,4 +31,6 @@ public:
 	Enums::ProcessStatus setMovieActive(const std::string& movieId);
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	std::vector<const Movie*> getAllInactiveMovies();
+	void saveMovieData();
+	void loadMovieData();
 };

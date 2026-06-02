@@ -8,7 +8,10 @@
  */
 #pragma once
 #include <string>
+#include <sstream>
+#include "ApplicationConfig.h"
 #include "Enums.h"
+#include "Factory.h"
 
 class Movie
 {
@@ -38,7 +41,6 @@ public:
     void setGenre(const std::string& genre);
     void setDuration(int duration);
     void setStatus(Enums::MovieStatus status);
+    std::string serialize();
+    static Movie* deserialize(std::string& lines);
 };
-
-
-

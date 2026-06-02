@@ -373,10 +373,6 @@ void DataStore::addShowSeatAvailability(ShowSeatAvailability* showSeatAvailabili
 const Show* DataStore::getShowById(const std::string& showId)
 {
     std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
-    if (iterator == m_shows.end())
-    {
-        return nullptr;
-    }
     return iterator->second;
 }
 
@@ -585,4 +581,127 @@ const Ticket* DataStore::getTicketForBooking(const Booking* booking)
         }
     }
     return nullptr;
+}
+
+/*
+ * Function: DataStore::getSeats
+ * Description: Retrieves all seats stored in the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A constant reference to a map containing all Seat objects,
+ *    keyed by their unique seat IDs.
+ */
+const std::map<std::string, Seat*>& DataStore::getSeats() const
+{
+    return m_seats;
+}
+
+/*
+ * Function: DataStore::getUserById
+ * Description: Retrieves a User object from the DataStore by its unique ID.
+ *              Looks up the internal users map using the provided ID key
+ *              and returns the corresponding User pointer.
+ * Parameters:
+ *    id - reference to a string containing the User ID
+ * Returns:
+ *    Pointer to the User object if found, otherwise nullptr
+ */
+User* DataStore::getUserById(std::string& id)
+{
+    return m_users[id];
+}
+
+/*
+ * Function: DataStore::addSeat
+ * Description: Adds a Seat object to the DataStore.
+ *              Stores the seat in the internal map of seats, keyed by its unique Seat ID.
+ *              If a seat with the same ID already exists, it will be overwritten with the new pointer.
+ * Parameters:
+ *    seat - A pointer to the Seat object to be added.
+ * Returns:
+ *    None
+ */
+void DataStore::addSeat(Seat* seat)
+{
+    m_seats[seat->getSeatId()] = seat;
+}
+
+/*
+ * Function: DataStore::addScreen
+ * Description: Adds a Screen object to the DataStore.
+ *              Stores the screen in the internal map of screens, keyed by its unique Screen ID.
+ *              If a screen with the same ID already exists, it will be overwritten with the new pointer.
+ * Parameters:
+ *    screen - A pointer to the Screen object to be added.
+ * Returns:
+ *    None
+ */
+void DataStore::addScreen(Screen* screen)
+{
+    m_screens[screen->getScreenId()] = screen;
+}
+
+/*
+ * Function: DataStore::addNotification
+ * Description: Adds or updates a Notification object in the DataStore.
+ *              Uses the Notification’s unique ID as the key in the
+ *              internal notifications map. If a Notification with the
+ *              same ID already exists, it will be replaced.
+ * Parameters:
+ *    notification - pointer to the Notification object to be stored
+ * Returns:
+ *    None
+ */
+void DataStore::addNotification(Notification* notification)
+{
+    m_notifications[notification->getNotificationId()] = notification;
+}
+
+/*
+ * Function: DataStore::getBookingDetailsById
+ * Description: Retrieves a booking object from the DataStore by its unique ID.
+ * Parameters:
+ *    bookingId (const std::string&) - Unique identifier of the booking
+ * Returns:
+ *    const Booking* - Pointer to the booking if found, nullptr otherwise
+ */
+Booking* DataStore::getBookingDetailsById(const std::string& bookingId)
+{
+    return m_bookings[bookingId];
+}
+
+/*
+ * Function: DataStore::getShowSeatAvailabilityList
+ * Description: Retrieves the entire map of ShowSeatAvailability objects stored in the DataStore.
+ *              Returns a copy of the internal map keyed by unique ShowSeatAvailability IDs.
+ *              This allows iteration or lookup of all seat availability records associated with shows.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A std::map<std::string, ShowSeatAvailability*> containing all ShowSeatAvailability objects.
+ */
+std::map<std::string, ShowSeatAvailability*> DataStore::getShowSeatAvailabilityList()
+{
+    return m_showSeatAvailabilitys;
+}
+
+void DataStore::addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvailability)
+{
+    m_showSeatAvailabilitys[showSeatAvailability->getShowAvailabiltyId()] = showSeatAvailability;
+}
+
+/*
+ * Function: DataStore::getShowById
+ * Description: Retrieves a Show object from the DataStore by its unique show ID.
+ *              Looks up the show in the internal map of shows and returns the pointer
+ *              if found. If the show ID does not exist in the map, this will return nullptr.
+ * Parameters:
+ *    id - A reference to the string containing the unique show identifier.
+ * Returns:
+ *    A pointer to the Show object associated with the given ID, or nullptr if not found.
+ */
+Show* DataStore::getShowDetailsById(std::string& id)
+{
+    return m_shows[id];
 }

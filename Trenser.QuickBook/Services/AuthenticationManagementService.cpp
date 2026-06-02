@@ -3,6 +3,10 @@
 #include "AuthenticationManagementService.h"
 #include "Factory.h"
 #include "DataStore.h"
+#include "Admin.h"
+#include "TheatreOwner.h"
+#include "Customer.h"
+#include "Log.h"
 
 /*
  * Function: AuthenticationManagementService
@@ -40,10 +44,14 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
                 if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
                 {
                     m_dataStore.setAuthenticatedUser(iterator->second);
+                    std::string message = "User with ID : " + iterator->second->getUserId() + " has logged in.";
+                    logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
                     return std::make_pair(Enums::LoginStatus::USER_FOUND, iterator->second->getUserType());
                 }
                 else
                 {
+                    std::string message = "User with ID : " + iterator->second->getUserId() + " could not log in.";
+                    logManagementService.addLog(message, Enums::LogType::ERROR);
                     return std::make_pair(Enums::LoginStatus::USER_NOT_FOUND, Enums::UserType::USER_NOT_FOUND);
                 }
             }
@@ -79,13 +87,33 @@ void AuthenticationManagementService::logout()
  */
 Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
 {
-    User* user = Factory::getObject<User>(generateUserId(), userName, email, password, phoneNumber, userType);
-	if (user != nullptr)
-	{
-		m_dataStore.addUser(user);
-		return Enums::ProcessStatus::SUCCESS;
-	}
-	return Enums::ProcessStatus::FAILED;
+    User* user = nullptr;
+    if (userType == Enums::UserType::ADMIN)
+    {
+        user = Factory::getObject<Admin>(generateUserId(), userName, email, password, phoneNumber, userType);
+        std::string message = "New User Type - Admin with ID : " + user->getUserId() + " has registered.";
+        logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    }
+    else if (userType == Enums::UserType::THEATRE_OWNER)
+    {
+        user = Factory::getObject<TheatreOwner>(generateUserId(), userName, email, password, phoneNumber, userType);
+        std::string message = "New User Type - Theatre Owner with ID : " + user->getUserId() + " has registered.";
+        logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    }
+    else
+    {
+        user = Factory::getObject<Customer>(generateUserId(), userName, email, password, phoneNumber, userType);
+        std::string message = "New User Type - Customer with ID : " + user->getUserId() + " has registered.";
+        logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    }
+    if (user != nullptr)
+    {
+        m_dataStore.addUser(user);
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    std::string message = "New user registration failed.";
+    logManagementService.addLog(message, Enums::LogType::ERROR);
+    return Enums::ProcessStatus::FAILED;
 }
 
 /*

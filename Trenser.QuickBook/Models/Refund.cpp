@@ -164,3 +164,53 @@ void Refund::setStatus(Enums::RefundStatus status)
 {
     m_status = status;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Refund object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Refund::serialize()
+{
+    std::string result = m_refundId + config::delimeter::comma;
+    if (m_bookedTicket)
+    {
+        result += m_bookedTicket->getTicketId() + config::delimeter::comma;
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    result += std::to_string(m_refundAmount) + config::delimeter::comma +
+        util::serializeTime(m_time) + config::delimeter::comma +
+        Enums::getRefundStatusString(m_status);
+    return result;
+}
+
+/*
+ * Function: Refund::deserialize
+ * Description: Deserializes a single line of CSV-formatted refund data into a Refund object.
+ *              Extracts fields such as Refund ID, Booked Ticket ID, Refund Amount, Time, and Status.
+ *              Parses the time string into its components (year, month, day, hour, minute) and converts
+ *              it into a time_t object using util::createTime. The Booked Ticket pointer is set to nullptr
+ *              initially and can be linked later when the Ticket object is available in the DataStore.
+ * Parameters:
+ *    lines - A reference to a string containing one line of CSV refund data.
+ * Returns:
+ *    A pointer to a newly created Refund object populated with the deserialized data.
+ */
+Refund* Refund::deserialize(std::string& lines)
+{
+    std::string refundId, bookedTicketId, refundAmount, time, status, year, dash, space, month, day, hour, colon, minute;
+    std::stringstream lineStream(lines);
+    getline(lineStream, refundId, ',');
+    getline(lineStream, bookedTicketId, ',');
+    getline(lineStream, refundAmount, ',');
+    getline(lineStream, time, ',');
+    getline(lineStream, status, ',');
+    time_t convertedTime = util::deserializeTime(time);
+    util::trimWhitespace(refundAmount);
+    Refund* refund = Factory::getObject<Refund>(refundId, nullptr, stod(refundAmount), convertedTime);
+    return refund;
+}

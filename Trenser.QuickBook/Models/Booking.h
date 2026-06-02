@@ -7,11 +7,16 @@
  * Created: 20 May 2026
  */
 #pragma once
+#include <iostream>
 #include <string>
+#include <sstream>
+#include "ApplicationConfig.h"
 #include <vector>
 #include "User.h"
 #include "Show.h"
 #include "Seat.h"
+#include "Factory.h"
+#include "InputHelper.h"
 
 class Booking
 {
@@ -42,6 +47,8 @@ public:
     void setBookedSeats(const std::vector<Seat*>& bookedSeats);
     void setStatus(Enums::BookingStatus status);
     void setAmount(double amount);
+    std::string serialize();
+    static Booking* deserialize(std::string& lines);
 };
 
 

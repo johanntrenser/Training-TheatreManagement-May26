@@ -12,11 +12,17 @@
 #pragma once
 #include <map>
 #include "DataStore.h"
+#include "FileManagement.h"
+#include "LogManagementService.h"
+#include "NotificationManagementService.h"
 
 class TicketManagementService
 {
 private:
 	DataStore& m_dataStore;
+	LogManagementService m_logManagementService;
+	NotificationManagementService m_notificationManagementService;
+	const std::string& PATH = config::File::TICKET_FILEPATH;
 public:
 	TicketManagementService();
 	Enums::ProcessStatus generateTicket(Payment* payment, User* customer);
@@ -27,4 +33,6 @@ public:
 	Enums::UserType getAuthenticatedUserType() const;
 	Enums::TicketStatus viewTicketStatus(const std::string& ticketId);
 	Enums::ProcessStatus cancelTicket(const std::string& ticketId);
+	void saveTicketData();
+	void loadTicketData();
 };
