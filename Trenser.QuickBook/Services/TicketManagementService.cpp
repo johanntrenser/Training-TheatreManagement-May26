@@ -75,12 +75,12 @@ Enums::ProcessStatus TicketManagementService::generateTicket(Payment* payment, U
 	if (ticket)
 	{
 		m_dataStore.addTicket(ticket);
+		message = "Your Booking has been confirmed with Ticket ID: " + ticket->getTicketId();
+		m_notificationManagementService.sendNotification(customer, message);
 		return Enums::ProcessStatus::SUCCESS;
 	}
 	message = "Ticket generation failed.";
 	m_logManagementService.addLog(message, Enums::LogType::ERROR);
-	message = "Your Boooking has been confirmed with Ticket ID: " + ticket->getTicketId();
-	m_notificationManagementService.sendNotification(customer, message);
 	return Enums::ProcessStatus::FAILED;
 }
 
