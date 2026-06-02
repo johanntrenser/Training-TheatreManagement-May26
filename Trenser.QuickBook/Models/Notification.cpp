@@ -160,3 +160,53 @@ void Notification::setTime(const time_t time)
 {
     m_time = time;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Notification object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Notification::serialize()
+{
+    std::string result = m_notificationId + config::delimeter::comma;
+    if (m_receiver)
+    {
+        result += m_receiver->getUserId() + config::delimeter::comma;
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    result += m_message + config::delimeter::comma +
+        Enums::getNotificationStatusString(m_status) + config::delimeter::comma +
+        util::serializeTime(m_time);
+    return result;
+}
+
+/*
+ * Function: Notification::deserialize
+ * Description: Converts a single CSV-formatted line into a Notification object.
+ *              Extracts fields such as notificationId, receiverId, message, status,
+ *              and time. The time string is parsed into its components (year, month,
+ *              day, hour, minute) and converted into a time_t using util::createTime.
+ *              The receiver User pointer is initialized to nullptr and can be set later
+ *              when restoring relationships.
+ * Parameters:
+ *    lines - reference to a CSV-formatted string containing notification data
+ * Returns:
+ *    Pointer to a newly constructed Notification object
+ */
+Notification* Notification::deserialize(std::string& lines)
+{
+    std::string notificationId, receiverId, messgae, status, time, year, dash, space, month, day, hour, colon, minute;
+    std::stringstream lineStream(lines);
+    getline(lineStream, notificationId, ',');
+    getline(lineStream, receiverId, ',');
+    getline(lineStream, messgae, ',');
+    getline(lineStream, status, ',');
+    getline(lineStream, time, ',');
+    time_t convertedTime = util::deserializeTime(time);
+    Notification* notification = Factory::getObject<Notification>(notificationId, nullptr, messgae, convertedTime);
+    return notification;
+}

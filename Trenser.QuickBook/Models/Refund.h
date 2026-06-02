@@ -10,6 +10,8 @@
 #pragma once
 #include <string>
 #include "Ticket.h"
+#include "Factory.h"
+#include "InputHelper.h"
 
 class Refund
 {
@@ -35,4 +37,6 @@ public:
     void setRefundAmount(double refundAmount);
     void setTime(time_t time);
     void setStatus(Enums::RefundStatus status);
+    std::string serialize();
+    static Refund* deserialize(std::string& line);
 };

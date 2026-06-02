@@ -107,3 +107,78 @@ void ShowSeatAvailability::setSeatAvailabilityMap(std::map<std::string, Enums::B
 {
 	m_seatAvailabilityMap = seatAvailabilityMap;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Theatre object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string ShowSeatAvailability::serialize()
+{
+    std::string result = m_showSeatAvailabilityId + config::delimeter::comma;
+    if (m_show)
+    {
+        result += m_show->getShowId();
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    if (!m_seatAvailabilityMap.empty())
+    {
+        for (std::map<std::string, Enums::BookingStatus>::const_iterator iterator = m_seatAvailabilityMap.begin(); iterator != m_seatAvailabilityMap.end(); ++iterator)
+        {
+            result += iterator->first + config::delimeter::colon + Enums::getBookingStatusString(iterator->second);
+            if (std::next(iterator) != m_seatAvailabilityMap.end())
+            {
+                result += config::delimeter::verticalBar;
+            }
+        }
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    return result;
+}
+
+/*
+ * Function: Theatre::deserialize
+ * Description: Converts a single CSV-formatted line into a Theatre object.
+ *              Extracts fields such as theatreId, name, city, address,
+ *              phoneNumber, email, theatreOwnerId, status, screenIds, and movieIds.
+ *              The TheatreOwner pointer and associations with Screens and Movies
+ *              are initialized to nullptr or left empty, and can be restored later
+ *              by higher-level services.
+ * Parameters:
+ *    line - reference to a CSV-formatted string containing theatre data
+ * Returns:
+ *    Pointer to a newly constructed Theatre object
+ */
+ShowSeatAvailability* ShowSeatAvailability::deserialize(std::string& line)
+{
+    std::string showSeatAvailabilityId, showId, seatBlock;
+    std::stringstream lineStream(line);
+    getline(lineStream, showSeatAvailabilityId, ',');
+    getline(lineStream, showId, ',');
+    getline(lineStream, seatBlock, ',');
+    std::map<std::string, Enums::BookingStatus> emptySeatAvailabilityMap;
+    ShowSeatAvailability* showSeatAvailability = Factory::getObject<ShowSeatAvailability>(showSeatAvailabilityId,nullptr, emptySeatAvailabilityMap);
+    if (!seatBlock.empty())
+    {
+        std::stringstream seatStream(seatBlock);
+        std::string seatEntry;
+        while (getline(seatStream, seatEntry, config::delimeter::verticalBar[0]))
+        {
+            int pos = int(seatEntry.find(config::delimeter::colon));
+            if (pos != std::string::npos)
+            {
+                std::string seatId = seatEntry.substr(0, pos);
+                std::string statusStr = seatEntry.substr(pos + 1);
+                showSeatAvailability->m_seatAvailabilityMap[seatId] = Enums::getBookingStatus(statusStr);
+            }
+        }
+    }
+    return showSeatAvailability;
+}

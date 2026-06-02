@@ -653,6 +653,10 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
             {
                 ((iterator->second)->setMovies({}));
             }
+            if (theatreStatus == Enums::TheatreStatus::ACTIVE)
+            {
+                theatreStatus = Enums::TheatreStatus::PENDING;
+            }
             (iterator->second)->setStatus(theatreStatus);
             return Enums::ProcessStatus::SUCCESS;
         }
@@ -660,3 +664,145 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
     return Enums::ProcessStatus::FAILED;
 }
 
+/*
+ * Function: TheatreManagementService::removeMovieFromTheatre
+ * Description: Attempts to remove a Movie from a Theatre in the DataStore.
+ *              Validates that the theatre exists, is active, and that the movie exists.
+ *              Ensures the movie is not currently associated with any active Show in the theatre.
+ *              If the movie is found in the theatre’s movie list and not in use, it is removed.
+ *              Returns SUCCESS if removal is successful, otherwise FAILED.
+ * Parameters:
+ *    theatreId - The unique identifier of the Theatre.
+ *    movieId   - The unique identifier of the Movie to be removed.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie was removed successfully.
+ *    Enums::ProcessStatus::FAILED if validation fails or the movie cannot be removed.
+ */
+Enums::ProcessStatus TheatreManagementService::removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId)
+{
+    User* currentOwner = m_dataStore.getAuthenticatedUser();
+    Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+    if (theatre == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    if (theatre->getStatus() != Enums::TheatreStatus::ACTIVE)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    Movie* movie = m_dataStore.getMovieById(movieId);
+    if (movie == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+    for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        Show* show = iterator->second;
+        if (show == nullptr)
+        {
+            continue;
+        }
+        if (show->getScreen()->getTheatre()->getTheatreId() == theatreId && show->getMovie()->getMovieId() == movieId)
+        {
+            return Enums::ProcessStatus::FAILED;
+        }
+    }
+    std::vector<Movie*>& movies = theatre->getMovies();
+    for (std::vector<Movie*>::iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+    {
+        if ((*iterator)->getMovieId() == movieId)
+        {
+            movies.erase(iterator);
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: TheatreManagementService::saveTheatreData
+ * Description: Saves all theatre data from the DataStore into a CSV file.
+ *              Includes theatre details, status, associated screens, and movies.
+ *              Overwrites existing file content.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened)
+ */
+void TheatreManagementService::saveTheatreData()
+{
+    std::vector<std::string> lines;
+    lines.push_back(config::Header::THEATRE_HEADER);
+    const std::map<std::string, Theatre*> theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        lines.push_back((iterator->second)->serialize());
+    }
+    FileManagement::writeLines(std::string(config::File::THEATRE_FILEPATH), lines);
+}
+
+/*
+ * Function: TheatreManagementService::loadTheatreData
+ * Description: Loads all theatre data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Theatre object via Theatre::deserialize,
+ *              and restores associations with Screen and Movie objects if their IDs
+ *              are present and found in the DataStore.
+ *              Finally, adds the reconstructed Theatre to the DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void TheatreManagementService::loadTheatreData()
+{
+    std::string theatreId;
+    std::string name;
+    std::string city;
+    std::string address;
+    std::string phoneNumber;
+    std::string email;
+    std::string theatreOwnerId;
+    std::string status;
+    std::string screenIds;
+    std::string movieIds;
+    std::vector<std::string> lines = FileManagement::readlines(PATH);
+    for (int index = 1; index < lines.size(); index++)
+    {
+        Theatre* theatre = Theatre::deserialize(lines[index]);
+        std::stringstream lineStream(lines[index]);
+        getline(lineStream, theatreId, ',');
+        getline(lineStream, name, ',');
+        getline(lineStream, city, ',');
+        getline(lineStream, address, ',');
+        getline(lineStream, phoneNumber, ',');
+        getline(lineStream, email, ',');
+        getline(lineStream, theatreOwnerId, ',');
+        getline(lineStream, status, ',');
+        getline(lineStream, screenIds, ',');
+        getline(lineStream, movieIds, ',');
+        theatre->setStatus(Enums::getTheatreStatus(status));
+        if (!theatreOwnerId.empty())
+        {
+            User* theatreOwner = m_dataStore.getUserById(theatreOwnerId);
+            theatre->setTheatreOwner(theatreOwner);
+        }
+        if (!movieIds.empty())
+        {
+            std::vector<Movie*> movies;
+            std::stringstream movieStream(movieIds);
+            std::string movieId;
+            while (getline(movieStream, movieId, '|'))
+            {
+                Movie* movie = m_dataStore.getMovieById(movieId);
+                if (movie != nullptr)
+                {
+                    movies.push_back(movie);
+                }
+            }
+            theatre->setMovies(movies);
+        }
+        m_dataStore.addTheatre(theatre);
+    }
+}

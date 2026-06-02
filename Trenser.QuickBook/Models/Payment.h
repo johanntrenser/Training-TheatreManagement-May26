@@ -9,7 +9,10 @@
 
 #pragma once
 #include <string>
+#include "TimeStamp.h"
 #include "Booking.h"
+#include "Factory.h"
+#include "InputHelper.h"
 
 class Payment
 {
@@ -39,5 +42,6 @@ public:
     void setPaymentMethod(Enums::PaymentMethod paymentMethod);
     void setStatus(Enums::PaymentStatus status);
     void setTimeStamp(const time_t timeStamp);
+    std::string serialize();
+    static Payment* deserialize(std::string& lines);
 };
-

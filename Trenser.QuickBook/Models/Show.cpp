@@ -224,3 +224,51 @@ void Show::setShowStatus(Enums::ShowStatus showStatus)
 {
     m_showStatus = showStatus;
 }
+
+/*
+ * Function: serialize
+ * Description: Converts Show object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Show::serialize()
+{
+    return m_showId + config::delimeter::comma +
+        (m_movie ? m_movie->getMovieId() : "") + config::delimeter::comma +
+        (m_screen ? m_screen->getScreenId() : "") + config::delimeter::comma +
+        util::serializeTime(m_startTime) + config::delimeter::comma +
+        util::serializeTime(m_endTime) + config::delimeter::comma +
+        (m_seatAvailability ? m_seatAvailability->getShowAvailabiltyId() : "") + config::delimeter::comma +
+        Enums::getShowStatusString(m_showStatus);
+}
+
+/*
+ * Function: Show::deserialize
+ * Description: Deserializes a single line of CSV-formatted show data into a Show object.
+ *              Extracts fields such as Show ID, Movie ID, Screen ID, Start Time, End Time,
+ *              Seat Availability ID, and Status. Parses the start and end time strings into
+ *              their components (year, month, day, hour, minute) and converts them into
+ *              time_t objects using util::createTime. The Movie, Screen, and SeatAvailability
+ *              pointers are set to nullptr initially and can be linked later when those
+ *              objects are available in the DataStore.
+ * Parameters:
+ *    line - A reference to a string containing one line of CSV show data.
+ * Returns:
+ *    A pointer to a newly created Show object populated with the deserialized data.
+ */
+Show* Show::deserialize(std::string& line)
+{
+    std::string showId, movieId, screenId, startTime, endTime, seatAvailabilityId, status, year, dash, space, month, day, hour, colon, minute;
+    std::stringstream lineStream(line);
+    getline(lineStream, showId, ',');
+    getline(lineStream, movieId, ',');
+    getline(lineStream, screenId, ',');
+    getline(lineStream, startTime, ',');
+    getline(lineStream, endTime, ',');
+    getline(lineStream, seatAvailabilityId, ',');
+    getline(lineStream, status, ',');
+    time_t convertedStartTime = util::deserializeTime(startTime);
+    time_t convertedEndTime = util::deserializeTime(endTime);
+    Show* show = Factory::getObject<Show>(showId, nullptr, nullptr, convertedStartTime, convertedEndTime, nullptr);
+    return show;
+}

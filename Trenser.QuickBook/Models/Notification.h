@@ -8,7 +8,11 @@
  */
 #pragma once
 #include <string>
+#include <sstream>
+#include "ApplicationConfig.h"
+#include "TimeStamp.h"
 #include "User.h"
+#include "Factory.h"
 
 class Notification
 {
@@ -34,4 +38,6 @@ public:
     void setMessage(const std::string& message);
     void setStatus(Enums::NotificationStatus status);
     void setTime(const time_t time);
+    std::string serialize();
+    static Notification* deserialize(std::string& lines);
 };

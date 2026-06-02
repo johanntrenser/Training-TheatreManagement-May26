@@ -13,11 +13,15 @@
 #include <vector>
 #include "User.h"
 #include "DataStore.h"
+#include "FileManagement.h"
+#include "LogManagementService.h"
 
 class UserManagementService
 {
 private:
     DataStore& m_dataStore;
+    LogManagementService logManagementService;
+    const std::string& PATH = config::File::USER_FILEPATH;
 public:
     UserManagementService();
     const std::string generateUserId();
@@ -31,5 +35,6 @@ public:
     Enums::ProcessStatus reactivateUser(const std::string& userId);
     Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
     Enums::UserStatus getUserStatus(const std::string& userId);const User* const getAuthenticatedUser();
+    void loadUserData();
+    void saveUserData();
 };
-

@@ -321,3 +321,57 @@ std::vector<const Movie*> MovieManagementService::getAllInactiveMovies()
 	}
 	return allInactiveMovies;
 }
+
+/*
+ * Function: MovieManagementService::saveMovieData
+ * Description: Saves all movie data from the DataStore into a CSV file.
+ *              Includes movie details such as ID, title, language, genre, duration, and status.
+ *              Overwrites existing file content.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened)
+ */
+void MovieManagementService::saveMovieData()
+{
+	std::vector<std::string> lines;
+	lines.push_back(config::Header::MOVIE_HEADER);
+	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
+	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	{
+		lines.push_back((iterator->second)->serialize());
+	}
+	FileManagement::writeLines(std::string(config::File::MOVIE_FILEPATH), lines);
+}
+
+/*
+ * Function: MovieManagementService::loadMovieData
+ * Description: Loads all movie data from a CSV file into memory.
+ *              Reads each line from the file using FileManagement::readlines(PATH),
+ *              deserializes it into a Movie object via Movie::deserialize,
+ *              and sets the Movie status using Enums::getMovieStatus.
+ *              Finally, adds the reconstructed Movie to the DataStore
+ *              through addMovieToSystem.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None (throws runtime_error if the file cannot be opened or read)
+ */
+void MovieManagementService::loadMovieData()
+{
+	std::string movieId, title, language, genre, duration, status;
+	std::vector<std::string> lines = FileManagement::readlines(PATH);
+	for (int index = 1; index < lines.size(); ++index)
+	{
+		Movie* movie = Movie::deserialize(lines[index]);
+		std::stringstream lineStream(lines[index]);
+		getline(lineStream, movieId, ',');
+		getline(lineStream, title, ',');
+		getline(lineStream, language, ',');
+		getline(lineStream, genre, ',');
+		getline(lineStream, duration, ',');
+		getline(lineStream, status, ',');
+		movie->setStatus(Enums::getMovieStatus(status));
+		m_dataStore.addMovieToSystem(movie);
+	}
+}

@@ -148,4 +148,18 @@ public:
 	void selectSeats(int numberOfSeats, std::vector<std::string>& bookedSeatIds, const Show* show);
 	void checkSelectedSeatAvailability(const std::map<std::string, Enums::BookingStatus> seatMap, std::string& seatId, const std::vector<std::string>& bookedSeatIds);
 	bool isSeatAlreadySelected(const std::string& seatId, const std::vector<std::string>& bookedSeatIds);
+	void removeMovieFromTheatre();
+	void adminUserManagementMenu();
+	void adminMovieManagementMenu();
+	void adminTheatreManagementMenu();
+	void adminShowManagementMenu();
+	void adminTicketManagementMenu();
+	void ownerTheatreManagementMenu();
+	void ownerShowManagementMenu();
+	void ownerBookingManagementMenu();
+	void customerBrowseMenu();
+	void customerBookingMenu();
+	void customerTicketMenu();
+	void ownerScreenManagementMenu();
+	void ownerSeatManagementMenu(Screen* screen);
 };

@@ -292,6 +292,22 @@ void Theatre::setScreens(const std::vector<Screen*>& screens)
 }
 
 /*
+ * Function: Theatre::getMovies
+ * Description: Provides access to the list of Movie objects associated with this Theatre.
+ *              Returns a reference to the internal vector of Movie pointers, allowing
+ *              direct iteration, modification, or removal of movies from the theatre’s collection.
+ *              This method is typically used by management services when adding or removing movies.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A reference to std::vector<Movie*> containing all movies linked to the Theatre.
+ */
+std::vector<Movie*>& Theatre::getMovies()
+{
+    return m_movies;
+}
+
+/*
  * Function: Theatre::setMovies
  * Description: Sets the movies associated with the theatre.
  * Parameters:
@@ -318,4 +334,80 @@ std::vector<Screen*>& Theatre::getScreensForUpdation()
 void Theatre::addMovieToTheatre(Movie* movie)
 {
     m_movies.push_back(movie);
+}
+
+/*
+ * Function: serialize
+ * Description: Converts Theatre object into CSV format string
+ * Returns:
+ *    CSV string representing the user
+ */
+std::string Theatre::serialize()
+{
+    std::string result = m_theatreId + config::delimeter::comma +
+        m_name + config::delimeter::comma +
+        m_city + config::delimeter::comma +
+        m_address + config::delimeter::comma +
+        m_phoneNumber + config::delimeter::comma +
+        m_email + config::delimeter::comma;
+    if (m_theatreOwner)
+    {
+        result += m_theatreOwner->getUserId() + config::delimeter::comma;
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    result += Enums::getTheatreStatusString(m_status) + config::delimeter::comma;
+    if (!m_screens.empty())
+    {
+        for (std::vector<Screen*>::const_iterator iterator = m_screens.begin(); iterator != m_screens.end(); ++iterator)
+        {
+            result += (*iterator)->getScreenId() + config::delimeter::verticalBar;
+        }
+        result += config::delimeter::comma;
+    }
+    else
+    {
+        result += config::delimeter::comma;
+    }
+    if (!m_movies.empty())
+    {
+        for (std::vector<Movie*>::const_iterator iterator = m_movies.begin(); iterator != m_movies.end(); ++iterator)
+        {
+            result += (*iterator)->getMovieId() + config::delimeter::verticalBar;
+        }
+    }
+    return result;
+}
+
+/*
+ * Function: Theatre::deserialize
+ * Description: Converts a single CSV-formatted line into a Theatre object.
+ *              Extracts fields such as theatreId, name, city, address,
+ *              phoneNumber, email, theatreOwnerId, status, screenIds, and movieIds.
+ *              The TheatreOwner pointer and associations with Screens and Movies
+ *              are initialized to nullptr or left empty, and can be restored later
+ *              by higher-level services.
+ * Parameters:
+ *    line - reference to a CSV-formatted string containing theatre data
+ * Returns:
+ *    Pointer to a newly constructed Theatre object
+ */
+Theatre* Theatre::deserialize(std::string& line)
+{
+    std::string theatreId, name, city, address, phoneNumber, email, theatreOwnerId, status, screenIds, movieIds;
+    std::stringstream lineStream(line);
+    getline(lineStream, theatreId, ',');
+    getline(lineStream, name, ',');
+    getline(lineStream, city, ',');
+    getline(lineStream, address, ',');
+    getline(lineStream, phoneNumber, ',');
+    getline(lineStream, email, ',');
+    getline(lineStream, theatreOwnerId, ',');
+    getline(lineStream, status, ',');
+    getline(lineStream, screenIds, ',');
+    getline(lineStream, movieIds, ',');
+    Theatre* theatre = Factory::getObject<Theatre>(theatreId, name, city, address, phoneNumber, email, nullptr);
+    return theatre;
 }

@@ -9,11 +9,15 @@
  */
 #pragma once
 #include "DataStore.h"
+#include "FileManagement.h"
+#include "LogManagementService.h"
 
 class BookingManagementService
 {
 private:
 	DataStore& m_dataStore;
+	LogManagementService logManagementService;
+	const std::string& PATH = config::File::BOOKING_FILEPATH;
 public:
 	BookingManagementService();
 	const std::vector<const Booking*> getAllBookings() const;
@@ -29,5 +33,7 @@ public:
 	double getBookingAmount(const std::vector<Seat*>& seats);
 	Enums::ProcessStatus cancelTicketAndProcessRefund(const Booking* booking);
 	void cancelBookingForFailedPayment(const std::string& bookingId);
+	void saveBookingData();
+	void loadBookingData();
 };
 

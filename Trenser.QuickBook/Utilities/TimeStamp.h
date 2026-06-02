@@ -34,4 +34,6 @@ namespace util
     };
 
     time_t createTime(int year, int month, int day, int hour, int minute);
+    std::string serializeTime(time_t time);
+    time_t deserializeTime(const std::string& timeString);
 }
