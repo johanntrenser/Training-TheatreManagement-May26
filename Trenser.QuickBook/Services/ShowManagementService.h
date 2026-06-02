@@ -39,4 +39,6 @@ public:
 	const Show* getShowById(const std::string& showId);
 	void saveShowData();
 	void loadShowData();
+	void updateShowStatuses();
+	void updateTicketStatusesForCompletedShows();
 };

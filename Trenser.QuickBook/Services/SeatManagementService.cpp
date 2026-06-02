@@ -442,7 +442,7 @@ void SeatManagementService::loadShowSeatAvailabilityData()
             std::map<std::string, Enums::BookingStatus> seatAvailabilityMap;
             while (getline(seatStream, seatEntry, config::delimeter::verticalBar[0]))
             {
-                int position = seatEntry.find(config::delimeter::colon);
+                int position = int(seatEntry.find(config::delimeter::colon));
                 if (position != std::string::npos)
                 {
                     std::string seatId = seatEntry.substr(0, position);
