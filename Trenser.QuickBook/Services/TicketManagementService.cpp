@@ -245,6 +245,7 @@ void TicketManagementService::loadTicketData()
 	std::string ticketId;
 	std::string paymentId;
 	std::string customerId;
+	std::string status;
 	std::vector<std::string> lines = FileManagement::readlines(PATH);
 	for (int index = 1; index < lines.size(); index++)
 	{
@@ -253,6 +254,7 @@ void TicketManagementService::loadTicketData()
 		std::getline(lineStream, ticketId, ',');
 		std::getline(lineStream, paymentId, ',');
 		std::getline(lineStream, customerId, ',');
+		std::getline(lineStream, status, ',');
 		if (!paymentId.empty())
 		{
 			const std::map<std::string, Payment*>& payments = m_dataStore.getPayments();
@@ -267,6 +269,7 @@ void TicketManagementService::loadTicketData()
 			User* customer = m_dataStore.getUserById(customerId);
 			ticket->setCustomer(customer);
 		}
+		ticket->setTicketStatus(Enums::getTicketStatus(status));
 		m_dataStore.addTicket(ticket);
 	}
 }

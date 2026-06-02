@@ -653,7 +653,7 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
             {
                 ((iterator->second)->setMovies({}));
             }
-            if (theatreStatus == Enums::TheatreStatus::ACTIVE)
+            if (theatreStatus == Enums::TheatreStatus::ACTIVE && m_dataStore.getAuthenticatedUser()->getUserType() == Enums::UserType::THEATRE_OWNER)
             {
                 theatreStatus = Enums::TheatreStatus::PENDING;
             }

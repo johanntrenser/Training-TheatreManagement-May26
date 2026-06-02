@@ -181,7 +181,7 @@ void NotificationManagementService::saveNotificationData()
  */
 void NotificationManagementService::loadNotificationData()
 {
-	std::string notificationId, receiverId, messgae, status, time;
+	std::string notificationId, receiverId, message, status, time;
 	std::vector<std::string> lines = FileManagement::readlines(PATH);
 	for (int index = 1; index < lines.size(); ++index)
 	{
@@ -189,7 +189,7 @@ void NotificationManagementService::loadNotificationData()
 		std::stringstream lineStream(lines[index]);
 		getline(lineStream, notificationId, ',');
 		getline(lineStream, receiverId, ',');
-		getline(lineStream, messgae, ',');
+		getline(lineStream, message, ',');
 		getline(lineStream, status, ',');
 		getline(lineStream, time, ',');
 		if (!receiverId.empty())
@@ -197,7 +197,12 @@ void NotificationManagementService::loadNotificationData()
 			User* receiver = m_dataStore.getUserById(receiverId);
 			notification->setReceiver(receiver);
 		}
-		notification->setStatus(Enums::getNotificationStatus(status));
+		Enums::NotificationStatus notificationStatus = Enums::getNotificationStatus(status);
+		if (notificationStatus == Enums::NotificationStatus::FAILED || notificationStatus == Enums::NotificationStatus::UNREAD)
+		{
+			notificationStatus = Enums::NotificationStatus::UNREAD;
+		}
+		notification->setStatus(notificationStatus);
 		m_dataStore.addNotification(notification);
 	}
 }

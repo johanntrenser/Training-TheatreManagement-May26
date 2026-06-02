@@ -119,7 +119,7 @@ std::string ShowSeatAvailability::serialize()
     std::string result = m_showSeatAvailabilityId + config::delimeter::comma;
     if (m_show)
     {
-        result += m_show->getShowId();
+        result += m_show->getShowId() + config::delimeter::comma;
     }
     else
     {

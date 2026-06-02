@@ -101,7 +101,7 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     }
     payment->setStatus(Enums::PaymentStatus::SUCCESS);
     m_dataStore.addPayment(payment);
-    booking->setStatus(Enums::BookingStatus::COMPLETED);
+    booking->setStatus(Enums::BookingStatus::CONFIRMED);
     std::string message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     return Enums::ProcessStatus::SUCCESS;
