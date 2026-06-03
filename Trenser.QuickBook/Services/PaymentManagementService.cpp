@@ -78,8 +78,10 @@ Payment* PaymentManagementService::getPaymentById(const std::string& paymentId)
 */
 Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount)
 {
+    std::string message;
     TicketManagementService ticketManagementService;
     BookingManagementService bookingManagementService;
+    User* currentUser = m_dataStore.getAuthenticatedUser();
     Booking* booking = m_dataStore.getBookingByIdForUpdation(bookingId);
     if (booking == nullptr)
     {
@@ -90,19 +92,22 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     if (payment == nullptr)
     {
         bookingManagementService.cancelBookingForFailedPayment(bookingId);
+        message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
+        logManagementService.addLog(message, Enums::LogType::ERROR);
         return Enums::ProcessStatus::FAILED;
     }
-    User* currentUser = m_dataStore.getAuthenticatedUser();
     Enums::ProcessStatus status = ticketManagementService.generateTicket(payment, currentUser);
     if (status == Enums::ProcessStatus::FAILED)
     {
         bookingManagementService.cancelBookingForFailedPayment(booking->getBookingId());
+        message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
+        logManagementService.addLog(message, Enums::LogType::ERROR);
         return Enums::ProcessStatus::FAILED;
     }
     payment->setStatus(Enums::PaymentStatus::SUCCESS);
     m_dataStore.addPayment(payment);
     booking->setStatus(Enums::BookingStatus::CONFIRMED);
-    std::string message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
+    message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     return Enums::ProcessStatus::SUCCESS;
 }
@@ -192,7 +197,7 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Pay
     ticket->setTicketStatus(Enums::TicketStatus::CANCELLED);
     std::string message = "Payment with ID : " + payment->getPaymentId() + " has been refunded.";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
-    message = "Your refund request has been processed successfully";
+    message = "Your refund request for booking with id " + booking->getBookingId() + " has been processed successfully";
     m_notificationManagementService.sendNotification(ticket->getCustomer(), message);
     return Enums::ProcessStatus::SUCCESS;
 }

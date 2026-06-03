@@ -283,10 +283,6 @@ std::string SeatManagementService::formatSeatDisplay(const Seat* seat, const std
     {
         return seatId + " -[D] ";
     }
-    if (seat->getSeatStatus() == Enums::SeatStatus::RESERVED)
-    {
-        return seatId + " -[R] ";
-    }
     std::map<std::string, Enums::BookingStatus>::const_iterator availabilityIterator = availabilityMap.find(seatId);
     if (availabilityIterator != availabilityMap.end())
     {

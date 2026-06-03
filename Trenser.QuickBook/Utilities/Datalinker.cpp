@@ -4,6 +4,13 @@ DataLinker::DataLinker() : m_dataStore(DataStore::getInstance())
 {
 }
 
+/*
+Function Name : linkTheatresAndScreens
+Description   : Iterates through all screens in the datastore and links each screen
+                to its corresponding theatre by setting the screen reference in the theatre.
+Parameters    : None
+Return Type   : void
+*/
 void DataLinker::linkTheatresAndScreens()
 {
     const std::map<std::string, Screen*>& screens = m_dataStore.getScreens();
@@ -18,6 +25,14 @@ void DataLinker::linkTheatresAndScreens()
     }
 }
 
+/*
+Function Name : linkShowsAndSeatAvailability
+Description   : Iterates through all show seat availability records in the datastore
+                and links each availability to its corresponding show by setting the
+                seat availability reference in the show.
+Parameters    : None
+Return Type   : void
+*/
 void DataLinker::linkShowsAndSeatAvailability()
 {
     const std::map<std::string, ShowSeatAvailability*>& availabilities = m_dataStore.getShowSeatAvailabilityList();
@@ -27,33 +42,6 @@ void DataLinker::linkShowsAndSeatAvailability()
         if (availability != nullptr && availability->getShow() != nullptr)
         {
             availability->getShow()->setSeatAvailability(availability);
-        }
-    }
-}
-
-void DataLinker::linkTheatresAndMovies()
-{
-    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
-    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
-    for (std::map<std::string, Theatre*>::const_iterator theatreIterator = theatres.begin(); theatreIterator != theatres.end(); ++theatreIterator)
-    {
-        Theatre* theatre = theatreIterator->second;
-        if (theatre == nullptr)
-        {
-            continue;
-        }
-        for (std::map<std::string, Show*>::const_iterator showIterator = shows.begin(); showIterator != shows.end(); ++showIterator)
-        {
-            Show* show = showIterator->second;
-            if (show == nullptr || show->getScreen() == nullptr || show->getMovie() == nullptr)
-            {
-                continue;
-            }
-            const Theatre* screenTheatre = show->getScreen()->getTheatre();
-            if (screenTheatre != nullptr && screenTheatre->getTheatreId() == theatre->getTheatreId())
-            {
-                theatre->addMovieToTheatre(const_cast<Movie*>(show->getMovie()));
-            }
         }
     }
 }

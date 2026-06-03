@@ -101,7 +101,7 @@ const std::vector<const Ticket*> TicketManagementService::viewTicketDetails()
 		if ((*iterator).second->getCustomer()->getUserId() == authenticatedUserId)
 		{
 			Enums::ShowStatus tikcetShowStatus = (*iterator).second->getPayment()->getBooking()->getShow()->getShowStatus();
-			if (tikcetShowStatus == Enums::ShowStatus::RUNNING || tikcetShowStatus == Enums::ShowStatus::SCHEDULED)
+			if ((tikcetShowStatus == Enums::ShowStatus::RUNNING || tikcetShowStatus == Enums::ShowStatus::SCHEDULED) && (*iterator).second->getTicketStatus() != Enums::TicketStatus::CANCELLED)
 			{
 				authenticatedUserActiveTickets.push_back((*iterator).second);
 			}

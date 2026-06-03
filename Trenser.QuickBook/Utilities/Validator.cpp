@@ -89,7 +89,7 @@ void util::isEmailValid(std::string& value)
         return;
     }
     while (!isValidEmail) {
-        std::cout << "Invalid email address. Please enter a valid format such as example@domain.com.\n";
+        std::cout << "Invalid email address. Please enter a valid format such as example@domain.com: ";
         util::readValue(value);
         if (std::regex_match(value, emailPattern)) {
             std::cout << "Email address format accepted.\n";
