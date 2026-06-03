@@ -189,9 +189,10 @@ Enums::ProcessStatus UserManagementService::setAuthenticatedUserPhoneNumber(cons
 Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& userId)
 {
     std::map<std::string, User*> users = m_dataStore.getUsers();
+    User* currentUser = m_dataStore.getAuthenticatedUser();
     for (std::map<std::string, User*>::iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
-        if (iterator->second->getUserId() == userId)
+        if (iterator->second->getUserId() == userId && userId != currentUser->getUserId())
         {
             if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
             {

@@ -138,7 +138,6 @@ public:
 	const std::vector<const Ticket*> viewAllTickets();
 	const std::vector<const Ticket*> viewTicketHistory();
 	Enums::UserType getAuthenticatedUserType() const;
-	Enums::TicketStatus viewTicketStatus(const std::string& ticketId);
 	const Show* getShowById(const std::string& showId);
 	const Booking* bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds);
 	void logout();

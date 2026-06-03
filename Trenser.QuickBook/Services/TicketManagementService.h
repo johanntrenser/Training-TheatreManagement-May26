@@ -31,7 +31,6 @@ public:
 	const std::vector<const Ticket*> viewAllTickets();
 	const std::vector<const Ticket*> viewTicketHistory();
 	Enums::UserType getAuthenticatedUserType() const;
-	Enums::TicketStatus viewTicketStatus(const std::string& ticketId);
 	Enums::ProcessStatus cancelTicket(const std::string& ticketId);
 	void saveTicketData();
 	void loadTicketData();

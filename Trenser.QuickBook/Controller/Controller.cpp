@@ -1381,19 +1381,6 @@ Enums::UserType Controller::getAuthenticatedUserType() const
 }
 
 /*
-* Function Name : Controller::viewTicketStatus
-* Description   : Retrieves the status of a ticket based on the provided Ticket ID
-*                 by delegating the call to TicketManagementService.
-* Parameters    :
-*                  ticketId - The unique identifier of the ticket whose status is to be retrieved
-* Return Type   : Enums::TicketStatus
-*/
-Enums::TicketStatus Controller::viewTicketStatus(const std::string& ticketId)
-{
-    return m_ticketManagementService->viewTicketStatus(ticketId);
-}
-
-/*
 * Function Name : getShowById
 * Description   : Retrieves a show using the provided show ID.
 * Parameters    :

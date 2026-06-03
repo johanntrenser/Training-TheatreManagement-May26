@@ -600,7 +600,6 @@ void UserInterface::adminTicketManagementMenu()
 		cout << "Ticket Management" << endl;
 		cout << "------------------------" << endl;
 		cout << "1. View All Tickets" << endl;
-		cout << "2. View Ticket Status" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -608,11 +607,6 @@ void UserInterface::adminTicketManagementMenu()
 		case 1:
 		{
 			viewAllTickets();
-			break;
-		}
-		case 2:
-		{
-			viewTicketStatus();
 			break;
 		}
 		case 0:
@@ -1404,7 +1398,6 @@ void UserInterface::customerTicketMenu()
 		cout << "------------------------" << endl;
 		cout << "1. View Active Tickets" << endl;
 		cout << "2. View Ticket History" << endl;
-		cout << "3. View Ticket Status" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -1417,11 +1410,6 @@ void UserInterface::customerTicketMenu()
 		case 2:
 		{
 			viewTicketHistory();
-			break;
-		}
-		case 3:
-		{
-			viewTicketStatus();
 			break;
 		}
 		case 0:
@@ -4656,36 +4644,6 @@ void UserInterface::viewTicketDetails(const std::vector<const Ticket*>& tickets)
 	}
 	util::pressEnter();
 
-}
-
-/*
-* Function Name : UserInterface::viewTicketStatus
-* Description   : Prompts the user to enter a Ticket ID, retrieves the ticket status
-*                 from the controller, and displays a message based on the status.
-* Parameters    : None
-* Return Type   : void
-*/
-void UserInterface::viewTicketStatus()
-{
-	string ticketId;
-	util::readValueWithRetry(ticketId, "Enter the Ticket ID:");
-	Enums::TicketStatus status = m_controller->viewTicketStatus(ticketId);
-	if (status == Enums::TicketStatus::ACTIVE)
-	{
-		cout << "Ticket is Active." << endl;
-	}
-	else if (status == Enums::TicketStatus::COMPLETED)
-	{
-		cout << "Ticket has been expired." << endl;
-	}
-	else if (status == Enums::TicketStatus::CANCELLED)
-	{
-		cout << "Ticket has been cancelled." << endl;
-	}
-	else
-	{
-		cout << "Ticket with ID : " << ticketId << " not found!" << endl;
-	}
 }
 
 /*
