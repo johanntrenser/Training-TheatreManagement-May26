@@ -136,17 +136,14 @@ std::vector<std::vector<Seat*>> ScreenManagementService::generateSeatGrid(Screen
 */
 void ScreenManagementService::cleanupSeatGrid(std::vector<std::vector<Seat*>>& seatGrid, std::vector<Seat*>& seatRow)
 {
-    for (std::vector<Seat*>& rowSeats : seatGrid)
+    for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
     {
-        for (Seat* existingSeat : rowSeats)
+        for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
         {
-            delete existingSeat;
+            (*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
         }
     }
-    for (Seat* existingSeat : seatRow)
-    {
-        delete existingSeat;
-    }
+    seatGrid.clear();
 }
 
 /*

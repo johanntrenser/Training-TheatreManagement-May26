@@ -850,21 +850,6 @@ Enums::ProcessStatus Controller::changePassword(const std::string& currentPasswo
 }
 
 /*
- * Function: getUserStatus
- * Description: Retrieves the status (Active/Inactive) of a user by their ID.
- * Parameters:
- *    userId - The unique identifier of the user
- * Returns:
- *    ACTIVE if the user is active,
- *    INACTIVE if the user is inactive,
- *    or another appropriate status if not found
- */
-Enums::UserStatus Controller::getUserStatus(const std::string& userId)
-{
-    return m_userManagementService->getUserStatus(userId);
-}
-
-/*
 * Function Name : getUnreadNotifications
 * Description   : Retrieves unread notifications for the user.
 * Parameters    :
@@ -1271,29 +1256,6 @@ Enums::ProcessStatus Controller::initiatePayment(const std::string & bookingId, 
 }
 
 /*
- * Function: Controller::viewPaymentStatus
- * Description: Retrieves the status and details of a payment by passing
- *              the request to the PaymentManagementService. Populates the
- *              provided reference parameters with booking ID, amount, payment
- *              method, payment status, and payment date if the payment exists.
- * Parameters:
- *    paymentId    - Unique identifier of the payment to be viewed.
- *    bookingId    - Reference string to store the associated booking ID.
- *    amount       - Reference double to store the payment amount.
- *    paymentMethod- Reference enum to store the payment method used.
- *    paymentStatus- Reference enum to store the current status of the payment.
- *    paymentDate  - Reference string to store the payment date.
- * Returns:
- *    Enums::ProcessStatus::SUCCESS if the payment details were successfully retrieved.
- *    Enums::ProcessStatus::FAILED if the payment does not exist.
- */
-Enums::ProcessStatus Controller::viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
-    double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate)
-{
-    return m_paymentManagementService->viewPaymentStatus(paymentId, bookingId, amount, paymentMethod, paymentStatus, paymentDate);
-}
-
-/*
 *Function: Controller::getAllBookings
 * Description : Retrieves all bookings for the authenticated user by delegating to BookingManagementService.
 * Parameters :
@@ -1517,6 +1479,21 @@ void Controller::saveData()
     m_refundManagementService->saveRefundData();
     m_bookingManagementService->saveBookingData();
     m_seatManagementService->saveShowSeatAvailabilityData();
+}
+
+/*
+* Function Name : getAllPayments
+* Description   : Retrieves all payments relevant to the authenticated user by delegating
+*                 the request to the PaymentManagementService. The returned payments are
+*                 filtered based on the user’s role (Customer or Theatre Owner) inside
+*                 the service layer.
+* Parameters    : None
+* Return Type   : const std::vector<Payment*>
+*                 - A vector containing payments relevant to the authenticated user.
+*/
+const std::vector<Payment*> Controller::getAllPayments()
+{
+    return m_paymentManagementService->getAllPayments();
 }
 
 /*

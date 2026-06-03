@@ -37,7 +37,6 @@ public:
 	void viewInactiveUsers();
 	void reactivateUser();
 	void changePassword();
-	void viewUserStatus();
 	void viewNotifications();
 	void viewLogsByType();
 	void logsTypeMenu();
@@ -134,8 +133,7 @@ public:
 	Enums::ProcessStatus handleCardPayment(Enums::PaymentMethod type);
 	Enums::ProcessStatus handleUPIPayment(Enums::PaymentMethod type);
 	int displayPaymentOptions();
-	void viewPaymentStatus();
-	void displayPaymentStatus(const std::string& paymentId);
+	void viewAllPayments();
 	void viewAllBookings();
 	Enums::UserType getAuthenticatedUserType();
 	void displayCustomerBookings(const std::vector<const Booking*> bookings);

@@ -106,8 +106,6 @@ public:
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 	const std::vector<const Show*> getShowsForMovie(const std::string movieId);
 	Enums::ProcessStatus initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount);
-	Enums::ProcessStatus viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
-			double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate);
 	const std::vector<const Booking*> getAllBookings();
 	const std::vector<std::string> getAllBookingIds();
 	const Booking* getBookingById(const std::string& bookingId);
@@ -123,7 +121,6 @@ public:
 	const User* const getAuthenticatedUser();
 	const std::vector<const User*> getInactiveUsers();
 	Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
-	Enums::UserStatus getUserStatus(const std::string& userId);
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
 	std::vector<const Movie*> getAllInactiveMovies();
 	Enums::ProcessStatus updateSeatLayout(Screen* screen, int rows, int columns, double amount);
@@ -148,5 +145,6 @@ public:
 	void saveData();
 	void loadDataFromFile();
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
+	const std::vector<Payment*> getAllPayments();
 	~Controller();
 };

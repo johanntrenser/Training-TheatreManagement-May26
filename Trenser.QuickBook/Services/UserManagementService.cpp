@@ -270,26 +270,6 @@ Enums::ProcessStatus UserManagementService::changePassword(const std::string& cu
 }
 
 /*
-     * Function: getUserStatus
-     * Description: Retrieves the current status of a user (active/inactive).
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     * Returns: Enum representing the user status.
-     */
-Enums::UserStatus UserManagementService::getUserStatus(const std::string& userId)
-{
-    const std::map<std::string, User*> users = m_dataStore.getUsers();
-    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
-    {
-        if (iterator->second->getUserId() == userId)
-        {
-            return iterator->second->getStatus();
-        }
-    }
-    return Enums::UserStatus::NOT_FOUND;
-}
-
-/*
  * Function: UserManagementService::saveData
  * Description: Saves all user data from the DataStore into a CSV file.
  *              Encrypts passwords before writing and overwrites existing file content.

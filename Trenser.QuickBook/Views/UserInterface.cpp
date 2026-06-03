@@ -354,7 +354,6 @@ void UserInterface::adminUserManagementMenu()
 		cout << "3. Update User Details" << endl;
 		cout << "4. Deactivate User" << endl;
 		cout << "5. Reactivate User" << endl;
-		cout << "6. View User Status" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -382,11 +381,6 @@ void UserInterface::adminUserManagementMenu()
 		case 5:
 		{
 			reactivateUser();
-			break;
-		}
-		case 6:
-		{
-			viewUserStatus();
 			break;
 		}
 		case 0:
@@ -941,11 +935,11 @@ void UserInterface::ownerScreenManagementMenu()
 			util::readValueWithRetry(screenId, "Enter Screen ID for seat management: ");
 			const std::vector<const Screen*> screens = m_controller->getScreensFromTheatre(theatreId);
 			Screen* selectedScreen = nullptr;
-			for (std::vector<const Screen*>::const_iterator it = screens.begin(); it != screens.end(); ++it)
+			for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 			{
-				if ((*it)->getScreenId() == screenId)
+				if ((*iterator)->getScreenId() == screenId)
 				{
-					selectedScreen = const_cast<Screen*>(*it);
+					selectedScreen = const_cast<Screen*>(*iterator);
 					break;
 				}
 			}
@@ -1139,6 +1133,7 @@ void UserInterface::ownerBookingManagementMenu()
 		cout << "------------------------" << endl;
 		cout << "1. View All Bookings" << endl;
 		cout << "2. View Booking Details" << endl;
+		cout << "3. View All Payment" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -1151,6 +1146,11 @@ void UserInterface::ownerBookingManagementMenu()
 		case 2:
 		{
 			displayBookingDetails();
+			break;
+		}
+		case 3:
+		{
+			viewAllPayments();
 			break;
 		}
 		case 0:
@@ -1345,7 +1345,7 @@ void UserInterface::customerBookingMenu()
 		cout << "1. View All Bookings" << endl;
 		cout << "2. View Booking Details" << endl;
 		cout << "3. Cancel Booking" << endl;
-		cout << "4. View Payment Status" << endl;
+		cout << "4. View All Payment" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -1367,7 +1367,7 @@ void UserInterface::customerBookingMenu()
 		}
 		case 4:
 		{
-			viewPaymentStatus();
+			viewAllPayments();
 			break;
 		}
 		case 0:
@@ -2660,37 +2660,6 @@ void UserInterface::changePassword()
 	else
 	{
 		cout << "Password does not match." << endl;
-	}
-	util::pressEnter();
-	util::clear();
-}
-
-/*
- * Function: UserInterface::viewUserStatus
- * Description: Prompts the user to enter a User ID and retrieves the status
- *              of the specified user from the Controller. Displays whether
- *              the user is Active, Inactive, or not found.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
-void UserInterface::viewUserStatus()
-{
-	string userId;
-	util::readValueWithRetry(userId, "Enter User ID: ");
-	Enums::UserStatus status = m_controller->getUserStatus(userId);
-	if (status == Enums::UserStatus::ACTIVE)
-	{
-		cout << "User is Active" << endl;
-	}
-	else if (status == Enums::UserStatus::INACTIVE)
-	{
-		cout << "User is Inactive" << endl;
-	}
-	else
-	{
-		cout << "User not found!" << endl;
 	}
 	util::pressEnter();
 	util::clear();
@@ -4786,47 +4755,46 @@ int UserInterface::displayPaymentOptions()
 }
 
 /*
- * Function: UserInterface::displayPaymentStatus
- * Description: Displays the details of a payment based on its unique identifier.
- *              Retrieves payment information from the Controller and prints
- *              the payment ID, booking ID, amount, method, status, and date
- *              to the console. Handles cases where the payment is not found.
- * Parameters:
- *    paymentId - A string representing the unique identifier of the payment to be displayed.
- * Returns: None
- */
-void UserInterface::displayPaymentStatus(const std::string& paymentId)
+* Function Name : viewAllPayments
+* Description   : Displays all payments relevant to the authenticated user in a formatted
+*                 tabular view. Retrieves payments from the controller and prints details
+*                 including Payment ID, Booking ID, Amount, Method, Status, and Timestamp.
+* Parameters    : None
+* Return Type   : void
+*/
+
+void UserInterface::viewAllPayments()
 {
-	std::string bookingId;
-	double amount = 0.0;
-	Enums::PaymentMethod paymentMethod;
-	Enums::PaymentStatus paymentStatus;
-	std::string paymentDate;
-	if (m_controller->viewPaymentStatus(paymentId, bookingId, amount, paymentMethod, paymentStatus, paymentDate) == Enums::ProcessStatus::FAILED)
+	const std::vector<Payment*> allPayments = m_controller->getAllPayments();
+	if (allPayments.empty())
 	{
-		std::cout << "\nPayment not found!";
+		cout << "No Payment Record!" << endl;
+		util::pressEnter();
 		return;
 	}
-	std::cout << "\nPayment ID   : " << paymentId;
-	std::cout << "\nBooking ID   : " << bookingId;
-	std::cout << "\nAmount       : " << amount;
-	std::cout << "\nMethod       : " << Enums::getPaymentMethodString(paymentMethod);
-	std::cout << "\nStatus       : " << Enums::getPaymentStatusString(paymentStatus);
-	std::cout << "\nPayment Date : " << paymentDate;
-}
+	std::cout << std::left
+		<< std::setw(12) << "Payment ID"
+		<< std::setw(12) << "Booking ID"
+		<< std::setw(10) << "Amount"
+		<< std::setw(15) << "Method"
+		<< std::setw(12) << "Status"
+		<< std::setw(20) << "Time"
+		<< std::endl;
+	std::cout << std::string(81, '-') << std::endl;
+	for (auto iterator = allPayments.begin(); iterator != allPayments.end(); ++iterator)
+	{
+		Payment* payment = *iterator;
 
-/*
- * Function: UserInterface::viewPaymentStatus
- * Description: Prompts the user to enter a payment ID and then calls
- *              displayPaymentStatus to show the corresponding payment details.
- * Parameters: None
- * Returns: None
- */
-void UserInterface::viewPaymentStatus()
-{
-	std::string paymentId;
-	util::readValueWithRetry(paymentId, "\nEnter payment Id: ");
-	displayPaymentStatus(paymentId);
+		std::cout << std::left
+			<< std::setw(12) << payment->getPaymentId()
+			<< std::setw(12) << payment->getBooking()->getBookingId()
+			<< std::setw(10) << payment->getAmount()
+			<< std::setw(15) << Enums::getPaymentMethodString(payment->getPaymentMethod())
+			<< std::setw(12) << Enums::getPaymentStatusString(payment->getStatus())
+			<< std::setw(20) << util::serializeTime(payment->getTimeStamp())
+			<< std::endl;
+	}
+	util::pressEnter();
 }
 
 /*
