@@ -61,10 +61,10 @@ public:
 	void activateMovie();
 	void searchMovie();
 	bool displayAllInactiveMovies();
-	void updateSeatLayout(Screen* screen, int rows, int columns, double amount);
-	void viewSeatLayout(const Screen* screen);
-	void deactivateSeat(Screen* screen, const std::string& seatId);
-	void reactivateSeat(Screen* screen, const std::string& seatId);
+	void updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount);
+	void viewSeatLayout(const std::string& selectedScreenId);
+	void deactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
+	void reactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
 	void viewShowSeatLayout(const Show* show);
 	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 	Enums::ProcessStatus updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name);
@@ -159,5 +159,5 @@ public:
 	void customerBookingMenu();
 	void customerTicketMenu();
 	void ownerScreenManagementMenu();
-	void ownerSeatManagementMenu(Screen* screen);
+	void ownerSeatManagementMenu(const std::string& selectedScreenId);
 };

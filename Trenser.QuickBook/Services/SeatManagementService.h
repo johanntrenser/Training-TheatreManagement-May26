@@ -21,12 +21,12 @@ private:
     const std::string& PATH_SHOW_SEAT = config::File::SHOW_SEAT_FILEPATH;
 public:
     SeatManagementService();
-    Enums::ProcessStatus updateSeatLayout(Screen* screen, int newRows, int newColumns, double amount);
+    Enums::ProcessStatus updateSeatLayout(const std::string& selectedScreenId, int newRows, int newColumns, double amount);
     void clearSeatGrid(std::vector<std::vector<Seat*>>& seatGrid);
-    const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
-    Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
+    const std::vector<std::vector<Seat*>>& getSeatLayout(const std::string& selectedScreenId) const;
+    Enums::ProcessStatus deactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
     Enums::ProcessStatus hasActiveSeatBooking(Screen* screen, const std::string& seatId);
-    Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
+    Enums::ProcessStatus reactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
     const std::vector<std::vector<std::string>> getShowsSeatLayout(const Show* show);
     std::string formatSeatDisplay(const Seat* seat, const std::map<std::string, Enums::BookingStatus>& availabilityMap);
     void saveSeatData();

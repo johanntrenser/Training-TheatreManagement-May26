@@ -928,9 +928,9 @@ std::vector<const Movie*> Controller::getAllInactiveMovies()
  * Returns:
  *    enum - ProcessStatus
  */
-Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
+Enums::ProcessStatus Controller::updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount)
 {
-    return m_seatManagementService->updateSeatLayout(screen, rows, columns, amount);
+    return m_seatManagementService->updateSeatLayout(selectedScreenId, rows, columns, amount);
 }
 
 /*
@@ -941,9 +941,9 @@ Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, int rows, int 
  * Returns:
  *    Const reference to 2D vector of Seat pointers
  */
-const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const Screen* screen) const
+const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const std::string& selectedScreenId) const
 {
-    return m_seatManagementService->getSeatLayout(screen);
+    return m_seatManagementService->getSeatLayout(selectedScreenId);
 }
 
 /*
@@ -955,9 +955,9 @@ const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const Screen* s
  * Returns:
  *    enum - ProcessStatus
  */
-Enums::ProcessStatus Controller::deactivateSeat(Screen* screen, const std::string& seatId)
+Enums::ProcessStatus Controller::deactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-    return m_seatManagementService->deactivateSeat(screen, seatId);
+    return m_seatManagementService->deactivateSeat(selectedScreenId, seatId);
 }
 
 /*
@@ -969,9 +969,9 @@ Enums::ProcessStatus Controller::deactivateSeat(Screen* screen, const std::strin
  * Returns:
  *    ProcessStatus indicating success or failure
  */
-Enums::ProcessStatus Controller::reactivateSeat(Screen* screen, const std::string& seatId)
+Enums::ProcessStatus Controller::reactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-    return m_seatManagementService->reactivateSeat(screen, seatId);
+    return m_seatManagementService->reactivateSeat(selectedScreenId, seatId);
 }
 
 /*

@@ -123,10 +123,10 @@ public:
 	Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
 	std::vector<const Movie*> getAllInactiveMovies();
-	Enums::ProcessStatus updateSeatLayout(Screen* screen, int rows, int columns, double amount);
-	const std::vector<std::vector<Seat*>>& getSeatLayout(const Screen* screen) const;
-	Enums::ProcessStatus deactivateSeat(Screen* screen, const std::string& seatId);
-	Enums::ProcessStatus reactivateSeat(Screen* screen, const std::string& seatId);
+	Enums::ProcessStatus updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount);
+	const std::vector<std::vector<Seat*>>& getSeatLayout(const std::string& selectedScreenId) const;
+	Enums::ProcessStatus deactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
+	Enums::ProcessStatus reactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
 	const std::vector<std::vector<std::string>> getShowSeatLayout(const Show* show);
 	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 	Enums::ProcessStatus updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name);

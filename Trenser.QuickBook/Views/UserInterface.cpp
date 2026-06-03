@@ -930,26 +930,25 @@ void UserInterface::ownerScreenManagementMenu()
 		}
 		case 6:
 		{
-			std::string screenId;
+			std::string screenId, selectedScreenId = "";
 			viewTheatreScreens(theatreId);
 			util::readValueWithRetry(screenId, "Enter Screen ID for seat management: ");
 			const std::vector<const Screen*> screens = m_controller->getScreensFromTheatre(theatreId);
-			Screen* selectedScreen = nullptr;
 			for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 			{
 				if ((*iterator)->getScreenId() == screenId)
 				{
-					selectedScreen = const_cast<Screen*>(*iterator);
+					selectedScreenId = screenId;
 					break;
 				}
 			}
-			if (selectedScreen == nullptr)
+			if (selectedScreenId.empty())
 			{
 				cout << "Invalid Screen ID!" << endl;
 				util::pressEnter();
 				break;
 			}
-			ownerSeatManagementMenu(selectedScreen);
+			ownerSeatManagementMenu(selectedScreenId);
 			break;
 		}
 		default:
@@ -972,7 +971,7 @@ void UserInterface::ownerScreenManagementMenu()
 *     - Screen* screen : Pointer to the screen object whose seats are being managed.
 * Return Type   : void
 */
-void UserInterface::ownerSeatManagementMenu(Screen* screen)
+void UserInterface::ownerSeatManagementMenu(const std::string& selectedScreenId)
 {
 	bool isMenuActive = true;
 	int choice;
@@ -991,7 +990,7 @@ void UserInterface::ownerSeatManagementMenu(Screen* screen)
 		{
 		case 1:
 		{
-			viewSeatLayout(screen);
+			viewSeatLayout(selectedScreenId);
 			util::pressEnter();
 			break;
 		}
@@ -1000,25 +999,25 @@ void UserInterface::ownerSeatManagementMenu(Screen* screen)
 			int rows = 0, columns = 0;
 			double amount = 0.0;
 			util::readValueWithRetry(amount, "Enter Seat Price: ");
-			updateSeatLayout(screen, rows, columns, amount);
+			updateSeatLayout(selectedScreenId, rows, columns, amount);
 			util::pressEnter();
 			break;
 		}
 		case 3:
 		{
 			std::string seatId;
-			viewSeatLayout(screen);
+			viewSeatLayout(selectedScreenId);
 			util::readValueWithRetry(seatId, "Enter Seat ID to deactivate: ");
-			deactivateSeat(screen, seatId);
+			deactivateSeat(selectedScreenId, seatId);
 			util::pressEnter();
 			break;
 		}
 		case 4:
 		{
 			std::string seatId;
-			viewSeatLayout(screen);
+			viewSeatLayout(selectedScreenId);
 			util::readValueWithRetry(seatId, "Enter Seat ID to reactivate: ");
-			reactivateSeat(screen, seatId);
+			reactivateSeat(selectedScreenId, seatId);
 			util::pressEnter();
 			break;
 		}
@@ -1500,11 +1499,11 @@ void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
  * Returns:
  *    None
  */
-void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
+void UserInterface::updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount)
 {
 	util::readValueWithRetry(rows, "Enter Number of Rows: ");
 	util::readValueWithRetry(columns, "Enter Number of Columns: ");
-	if (m_controller->updateSeatLayout(screen, rows, columns, amount) == Enums::ProcessStatus::SUCCESS)
+	if (m_controller->updateSeatLayout(selectedScreenId, rows, columns, amount) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Layout Updated Successfully" << endl;
 	}
@@ -2002,9 +2001,9 @@ Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& t
  * Returns:
  *    None
  */
-void UserInterface::viewSeatLayout(const Screen* screen)
+void UserInterface::viewSeatLayout(const std::string& selectedScreenId)
 {
-	const std::vector<std::vector<Seat*>>& seatGrid = m_controller->getSeatLayout(screen);
+	const std::vector<std::vector<Seat*>>& seatGrid = m_controller->getSeatLayout(selectedScreenId);
 	cout << "<------ Seat Grid ------>" << endl << endl;
 	for (std::vector<std::vector<Seat*>>::const_iterator iteratorOne = seatGrid.begin(); iteratorOne != seatGrid.end(); ++iteratorOne)
 	{
@@ -2831,9 +2830,9 @@ bool UserInterface::displayAllInactiveMovies()
  * Returns:
  *    None
  */
-void UserInterface::deactivateSeat(Screen* screen, const std::string& seatId)
+void UserInterface::deactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-	Enums::ProcessStatus status = m_controller->deactivateSeat(screen, seatId);
+	Enums::ProcessStatus status = m_controller->deactivateSeat(selectedScreenId, seatId);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Number " << seatId << " Deactivated!" << endl;
@@ -2853,9 +2852,9 @@ void UserInterface::deactivateSeat(Screen* screen, const std::string& seatId)
  * Returns:
  *    None
  */
-void UserInterface::reactivateSeat(Screen* screen, const std::string& seatId)
+void UserInterface::reactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-	Enums::ProcessStatus status = m_controller->reactivateSeat(screen, seatId);
+	Enums::ProcessStatus status = m_controller->reactivateSeat(selectedScreenId, seatId);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Number " << seatId << " Reactivated!" << endl;

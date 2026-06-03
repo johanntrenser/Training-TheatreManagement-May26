@@ -51,8 +51,9 @@ std::string SeatManagementService::generateSeatId()
  * Returns:
  *    ProcessStatus::SUCCESS if layout updated, FAILED otherwise
  */
-Enums::ProcessStatus SeatManagementService::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
+Enums::ProcessStatus SeatManagementService::updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount)
 {
+    Screen* screen = m_dataStore.getScreenById(selectedScreenId);
     if (!screen)
     {
         return Enums::ProcessStatus::FAILED;
@@ -117,9 +118,10 @@ void SeatManagementService::clearSeatGrid(std::vector<std::vector<Seat*>>& seatG
  * Returns:
  *    Const reference to 2D vector of Seat pointers
  */
-const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(const Screen* screen) const
+const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(const std::string& selectedScreenId) const
 {
-    return screen->getSeatGrid();
+    Screen* screen = m_dataStore.getScreenById(selectedScreenId);
+    return  screen->getSeatGrid();
 }
 
 /*
@@ -131,8 +133,9 @@ const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(cons
  * Returns:
  *    ProcessStatus::SUCCESS if seat blocked, FAILED otherwise
  */
-Enums::ProcessStatus SeatManagementService::deactivateSeat(Screen* screen, const std::string& seatId)
+Enums::ProcessStatus SeatManagementService::deactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
+    Screen* screen = m_dataStore.getScreenById(selectedScreenId);
     if (!screen)
     {
         return Enums::ProcessStatus::FAILED;
@@ -205,8 +208,9 @@ Enums::ProcessStatus SeatManagementService::hasActiveSeatBooking(Screen* screen,
  * Returns:
  *    ProcessStatus::SUCCESS if seat reactivated, FAILED otherwise
  */
-Enums::ProcessStatus SeatManagementService::reactivateSeat(Screen* screen, const std::string& seatId)
+Enums::ProcessStatus SeatManagementService::reactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
+    Screen* screen = m_dataStore.getScreenById(selectedScreenId);
     if (!screen)
     {
         return Enums::ProcessStatus::FAILED;
