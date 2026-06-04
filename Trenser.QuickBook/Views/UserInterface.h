@@ -159,4 +159,5 @@ public:
 	void customerTicketMenu();
 	void ownerScreenManagementMenu();
 	void ownerSeatManagementMenu(const std::string& selectedScreenId);
+	void viewRefunds();
 };

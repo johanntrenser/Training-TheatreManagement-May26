@@ -69,10 +69,11 @@ public:
 	Enums::ProcessStatus setMovieGenreByID(const std::string& movieId, const std::string& genre);
 	Enums::ProcessStatus setMovieDurationByID(const std::string& movieId, const int& duration);
 	std::vector<const Movie*> getAllActiveMovies();
-	Enums::ProcessStatus setMovieDeactivate(const std::string& movieId);
-	Enums::ProcessStatus setMovieActivate(const std::string& movieId);
+	Enums::ProcessStatus deactivateMovie(const std::string& movieId);
+	Enums::ProcessStatus reactivateMovie(const std::string& movieId);
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	const std::vector<const Theatre*> getCurrentOwnerTheatres();
+	const std::vector<const Theatre*> getCurrentOwnerInavtiavteTheatres();
 	const std::vector<std::string> getCurrentOwnerTheatreIds();
 	const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
@@ -145,5 +146,6 @@ public:
 	void loadDataFromFile();
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
 	const std::vector<Payment*> getAllPayments();
+	const std::vector<Refund*> getRefunds();
 	~Controller();
 };

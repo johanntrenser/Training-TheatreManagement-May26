@@ -165,6 +165,29 @@ Enums::ProcessStatus SeatManagementService::deactivateSeat(const std::string& se
 }
 
 /*
+ * Function: SeatManagementService::deactivateSeats
+ * Description: Deactivates all seats associated with a given screen by setting
+ *              their status to BLOCKED.
+ * Parameters:
+ *    selectedScreenId - Unique identifier of the screen whose seats should be deactivated
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS after all seats are blocked
+ */
+Enums::ProcessStatus SeatManagementService::deactivateSeats(const std::string& selectedScreenId)
+{
+    const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
+    for (std::map<std::string, Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getScreen() && iterator->second->getScreen()->getScreenId() == selectedScreenId)
+        {
+            Seat* seat = m_dataStore.getSeatById(iterator->second->getSeatId());
+            seat->setSeatStatus(Enums::SeatStatus::BLOCKED);
+        }
+    }
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
  * Function: SeatManagementService::hasActiveSeatBooking
  * Description: Checks whether the seat has confirmed bookings in active shows.
  * Parameters:
@@ -231,6 +254,29 @@ Enums::ProcessStatus SeatManagementService::reactivateSeat(const std::string& se
         }
     }
     return Enums::ProcessStatus::FAILED;
+}
+
+/*
+ * Function: SeatManagementService::reactivateSeats
+ * Description: Reactivates all seats associated with a given screen by setting
+ *              their status to AVAILABLE.
+ * Parameters:
+ *    selectedScreenId - Unique identifier of the screen whose seats should be reactivated
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS after all seats are made available
+ */
+Enums::ProcessStatus SeatManagementService::reactivateSeats(const std::string& selectedScreenId)
+{
+    const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
+    for (std::map<std::string, Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getScreen() && iterator->second->getScreen()->getScreenId() == selectedScreenId)
+        {
+            Seat* seat = m_dataStore.getSeatById(iterator->second->getSeatId());
+            seat->setSeatStatus(Enums::SeatStatus::AVAILABLE);
+        }
+    }
+    return Enums::ProcessStatus::SUCCESS;
 }
 
 /*

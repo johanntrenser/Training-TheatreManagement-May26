@@ -27,10 +27,11 @@ public:
 	Enums::ProcessStatus setMovieGenreByID(const std::string& movieId, const std::string& genre);
 	Enums::ProcessStatus setMovieDurationByID(const std::string& movieId, const int& duration);
 	std::vector<const Movie*> getAllActiveMovies();
-	Enums::ProcessStatus setMovieDeactive(const std::string& movieId);
-	Enums::ProcessStatus setMovieActive(const std::string& movieId);
+	Enums::ProcessStatus deactivateMovie(const std::string& movieId);
+	Enums::ProcessStatus reactivateMovie(const std::string& movieId);
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	std::vector<const Movie*> getAllInactiveMovies();
+	Enums::ProcessStatus isMovieDeactivatable(const std::string& movieId);
 	void saveMovieData();
 	void loadMovieData();
 };

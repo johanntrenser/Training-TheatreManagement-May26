@@ -25,8 +25,10 @@ public:
     void clearSeatGrid(std::vector<std::vector<Seat*>>& seatGrid);
     const std::vector<std::vector<Seat*>>& getSeatLayout(const std::string& selectedScreenId) const;
     Enums::ProcessStatus deactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
+    Enums::ProcessStatus deactivateSeats(const std::string& selectedScreenId);
     Enums::ProcessStatus hasActiveSeatBooking(Screen* screen, const std::string& seatId);
     Enums::ProcessStatus reactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
+    Enums::ProcessStatus reactivateSeats(const std::string& selectedScreenId);
     const std::vector<std::vector<std::string>> getShowsSeatLayout(const Show* show);
     std::string formatSeatDisplay(const Seat* seat, const std::map<std::string, Enums::BookingStatus>& availabilityMap);
     void saveSeatData();

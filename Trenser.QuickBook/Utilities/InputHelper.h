@@ -42,6 +42,18 @@ namespace util
     }
 
     /*
+     * Function: readString
+     * Description: Reads a string value from the console input stream.
+     * Parameters:
+     *   - str: Reference to the string variable where the input will be stored.
+     * Returns: None
+     */
+    inline void readValue(std::string& value)
+    {
+        getline(std::cin >> std::ws, value);
+    }
+
+    /*
     * Function Name : readValueWithRetry (template)
     * Description   : Reads a value of type T from user input with retry logic.
     *                 Keeps prompting until a valid value is entered.
@@ -133,7 +145,6 @@ namespace util
         str.erase(std::remove(str.begin(), str.end(), '\t'), str.end());
     }
 
-    void readValue(std::string& value);
     void pressEnter();
 }
 

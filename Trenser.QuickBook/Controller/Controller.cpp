@@ -313,6 +313,19 @@ const std::vector<const Theatre*> Controller::getCurrentOwnerTheatres()
 }
 
 /*
+Function Name : getCurrentOwnerInavtiavteTheatres
+Description   : Retrieves the list of inactive theatres owned by the currently
+                authenticated theatre owner. Delegates the retrieval to the
+                TheatreManagementService.
+Parameters    : None
+Return Type   : const std::vector<const Theatre*>
+*/
+const std::vector<const Theatre*> Controller::getCurrentOwnerInavtiavteTheatres()
+{
+    return m_theatreManagementService->getCurrentOwnerInavtiavteTheatres();
+}
+
+/*
  * Function: Controller::getCurrentOwnerTheatreIds
  * Description: Retrieves the theatre IDs associated with the currently logged-in
  *              owner. Calls getCurrentOwnerTheatres to obtain the list of theatres
@@ -863,7 +876,7 @@ std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& 
 }
 
 /*
- * Function: Controller::setMovieDeactivate
+ * Function: Controller::deactivateMovie
  * Description: Deactivates a movie in the system by delegating the request to the MovieManagementService.
  * Parameters:
  *    movieId - Unique identifier of the movie to deactivate
@@ -871,13 +884,13 @@ std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& 
  *    Enums::ProcessStatus::SUCCESS if the movie was successfully deactivated,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieDeactivate(const std::string& movieId)
+Enums::ProcessStatus Controller::deactivateMovie(const std::string& movieId)
 {
-    return m_movieManagementService->setMovieDeactive(movieId);
+    return m_movieManagementService->deactivateMovie(movieId);
 }
 
 /*
- * Function: Controller::setMovieActivate
+ * Function: Controller::reactivateMovie
  * Description: Activates a movie in the system by delegating the request to the MovieManagementService.
  * Parameters:
  *    movieId - Unique identifier of the movie to activate
@@ -885,9 +898,9 @@ Enums::ProcessStatus Controller::setMovieDeactivate(const std::string& movieId)
  *    Enums::ProcessStatus::SUCCESS if the movie was successfully activated,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieActivate(const std::string& movieId)
+Enums::ProcessStatus Controller::reactivateMovie(const std::string& movieId)
 {
-    return m_movieManagementService->setMovieActive(movieId);
+    return m_movieManagementService->reactivateMovie(movieId);
 }
 
 /*
@@ -1481,6 +1494,19 @@ void Controller::saveData()
 const std::vector<Payment*> Controller::getAllPayments()
 {
     return m_paymentManagementService->getAllPayments();
+}
+
+/*
+Function Name : getRefunds
+Description   : Retrieves refunds relevant to the authenticated user by delegating
+                the request to the RefundManagementService.
+Parameters    : None
+Return Type   : const std::vector<Refund*>
+                - A vector containing refunds relevant to the authenticated user.
+*/
+const std::vector<Refund*> Controller::getRefunds()
+{
+    return m_refundManagementService->getRefunds();
 }
 
 /*
