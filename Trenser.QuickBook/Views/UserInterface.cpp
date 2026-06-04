@@ -74,11 +74,12 @@ void UserInterface::run()
 		catch (const runtime_error& e)
 		{
 			cout << "Runtime Exception: " << e.what();
+			m_controller->saveData();
 		}
 		catch (const exception& e)
 		{
 			cout << "Exception : " << e.what() << endl;
-			util::pressEnter();
+			m_controller->saveData();
 		}
 	}
 }
@@ -246,7 +247,8 @@ void UserInterface::adminMenu()
 	cout << " 6.  View Logs" << endl;
 	cout << " 7.  View Profile" << endl;
 	cout << " 8.  Change Password" << endl;
-	cout << " 9.  Logout" << endl;
+	cout << " 9.  View Notifications" << endl;
+	cout << " 10. Logout" << endl;
 	cout << "------------------------" << endl;
 }
 
@@ -310,6 +312,11 @@ void UserInterface::handleAdminMenuOperation()
 		}
 		case 9:
 		{
+			viewNotifications();
+			break;
+		}
+		case 10:
+		{
 			m_controller->logout();
 			isMenuActive = false;
 			break;
@@ -347,8 +354,6 @@ void UserInterface::adminUserManagementMenu()
 		cout << "3. Update User Details" << endl;
 		cout << "4. Deactivate User" << endl;
 		cout << "5. Reactivate User" << endl;
-		cout << "6. View User Status" << endl;
-		cout << "7. View Notifications" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -376,16 +381,6 @@ void UserInterface::adminUserManagementMenu()
 		case 5:
 		{
 			reactivateUser();
-			break;
-		}
-		case 6:
-		{
-			viewUserStatus();
-			break;
-		}
-		case 7:
-		{
-			viewNotifications();
 			break;
 		}
 		case 0:
@@ -562,24 +557,12 @@ void UserInterface::adminShowManagementMenu()
 		util::clear();
 		cout << "Show Management" << endl;
 		cout << "------------------------" << endl;
-		cout << "1. View All Shows" << endl;
-		cout << "2. View Show Status" << endl;
-		cout << "3. List Shows For a Movie" << endl;
+		cout << "1. List Shows For a Movie" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
 		case 1:
-		{
-			displayAllShows();
-			break;
-		}
-		case 2:
-		{
-			viewShowStatus();
-			break;
-		}
-		case 3:
 		{
 			listShowsForAMovie();
 			break;
@@ -617,7 +600,6 @@ void UserInterface::adminTicketManagementMenu()
 		cout << "Ticket Management" << endl;
 		cout << "------------------------" << endl;
 		cout << "1. View All Tickets" << endl;
-		cout << "2. View Ticket Status" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -625,11 +607,6 @@ void UserInterface::adminTicketManagementMenu()
 		case 1:
 		{
 			viewAllTickets();
-			break;
-		}
-		case 2:
-		{
-			viewTicketStatus();
 			break;
 		}
 		case 0:
@@ -947,26 +924,25 @@ void UserInterface::ownerScreenManagementMenu()
 		}
 		case 6:
 		{
-			std::string screenId;
+			std::string screenId, selectedScreenId = "";
 			viewTheatreScreens(theatreId);
 			util::readValueWithRetry(screenId, "Enter Screen ID for seat management: ");
 			const std::vector<const Screen*> screens = m_controller->getScreensFromTheatre(theatreId);
-			Screen* selectedScreen = nullptr;
-			for (std::vector<const Screen*>::const_iterator it = screens.begin(); it != screens.end(); ++it)
+			for (std::vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
 			{
-				if ((*it)->getScreenId() == screenId)
+				if ((*iterator)->getScreenId() == screenId)
 				{
-					selectedScreen = const_cast<Screen*>(*it);
+					selectedScreenId = screenId;
 					break;
 				}
 			}
-			if (selectedScreen == nullptr)
+			if (selectedScreenId.empty())
 			{
 				cout << "Invalid Screen ID!" << endl;
 				util::pressEnter();
 				break;
 			}
-			ownerSeatManagementMenu(selectedScreen);
+			ownerSeatManagementMenu(selectedScreenId);
 			break;
 		}
 		default:
@@ -989,7 +965,7 @@ void UserInterface::ownerScreenManagementMenu()
 *     - Screen* screen : Pointer to the screen object whose seats are being managed.
 * Return Type   : void
 */
-void UserInterface::ownerSeatManagementMenu(Screen* screen)
+void UserInterface::ownerSeatManagementMenu(const std::string& selectedScreenId)
 {
 	bool isMenuActive = true;
 	int choice;
@@ -1008,7 +984,7 @@ void UserInterface::ownerSeatManagementMenu(Screen* screen)
 		{
 		case 1:
 		{
-			viewSeatLayout(screen);
+			viewSeatLayout(selectedScreenId);
 			util::pressEnter();
 			break;
 		}
@@ -1017,25 +993,25 @@ void UserInterface::ownerSeatManagementMenu(Screen* screen)
 			int rows = 0, columns = 0;
 			double amount = 0.0;
 			util::readValueWithRetry(amount, "Enter Seat Price: ");
-			updateSeatLayout(screen, rows, columns, amount);
+			updateSeatLayout(selectedScreenId, rows, columns, amount);
 			util::pressEnter();
 			break;
 		}
 		case 3:
 		{
 			std::string seatId;
-			viewSeatLayout(screen);
+			viewSeatLayout(selectedScreenId);
 			util::readValueWithRetry(seatId, "Enter Seat ID to deactivate: ");
-			deactivateSeat(screen, seatId);
+			deactivateSeat(selectedScreenId, seatId);
 			util::pressEnter();
 			break;
 		}
 		case 4:
 		{
 			std::string seatId;
-			viewSeatLayout(screen);
+			viewSeatLayout(selectedScreenId);
 			util::readValueWithRetry(seatId, "Enter Seat ID to reactivate: ");
-			reactivateSeat(screen, seatId);
+			reactivateSeat(selectedScreenId, seatId);
 			util::pressEnter();
 			break;
 		}
@@ -1075,9 +1051,10 @@ void UserInterface::ownerShowManagementMenu()
 		cout << "1. Add Show" << endl;
 		cout << "2. Update Show" << endl;
 		cout << "3. Cancel Show" << endl;
-		cout << "4. View All Shows" << endl;
-		cout << "5. View Show Status" << endl;
-		cout << "6. List Shows For a Movie" << endl;
+		cout << "4. View All Active Shows" << endl;
+		cout << "5. View All Shows" << endl;
+		cout << "6. View Show Status" << endl;
+		cout << "7. List Shows For a Movie" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -1098,16 +1075,19 @@ void UserInterface::ownerShowManagementMenu()
 			break;
 		}
 		case 4:
+			displayActiveShows();
+			break;
+		case 5:
 		{
 			displayAllShows();
 			break;
 		}
-		case 5:
+		case 6:
 		{
 			viewShowStatus();
 			break;
 		}
-		case 6:
+		case 7:
 		{
 			listShowsForAMovie();
 			break;
@@ -1146,6 +1126,8 @@ void UserInterface::ownerBookingManagementMenu()
 		cout << "------------------------" << endl;
 		cout << "1. View All Bookings" << endl;
 		cout << "2. View Booking Details" << endl;
+		cout << "3. View All Payment" << endl;
+		cout << "4. View All Refunds" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -1158,6 +1140,16 @@ void UserInterface::ownerBookingManagementMenu()
 		case 2:
 		{
 			displayBookingDetails();
+			break;
+		}
+		case 3:
+		{
+			viewAllPayments();
+			break;
+		}
+		case 4:
+		{
+			viewRefunds();
 			break;
 		}
 		case 0:
@@ -1352,7 +1344,8 @@ void UserInterface::customerBookingMenu()
 		cout << "1. View All Bookings" << endl;
 		cout << "2. View Booking Details" << endl;
 		cout << "3. Cancel Booking" << endl;
-		cout << "4. View Payment Status" << endl;
+		cout << "4. View All Payment" << endl;
+		cout << "5. View All Refunds" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -1374,7 +1367,12 @@ void UserInterface::customerBookingMenu()
 		}
 		case 4:
 		{
-			viewPaymentStatus();
+			viewAllPayments();
+			break;
+		}
+		case 5:
+		{
+			viewRefunds();
 			break;
 		}
 		case 0:
@@ -1412,7 +1410,6 @@ void UserInterface::customerTicketMenu()
 		cout << "------------------------" << endl;
 		cout << "1. View Active Tickets" << endl;
 		cout << "2. View Ticket History" << endl;
-		cout << "3. View Ticket Status" << endl;
 		cout << "0. Back" << endl;
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
@@ -1425,11 +1422,6 @@ void UserInterface::customerTicketMenu()
 		case 2:
 		{
 			viewTicketHistory();
-			break;
-		}
-		case 3:
-		{
-			viewTicketStatus();
 			break;
 		}
 		case 0:
@@ -1507,11 +1499,11 @@ void UserInterface::getUniquePhoneNumber(std::string& phoneNumber)
  * Returns:
  *    None
  */
-void UserInterface::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
+void UserInterface::updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount)
 {
 	util::readValueWithRetry(rows, "Enter Number of Rows: ");
 	util::readValueWithRetry(columns, "Enter Number of Columns: ");
-	if (m_controller->updateSeatLayout(screen, rows, columns, amount) == Enums::ProcessStatus::SUCCESS)
+	if (m_controller->updateSeatLayout(selectedScreenId, rows, columns, amount) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Layout Updated Successfully" << endl;
 	}
@@ -1663,7 +1655,14 @@ void UserInterface::addShow()
 	string movieId, screenId, theatreId;
 	int year, month, day;
 	int startTimeHour, startTimeMinute;
-	displayMoviesInTheatre(theatreId);
+	Enums::ProcessStatus movieDisplayStatus = displayMoviesInTheatre(theatreId);
+	if (movieDisplayStatus == Enums::ProcessStatus::FAILED)
+	{
+		cout << "No movies present in theatre" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
 	util::readValueWithRetry(movieId, "Enter Movie ID: ");
 	Enums::ProcessStatus isMoviePresent = m_controller->isMovieInTheatre(movieId, theatreId);
 	if (isMoviePresent == Enums::ProcessStatus::FAILED)
@@ -1692,7 +1691,7 @@ void UserInterface::addShow()
 	util::readValueWithRetry(month, "Enter month (MM): ");
 	util::readValueWithRetry(day, "Enter day (DD): ");
 	getValidDate(year, month, day);
-	cout << "Enter start time (HH MM): ";
+	cout << "Enter start time (HH MM): \n";
 	util::readValueWithRetry(startTimeHour, "Enter a valid time (Enter Hour) : ");
 	util::readValueWithRetry(startTimeMinute, "Enter a valid time (Enter Minutes) : ");
 	getValidTime(startTimeHour, startTimeMinute);
@@ -1814,10 +1813,14 @@ void UserInterface::updateUserDetails()
 			break;
 		case 2:
 			util::readValueWithRetry(input, "Enter email: ");
+			util::isEmailValid(input);
+			getUniqueEmail(input);
 			result = m_controller->setAuthenticatedUserEmail(input);
 			break;
 		case 3:
 			util::readValueWithRetry(input, "Enter phoneNumber: ");
+			util::isPhoneNumberValid(input);
+			getUniquePhoneNumber(input);
 			result = m_controller->setAuthenticatedUserPhoneNumber(input);
 			break;
 		case 4:
@@ -1908,6 +1911,7 @@ void UserInterface::viewNotifications()
 		if (notifications.empty())
 		{
 			cout << "No unread notifications." << endl;
+			util::pressEnter();
 			return;
 		}
 		cout << endl;
@@ -1931,6 +1935,7 @@ void UserInterface::viewNotifications()
 			break;
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -1950,21 +1955,21 @@ void UserInterface::viewInactiveUsers()
 		cout << "No users found!" << endl;
 	}
 	std::cout << std::left
-		<< std::setw(10) << "User ID"
-		<< std::setw(20) << "Name"
-		<< std::setw(25) << "Email"
-		<< std::setw(15) << "Password"
-		<< std::setw(15) << "Role"
+		<< std::setw(14) << "User ID"
+		<< std::setw(22) << "Name"
+		<< std::setw(32) << "Email"
+		<< std::setw(20) << "Password"
+		<< std::setw(16) << "Role"
 		<< std::endl;
-	std::cout << std::string(100, '-') << std::endl;
-	for (const User* const user : users)
+	std::cout << std::string(104, '-') << std::endl;
+	for (vector<const User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
 	{
 		std::cout << std::left
-			<< std::setw(10) << user->getUserId()
-			<< std::setw(20) << user->getUserName()
-			<< std::setw(25) << user->getEmail()
-			<< std::setw(15) << user->getPassword()
-			<< std::setw(15) << Enums::getUserTypeString(user->getUserType())
+			<< std::setw(14) << (*iterator)->getUserId()
+			<< std::setw(22) << (*iterator)->getUserName()
+			<< std::setw(32) << (*iterator)->getEmail()
+			<< std::setw(20) << (*iterator)->getPassword()
+			<< std::setw(16) << Enums::getUserTypeString((*iterator)->getUserType())
 			<< std::endl;
 	}
 	util::pressEnter();
@@ -1996,9 +2001,9 @@ Enums::ProcessStatus UserInterface::handleMovieDetailsInput(const std::string& t
  * Returns:
  *    None
  */
-void UserInterface::viewSeatLayout(const Screen* screen)
+void UserInterface::viewSeatLayout(const std::string& selectedScreenId)
 {
-	const std::vector<std::vector<Seat*>>& seatGrid = m_controller->getSeatLayout(screen);
+	const std::vector<std::vector<Seat*>>& seatGrid = m_controller->getSeatLayout(selectedScreenId);
 	cout << "<------ Seat Grid ------>" << endl << endl;
 	for (std::vector<std::vector<Seat*>>::const_iterator iteratorOne = seatGrid.begin(); iteratorOne != seatGrid.end(); ++iteratorOne)
 	{
@@ -2006,8 +2011,8 @@ void UserInterface::viewSeatLayout(const Screen* screen)
 		{
 			if (!(*iteratorTwo))
 			{
-				cout << "[NA]\t" << " "; //
-				continue; //
+				cout << "[NA]\t" << " ";
+				continue;
 			}
 			if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::AVAILABLE)
 			{
@@ -2017,10 +2022,6 @@ void UserInterface::viewSeatLayout(const Screen* screen)
 			{
 				cout << (*iteratorTwo)->getSeatId() << "-[B]\t" << " ";
 			}
-			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::RESERVED)
-			{
-				cout << (*iteratorTwo)->getSeatId() << "-[R]\t" << " ";
-			}
 			else if ((*iteratorTwo)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
 			{
 				cout << (*iteratorTwo)->getSeatId() << "-[D]\t" << " ";
@@ -2029,7 +2030,7 @@ void UserInterface::viewSeatLayout(const Screen* screen)
 		cout << endl;
 	}
 	cout << endl;
-	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked" << endl;
+	cout << "[A] - Available  [B] - Booked  [D] - Blocked" << endl;
 }
 
 /*
@@ -2179,9 +2180,9 @@ const std::vector<std::string> UserInterface::getMovieIdFromList(const std::vect
 Enums::ProcessStatus UserInterface::checkMovieIdIsValid(const string& movieId, const std::vector<string>& movieIdList)
 {
 	bool flag = false;
-	for (string id : movieIdList)
+	for (std::vector<string>::const_iterator iterator = movieIdList.begin(); iterator != movieIdList.end(); ++iterator)
 	{
-		if (id == movieId)
+		if (*iterator == movieId)
 		{
 			flag = true;
 		}
@@ -2204,25 +2205,29 @@ Enums::ProcessStatus UserInterface::checkMovieIdIsValid(const string& movieId, c
  */
 void UserInterface::displayCurrentMovieDetails(const string& movieId, const std::vector<const Movie*>& movies)
 {
-	cout << "\n-------------------------------------------------------------\n";
-	cout << left << setw(10) << "ID"
-		<< setw(10) << "Title"
-		<< setw(10) << "Language"
-		<< setw(10) << "Genre"
-		<< setw(10) << "Duration" << endl;
-	cout << "-------------------------------------------------------------\n";
+	cout << std::string(78, '-') << endl;
+	cout << left
+		<< setw(14) << "ID"
+		<< setw(22) << "Title"
+		<< setw(14) << "Language"
+		<< setw(18) << "Genre"
+		<< setw(10) << "Duration"
+		<< endl;
+	cout << std::string(78, '-') << endl;
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if ((*iterator)->getMovieId() == movieId)
 		{
-			cout << left << setw(10) << (*iterator)->getMovieId()
-				<< setw(10) << (*iterator)->getTitle()
-				<< setw(10) << (*iterator)->getLanguage()
-				<< setw(10) << (*iterator)->getGenre()
+			cout << left
+				<< setw(14) << (*iterator)->getMovieId()
+				<< setw(22) << (*iterator)->getTitle()
+				<< setw(14) << (*iterator)->getLanguage()
+				<< setw(18) << (*iterator)->getGenre()
 				<< setw(10) << (*iterator)->getDuration()
 				<< endl;
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -2261,7 +2266,7 @@ void UserInterface::displayEditMovieMenu()
 	cout << "\n3.Genre";
 	cout << "\n4.Duration";
 	cout << "\n0.Exit";
-	cout << "------------------" << endl;
+	cout << "\n------------------" << endl;
 }
 
 /*
@@ -2343,6 +2348,7 @@ void UserInterface::viewTheatreDetails()
 	else
 	{
 		cout << "No theatres found for current owner" << endl;
+		util::pressEnter();
 	}
 }
 
@@ -2358,31 +2364,37 @@ void UserInterface::viewTheatreDetails()
  */
 void UserInterface::displayTheatreDetails(const std::vector<const Theatre*>& theatres)
 {
-	cout << "\n--------------------------------------------------------------------------------------------------\n";
-
+	if (theatres.empty())
+	{
+		cout << "No theatres available." << endl;
+		util::pressEnter();
+		return;
+	}
+	cout << std::string(112, '-') << endl;
 	cout << left
-		<< setw(15) << "ID"
-		<< setw(20) << "Name"
-		<< setw(15) << "City"
-		<< setw(25) << "Address"
-		<< setw(15) << "Contact"
-		<< setw(15) << "Status"
+		<< setw(16) << "ID"
+		<< setw(22) << "Name"
+		<< setw(16) << "City"
+		<< setw(28) << "Address"
+		<< setw(16) << "Contact"
+		<< setw(14) << "Status"
 		<< endl;
-	cout << "--------------------------------------------------------------------------------------------------\n";
+	cout << std::string(112, '-') << endl;
 	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		if (*iterator)
 		{
 			cout << left
-				<< setw(15) << (*iterator)->getTheatreId()
-				<< setw(20) << (*iterator)->getName()
-				<< setw(15) << (*iterator)->getCity()
-				<< setw(25) << (*iterator)->getAddress()
-				<< setw(15) << (*iterator)->getTheatrePhoneNumber()
-				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
+				<< setw(16) << (*iterator)->getTheatreId()
+				<< setw(22) << (*iterator)->getName()
+				<< setw(16) << (*iterator)->getCity()
+				<< setw(28) << (*iterator)->getAddress()
+				<< setw(16) << (*iterator)->getTheatrePhoneNumber()
+				<< setw(14) << Enums::getTheatreStatusString((*iterator)->getStatus())
 				<< endl;
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -2466,7 +2478,7 @@ void UserInterface::addMovie()
 	{
 		if (m_controller->addMovie(title, language, genre, duration) == Enums::ProcessStatus::SUCCESS)
 		{
-			cout << "Movie Successfully Added";
+			cout << "Movie Successfully Added" << endl;
 		}
 		else
 		{
@@ -2477,6 +2489,7 @@ void UserInterface::addMovie()
 	{
 		cout << "\nThe movie already exists!. Please try another. \n";
 	}
+	util::pressEnter();
 }
 
 /*
@@ -2586,22 +2599,21 @@ void UserInterface::viewAllUsers()
 	else
 	{
 		std::cout << std::left
-			<< std::setw(10) << "Index"
-			<< std::setw(10) << "User ID"
-			<< std::setw(20) << "Name"
-			<< std::setw(25) << "Email"
-			<< std::setw(15) << "Password"
-			<< std::setw(15) << "Role"
+			<< std::setw(14) << "User ID"
+			<< std::setw(22) << "Name"
+			<< std::setw(32) << "Email"
+			<< std::setw(20) << "Password"
+			<< std::setw(16) << "Role"
 			<< std::endl;
-		std::cout << std::string(100, '-') << std::endl;
+		std::cout << std::string(104, '-') << std::endl;
 		for (vector<const User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
 		{
 			std::cout << std::left
-				<< std::setw(10) << (*iterator)->getUserId()
-				<< std::setw(20) << (*iterator)->getUserName()
-				<< std::setw(25) << (*iterator)->getEmail()
-				<< std::setw(15) << (*iterator)->getPassword()
-				<< std::setw(15) << Enums::getUserTypeString((*iterator)->getUserType())
+				<< std::setw(14) << (*iterator)->getUserId()
+				<< std::setw(22) << (*iterator)->getUserName()
+				<< std::setw(32) << (*iterator)->getEmail()
+				<< std::setw(20) << (*iterator)->getPassword()
+				<< std::setw(16) << Enums::getUserTypeString((*iterator)->getUserType())
 				<< std::endl;
 		}
 	}
@@ -2662,37 +2674,6 @@ void UserInterface::changePassword()
 }
 
 /*
- * Function: UserInterface::viewUserStatus
- * Description: Prompts the user to enter a User ID and retrieves the status
- *              of the specified user from the Controller. Displays whether
- *              the user is Active, Inactive, or not found.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
-void UserInterface::viewUserStatus()
-{
-	string userId;
-	util::readValueWithRetry(userId, "Enter User ID: ");
-	Enums::UserStatus status = m_controller->getUserStatus(userId);
-	if (status == Enums::UserStatus::ACTIVE)
-	{
-		cout << "User is Active" << endl;
-	}
-	else if (status == Enums::UserStatus::INACTIVE)
-	{
-		cout << "User is Inactive" << endl;
-	}
-	else
-	{
-		cout << "User not found!" << endl;
-	}
-	util::pressEnter();
-	util::clear();
-}
-
-/*
  * Function: UserInterface::displayAllMovies
  * Description: Retrieves and displays all active movies in the system. If no active movies exist,
  *              informs the user accordingly.
@@ -2725,7 +2706,7 @@ void UserInterface::displayAllMovies()
  */
 void UserInterface::deactivateMovie()
 {
-	const std::vector<const Movie*> movies = m_controller->getAllInactiveMovies();
+	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	if (movies.empty())
 	{
 		return;
@@ -2739,7 +2720,7 @@ void UserInterface::deactivateMovie()
 		util::readValueWithRetry(movieId, "\nEnter the Movie ID: ");
 		if (checkMovieIdIsValid(movieId, movieIdList) == Enums::ProcessStatus::SUCCESS)
 		{
-			if (m_controller->setMovieDeactivate(movieId) == Enums::ProcessStatus::SUCCESS)
+			if (m_controller->deactivateMovie(movieId) == Enums::ProcessStatus::SUCCESS)
 			{
 				cout << "\nMovie status has changed to Deactivate!.";
 			}
@@ -2757,6 +2738,7 @@ void UserInterface::deactivateMovie()
 	{
 		cout << "\nNo movies with " << title << " name!.";
 	}
+	util::pressEnter();
 }
 
 /*
@@ -2784,7 +2766,7 @@ void UserInterface::activateMovie()
 		util::readValueWithRetry(movieId, "\nEnter the Movie ID: ");
 		if (checkMovieIdIsValid(movieId, movieIdList) == Enums::ProcessStatus::SUCCESS)
 		{
-			if (m_controller->setMovieActivate(movieId) == Enums::ProcessStatus::SUCCESS)
+			if (m_controller->reactivateMovie(movieId) == Enums::ProcessStatus::SUCCESS)
 			{
 				cout << "\nMovie status has changed to Activate!.";
 			}
@@ -2802,6 +2784,7 @@ void UserInterface::activateMovie()
 	{
 		cout << "\nNo movies with " << title << " name!.";
 	}
+	util::pressEnter();
 }
 
 /*
@@ -2824,6 +2807,7 @@ void UserInterface::searchMovie()
 	else
 	{
 		cout << "No movie exists with name " << title << endl;
+		util::pressEnter();
 	}
 }
 
@@ -2842,6 +2826,7 @@ bool UserInterface::displayAllInactiveMovies()
 	if (movies.empty())
 	{
 		cout << "\nNo inactive movies!.";
+		util::pressEnter();
 		return false;
 	}
 	displayMovie(movies);
@@ -2857,9 +2842,9 @@ bool UserInterface::displayAllInactiveMovies()
  * Returns:
  *    None
  */
-void UserInterface::deactivateSeat(Screen* screen, const std::string& seatId)
+void UserInterface::deactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-	Enums::ProcessStatus status = m_controller->deactivateSeat(screen, seatId);
+	Enums::ProcessStatus status = m_controller->deactivateSeat(selectedScreenId, seatId);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Number " << seatId << " Deactivated!" << endl;
@@ -2879,9 +2864,9 @@ void UserInterface::deactivateSeat(Screen* screen, const std::string& seatId)
  * Returns:
  *    None
  */
-void UserInterface::reactivateSeat(Screen* screen, const std::string& seatId)
+void UserInterface::reactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-	Enums::ProcessStatus status = m_controller->reactivateSeat(screen, seatId);
+	Enums::ProcessStatus status = m_controller->reactivateSeat(selectedScreenId, seatId);
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Seat Number " << seatId << " Reactivated!" << endl;
@@ -2914,7 +2899,7 @@ void UserInterface::viewShowSeatLayout(const Show* show)
 		std::cout << std::endl;
 	}
 	cout << endl;
-	cout << "[A] - Available  [B] - Booked  [R] - Reserved  [D] - Blocked  [NA] - Invalid Seat" << endl;
+	cout << "[A] - Available  [B] - Booked  [D] - Blocked  [NA] - Invalid Seat" << endl;
 }
 
 /*
@@ -3080,6 +3065,7 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
 		}
 		cout << endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -3094,30 +3080,31 @@ void UserInterface::viewTheatreScreens(const std::string& theatreId)
  */
 void UserInterface::displayMovieDetails(const std::vector<const Movie*>& movies)
 {
-	cout << "\n--------------------------------------------------------------------------------------------------\n";
+	cout << std::string(92, '-') << endl;
 	cout << left
-		<< setw(15) << "ID"
-		<< setw(20) << "Title"
-		<< setw(15) << "Language"
-		<< setw(25) << "Genre"
-		<< setw(15) << "Duration"
-		<< setw(15) << "Status"
+		<< setw(14) << "ID"
+		<< setw(22) << "Title"
+		<< setw(14) << "Language"
+		<< setw(18) << "Genre"
+		<< setw(10) << "Duration"
+		<< setw(14) << "Status"
 		<< endl;
-	cout << "--------------------------------------------------------------------------------------------------\n";
+	cout << std::string(92, '-') << endl;
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if (*iterator)
 		{
 			cout << left
-				<< setw(15) << (*iterator)->getMovieId()
-				<< setw(20) << (*iterator)->getTitle()
-				<< setw(15) << (*iterator)->getLanguage()
-				<< setw(25) << (*iterator)->getGenre()
-				<< setw(15) << (*iterator)->getDuration()
-				<< setw(15) << Enums::getMovieStatusString((*iterator)->getStatus())
+				<< setw(14) << (*iterator)->getMovieId()
+				<< setw(22) << (*iterator)->getTitle()
+				<< setw(14) << (*iterator)->getLanguage()
+				<< setw(18) << (*iterator)->getGenre()
+				<< setw(10) << (*iterator)->getDuration()
+				<< setw(14) << Enums::getMovieStatusString((*iterator)->getStatus())
 				<< endl;
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -3137,7 +3124,8 @@ void UserInterface::searchTheatre()
 	const std::vector<const Theatre*> theatres = m_controller->searchTheatreByName(theatreName);
 	if (theatres.empty())
 	{
-		cout << "\nNo theatres found";
+		cout << "\nNo theatres found" << endl;
+		util::pressEnter();
 		return;
 	}
 	const User* authenticatedUser = m_controller->getAuthenticatedUser();
@@ -3164,25 +3152,26 @@ void UserInterface::searchTheatre()
  */
 void UserInterface::displayTheatresForAdmin(const std::vector<const Theatre*>& theatres)
 {
-	cout << "\n---------------------------------------------------------------------------------------\n";
+	cout << std::string(98, '-') << endl;
 	cout << left
-		<< setw(15) << "ID"
-		<< setw(20) << "Name"
-		<< setw(15) << "City"
-		<< setw(25) << "Address"
-		<< setw(15) << "Contact"
+		<< setw(16) << "ID"
+		<< setw(22) << "Name"
+		<< setw(16) << "City"
+		<< setw(28) << "Address"
+		<< setw(16) << "Contact"
 		<< endl;
-	cout << "---------------------------------------------------------------------------------------\n";
+	cout << std::string(98, '-') << endl;
 	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		cout << left
-			<< setw(15) << (*iterator)->getTheatreId()
-			<< setw(20) << (*iterator)->getName()
-			<< setw(15) << (*iterator)->getCity()
-			<< setw(25) << (*iterator)->getAddress()
-			<< setw(15) << (*iterator)->getTheatrePhoneNumber()
+			<< setw(16) << (*iterator)->getTheatreId()
+			<< setw(22) << (*iterator)->getName()
+			<< setw(16) << (*iterator)->getCity()
+			<< setw(28) << (*iterator)->getAddress()
+			<< setw(16) << (*iterator)->getTheatrePhoneNumber()
 			<< endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -3197,23 +3186,24 @@ void UserInterface::displayTheatresForAdmin(const std::vector<const Theatre*>& t
  */
 void UserInterface::displayTheatresForUsers(const std::vector<const Theatre*>& theatres)
 {
-	cout << "\n-------------------------------------------------------------\n";
+	cout << std::string(82, '-') << endl;
 	cout << left
-		<< setw(20) << "Name"
-		<< setw(15) << "City"
-		<< setw(25) << "Address"
-		<< setw(15) << "Contact"
+		<< setw(22) << "Name"
+		<< setw(16) << "City"
+		<< setw(28) << "Address"
+		<< setw(16) << "Contact"
 		<< endl;
-	cout << "-------------------------------------------------------------\n";
+	cout << std::string(82, '-') << endl;
 	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		cout << left
-			<< setw(20) << (*iterator)->getName()
-			<< setw(15) << (*iterator)->getCity()
-			<< setw(25) << (*iterator)->getAddress()
-			<< setw(15) << (*iterator)->getTheatrePhoneNumber()
+			<< setw(22) << (*iterator)->getName()
+			<< setw(16) << (*iterator)->getCity()
+			<< setw(28) << (*iterator)->getAddress()
+			<< setw(16) << (*iterator)->getTheatrePhoneNumber()
 			<< endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -3250,6 +3240,7 @@ void UserInterface::listAllTheatres()
 		else
 		{
 			cout << "\nNo active theatres found!";
+			util::pressEnter();
 		}
 	}
 	else if (choice == 2)
@@ -3270,11 +3261,13 @@ void UserInterface::listAllTheatres()
 		else
 		{
 			cout << "\nNo inactive theatres found!";
+			util::pressEnter();
 		}
 	}
 	else
 	{
 		cout << "\nInvalid Choice!";
+		util::pressEnter();
 	}
 }
 
@@ -3291,30 +3284,31 @@ void UserInterface::listAllTheatres()
  */
 void UserInterface::displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status)
 {
-	cout << "\n--------------------------------------------------------------------------------------------------\n";
+	cout << std::string(112, '-') << endl;
 	cout << left
-		<< setw(15) << "ID"
-		<< setw(20) << "Name"
-		<< setw(15) << "City"
-		<< setw(25) << "Address"
-		<< setw(15) << "Contact"
-		<< setw(15) << "Status"
+		<< setw(16) << "ID"
+		<< setw(22) << "Name"
+		<< setw(16) << "City"
+		<< setw(28) << "Address"
+		<< setw(16) << "Contact"
+		<< setw(14) << "Status"
 		<< endl;
-	cout << "--------------------------------------------------------------------------------------------------\n";
+	cout << std::string(112, '-') << endl;
 	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		if ((*iterator)->getStatus() == status)
 		{
 			cout << left
-				<< setw(15) << (*iterator)->getTheatreId()
-				<< setw(20) << (*iterator)->getName()
-				<< setw(15) << (*iterator)->getCity()
-				<< setw(25) << (*iterator)->getAddress()
-				<< setw(15) << (*iterator)->getTheatrePhoneNumber()
-				<< setw(15) << Enums::getTheatreStatusString((*iterator)->getStatus())
+				<< setw(16) << (*iterator)->getTheatreId()
+				<< setw(22) << (*iterator)->getName()
+				<< setw(16) << (*iterator)->getCity()
+				<< setw(28) << (*iterator)->getAddress()
+				<< setw(16) << (*iterator)->getTheatrePhoneNumber()
+				<< setw(14) << Enums::getTheatreStatusString((*iterator)->getStatus())
 				<< endl;
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -3359,29 +3353,39 @@ void UserInterface::displayMoviesInTheatre()
  * Returns:
  *    void
  */
-void UserInterface::displayMoviesInTheatre(std::string& theatreId)
+Enums::ProcessStatus UserInterface::displayMoviesInTheatre(std::string& theatreId)
 {
-	bool isTheatreIdValid = false;
 	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
-	displayTheatreDetails(theatres);
-	util::readValueWithRetry(theatreId, "Enter theatre id of theatre to select: ");
-	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
-	for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
+	if (theatres.empty())
 	{
-		if (theatreId == *iterator)
+		return Enums::ProcessStatus::FAILED;
+	}
+	const std::vector<std::string> theatreIds = m_controller->getCurrentOwnerTheatreIds();
+	displayTheatreDetails(theatres);
+	bool isTheatreIdValid = false;
+	while (!isTheatreIdValid)
+	{
+		util::readValueWithRetry(theatreId, "Enter theatre id of theatre to select: ");
+		for (std::vector<std::string>::const_iterator iterator = theatreIds.begin(); iterator != theatreIds.end(); ++iterator)
 		{
-			isTheatreIdValid = true;
-			break;
+			if (theatreId == *iterator)
+			{
+				isTheatreIdValid = true;
+				break;
+			}
+		}
+		if (!isTheatreIdValid)
+		{
+			std::cout << "Invalid Theatre id! Please try again." << std::endl;
 		}
 	}
-	if (!isTheatreIdValid)
-	{
-		cout << "Invalid Theatre id!" << endl;
-		util::pressEnter();
-		return;
-	}
 	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
+	if (movies.empty())
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
 	displayMovieDetails(movies);
+	return Enums::ProcessStatus::SUCCESS;
 }
 
 /*
@@ -3486,21 +3490,22 @@ const std::vector<std::string> UserInterface::getTheatreIds(const std::vector<co
  */
 void UserInterface::displayOwnerTheatres(const std::vector<const Theatre*>& theatres)
 {
-	cout << "\n-------------------------------------------------------------\n";
+	cout << std::string(54, '-') << endl;
 	cout << left
-		<< setw(15) << "ID"
-		<< setw(20) << "Name"
-		<< setw(15) << "City"
+		<< setw(16) << "ID"
+		<< setw(22) << "Name"
+		<< setw(16) << "City"
 		<< endl;
-	cout << "-------------------------------------------------------------\n";
+	cout << std::string(54, '-') << endl;
 	for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
 	{
 		cout << left
-			<< setw(15) << (*iterator)->getTheatreId()
-			<< setw(20) << (*iterator)->getName()
-			<< setw(15) << (*iterator)->getCity()
+			<< setw(16) << (*iterator)->getTheatreId()
+			<< setw(22) << (*iterator)->getName()
+			<< setw(16) << (*iterator)->getCity()
 			<< endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -3513,25 +3518,29 @@ void UserInterface::displayOwnerTheatres(const std::vector<const Theatre*>& thea
  */
 void UserInterface::displayMovie(const std::vector<const Movie*>& movies)
 {
-	cout << "\n-------------------------------------------------------------\n";
-	cout << left << setw(10) << "ID"
-		<< setw(10) << "Title"
-		<< setw(10) << "Language"
-		<< setw(10) << "Genre"
-		<< setw(10) << "Duration" << endl;
-	cout << "-------------------------------------------------------------\n";
+	cout << std::string(78, '-') << endl;
+	cout << left
+		<< setw(14) << "ID"
+		<< setw(22) << "Title"
+		<< setw(14) << "Language"
+		<< setw(18) << "Genre"
+		<< setw(10) << "Duration"
+		<< endl;
+	cout << std::string(78, '-') << endl;
 	for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
 		if (*iterator)
 		{
-			cout << left << setw(10) << (*iterator)->getMovieId()
-				<< setw(10) << (*iterator)->getTitle()
-				<< setw(10) << (*iterator)->getLanguage()
-				<< setw(10) << (*iterator)->getGenre()
+			cout << left
+				<< setw(14) << (*iterator)->getMovieId()
+				<< setw(22) << (*iterator)->getTitle()
+				<< setw(14) << (*iterator)->getLanguage()
+				<< setw(18) << (*iterator)->getGenre()
 				<< setw(10) << (*iterator)->getDuration()
 				<< endl;
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -3552,6 +3561,7 @@ void UserInterface::addMovieToTheatre()
 	if (theatres.empty())
 	{
 		cout << "\nNo theatres found!";
+		util::pressEnter();
 		return;
 	}
 	displayOwnerTheatres(theatres);
@@ -3560,12 +3570,14 @@ void UserInterface::addMovieToTheatre()
 	if (validateTheatreId(theatreId, theatreIds) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "\nInvalid Theatre ID!";
+		util::pressEnter();
 		return;
 	}
 	const std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	if (movies.empty())
 	{
 		cout << "\nNo active movies found!";
+		util::pressEnter();
 		return;
 	}
 	displayMovie(movies);
@@ -3574,15 +3586,18 @@ void UserInterface::addMovieToTheatre()
 	if (validateMovieId(movieId, movieIds) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "\nInvalid Movie ID!";
+		util::pressEnter();
 		return;
 	}
 	if (m_controller->addMovieToTheatre(theatreId, movieId) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "\nMovie successfully added to theatre!";
+		util::pressEnter();
 	}
 	else
 	{
 		cout << "\nMovie already exists in theatre!";
+		util::pressEnter();
 	}
 }
 
@@ -3666,10 +3681,12 @@ void UserInterface::addTheatre()
 		{
 			cout << "Something went wrong!.";
 		}
+		util::pressEnter();
 	}
 	else
 	{
 		cout << "\nTheatre already exist!.";
+		util::pressEnter();
 		return;
 	}
 }
@@ -3760,7 +3777,7 @@ void UserInterface::displayEditTheatreMenu()
 	cout << "\n4.Phone Number";
 	cout << "\n5.Email";
 	cout << "\n0.Exit";
-	cout << "-----------------------" << endl;
+	cout << "\n-----------------------" << endl;
 }
 
 /*
@@ -3824,11 +3841,13 @@ void UserInterface::updateTheatre()
 		else
 		{
 			cout << "\nEnter the valid theatre id";
+			util::pressEnter();
 		}
 	}
 	else
 	{
 		cout << "No theatres found has added" << endl;
+		util::pressEnter();
 	}
 }
 
@@ -4053,6 +4072,7 @@ void UserInterface::validateTheatreRequest()
 	{
 		cout << "\nNo pending theatre request!";
 	}
+	util::pressEnter();
 }
 
 /*
@@ -4084,11 +4104,11 @@ void UserInterface::setTheatreStatusById(const std::string& theatreId, Enums::Th
 {
 	if (m_controller->setTheatreStatusById(theatreId, theatreStatus) == Enums::ProcessStatus::SUCCESS)
 	{
-		cout << "\nTheatre Status has been updated!.";
+		cout << "\nTheatre Status has been updated!." << endl;
 	}
 	else
 	{
-		cout << "\nSomething went wrong!.";
+		cout << "\nTheatre status cannot be updated as it has scheduled shows!.\n";
 	}
 }
 
@@ -4122,6 +4142,7 @@ void UserInterface::deactivateTheatreByOwner()
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -4147,13 +4168,14 @@ void UserInterface::deactivateTheatreByAdmin()
 		}
 		else
 		{
-			cout << "\nEnter the valid theatre id";
+			cout << "\nEnter the valid theatre id\n";
 		}
 	}
 	else
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -4168,7 +4190,7 @@ void UserInterface::deactivateTheatreByAdmin()
 void UserInterface::reactivateTheatreByOwner()
 {
 	std::string theatreId;
-	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerInavtiavteTheatres();
 	if (!theatres.empty())
 	{
 		displayTheatreDetails(theatres);
@@ -4179,13 +4201,14 @@ void UserInterface::reactivateTheatreByOwner()
 		}
 		else
 		{
-			cout << "\nEnter the valid theatre id";
+			cout << "\nEnter the valid theatre id\n";
 		}
 	}
 	else
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -4211,13 +4234,14 @@ void UserInterface::reactivateTheatreByAdmin()
 		}
 		else
 		{
-			cout << "\nEnter the valid theatre id";
+			cout << "\nEnter the valid theatre id\n";
 		}
 	}
 	else
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -4271,25 +4295,26 @@ void UserInterface::displayShowDetails(const std::vector<const Show*> shows)
 		cout << "NO SHOWS TO DISPLAY!" << endl;
 		return;
 	}
-	cout << "\n--------------------------------------------------------------------------------------------------\n";
+	cout << std::string(98, '-') << endl;
 	cout << left
-		<< setw(15) << "ID"
-		<< setw(20) << "Theatre Name"
-		<< setw(15) << "Screen Id"
-		<< setw(25) << "Movie Title"
-		<< setw(15) << "Show Date and time"
+		<< setw(14) << "ID"
+		<< setw(22) << "Theatre Name"
+		<< setw(14) << "Screen ID"
+		<< setw(26) << "Movie Title"
+		<< setw(22) << "Show Date and Time"
 		<< endl;
-	cout << "--------------------------------------------------------------------------------------------------\n";
+	cout << std::string(98, '-') << endl;
 	for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
 	{
 		cout << left
-			<< setw(15) << (*iterator)->getShowId()
-			<< setw(20) << (*iterator)->getScreen()->getTheatre()->getName()
-			<< setw(15) << (*iterator)->getScreen()->getScreenId()
-			<< setw(25) << (*iterator)->getMovie()->getTitle()
-			<< setw(15) << displayTimeAndDate((*iterator)->getStartTime())
+			<< setw(14) << (*iterator)->getShowId()
+			<< setw(22) << (*iterator)->getScreen()->getTheatre()->getName()
+			<< setw(14) << (*iterator)->getScreen()->getScreenId()
+			<< setw(26) << (*iterator)->getMovie()->getTitle()
+			<< setw(22) << displayTimeAndDate((*iterator)->getStartTime())
 			<< endl;
 	}
+	util::pressEnter();
 }
 
 /*
@@ -4375,6 +4400,14 @@ void UserInterface::cancelShow()
 void UserInterface::viewShowStatus()
 {
 	std::string showId;
+	const std::vector<const Show*> shows = m_controller->getAllShows();
+	if (shows.empty())
+	{
+		cout << "No shows available" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
 	displayAllShows();
 	util::readValueWithRetry(showId, "Enter the show id of show to see status of: ");
 	const std::vector<std::string> showIds = m_controller->getAllShowIds();
@@ -4394,7 +4427,7 @@ void UserInterface::viewShowStatus()
 		return;
 	}
 	Enums::ShowStatus status = m_controller->getShowStatus(showId);
-	cout << " Show Status: " << Enums::getShowStatusString(status);
+	cout << " Show Status: " << Enums::getShowStatusString(status) << endl;
 	util::pressEnter();
 	util::clear();
 }
@@ -4508,7 +4541,6 @@ void UserInterface::listShowsForAMovie()
 	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	std::string movieId;
 	displayAllMovies();
-	util::readValueWithRetry(movieId, "Enter the id of a movie to search shows for: ");
 	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Invalid movie id!" << endl;
@@ -4533,7 +4565,6 @@ Enums::ProcessStatus UserInterface::listShowsForAMovie(std::string& movieId, std
 {
 	std::vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	displayAllMovies();
-	util::readValueWithRetry(movieId, "Enter the id of a movie to search shows for: ");
 	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Invalid movie id!" << endl;
@@ -4541,6 +4572,12 @@ Enums::ProcessStatus UserInterface::listShowsForAMovie(std::string& movieId, std
 		return Enums::ProcessStatus::FAILED;
 	}
 	const std::vector<const Show*> shows = m_controller->getShowsForMovie(movieId);
+	if (shows.empty())
+	{
+		cout << "No shows available for movie!" << endl;
+		util::pressEnter();
+		return Enums::ProcessStatus::FAILED;
+	}
 	displayShowDetails(shows);
 	util::readValueWithRetry(showId, "Select the show to book seats for: ");
 	bool isShowIdValid = false;
@@ -4575,6 +4612,7 @@ void UserInterface::viewActiveTicketDetails()
 	if (tickets.empty())
 	{
 		cout << "No Tickets Available" << endl;
+		util::pressEnter();
 		return;
 	}
 	viewTicketDetails(tickets);
@@ -4593,6 +4631,7 @@ void UserInterface::viewAllTickets()
 	if (tickets.empty())
 	{
 		cout << "No Tickets Available" << endl;
+		util::pressEnter();
 		return;
 	}
 	viewTicketDetails(tickets);
@@ -4657,36 +4696,8 @@ void UserInterface::viewTicketDetails(const std::vector<const Ticket*>& tickets)
 			<< std::setw(12) << Enums::getTicketStatusString(ticket->getTicketStatus())
 			<< std::endl;
 	}
-}
+	util::pressEnter();
 
-/*
-* Function Name : UserInterface::viewTicketStatus
-* Description   : Prompts the user to enter a Ticket ID, retrieves the ticket status
-*                 from the controller, and displays a message based on the status.
-* Parameters    : None
-* Return Type   : void
-*/
-void UserInterface::viewTicketStatus()
-{
-	string ticketId;
-	util::readValueWithRetry(ticketId, "Enter the Ticket ID:");
-	Enums::TicketStatus status = m_controller->viewTicketStatus(ticketId);
-	if (status == Enums::TicketStatus::ACTIVE)
-	{
-		cout << "Ticket is Active." << endl;
-	}
-	else if (status == Enums::TicketStatus::COMPLETED)
-	{
-		cout << "Ticket has been expired." << endl;
-	}
-	else if (status == Enums::TicketStatus::CANCELLED)
-	{
-		cout << "Ticket has been cancelled." << endl;
-	}
-	else
-	{
-		cout << "Ticket with ID : " << ticketId << " not found!" << endl;
-	}
 }
 
 /*
@@ -4755,47 +4766,46 @@ int UserInterface::displayPaymentOptions()
 }
 
 /*
- * Function: UserInterface::displayPaymentStatus
- * Description: Displays the details of a payment based on its unique identifier.
- *              Retrieves payment information from the Controller and prints
- *              the payment ID, booking ID, amount, method, status, and date
- *              to the console. Handles cases where the payment is not found.
- * Parameters:
- *    paymentId - A string representing the unique identifier of the payment to be displayed.
- * Returns: None
- */
-void UserInterface::displayPaymentStatus(const std::string& paymentId)
+* Function Name : viewAllPayments
+* Description   : Displays all payments relevant to the authenticated user in a formatted
+*                 tabular view. Retrieves payments from the controller and prints details
+*                 including Payment ID, Booking ID, Amount, Method, Status, and Timestamp.
+* Parameters    : None
+* Return Type   : void
+*/
+
+void UserInterface::viewAllPayments()
 {
-	std::string bookingId;
-	double amount = 0.0;
-	Enums::PaymentMethod paymentMethod;
-	Enums::PaymentStatus paymentStatus;
-	std::string paymentDate;
-	if (m_controller->viewPaymentStatus(paymentId, bookingId, amount, paymentMethod, paymentStatus, paymentDate) == Enums::ProcessStatus::FAILED)
+	const std::vector<Payment*> allPayments = m_controller->getAllPayments();
+	if (allPayments.empty())
 	{
-		std::cout << "\nPayment not found!";
+		cout << "No Payment Record!" << endl;
+		util::pressEnter();
 		return;
 	}
-	std::cout << "\nPayment ID   : " << paymentId;
-	std::cout << "\nBooking ID   : " << bookingId;
-	std::cout << "\nAmount       : " << amount;
-	std::cout << "\nMethod       : " << Enums::getPaymentMethodString(paymentMethod);
-	std::cout << "\nStatus       : " << Enums::getPaymentStatusString(paymentStatus);
-	std::cout << "\nPayment Date : " << paymentDate;
-}
-
-/*
- * Function: UserInterface::viewPaymentStatus
- * Description: Prompts the user to enter a payment ID and then calls
- *              displayPaymentStatus to show the corresponding payment details.
- * Parameters: None
- * Returns: None
- */
-void UserInterface::viewPaymentStatus()
-{
-	std::string paymentId;
-	util::readValueWithRetry(paymentId, "\nEnter payment Id: ");
-	displayPaymentStatus(paymentId);
+	cout << std::string(94, '-') << endl;
+	std::cout << std::left
+		<< std::setw(14) << "Payment ID"
+		<< std::setw(14) << "Booking ID"
+		<< std::setw(12) << "Amount"
+		<< std::setw(18) << "Method"
+		<< std::setw(14) << "Status"
+		<< std::setw(22) << "Time"
+		<< std::endl;
+	cout << std::string(94, '-') << endl;
+	for (auto iterator = allPayments.begin(); iterator != allPayments.end(); ++iterator)
+	{
+		Payment* payment = *iterator;
+		std::cout << std::left
+			<< std::setw(14) << payment->getPaymentId()
+			<< std::setw(14) << payment->getBooking()->getBookingId()
+			<< std::setw(12) << payment->getAmount()
+			<< std::setw(18) << Enums::getPaymentMethodString(payment->getPaymentMethod())
+			<< std::setw(14) << Enums::getPaymentStatusString(payment->getStatus())
+			<< std::setw(22) << util::serializeTime(payment->getTimeStamp())
+			<< std::endl;
+	}
+	util::pressEnter();
 }
 
 /*
@@ -4810,8 +4820,9 @@ void UserInterface::viewPaymentStatus()
 void UserInterface::initiatePayment(const std::string& bookingId, double amount)
 {
 	int choice = displayPaymentOptions();
-	Enums::PaymentMethod type = Enums::PaymentMethod::CREDIT_CARD;
+	Enums::PaymentMethod type = Enums::PaymentMethod::UPI;
 	Enums::ProcessStatus valid;
+
 	if (choice == 1)
 	{
 		type = Enums::PaymentMethod::CREDIT_CARD;
@@ -4842,6 +4853,7 @@ void UserInterface::initiatePayment(const std::string& bookingId, double amount)
 	{
 		std::cout << "Payment failed. Please book again\n";
 	}
+	util::pressEnter();
 }
 
 /*
@@ -4906,16 +4918,15 @@ void UserInterface::displayCustomerBookings(const std::vector<const Booking*> bo
 		util::clear();
 		return;
 	}
-	cout << "\n-------------------------------------------------------------\n";
+	cout << std::string(122, '-') << endl;
 	cout << left
-		<< setw(20) << "Booking ID"
-		<< setw(20) << "Movie Name"
-		<< setw(15) << "Date"
-		<< setw(25) << "Theater Name"
-		<< setw(15) << "No of Bookings"
-		<< setw(15) << "Booking status"
+		<< setw(18) << "Booking ID"
+		<< setw(22) << "Movie Name"
+		<< setw(22) << "Date"
+		<< setw(28) << "No of Bookings"
+		<< setw(16) << "Booking Status"
 		<< endl;
-	cout << "-------------------------------------------------------------\n";
+	cout << std::string(122, '-') << endl;
 	for (std::vector<const Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
 	{
 		if (*iterator != nullptr)
@@ -4933,17 +4944,17 @@ void UserInterface::displayCustomerBookings(const std::vector<const Booking*> bo
 				if (movie != nullptr && theatre != nullptr)
 				{
 					cout << left
-						<< setw(20) << (*iterator)->getBookingId()
-						<< setw(20) << movie->getTitle()
-						<< setw(15) << displayTimeAndDate(show->getStartTime())
-						<< setw(25) << theatre->getName()
-						<< setw(15) << (*iterator)->getBookedSeats().size()
-						<< setw(15) << Enums::getBookingStatusString((*iterator)->getStatus())
+						<< setw(18) << (*iterator)->getBookingId()
+						<< setw(22) << movie->getTitle()
+						<< setw(22) << displayTimeAndDate(show->getStartTime())
+						<< setw(28) << (*iterator)->getBookedSeats().size()
+						<< setw(16) << Enums::getBookingStatusString((*iterator)->getStatus())
 						<< endl;
 				}
 			}
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -5000,30 +5011,31 @@ void UserInterface::displayTheatreBookings(const std::vector<const Booking*> boo
 			continue;
 		}
 		cout << (*iterator)->getName() << " Bookings\n---------------------" << endl;
-		cout << "\n-------------------------------------------------------------\n";
+		cout << std::string(122, '-') << endl;
 		cout << left
-			<< setw(20) << "Booking ID"
-			<< setw(20) << "Movie Name"
-			<< setw(15) << "Date"
-			<< setw(25) << "Theater Name"
-			<< setw(15) << "No of Bookings"
-			<< setw(15) << "Booking status"
+			<< setw(18) << "Booking ID"
+			<< setw(22) << "Movie Name"
+			<< setw(22) << "Date"
+			<< setw(28) << "Theater Name"
+			<< setw(16) << "No of Bookings"
+			<< setw(16) << "Booking Status"
 			<< endl;
-		cout << "-------------------------------------------------------------\n";
+		cout << std::string(122, '-') << endl;
 		for (std::vector<const Booking*>::const_iterator bookingsIterator = theatreBookings.begin(); bookingsIterator != theatreBookings.end(); ++bookingsIterator)
 		{
 			const Show* show = (*bookingsIterator)->getShow();
 			const Movie* movie = show->getMovie();
 			const Theatre* theatre = show->getScreen()->getTheatre();
 			cout << left
-				<< setw(20) << (*bookingsIterator)->getBookingId()
-				<< setw(20) << movie->getTitle()
-				<< setw(15) << displayTimeAndDate(show->getStartTime())
-				<< setw(25) << theatre->getName()
-				<< setw(15) << (*bookingsIterator)->getBookedSeats().size()
-				<< setw(15) << Enums::getBookingStatusString((*bookingsIterator)->getStatus())
+				<< setw(18) << (*bookingsIterator)->getBookingId()
+				<< setw(22) << movie->getTitle()
+				<< setw(22) << displayTimeAndDate(show->getStartTime())
+				<< setw(28) << theatre->getName()
+				<< setw(16) << (*bookingsIterator)->getBookedSeats().size()
+				<< setw(16) << Enums::getBookingStatusString((*bookingsIterator)->getStatus())
 				<< endl;
 		}
+		util::pressEnter();
 	}
 }
 
@@ -5037,6 +5049,14 @@ void UserInterface::displayTheatreBookings(const std::vector<const Booking*> boo
  */
 void UserInterface::displayBookingDetails()
 {
+	const std::vector<const Booking*>  bookings = m_controller->getAllBookings();
+	if (bookings.empty())
+	{
+		cout << "No bookings available to display!" << endl;
+		util::pressEnter();
+		util::clear();
+		return;
+	}
 	viewAllBookings();
 	const std::vector<std::string> bookingIds = m_controller->getAllBookingIds();
 	std::string bookingId;
@@ -5080,16 +5100,16 @@ void UserInterface::displayBookingDetails()
 void UserInterface::displayBookingDetail(const Booking* booking)
 {
 	util::clear();
-	cout << "\n-------------------------------------------------------------\n";
+	cout << std::string(120, '-') << endl;
 	cout << left
-		<< setw(20) << "Movie ID"
-		<< setw(20) << "Movie Name"
-		<< setw(15) << "Date"
-		<< setw(25) << "Theater Name"
-		<< setw(15) << "Booked Seats"
-		<< setw(15) << "Booking status"
+		<< setw(16) << "Movie ID"
+		<< setw(22) << "Movie Name"
+		<< setw(22) << "Date"
+		<< setw(28) << "Theater Name"
+		<< setw(16) << "Booked Seats"
+		<< setw(16) << "Booking Status"
 		<< endl;
-	cout << "-------------------------------------------------------------\n";
+	cout << std::string(120, '-') << endl;
 	const Show* show = booking->getShow();
 	if (show != nullptr)
 	{
@@ -5103,15 +5123,16 @@ void UserInterface::displayBookingDetail(const Booking* booking)
 		if (movie != nullptr && theatre != nullptr)
 		{
 			cout << left
-				<< setw(20) << booking->getBookingId()
-				<< setw(20) << movie->getTitle()
-				<< setw(15) << displayTimeAndDate(show->getStartTime())
-				<< setw(25) << theatre->getName()
-				<< setw(15) << booking->getBookedSeats().size()
-				<< setw(15) << Enums::getBookingStatusString(booking->getStatus())
+				<< setw(16) << movie->getMovieId()
+				<< setw(22) << movie->getTitle()
+				<< setw(22) << displayTimeAndDate(show->getStartTime())
+				<< setw(28) << theatre->getName()
+				<< setw(16) << booking->getBookedSeats().size()
+				<< setw(16) << Enums::getBookingStatusString(booking->getStatus())
 				<< endl;
 		}
 	}
+	util::pressEnter();
 }
 
 /*
@@ -5150,7 +5171,7 @@ void UserInterface::cancelBooking()
 	}
 	Enums::ProcessStatus cancelStatus = m_controller->cancelBooking(bookingId);
 	std::string displayMessage = (cancelStatus == Enums::ProcessStatus::SUCCESS) ? "Booking cancelled successfully and payment refunded!" : "Failed to cancel Booking!";
-	cout << displayMessage;
+	cout << displayMessage << endl;
 	util::pressEnter();
 	util::clear();
 }
@@ -5186,7 +5207,7 @@ void UserInterface::createBooking()
 	selectSeats(numberOfSeats, bookedSeatIds, show);
 	const Booking* booking = m_controller->bookSelectedSeats(showId, bookedSeatIds);
 	std::string message = (booking == nullptr) ? "Failed to complete booking!" : "Booking completed Successfully!";
-	cout << message;
+	cout << message << endl;
 	util::pressEnter();
 	std::string bookingId = "";
 	double amount = 0.0;
@@ -5350,4 +5371,44 @@ void UserInterface::removeMovieFromTheatre()
 	{
 		std::cout << "Failed to remove movie\n";
 	}
+	util::pressEnter();
+}
+
+/*
+Function Name : viewRefunds
+Description   : Displays all refunds relevant to the authenticated user in a formatted
+				tabular view. Retrieves refunds from the controller and prints details
+				including Refund ID, Ticket ID, Amount, Status, and Timestamp.
+Parameters    : None
+Return Type   : void
+*/
+void UserInterface::viewRefunds()
+{
+	const std::vector<Refund*> refunds = m_controller->getRefunds();
+	if (refunds.empty())
+	{
+		cout << "No refunds found." << endl;
+		util::pressEnter();
+		return;
+	}
+	std::cout << std::left
+		<< std::setw(12) << "Refund ID"
+		<< std::setw(12) << "Ticket ID"
+		<< std::setw(12) << "Amount"
+		<< std::setw(12) << "Status"
+		<< std::setw(20) << "Time"
+		<< std::endl;
+	std::cout << std::string(68, '-') << std::endl;
+	for (auto iterator = refunds.begin(); iterator != refunds.end(); ++iterator)
+	{
+		Refund* refund = *iterator;
+		std::cout << std::left
+			<< std::setw(12) << refund->getRefundId()
+			<< std::setw(12) << refund->getBookedTicket()->getTicketId()
+			<< std::setw(12) << refund->getRefundAmount()
+			<< std::setw(12) << Enums::getRefundStatusString(refund->getStatus())
+			<< std::setw(20) << util::serializeTime(refund->getTime())
+			<< std::endl;
+	}
+	util::pressEnter();
 }

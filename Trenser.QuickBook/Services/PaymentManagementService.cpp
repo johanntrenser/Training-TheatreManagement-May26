@@ -78,8 +78,10 @@ Payment* PaymentManagementService::getPaymentById(const std::string& paymentId)
 */
 Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount)
 {
+    std::string message;
     TicketManagementService ticketManagementService;
     BookingManagementService bookingManagementService;
+    User* currentUser = m_dataStore.getAuthenticatedUser();
     Booking* booking = m_dataStore.getBookingByIdForUpdation(bookingId);
     if (booking == nullptr)
     {
@@ -90,59 +92,23 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     if (payment == nullptr)
     {
         bookingManagementService.cancelBookingForFailedPayment(bookingId);
+        message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
+        logManagementService.addLog(message, Enums::LogType::ERROR);
         return Enums::ProcessStatus::FAILED;
     }
-    User* currentUser = m_dataStore.getAuthenticatedUser();
     Enums::ProcessStatus status = ticketManagementService.generateTicket(payment, currentUser);
     if (status == Enums::ProcessStatus::FAILED)
     {
         bookingManagementService.cancelBookingForFailedPayment(booking->getBookingId());
+        message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
+        logManagementService.addLog(message, Enums::LogType::ERROR);
         return Enums::ProcessStatus::FAILED;
     }
     payment->setStatus(Enums::PaymentStatus::SUCCESS);
     m_dataStore.addPayment(payment);
-    booking->setStatus(Enums::BookingStatus::COMPLETED);
-    std::string message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
+    booking->setStatus(Enums::BookingStatus::CONFIRMED);
+    message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
-    return Enums::ProcessStatus::SUCCESS;
-}
-
-/*
- * Function: PaymentManagementService::viewPaymentStatus
- * Description: Retrieves the status and details of a payment by its unique identifier.
- *              Validates that the payment exists and belongs to the currently authenticated user.
- *              Populates the provided reference parameters with booking ID, amount, payment method,
- *              payment status, and payment date if validation succeeds.
- * Parameters:
- *    paymentId     - Unique identifier of the payment to be viewed.
- *    bookingId     - Reference string to store the associated booking ID.
- *    amount        - Reference double to store the payment amount.
- *    paymentMethod - Reference enum to store the payment method used.
- *    paymentStatus - Reference enum to store the current status of the payment.
- *    paymentDate   - time_t to store the payment date.
- * Returns:
- *    Enums::ProcessStatus::SUCCESS if the payment exists, belongs to the current user,
- *    and details were successfully retrieved.
- *    Enums::ProcessStatus::FAILED if the payment does not exist or does not belong to the current user.
- */
-Enums::ProcessStatus PaymentManagementService::viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
-    double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate)
-{
-    Payment* payment = getPaymentById(paymentId);
-    if (payment == nullptr)
-    {
-        return Enums::ProcessStatus::FAILED;
-    }
-    const User* currentUser = m_dataStore.getAuthenticatedUser();
-    if (payment->getBooking()->getCustomer()->getUserId() != currentUser->getUserId())
-    {
-        return Enums::ProcessStatus::FAILED;
-    }
-    bookingId = payment->getBooking()->getBookingId();
-    amount = payment->getAmount();
-    paymentMethod = payment->getPaymentMethod();
-    paymentStatus = payment->getStatus();
-    paymentDate = util::serializeTime(payment->getTimeStamp());
     return Enums::ProcessStatus::SUCCESS;
 }
 
@@ -192,7 +158,7 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Pay
     ticket->setTicketStatus(Enums::TicketStatus::CANCELLED);
     std::string message = "Payment with ID : " + payment->getPaymentId() + " has been refunded.";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
-    message = "Your refund request has been processed successfully";
+    message = "Your refund request for booking with id " + booking->getBookingId() + " has been processed successfully";
     m_notificationManagementService.sendNotification(ticket->getCustomer(), message);
     return Enums::ProcessStatus::SUCCESS;
 }
@@ -256,4 +222,92 @@ void PaymentManagementService::loadPaymentData()
         payment->setStatus(Enums::getPaymentStatus(paymentStatus));
         m_dataStore.addPayment(payment);
     }
+}
+
+/*
+* Function Name : PaymentManagementService::getAllPayments
+* Description   : Retrieves all payments from the datastore based on the authenticated user’s role.
+*                 - For CUSTOMER users: returns only payments linked to their own bookings.
+*                 - For THEATRE_OWNER users: returns payments linked to shows in their theatres.
+*                 Performs null checks at each level (Payment, Booking, Show, Screen, Theatre, User)
+*                 to ensure safe traversal of relationships.
+* Parameters    : None
+* Return Type   : const std::vector<Payment*>
+*                 - A vector containing payments relevant to the authenticated user.
+*/
+const std::vector<Payment*> PaymentManagementService::getAllPayments()
+{
+    const std::map<std::string, Payment*> allPayments = m_dataStore.getPayments();
+    const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
+    std::vector<Payment*> currentCustomerPayments;
+    if (authenticatedUser == nullptr)
+    {
+        return currentCustomerPayments;
+    }
+    if (authenticatedUser->getUserType() == Enums::UserType::CUSTOMER)
+    {
+        for (std::map<std::string, Payment*>::const_iterator iterator = allPayments.begin(); iterator != allPayments.end(); ++iterator)
+        {
+            const Payment* payment = iterator->second;
+            if (payment == nullptr)
+            {
+                continue;
+            }
+            const Booking* booking = payment->getBooking();
+            if (booking == nullptr)
+            {
+                continue;
+            }
+            const User* customer = booking->getCustomer();
+            if (customer == nullptr)
+            {
+                continue;
+            }
+            if (customer->getUserId() == authenticatedUser->getUserId())
+            {
+                currentCustomerPayments.push_back(iterator->second);
+            }
+        }
+    }
+    else if (authenticatedUser->getUserType() == Enums::UserType::THEATRE_OWNER)
+    {
+        for (std::map<std::string, Payment*>::const_iterator iterator = allPayments.begin(); iterator != allPayments.end(); ++iterator)
+        {
+            const Payment* payment = iterator->second;
+            if (payment == nullptr)
+            {
+                continue;
+            }
+            const Booking* booking = payment->getBooking();
+            if (booking == nullptr)
+            {
+                continue;
+            }
+            const Show* show = booking->getShow();
+            if (show == nullptr)
+            {
+                continue;
+            }
+            const Screen* screen = show->getScreen();
+            if (screen == nullptr)
+            {
+                continue;
+            }
+            const Theatre* theatre = screen->getTheatre();
+            if (theatre == nullptr)
+            {
+                continue;
+            }
+            const User* theatreOwner = theatre->getTheatreOwner();
+            if (theatreOwner == nullptr)
+            {
+                continue;
+            }
+            if (theatreOwner->getUserId() == authenticatedUser->getUserId())
+            {
+                currentCustomerPayments.push_back(iterator->second);
+            }
+        }
+    }
+    return currentCustomerPayments;
 }

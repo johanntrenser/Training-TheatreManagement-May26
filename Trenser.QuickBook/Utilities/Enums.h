@@ -290,6 +290,8 @@ namespace Enums {
             return "PENDING";
         case BookingStatus::COMPLETED:
             return "COMPLETED";
+        case BookingStatus::NOT_BOOKED:
+            return "NOT_BOOKED";
         default:
             return "UNKNOWN";
         }
@@ -312,6 +314,10 @@ namespace Enums {
         if (input == "COMPLETED")
         {
             return BookingStatus::COMPLETED;
+        }
+        if (input == "NOT_BOOKED")
+        {
+            return BookingStatus::NOT_BOOKED;
         }
         return BookingStatus::CANCELLED;
     }
@@ -366,6 +372,8 @@ namespace Enums {
             return "READ";
         case NotificationStatus::FAILED:
             return "FAILED";
+        case NotificationStatus::UNREAD:
+            return "UNREAD";
         default:
             return "UNKNOWN";
         }
@@ -388,6 +396,10 @@ namespace Enums {
         if (input == "FAILED")
         {
             return NotificationStatus::FAILED;
+        }
+        if (input == "UNREAD")
+        {
+            return NotificationStatus::UNREAD;
         }
         return NotificationStatus::FAILED;
     }

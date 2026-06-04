@@ -10,5 +10,4 @@ public:
     DataLinker();
     void linkTheatresAndScreens();
     void linkShowsAndSeatAvailability();
-    void linkTheatresAndMovies();
 };

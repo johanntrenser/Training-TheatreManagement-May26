@@ -101,7 +101,7 @@ const std::vector<const Ticket*> TicketManagementService::viewTicketDetails()
 		if ((*iterator).second->getCustomer()->getUserId() == authenticatedUserId)
 		{
 			Enums::ShowStatus tikcetShowStatus = (*iterator).second->getPayment()->getBooking()->getShow()->getShowStatus();
-			if (tikcetShowStatus == Enums::ShowStatus::RUNNING || tikcetShowStatus == Enums::ShowStatus::SCHEDULED)
+			if ((tikcetShowStatus == Enums::ShowStatus::RUNNING || tikcetShowStatus == Enums::ShowStatus::SCHEDULED) && (*iterator).second->getTicketStatus() != Enums::TicketStatus::CANCELLED)
 			{
 				authenticatedUserActiveTickets.push_back((*iterator).second);
 			}
@@ -151,25 +151,6 @@ const std::vector<const Ticket*> TicketManagementService::viewTicketHistory()
 		}
 	}
 	return authenticatedUserTickets;
-}
-
-/*
-* Function Name : TicketManagementService::viewTicketStatus
-* Description   : Retrieves the status of a ticket based on the provided Ticket ID.
-*                 If the ticket is not found in the datastore, returns TicketStatus::NOT_FOUND.
-* Parameters    :
-*                  ticketId - The unique identifier of the ticket whose status is to be retrieved
-* Return Type   : Enums::TicketStatus
-*/
-Enums::TicketStatus TicketManagementService::viewTicketStatus(const std::string& ticketId)
-{
-	const std::map<std::string, Ticket*>& tickets = m_dataStore.getTickets();
-	std::map<std::string, Ticket*>::const_iterator ticket = tickets.find(ticketId);
-	if (ticket == tickets.end())
-	{
-		return Enums::TicketStatus::NOT_FOUND;
-	}
-	return ticket->second->getTicketStatus();
 }
 
 /*
@@ -245,6 +226,7 @@ void TicketManagementService::loadTicketData()
 	std::string ticketId;
 	std::string paymentId;
 	std::string customerId;
+	std::string status;
 	std::vector<std::string> lines = FileManagement::readlines(PATH);
 	for (int index = 1; index < lines.size(); index++)
 	{
@@ -253,6 +235,7 @@ void TicketManagementService::loadTicketData()
 		std::getline(lineStream, ticketId, ',');
 		std::getline(lineStream, paymentId, ',');
 		std::getline(lineStream, customerId, ',');
+		std::getline(lineStream, status, ',');
 		if (!paymentId.empty())
 		{
 			const std::map<std::string, Payment*>& payments = m_dataStore.getPayments();
@@ -267,6 +250,7 @@ void TicketManagementService::loadTicketData()
 			User* customer = m_dataStore.getUserById(customerId);
 			ticket->setCustomer(customer);
 		}
+		ticket->setTicketStatus(Enums::getTicketStatus(status));
 		m_dataStore.addTicket(ticket);
 	}
 }

@@ -37,7 +37,6 @@ public:
 	void viewInactiveUsers();
 	void reactivateUser();
 	void changePassword();
-	void viewUserStatus();
 	void viewNotifications();
 	void viewLogsByType();
 	void logsTypeMenu();
@@ -62,10 +61,10 @@ public:
 	void activateMovie();
 	void searchMovie();
 	bool displayAllInactiveMovies();
-	void updateSeatLayout(Screen* screen, int rows, int columns, double amount);
-	void viewSeatLayout(const Screen* screen);
-	void deactivateSeat(Screen* screen, const std::string& seatId);
-	void reactivateSeat(Screen* screen, const std::string& seatId);
+	void updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount);
+	void viewSeatLayout(const std::string& selectedScreenId);
+	void deactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
+	void reactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
 	void viewShowSeatLayout(const Show* show);
 	Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
 	Enums::ProcessStatus updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name);
@@ -85,7 +84,7 @@ public:
 	void getUniqueTheatreEmail(std::string& email);
 	Enums::ProcessStatus handleInputTheatreDetails(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email);
 	void displayMoviesInTheatre();
-	void displayMoviesInTheatre(std::string& theatreId);
+	Enums::ProcessStatus displayMoviesInTheatre(std::string& theatreId);
 	void updateTheatre();
 	Enums::ProcessStatus isValidTheatreID(const std::string& theatreId, const std::vector<const Theatre*>& theatres);
 	void displayEditTheatreMenu();
@@ -115,7 +114,7 @@ public:
 	bool isFutureDateTime(int year, int month, int day, int hour, int minute);
 	void addShow();
 	bool getScreenId(const std::vector<const Screen*>& screens, std::string& screenId);
-	void displayActiveShows(); 
+	void displayActiveShows();
 	void displayAllShows();
 	void displayShowDetails(const std::vector<const Show*> shows);
 	std::string displayTimeAndDate(time_t time);
@@ -129,13 +128,11 @@ public:
 	void viewAllTickets();
 	void viewTicketHistory();
 	void viewTicketDetails(const std::vector<const Ticket*>& tickets);
-	void viewTicketStatus();
 	void initiatePayment(const std::string& bookingId, double amount);
 	Enums::ProcessStatus handleCardPayment(Enums::PaymentMethod type);
 	Enums::ProcessStatus handleUPIPayment(Enums::PaymentMethod type);
 	int displayPaymentOptions();
-	void viewPaymentStatus();
-	void displayPaymentStatus(const std::string& paymentId);
+	void viewAllPayments();
 	void viewAllBookings();
 	Enums::UserType getAuthenticatedUserType();
 	void displayCustomerBookings(const std::vector<const Booking*> bookings);
@@ -161,5 +158,6 @@ public:
 	void customerBookingMenu();
 	void customerTicketMenu();
 	void ownerScreenManagementMenu();
-	void ownerSeatManagementMenu(Screen* screen);
+	void ownerSeatManagementMenu(const std::string& selectedScreenId);
+	void viewRefunds();
 };

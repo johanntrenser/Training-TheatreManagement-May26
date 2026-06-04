@@ -33,5 +33,5 @@ public:
 	void setTicketStatus(Enums::TicketStatus status);
 	std::string serialize();
 	static Ticket* deserialize(std::string& line);
-	~Ticket() = delete;
+	~Ticket() = default;
 };

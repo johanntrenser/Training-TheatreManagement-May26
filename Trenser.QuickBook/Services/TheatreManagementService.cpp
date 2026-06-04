@@ -1,7 +1,9 @@
 #include <sstream>
 #include <iomanip>
 #include "TheatreManagementService.h"
+#include "ShowManagementService.h"
 #include "Factory.h"
+#include "ScreenManagementService.h"
 /*
      * Function: TheatreManagementService
      * Description: Default constructor that initializes the theatre management
@@ -53,9 +55,37 @@ bool TheatreManagementService::reactivateTheatre(const std::string& theatreId)
      *   - theatreId: Unique identifier of the theatre.
      * Returns: True if the theatre is successfully deactivated, false otherwise.
      */
-bool TheatreManagementService::deactivateTheatre(const std::string& theatreId)
+Enums::ProcessStatus TheatreManagementService::deactivateTheatre(const std::string& theatreId)
 {
-    return true;
+    ScreenManagementService screenManagementService;
+    Theatre* theatre = getTheatreById(theatreId);
+    if (theatre == nullptr)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    const std::map<std::string, Screen*>& screens = m_dataStore.getScreens();
+    Enums::ProcessStatus screenDeactivateStatus = Enums::ProcessStatus::FAILED;
+    for (std::map<std::string, Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getTheatre() && iterator->second->getTheatre()->getTheatreId() == theatreId)
+        {
+            screenDeactivateStatus = screenManagementService.deactivateScreen(theatreId, iterator->second->getScreenId());
+        }
+    }
+    if (screenDeactivateStatus == Enums::ProcessStatus::FAILED)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+    for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getScreen() && iterator->second->getScreen()->getTheatre() && iterator->second->getScreen()->getTheatre()->getTheatreId() == theatreId)
+        {
+            Show* show = m_dataStore.getShowByIdForUpdation(iterator->second->getShowId());
+            show->setShowStatus(Enums::ShowStatus::CANCELLED);
+        }
+    }
+    return Enums::ProcessStatus::SUCCESS;
 }
 
 /*
@@ -249,6 +279,30 @@ const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheat
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
         if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner() == authenticatedUser) && (iterator->second->getStatus() == Enums::TheatreStatus::ACTIVE))
+        {
+            ownerTheatres.push_back(iterator->second);
+        }
+    }
+    return ownerTheatres;
+}
+
+/*
+Function Name : getCurrentOwnerInavtiavteTheatres
+Description   : Retrieves all theatres owned by the currently authenticated user
+                that are marked with status INACTIVE. Iterates through the datastore’s
+                theatre collection, filters by ownership and inactive status, and
+                returns the matching theatres.
+Parameters    : None
+Return Type   : const std::vector<const Theatre*>
+*/
+const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerInavtiavteTheatres()
+{
+    std::vector<const Theatre*> ownerTheatres;
+    const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
+    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
+    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+    {
+        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner() == authenticatedUser) && (iterator->second->getStatus() == Enums::TheatreStatus::INACTIVE))
         {
             ownerTheatres.push_back(iterator->second);
         }
@@ -644,6 +698,7 @@ const std::vector<const Theatre*> TheatreManagementService::getPendingTheatres()
  */
 Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus)
 {
+    bool isTheatreDeactivatable = false;
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
@@ -651,14 +706,78 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
         {
             if (theatreStatus == Enums::TheatreStatus::INACTIVE)
             {
-                ((iterator->second)->setMovies({}));
+                const std::vector<Screen*>& screens = (iterator->second)->getScreens();
+                if (screens.empty())
+                {
+                    Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+                    theatre->setMovies({});
+                    theatre->setStatus(Enums::TheatreStatus::INACTIVE);
+                    return Enums::ProcessStatus::SUCCESS;
+                }
+                for (std::vector<Screen*>::const_iterator screenIterator = screens.begin(); screenIterator != screens.end(); ++screenIterator)
+                {
+                    if (isScreenDeactivatable((*screenIterator)) == Enums::ProcessStatus::SUCCESS)
+                    {
+                        isTheatreDeactivatable = true;
+                    }
+                    else
+                    {
+                        isTheatreDeactivatable = false;
+                    }
+                }
+                if (!isTheatreDeactivatable)
+                {
+                    return Enums::ProcessStatus::FAILED;
+                }
             }
-            if (theatreStatus == Enums::TheatreStatus::ACTIVE)
+            else if (m_dataStore.getAuthenticatedUser()->getUserType() == Enums::UserType::ADMIN && theatreStatus == Enums::TheatreStatus::ACTIVE)
             {
-                theatreStatus = Enums::TheatreStatus::PENDING;
+                (iterator->second)->setStatus(Enums::TheatreStatus::ACTIVE);
+                return Enums::ProcessStatus::SUCCESS;
             }
-            (iterator->second)->setStatus(theatreStatus);
-            return Enums::ProcessStatus::SUCCESS;
+            else if (m_dataStore.getAuthenticatedUser()->getUserType() == Enums::UserType::ADMIN && theatreStatus == Enums::TheatreStatus::PENDING)
+            {
+                (iterator->second)->setStatus(Enums::TheatreStatus::PENDING);
+                return Enums::ProcessStatus::SUCCESS;
+            }
+            else if (theatreStatus == Enums::TheatreStatus::PENDING)
+            {
+                (iterator->second)->setStatus(Enums::TheatreStatus::PENDING);
+                return Enums::ProcessStatus::SUCCESS;   
+            }
+            else
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
+        }
+    }
+    Enums::ProcessStatus deactivateStatus = deactivateTheatre(theatreId);
+    if (deactivateStatus == Enums::ProcessStatus::SUCCESS)
+    {
+        Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+        theatre->setMovies({});
+        theatre->setStatus(Enums::TheatreStatus::INACTIVE);
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    else
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    return Enums::ProcessStatus::FAILED;
+}
+
+Enums::ProcessStatus TheatreManagementService::isScreenDeactivatable(Screen* screen)
+{
+    ShowManagementService showManagementService;
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+    for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        if ((iterator->second) && (iterator->second->getScreen()))
+        {
+            if (screen->getScreenId() == (iterator->second)->getScreen()->getScreenId())
+            {
+                return showManagementService.isShowChangable((iterator->second)->getShowId());
+            }
         }
     }
     return Enums::ProcessStatus::FAILED;

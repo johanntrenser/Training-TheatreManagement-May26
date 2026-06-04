@@ -3,6 +3,7 @@
 #include <sstream>
 #include "ScreenManagementService.h"
 #include "Factory.h"
+#include "SeatManagementService.h"
 
 /*
 * Function Name : ScreenManagementService
@@ -136,17 +137,14 @@ std::vector<std::vector<Seat*>> ScreenManagementService::generateSeatGrid(Screen
 */
 void ScreenManagementService::cleanupSeatGrid(std::vector<std::vector<Seat*>>& seatGrid, std::vector<Seat*>& seatRow)
 {
-    for (std::vector<Seat*>& rowSeats : seatGrid)
+    for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
     {
-        for (Seat* existingSeat : rowSeats)
+        for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
         {
-            delete existingSeat;
+            (*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
         }
     }
-    for (Seat* existingSeat : seatRow)
-    {
-        delete existingSeat;
-    }
+    seatGrid.clear();
 }
 
 /*
@@ -191,6 +189,7 @@ Enums::ProcessStatus ScreenManagementService::updateScreenName(const std::string
 */
 Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string& theatreId, const std::string& screenId)
 {
+    SeatManagementService seatManagementService;
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (!theatre)
     {
@@ -209,7 +208,8 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
                     return Enums::ProcessStatus::ALREADY_EXISTS;
                 }
                 (*iterator)->setScreenStatus(Enums::ScreenStatus::UNAVAILABLE);
-                return Enums::ProcessStatus::SUCCESS;
+                Enums::ProcessStatus seatDeactivationStatus = seatManagementService.deactivateSeats(screenId);
+                return seatDeactivationStatus;
             }
         }
     }
@@ -234,8 +234,7 @@ Enums::ProcessStatus ScreenManagementService::hasActiveShows(const std::string& 
     {
         if (iterator->second->getScreen()->getScreenId() == screenId)
         {
-            if (iterator->second->getShowStatus() == Enums::ShowStatus::RUNNING
-                || iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED)
+            if (iterator->second->getShowStatus() == Enums::ShowStatus::RUNNING || iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED)
             {
                 status = Enums::ProcessStatus::FAILED;
                 return status;
@@ -255,6 +254,7 @@ Enums::ProcessStatus ScreenManagementService::hasActiveShows(const std::string& 
 */
 Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string& theatreId, const std::string& screenId)
 {
+    SeatManagementService seatManagementService;
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     std::vector<Screen*>& screens = theatre->getScreensForUpdation();
     for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
@@ -266,7 +266,8 @@ Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string
                 return Enums::ProcessStatus::ALREADY_EXISTS;
             }
             (*iterator)->setScreenStatus(Enums::ScreenStatus::AVAILABLE);
-            return Enums::ProcessStatus::SUCCESS;
+            Enums::ProcessStatus seatReactivationStatus = seatManagementService.reactivateSeats(screenId);
+            return seatReactivationStatus;
         }
     }
     return Enums::ProcessStatus::NOT_FOUND;

@@ -23,4 +23,7 @@ public:
     RefundManagementService();
     void saveRefundData();
     void loadRefundData();
+    const std::vector<Refund*> getRefunds();
+    void getTheatreRefunds(const std::string& userId, std::vector<Refund*>& refunds);
+    void getCustomerRefunds(const std::string& userId, std::vector<Refund*>& refunds);
 };

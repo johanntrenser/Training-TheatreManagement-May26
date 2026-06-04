@@ -313,6 +313,19 @@ const std::vector<const Theatre*> Controller::getCurrentOwnerTheatres()
 }
 
 /*
+Function Name : getCurrentOwnerInavtiavteTheatres
+Description   : Retrieves the list of inactive theatres owned by the currently
+                authenticated theatre owner. Delegates the retrieval to the
+                TheatreManagementService.
+Parameters    : None
+Return Type   : const std::vector<const Theatre*>
+*/
+const std::vector<const Theatre*> Controller::getCurrentOwnerInavtiavteTheatres()
+{
+    return m_theatreManagementService->getCurrentOwnerInavtiavteTheatres();
+}
+
+/*
  * Function: Controller::getCurrentOwnerTheatreIds
  * Description: Retrieves the theatre IDs associated with the currently logged-in
  *              owner. Calls getCurrentOwnerTheatres to obtain the list of theatres
@@ -850,21 +863,6 @@ Enums::ProcessStatus Controller::changePassword(const std::string& currentPasswo
 }
 
 /*
- * Function: getUserStatus
- * Description: Retrieves the status (Active/Inactive) of a user by their ID.
- * Parameters:
- *    userId - The unique identifier of the user
- * Returns:
- *    ACTIVE if the user is active,
- *    INACTIVE if the user is inactive,
- *    or another appropriate status if not found
- */
-Enums::UserStatus Controller::getUserStatus(const std::string& userId)
-{
-    return m_userManagementService->getUserStatus(userId);
-}
-
-/*
 * Function Name : getUnreadNotifications
 * Description   : Retrieves unread notifications for the user.
 * Parameters    :
@@ -878,7 +876,7 @@ std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& 
 }
 
 /*
- * Function: Controller::setMovieDeactivate
+ * Function: Controller::deactivateMovie
  * Description: Deactivates a movie in the system by delegating the request to the MovieManagementService.
  * Parameters:
  *    movieId - Unique identifier of the movie to deactivate
@@ -886,13 +884,13 @@ std::vector<std::string> Controller::getUnreadNotifications(int batchSize, int& 
  *    Enums::ProcessStatus::SUCCESS if the movie was successfully deactivated,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieDeactivate(const std::string& movieId)
+Enums::ProcessStatus Controller::deactivateMovie(const std::string& movieId)
 {
-    return m_movieManagementService->setMovieDeactive(movieId);
+    return m_movieManagementService->deactivateMovie(movieId);
 }
 
 /*
- * Function: Controller::setMovieActivate
+ * Function: Controller::reactivateMovie
  * Description: Activates a movie in the system by delegating the request to the MovieManagementService.
  * Parameters:
  *    movieId - Unique identifier of the movie to activate
@@ -900,9 +898,9 @@ Enums::ProcessStatus Controller::setMovieDeactivate(const std::string& movieId)
  *    Enums::ProcessStatus::SUCCESS if the movie was successfully activated,
  *    Enums::ProcessStatus::FAILED otherwise
  */
-Enums::ProcessStatus Controller::setMovieActivate(const std::string& movieId)
+Enums::ProcessStatus Controller::reactivateMovie(const std::string& movieId)
 {
-    return m_movieManagementService->setMovieActive(movieId);
+    return m_movieManagementService->reactivateMovie(movieId);
 }
 
 /*
@@ -943,9 +941,9 @@ std::vector<const Movie*> Controller::getAllInactiveMovies()
  * Returns:
  *    enum - ProcessStatus
  */
-Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, int rows, int columns, double amount)
+Enums::ProcessStatus Controller::updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount)
 {
-    return m_seatManagementService->updateSeatLayout(screen, rows, columns, amount);
+    return m_seatManagementService->updateSeatLayout(selectedScreenId, rows, columns, amount);
 }
 
 /*
@@ -956,9 +954,9 @@ Enums::ProcessStatus Controller::updateSeatLayout(Screen* screen, int rows, int 
  * Returns:
  *    Const reference to 2D vector of Seat pointers
  */
-const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const Screen* screen) const
+const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const std::string& selectedScreenId) const
 {
-    return m_seatManagementService->getSeatLayout(screen);
+    return m_seatManagementService->getSeatLayout(selectedScreenId);
 }
 
 /*
@@ -970,9 +968,9 @@ const std::vector<std::vector<Seat*>>& Controller::getSeatLayout(const Screen* s
  * Returns:
  *    enum - ProcessStatus
  */
-Enums::ProcessStatus Controller::deactivateSeat(Screen* screen, const std::string& seatId)
+Enums::ProcessStatus Controller::deactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-    return m_seatManagementService->deactivateSeat(screen, seatId);
+    return m_seatManagementService->deactivateSeat(selectedScreenId, seatId);
 }
 
 /*
@@ -984,9 +982,9 @@ Enums::ProcessStatus Controller::deactivateSeat(Screen* screen, const std::strin
  * Returns:
  *    ProcessStatus indicating success or failure
  */
-Enums::ProcessStatus Controller::reactivateSeat(Screen* screen, const std::string& seatId)
+Enums::ProcessStatus Controller::reactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
-    return m_seatManagementService->reactivateSeat(screen, seatId);
+    return m_seatManagementService->reactivateSeat(selectedScreenId, seatId);
 }
 
 /*
@@ -1271,29 +1269,6 @@ Enums::ProcessStatus Controller::initiatePayment(const std::string & bookingId, 
 }
 
 /*
- * Function: Controller::viewPaymentStatus
- * Description: Retrieves the status and details of a payment by passing
- *              the request to the PaymentManagementService. Populates the
- *              provided reference parameters with booking ID, amount, payment
- *              method, payment status, and payment date if the payment exists.
- * Parameters:
- *    paymentId    - Unique identifier of the payment to be viewed.
- *    bookingId    - Reference string to store the associated booking ID.
- *    amount       - Reference double to store the payment amount.
- *    paymentMethod- Reference enum to store the payment method used.
- *    paymentStatus- Reference enum to store the current status of the payment.
- *    paymentDate  - Reference string to store the payment date.
- * Returns:
- *    Enums::ProcessStatus::SUCCESS if the payment details were successfully retrieved.
- *    Enums::ProcessStatus::FAILED if the payment does not exist.
- */
-Enums::ProcessStatus Controller::viewPaymentStatus(const std::string& paymentId, std::string& bookingId,
-    double& amount, Enums::PaymentMethod& paymentMethod, Enums::PaymentStatus& paymentStatus, std::string& paymentDate)
-{
-    return m_paymentManagementService->viewPaymentStatus(paymentId, bookingId, amount, paymentMethod, paymentStatus, paymentDate);
-}
-
-/*
 *Function: Controller::getAllBookings
 * Description : Retrieves all bookings for the authenticated user by delegating to BookingManagementService.
 * Parameters :
@@ -1419,19 +1394,6 @@ Enums::UserType Controller::getAuthenticatedUserType() const
 }
 
 /*
-* Function Name : Controller::viewTicketStatus
-* Description   : Retrieves the status of a ticket based on the provided Ticket ID
-*                 by delegating the call to TicketManagementService.
-* Parameters    :
-*                  ticketId - The unique identifier of the ticket whose status is to be retrieved
-* Return Type   : Enums::TicketStatus
-*/
-Enums::TicketStatus Controller::viewTicketStatus(const std::string& ticketId)
-{
-    return m_ticketManagementService->viewTicketStatus(ticketId);
-}
-
-/*
 * Function Name : getShowById
 * Description   : Retrieves a show using the provided show ID.
 * Parameters    :
@@ -1517,6 +1479,34 @@ void Controller::saveData()
     m_refundManagementService->saveRefundData();
     m_bookingManagementService->saveBookingData();
     m_seatManagementService->saveShowSeatAvailabilityData();
+}
+
+/*
+* Function Name : getAllPayments
+* Description   : Retrieves all payments relevant to the authenticated user by delegating
+*                 the request to the PaymentManagementService. The returned payments are
+*                 filtered based on the user’s role (Customer or Theatre Owner) inside
+*                 the service layer.
+* Parameters    : None
+* Return Type   : const std::vector<Payment*>
+*                 - A vector containing payments relevant to the authenticated user.
+*/
+const std::vector<Payment*> Controller::getAllPayments()
+{
+    return m_paymentManagementService->getAllPayments();
+}
+
+/*
+Function Name : getRefunds
+Description   : Retrieves refunds relevant to the authenticated user by delegating
+                the request to the RefundManagementService.
+Parameters    : None
+Return Type   : const std::vector<Refund*>
+                - A vector containing refunds relevant to the authenticated user.
+*/
+const std::vector<Refund*> Controller::getRefunds()
+{
+    return m_refundManagementService->getRefunds();
 }
 
 /*

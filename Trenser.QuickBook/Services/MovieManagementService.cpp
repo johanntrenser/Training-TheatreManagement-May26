@@ -232,7 +232,7 @@ std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
 }
 
 /*
- * Function: MovieManagementService::setMovieDeactive
+ * Function: MovieManagementService::deactivateMovie
  * Description: Deactivates a movie in the system by updating its status to INACTIVE.
  * Parameters:
  *    movieId - Unique identifier of the movie to deactivate
@@ -240,12 +240,12 @@ std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
  *    Enums::ProcessStatus::SUCCESS if the movie was successfully deactivated,
  *    Enums::ProcessStatus::FAILED if the movie ID was not found
  */
-Enums::ProcessStatus MovieManagementService::setMovieDeactive(const std::string& movieId)
+Enums::ProcessStatus MovieManagementService::deactivateMovie(const std::string& movieId)
 {
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
-		if ((iterator->second)->getMovieId() == movieId)
+		if ((iterator->second)->getMovieId() == movieId && isMovieDeactivatable(movieId) == Enums::ProcessStatus::SUCCESS)
 		{
 			(iterator->second)->setStatus(Enums::MovieStatus::INACTIVE);
 			return Enums::ProcessStatus::SUCCESS;
@@ -255,7 +255,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDeactive(const std::string&
 }
 
 /*
- * Function: MovieManagementService::setMovieActive
+ * Function: MovieManagementService::reactivateMovie
  * Description: Activates a movie by searching the datastore for the given movieId
  *              and updating its status to Enums::MovieStatus::ACTIVE if found.
  * Parameters:
@@ -264,7 +264,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDeactive(const std::string&
  *    Enums::ProcessStatus::SUCCESS if the movie was found and activated,
  *    Enums::ProcessStatus::FAILED if the movieId does not exist in the datastore
  */
-Enums::ProcessStatus MovieManagementService::setMovieActive(const std::string& movieId)
+Enums::ProcessStatus MovieManagementService::reactivateMovie(const std::string& movieId)
 {
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
@@ -320,6 +320,38 @@ std::vector<const Movie*> MovieManagementService::getAllInactiveMovies()
 		}
 	}
 	return allInactiveMovies;
+}
+
+/*
+ * Function: MovieManagementService::isMovieDeactivatable
+ * Description: Checks whether a movie can be deactivated by verifying if it has
+ *              any scheduled or running shows. If such shows exist, the movie
+ *              cannot be deactivated.
+ * Parameters:
+ *    movieId - Unique identifier of the movie to check
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the movie can be deactivated,
+ *    Enums::ProcessStatus::FAILED if the movie has active shows
+ */
+Enums::ProcessStatus MovieManagementService::isMovieDeactivatable(const std::string& movieId)
+{
+	int showCount = 0;
+	const std::map<std::string, Show*>& shows = m_dataStore.getShows();
+	for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+	{
+		if (iterator->second && iterator->second->getMovie() && iterator->second->getMovie()->getMovieId() == movieId)
+		{
+			if (iterator->second->getShowStatus() == Enums::ShowStatus::SCHEDULED || iterator->second->getShowStatus() == Enums::ShowStatus::RUNNING)
+			{
+				++showCount;
+			}
+		}
+	}
+	if (showCount > 0)
+	{
+		return Enums::ProcessStatus::FAILED;
+	}
+	return Enums::ProcessStatus::SUCCESS;
 }
 
 /*

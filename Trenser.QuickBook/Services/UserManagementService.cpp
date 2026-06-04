@@ -189,9 +189,10 @@ Enums::ProcessStatus UserManagementService::setAuthenticatedUserPhoneNumber(cons
 Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& userId)
 {
     std::map<std::string, User*> users = m_dataStore.getUsers();
+    User* currentUser = m_dataStore.getAuthenticatedUser();
     for (std::map<std::string, User*>::iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
-        if (iterator->second->getUserId() == userId)
+        if (iterator->second->getUserId() == userId && userId != currentUser->getUserId())
         {
             if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
             {
@@ -267,26 +268,6 @@ Enums::ProcessStatus UserManagementService::changePassword(const std::string& cu
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;
-}
-
-/*
-     * Function: getUserStatus
-     * Description: Retrieves the current status of a user (active/inactive).
-     * Parameters:
-     *   - userId: Unique identifier of the user.
-     * Returns: Enum representing the user status.
-     */
-Enums::UserStatus UserManagementService::getUserStatus(const std::string& userId)
-{
-    const std::map<std::string, User*> users = m_dataStore.getUsers();
-    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
-    {
-        if (iterator->second->getUserId() == userId)
-        {
-            return iterator->second->getStatus();
-        }
-    }
-    return Enums::UserStatus::NOT_FOUND;
 }
 
 /*

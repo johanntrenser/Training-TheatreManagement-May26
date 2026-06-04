@@ -44,13 +44,13 @@ Seat::Seat(const std::string& id,
     Screen* screen,
     char seatRow,
     int seatColumn,
-    double m_amount,
+    double amount,
     Enums::SeatStatus seatStatus)
     : m_seatId(id),
     m_screen(screen),
     m_seatRow(seatRow),
     m_seatColumn(seatColumn),
-    m_amount(0),
+    m_amount(amount),
     m_seatStatus(seatStatus)
 {
 }

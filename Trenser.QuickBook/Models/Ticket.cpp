@@ -154,12 +154,13 @@ std::string Ticket::serialize()
 	}
 	if (m_customer)
 	{
-		result += m_customer->getUserId();
+		result += m_customer->getUserId() + config::delimeter::comma;
 	}
 	else
 	{
 		result += config::delimeter::comma;
 	}
+	result += Enums::getTicketStatusString(m_status);
 	return result;
 }
 

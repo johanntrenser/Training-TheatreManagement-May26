@@ -6,6 +6,67 @@
 #include "Factory.h"
 
 /*
+* Function Name : updateTicketStatusesForCompletedShows
+* Description   : Iterates through all tickets in the datastore and updates their status
+*                 to COMPLETED if the associated show has been marked as COMPLETED.
+*                 Only tickets currently marked as ACTIVE are considered for update.
+* Parameters    : None
+* Return Type   : void
+*/
+void ShowManagementService::updateTicketStatusesForCompletedShows()
+{
+    std::map<std::string, Ticket*>& tickets = m_dataStore.getTickets();
+    for (std::map<std::string, Ticket*>::iterator iterator = tickets.begin(); iterator != tickets.end(); ++iterator)
+    {
+        Ticket* ticket = iterator->second;
+        if (ticket && ticket->getTicketStatus() == Enums::TicketStatus::ACTIVE)
+        {
+            const Show* show = ticket->getPayment()->getBooking()->getShow();
+            if (show && show->getShowStatus() == Enums::ShowStatus::COMPLETED)
+            {
+                ticket->setTicketStatus(Enums::TicketStatus::COMPLETED);
+            }
+        }
+    }
+}
+
+/*
+* Function Name : updateShowStatuses
+* Description   : Iterates through all shows in the datastore and updates their status
+*                 based on the current system time.
+*                 - Changes SCHEDULED shows to RUNNING if the current time falls between
+*                   their start and end times.
+*                 - Changes RUNNING shows to COMPLETED if the current time is past their end time.
+*                 After updating show statuses, it also updates ticket statuses for completed shows.
+* Parameters    : None
+* Return Type   : void
+*/
+void ShowManagementService::updateShowStatuses()
+{
+    time_t currentTime = time(nullptr);
+    std::map<std::string, Show*>& shows = m_dataStore.getShowsForUpdation();
+    for (std::map<std::string, Show*>::iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
+    {
+        Show* show = iterator->second;
+        if (show && show->getShowStatus() == Enums::ShowStatus::SCHEDULED)
+        {
+            if (currentTime >= show->getStartTime() && currentTime < show->getEndTime())
+            {
+                show->setShowStatus(Enums::ShowStatus::RUNNING);
+            }
+        }
+        if (show && show->getShowStatus() == Enums::ShowStatus::RUNNING)
+        {
+            if (currentTime >= show->getEndTime())
+            {
+                show->setShowStatus(Enums::ShowStatus::COMPLETED);
+            }
+        }
+    }
+    updateTicketStatusesForCompletedShows();
+}
+
+/*
  * Function: ShowManagementService::generateShowId
  * Description: Generates a unique identifier for a new show based on
  *              the current number of shows in the system.
@@ -290,6 +351,7 @@ Enums::ProcessStatus ShowManagementService::updateShow(const time_t& startTime, 
  */
 const std::vector<const Show*> ShowManagementService::getActiveShows()
 {
+    updateShowStatuses();
     std::vector<const Show*> filteredShows;
     std::string theatreOwnerId = m_dataStore.getAuthenticatedUser()->getUserId();
     const std::map<std::string, Show*>& shows = m_dataStore.getShows();
@@ -340,6 +402,7 @@ const std::vector<std::string> ShowManagementService::getActiveShowIds()
  */
 const std::vector<const Show*> ShowManagementService::getAllShows()
 {
+    updateShowStatuses();
     std::vector<const Show*> filteredShows;
     std::string theatreOwnerId = m_dataStore.getAuthenticatedUser()->getUserId();
     const std::map<std::string, Show*>& shows = m_dataStore.getShows();
@@ -387,6 +450,7 @@ const std::vector<std::string> ShowManagementService::getAllShowIds()
  */
 Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId)
 {
+    updateShowStatuses();
     const Show* show = m_dataStore.getShowById(showId);
     if (show != nullptr)
     {
@@ -405,6 +469,7 @@ Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId
  */
 const std::vector<const Show*> ShowManagementService::getShowsForMovie(const std::string& movieId)
 {
+    updateShowStatuses();
     std::vector<const Show*> filteredShows;
     const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)

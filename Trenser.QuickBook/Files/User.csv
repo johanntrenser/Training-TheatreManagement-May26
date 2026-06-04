@@ -1,5 +1,6 @@
 USER ID,USER NAME,EMAIL,PASSWORD,PHONE NUMBER,USER TYPE,STATUS
-US001,ashlin,ashlin@gmail.com,=<;Jxsvr}K,7418529636,THEATRE_OWNER,ACTIVE
-US002,admin,admin@gmail.com,=<;Jxsvr}K,7418529636,ADMIN,ACTIVE
-US003,2,2@gmail.com,=<;JxxkryT,7418529635,THEATRE_OWNER,ACTIVE
-US004,johann,johann@gmail.com,=<;JxxkryT,7890987678,CUSTOMER,ACTIVE
+US001,admin,admin@gmail.com,=<;JxswnK,3213213218,ADMIN,ACTIVE
+US002,Johann Thomas,johann123@gmail.com,=<;JxxkryT,9876545678,CUSTOMER,ACTIVE
+US003,Ashlin Babu,ashlin@gmail.com,=<;Jxsvr}K,7034911987,CUSTOMER,ACTIVE
+US004,Amal Joe,amal@gmail.com,=<;JvkwK,9874569875,THEATRE_OWNER,ACTIVE
+US005,Ajmal Jalal,ajmaljalal@gmail.com,=<;JvkwtK,1234123412,THEATRE_OWNER,ACTIVE
