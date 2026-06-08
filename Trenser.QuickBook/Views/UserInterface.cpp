@@ -3219,7 +3219,7 @@ void UserInterface::listAllTheatres()
 {
 	int choice;
 	cout << "\n1. Active Theatres";
-	cout << "\n2.Inactive Theatres";
+	cout << "\n2. Inactive Theatres";
 	util::readValueWithRetry(choice, "\n Enter choice: ");
 	const std::vector<const Theatre*>theatres = m_controller->getAllTheatres();
 	if (choice == 1)
@@ -3342,6 +3342,11 @@ void UserInterface::displayMoviesInTheatre()
 		return;
 	}
 	const std::vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
+	if (movies.empty())
+	{
+		cout << "\nNo Movies in theatre\n";
+		return;
+	}
 	displayMovieDetails(movies);
 }
 
@@ -3591,7 +3596,7 @@ void UserInterface::addMovieToTheatre()
 	}
 	if (m_controller->addMovieToTheatre(theatreId, movieId) == Enums::ProcessStatus::SUCCESS)
 	{
-		cout << "\nMovie successfully added to theatre!";
+		cout << "\nMovie successfully added to theatre!\n";
 		util::pressEnter();
 	}
 	else
@@ -4190,7 +4195,7 @@ void UserInterface::deactivateTheatreByAdmin()
 void UserInterface::reactivateTheatreByOwner()
 {
 	std::string theatreId;
-	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerInavtiavteTheatres();
+	const std::vector<const Theatre*> theatres = m_controller->getCurrentOwnerInactiveTheatres();
 	if (!theatres.empty())
 	{
 		displayTheatreDetails(theatres);
@@ -5106,6 +5111,7 @@ void UserInterface::displayBookingDetail(const Booking* booking)
 		<< setw(22) << "Movie Name"
 		<< setw(22) << "Date"
 		<< setw(28) << "Theater Name"
+		<< setw(16) << "Screen ID"
 		<< setw(16) << "Booked Seats"
 		<< setw(16) << "Booking Status"
 		<< endl;
@@ -5127,9 +5133,15 @@ void UserInterface::displayBookingDetail(const Booking* booking)
 				<< setw(22) << movie->getTitle()
 				<< setw(22) << displayTimeAndDate(show->getStartTime())
 				<< setw(28) << theatre->getName()
-				<< setw(16) << booking->getBookedSeats().size()
-				<< setw(16) << Enums::getBookingStatusString(booking->getStatus())
+				<< setw(16) << screen->getScreenId()
+			    << setw(16) << Enums::getBookingStatusString(booking->getStatus())
 				<< endl;
+		}
+		cout << "Booked Seats: " << endl;
+		const std::vector<std::string> seatIds = m_controller->getSeatIdsFromBooking(booking);
+		for (std::vector<std::string>::const_iterator iterator = seatIds.begin(); iterator != seatIds.end(); ++iterator)
+		{
+			cout << *iterator << endl;
 		}
 	}
 	util::pressEnter();
@@ -5215,6 +5227,7 @@ void UserInterface::createBooking()
 	{
 		bookingId = booking->getBookingId();
 		amount = booking->getAmount();
+		cout << "Total booking amount = " << amount << endl;
 		initiatePayment(bookingId, amount);
 	}
 }
@@ -5411,4 +5424,19 @@ void UserInterface::viewRefunds()
 			<< std::endl;
 	}
 	util::pressEnter();
+}
+
+/*
+ * Function: UserInterface::~UserInterface
+ * Description: Destructor for the UserInterface class.
+ *              Cleans up resources by deleting the associated Controller
+ *              instance to prevent memory leaks.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+UserInterface::~UserInterface()
+{
+	delete m_controller;
 }

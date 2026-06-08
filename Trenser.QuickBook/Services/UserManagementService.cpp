@@ -262,7 +262,7 @@ Enums::ProcessStatus UserManagementService::changePassword(const std::string& cu
 {
     User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::string authenticatedUserPassword = authenticatedUser->getPassword();
-    if (currentPassword == authenticatedUserPassword)
+    if (currentPassword == authenticatedUserPassword && newPassword != authenticatedUserPassword)
     {
         authenticatedUser->setPassword(newPassword);
         return Enums::ProcessStatus::SUCCESS;

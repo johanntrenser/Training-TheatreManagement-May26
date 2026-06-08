@@ -287,7 +287,7 @@ const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheat
 }
 
 /*
-Function Name : getCurrentOwnerInavtiavteTheatres
+Function Name : getCurrentOwnerInactiveTheatres
 Description   : Retrieves all theatres owned by the currently authenticated user
                 that are marked with status INACTIVE. Iterates through the datastore’s
                 theatre collection, filters by ownership and inactive status, and
@@ -295,7 +295,7 @@ Description   : Retrieves all theatres owned by the currently authenticated user
 Parameters    : None
 Return Type   : const std::vector<const Theatre*>
 */
-const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerInavtiavteTheatres()
+const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerInactiveTheatres()
 {
     std::vector<const Theatre*> ownerTheatres;
     const User* authenticatedUser = m_dataStore.getAuthenticatedUser();

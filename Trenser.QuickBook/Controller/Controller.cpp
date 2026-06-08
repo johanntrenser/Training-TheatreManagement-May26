@@ -313,16 +313,16 @@ const std::vector<const Theatre*> Controller::getCurrentOwnerTheatres()
 }
 
 /*
-Function Name : getCurrentOwnerInavtiavteTheatres
+Function Name : getCurrentOwnerInactiveTheatres
 Description   : Retrieves the list of inactive theatres owned by the currently
                 authenticated theatre owner. Delegates the retrieval to the
                 TheatreManagementService.
 Parameters    : None
 Return Type   : const std::vector<const Theatre*>
 */
-const std::vector<const Theatre*> Controller::getCurrentOwnerInavtiavteTheatres()
+const std::vector<const Theatre*> Controller::getCurrentOwnerInactiveTheatres()
 {
-    return m_theatreManagementService->getCurrentOwnerInavtiavteTheatres();
+    return m_theatreManagementService->getCurrentOwnerInactiveTheatres();
 }
 
 /*
@@ -1507,6 +1507,21 @@ Return Type   : const std::vector<Refund*>
 const std::vector<Refund*> Controller::getRefunds()
 {
     return m_refundManagementService->getRefunds();
+}
+
+/*
+ * Function: Controller::getSeatIdsFromBooking
+ * Description: Retrieves the seat IDs associated with a given Booking object
+ *              by delegating the extraction logic to the
+ *              BookingManagementService::getSeatIdsFromBooking method.
+ * Parameters:
+ *    booking - Pointer to the Booking object whose seat IDs are to be extracted
+ * Returns:
+ *    const std::vector<const std::string> - A vector containing the seat IDs
+ */
+const std::vector<std::string> Controller::getSeatIdsFromBooking(const Booking* booking)
+{
+    return m_bookingManagementService->getSeatIdsFromBooking(booking);
 }
 
 /*

@@ -100,7 +100,7 @@ std::vector<std::string> NotificationManagementService::getUnreadNotifications(i
 	const User* currentUser = m_dataStore.getAuthenticatedUser();
 	const std::map<std::string, Notification*>& notifications = m_dataStore.getNotifications();
 	int displayedCount = 0;
-	for (std::map<std::string, Notification*>::const_iterator iterator = notifications.begin(); iterator != notifications.end(); ++iterator)
+	for (std::map<std::string, Notification*>::const_reverse_iterator iterator = notifications.rbegin(); iterator != notifications.rend(); ++iterator)
 	{
 		Notification* notification = iterator->second;
 		if (notification->getReceiver() == currentUser && notification->getStatus() == Enums::NotificationStatus::UNREAD)

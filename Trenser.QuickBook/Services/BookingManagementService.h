@@ -33,6 +33,7 @@ public:
 	double getBookingAmount(const std::vector<Seat*>& seats);
 	Enums::ProcessStatus cancelTicketAndProcessRefund(const Booking* booking);
 	void cancelBookingForFailedPayment(const std::string& bookingId);
+	const std::vector<std::string> getSeatIdsFromBooking(const Booking*);
 	void saveBookingData();
 	void loadBookingData();
 };

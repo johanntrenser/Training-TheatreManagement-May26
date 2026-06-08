@@ -24,7 +24,7 @@
   * Returns:
   *    None
   */
-void util::isPasswordValid(std::string& value) 
+void util::isPasswordValid(std::string& value)
 {
     bool isPasswordValid = false;
     bool hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
@@ -165,7 +165,49 @@ void util::isPhoneNumberValid(std::string& value)
 */
 bool util::validateCard(const std::string& cardNumber, const std::string& expiry, const std::string& cvv)
 {
-    return (cardNumber.size() == 16 && cvv.size() == 3);
+    if (cardNumber.size() != 16)
+    {
+        return false;
+    }
+    for (std::string::const_iterator iterator = cardNumber.begin(); iterator != cardNumber.end(); ++iterator)
+    {
+        if (!std::isdigit(static_cast<unsigned char>(*iterator)))
+        {
+            return false;
+        }
+    }
+    if (cvv.size() != 3)
+    {
+        return false;
+    }
+    for (std::string::const_iterator iterator = cvv.begin(); iterator != cvv.end(); ++iterator)
+    {
+        if (!std::isdigit(static_cast<unsigned char>(*iterator)))
+        {
+            return false;
+        }
+    }
+    if (expiry.size() != 5 || expiry[2] != '/')
+    {
+        return false;
+    }
+    for (int index = 0; index < 5; ++index)
+    {
+        if (index == 2)
+        {
+            continue;
+        }
+        if (!std::isdigit(static_cast<unsigned char>(expiry[index])))
+        {
+            return false;
+        }
+    }
+    int month = std::stoi(expiry.substr(0, 2));
+    if (month < 1 || month > 12)
+    {
+        return false;
+    }
+    return true;
 }
 
 /*
@@ -175,7 +217,34 @@ bool util::validateCard(const std::string& cardNumber, const std::string& expiry
 *                  upiId - The UPI ID entered by the user
 * Return Type   : bool
 */
-bool util::validateUPI(const std::string& upiId)
+bool util::validateUPI(const std::string & upiId)
 {
-    return (upiId.find('@') != std::string::npos);
+    size_t atPosition = upiId.find('@');
+    if (atPosition == std::string::npos || atPosition == 0 || atPosition == upiId.size() - 1)
+    {
+        return false;
+    }
+    if (upiId.find('@', atPosition + 1) != std::string::npos)
+    {
+        return false;
+    }
+    const std::string localPart = upiId.substr(0, atPosition);
+    const std::string provider = upiId.substr(atPosition + 1);
+    for (std::string::const_iterator iterator = localPart.begin(); iterator != localPart.end(); ++iterator)
+    {
+        char character = *iterator;
+        if (!std::isalnum(static_cast<unsigned char>(character)) && character != '.' && character != '_' && character != '-')
+        {
+            return false;
+        }
+    }
+    for (std::string::const_iterator iterator = provider.begin(); iterator != provider.end(); ++iterator)
+    {
+        char character = *iterator;
+        if (!std::isalnum(static_cast<unsigned char>(character)) && character != '.' && character != '-')
+        {
+            return false;
+        }
+    }
+    return true;
 }

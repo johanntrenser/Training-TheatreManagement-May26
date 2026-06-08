@@ -69,6 +69,9 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
  */
 void AuthenticationManagementService::logout()
 {
+    const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
+    std::string message = "User with ID : " + authenticatedUser->getUserId() + " has logged out.";
+    logManagementService.addLog(message, Enums::LogType::ERROR);
 	m_dataStore.setAuthenticatedUser(nullptr);
 }
 
