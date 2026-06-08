@@ -43,7 +43,7 @@ void util::isPasswordValid(std::string& value)
         }
     }
     if (value.size() >= 8 && hasUpper && hasLower && hasDigit && hasSpecial) {
-        std::cout << "Password set!\n";
+        std::cout << "Password format accepted!\n";
         return;
     }
     while (!isPasswordValid)

@@ -1,13 +1,14 @@
 #include "InputHelper.h"
 
 /*
-     * Function: pressEnter
+     * Function: pressEnterToContinue
      * Description: Waits for the user to press the Enter key before continuing.
      *              Useful for pausing console applications until user input.
      * Parameters: None
      * Returns: None
      */
-void util::pressEnter()
+void util::pressEnterToContinue()
 {
-    system("pause");
+    std::cout << "Press Enter to continue..." << std::endl;
+    std::cin.get();
 }

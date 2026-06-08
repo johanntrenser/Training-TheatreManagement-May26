@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 
 namespace util
 {
@@ -39,6 +40,7 @@ namespace util
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Invalid Console Input");
         }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
     /*
@@ -163,7 +165,7 @@ namespace util
         str.erase(std::remove(str.begin(), str.end(), '\t'), str.end());
     }
 
-    void pressEnter();
+    void pressEnterToContinue();
 }
 
 namespace utils {

@@ -93,7 +93,7 @@ void UserInterface::run()
  *    bool - true if the menu should remain active,
  *           false if the user chooses to exit
  */
-bool UserInterface::handleOperation(int choice)
+bool UserInterface::handleOperation(unsigned short choice)
 {
 	switch (choice)
 	{
@@ -109,7 +109,7 @@ bool UserInterface::handleOperation(int choice)
 		return false;
 	default:
 		cout << "Enter a valid choice!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 	return true;
 }
@@ -137,13 +137,13 @@ void UserInterface::login()
 	if (loginStatus == Enums::LoginStatus::USER_NOT_FOUND)
 	{
 		cout << "Error: User Not Found! Try Again\n";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	if (loginStatus == Enums::LoginStatus::INVALID_PASSWORD)
 	{
 		cout << "Error: Invalid Password! Try Again\n";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	util::clear();
@@ -181,7 +181,7 @@ void UserInterface::registerUser()
 {
 	string userName, email, password, phoneNumber;
 	Enums::UserType userType = Enums::UserType::CUSTOMER;
-	int choice;
+	unsigned short choice;
 	userTypesMenu();
 	util::readValueWithRetry(choice, "Enter a choice: ");
 	switch (choice)
@@ -194,7 +194,7 @@ void UserInterface::registerUser()
 		break;
 	default:
 		cout << "Invalid Choice. Please Try again!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -202,13 +202,13 @@ void UserInterface::registerUser()
 	if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "User registered successfully!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 	}
 	else
 	{
 		cout << "User could not be registered!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 	}
 }
@@ -262,7 +262,7 @@ Return Type   : void
 void UserInterface::handleAdminMenuOperation()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -323,7 +323,7 @@ void UserInterface::handleAdminMenuOperation()
 		default:
 		{
 			cout << "Invalid choice. Please try again!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -342,7 +342,7 @@ Return Type   : void
 void UserInterface::adminUserManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -390,7 +390,7 @@ void UserInterface::adminUserManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -410,7 +410,7 @@ void UserInterface::adminUserManagementMenu()
 void UserInterface::adminMovieManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -464,7 +464,7 @@ void UserInterface::adminMovieManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -483,7 +483,7 @@ Return Type   : void
 void UserInterface::adminTheatreManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -531,7 +531,7 @@ void UserInterface::adminTheatreManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -550,7 +550,7 @@ Return Type   : void
 void UserInterface::adminShowManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -574,7 +574,7 @@ void UserInterface::adminShowManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -592,7 +592,7 @@ Return Type   : void
 void UserInterface::adminTicketManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -616,7 +616,7 @@ void UserInterface::adminTicketManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -659,7 +659,7 @@ Return Type   : void
 void UserInterface::handleTheatreOwnerMenuOperation()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -710,7 +710,7 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		default:
 		{
 			cout << "Invalid choice. Please try again!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -729,7 +729,7 @@ Return Type   : void
 void UserInterface::ownerTheatreManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -782,7 +782,7 @@ void UserInterface::ownerTheatreManagementMenu()
 			}
 			case 7:
 			{
-				listAllTheatres();
+				listAllOwnerTheatres();
 				break;
 			}
 			case 8:
@@ -813,7 +813,7 @@ void UserInterface::ownerTheatreManagementMenu()
 			default:
 			{
 				cout << "Invalid choice!" << endl;
-				util::pressEnter();
+				util::pressEnterToContinue();
 				break;
 			}
 		}
@@ -835,7 +835,7 @@ void UserInterface::ownerTheatreManagementMenu()
 void UserInterface::ownerScreenManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -859,7 +859,7 @@ void UserInterface::ownerScreenManagementMenu()
 		if (theatres.empty())
 		{
 			cout << "No theatres found!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		displayTheatreDetails(theatres);
@@ -867,7 +867,7 @@ void UserInterface::ownerScreenManagementMenu()
 		if (isValidTheatreID(theatreId, theatres) == Enums::ProcessStatus::FAILED)
 		{
 			cout << "Invalid Theatre ID!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			continue;
 		}
 
@@ -883,13 +883,13 @@ void UserInterface::ownerScreenManagementMenu()
 			util::readValueWithRetry(columns, "Enter Number of Columns: ");
 			util::readValueWithRetry(amount, "Enter Seat Price: ");
 			addScreen(theatreId, name, rows, columns, amount);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 2:
 		{
 			viewTheatreScreens(theatreId);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 3:
@@ -899,7 +899,7 @@ void UserInterface::ownerScreenManagementMenu()
 			util::readValueWithRetry(screenId, "Enter Screen ID: ");
 			util::readValueWithRetry(name, "Enter New Name: ");
 			updateScreenName(theatreId, screenId, name);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 4:
@@ -908,7 +908,7 @@ void UserInterface::ownerScreenManagementMenu()
 			viewTheatreScreens(theatreId);
 			util::readValueWithRetry(screenId, "Enter Screen ID to deactivate: ");
 			deactivateScreen(theatreId, screenId);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 5:
@@ -917,7 +917,7 @@ void UserInterface::ownerScreenManagementMenu()
 			viewTheatreScreens(theatreId);
 			util::readValueWithRetry(screenId, "Enter Screen ID to reactivate: ");
 			reactivateScreen(theatreId, screenId);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 6:
@@ -937,7 +937,7 @@ void UserInterface::ownerScreenManagementMenu()
 			if (selectedScreenId.empty())
 			{
 				cout << "Invalid Screen ID!" << endl;
-				util::pressEnter();
+				util::pressEnterToContinue();
 				break;
 			}
 			ownerSeatManagementMenu(selectedScreenId);
@@ -946,7 +946,7 @@ void UserInterface::ownerScreenManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -966,7 +966,7 @@ void UserInterface::ownerScreenManagementMenu()
 void UserInterface::ownerSeatManagementMenu(const string& selectedScreenId)
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -983,7 +983,7 @@ void UserInterface::ownerSeatManagementMenu(const string& selectedScreenId)
 		case 1:
 		{
 			viewSeatLayout(selectedScreenId);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 2:
@@ -992,7 +992,7 @@ void UserInterface::ownerSeatManagementMenu(const string& selectedScreenId)
 			double amount = 0.0;
 			util::readValueWithRetry(amount, "Enter Seat Price: ");
 			updateSeatLayout(selectedScreenId, rows, columns, amount);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 3:
@@ -1001,7 +1001,7 @@ void UserInterface::ownerSeatManagementMenu(const string& selectedScreenId)
 			viewSeatLayout(selectedScreenId);
 			util::readValueWithRetry(seatId, "Enter Seat ID to deactivate: ");
 			deactivateSeat(selectedScreenId, seatId);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 4:
@@ -1010,7 +1010,7 @@ void UserInterface::ownerSeatManagementMenu(const string& selectedScreenId)
 			viewSeatLayout(selectedScreenId);
 			util::readValueWithRetry(seatId, "Enter Seat ID to reactivate: ");
 			reactivateSeat(selectedScreenId, seatId);
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		case 0:
@@ -1021,7 +1021,7 @@ void UserInterface::ownerSeatManagementMenu(const string& selectedScreenId)
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -1040,7 +1040,7 @@ Return Type   : void
 void UserInterface::ownerShowManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -1098,7 +1098,7 @@ void UserInterface::ownerShowManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -1116,7 +1116,7 @@ Return Type   : void
 void UserInterface::ownerBookingManagementMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -1158,7 +1158,7 @@ void UserInterface::ownerBookingManagementMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -1202,7 +1202,7 @@ Return Type   : void
 void UserInterface::handleCustomerMenuOperation()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -1253,7 +1253,7 @@ void UserInterface::handleCustomerMenuOperation()
 		default:
 		{
 			cout << "Invalid choice. Please try again!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -1272,7 +1272,7 @@ Return Type   : void
 void UserInterface::customerBrowseMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -1314,7 +1314,7 @@ void UserInterface::customerBrowseMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -1333,7 +1333,7 @@ Return Type   : void
 void UserInterface::customerBookingMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -1381,7 +1381,7 @@ void UserInterface::customerBookingMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -1400,7 +1400,7 @@ Return Type   : void
 void UserInterface::customerTicketMenu()
 {
 	bool isMenuActive = true;
-	int choice;
+	unsigned short choice;
 	while (isMenuActive)
 	{
 		util::clear();
@@ -1430,7 +1430,7 @@ void UserInterface::customerTicketMenu()
 		default:
 		{
 			cout << "Invalid choice!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			break;
 		}
 		}
@@ -1657,7 +1657,7 @@ void UserInterface::addShow()
 	if (movieDisplayStatus == Enums::ProcessStatus::FAILED)
 	{
 		cout << "No movies present in theatre" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -1666,7 +1666,7 @@ void UserInterface::addShow()
 	if (isMoviePresent == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Movie is not present in theatre" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -1674,14 +1674,14 @@ void UserInterface::addShow()
 	if (screens.empty())
 	{
 		cout << "No screens available to add show to! " << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
 	if (!getScreenId(screens, screenId))
 	{
 		cout << "Invalid screen ID!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -1696,21 +1696,21 @@ void UserInterface::addShow()
 	if (!isFutureDateTime(year, month, day, startTimeHour, startTimeMinute))
 	{
 		cout << "Cannot add a show with a past time/date!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
 	if (m_controller->isShowTimeConflicting(movieId, screenId, year, month, day, startTimeHour, startTimeMinute) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Cannot add show as it conflicts with the time of another show!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
 	if (m_controller->addShow(movieId, screenId, year, month, day, startTimeHour, startTimeMinute) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Show added successfully!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 }
 
@@ -1728,7 +1728,7 @@ void UserInterface::createUser()
 {
 	string userName, email, password, phoneNumber;
 	Enums::UserType userType = Enums::UserType::CUSTOMER;
-	int choice;
+	unsigned short choice;
 	userTypesAdminMenu();
 	util::readValueWithRetry(choice, "Enter a choice: ");
 	switch (choice)
@@ -1744,7 +1744,7 @@ void UserInterface::createUser()
 		break;
 	default:
 		cout << "Invalid Choice. Please Try again!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -1752,13 +1752,13 @@ void UserInterface::createUser()
 	if (m_controller->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "User registered successfully!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 	}
 	else
 	{
 		cout << "User could not be registered!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 	}
 }
@@ -1797,7 +1797,7 @@ void UserInterface::updateUserDetails()
 	bool condition = true;
 	while (condition)
 	{
-		int choice;
+		unsigned short choice;
 		string input;
 		Enums::ProcessStatus result = Enums::ProcessStatus::FAILED;
 		viewProfile();
@@ -1826,7 +1826,7 @@ void UserInterface::updateUserDetails()
 			break;
 		default:
 			cout << "Enter a valid option!" << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			util::clear();
 			break;
 		}
@@ -1840,11 +1840,11 @@ void UserInterface::updateUserDetails()
 			{
 				cout << "failed, could not update user details!" << endl;
 			}
-			util::pressEnter();
+			util::pressEnterToContinue();
 			util::clear();
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -1887,7 +1887,7 @@ void UserInterface::deactivateUser()
 	{
 		cout << "Invalid User Id, Try again!" << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -1900,7 +1900,7 @@ void UserInterface::deactivateUser()
 void UserInterface::viewNotifications()
 {
 	bool condition = true;
-	int choice = 1;
+	unsigned short choice = 1;
 	int count = 0;
 	while (condition)
 	{
@@ -1909,7 +1909,7 @@ void UserInterface::viewNotifications()
 		if (notifications.empty())
 		{
 			cout << "No unread notifications." << endl;
-			util::pressEnter();
+			util::pressEnterToContinue();
 			return;
 		}
 		cout << endl;
@@ -1933,7 +1933,7 @@ void UserInterface::viewNotifications()
 			break;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -1970,7 +1970,7 @@ void UserInterface::viewInactiveUsers()
 			<< setw(16) << Enums::getUserTypeString((*iterator)->getUserType())
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -2085,7 +2085,7 @@ Enums::ProcessStatus UserInterface::validateMovieIdInput(const vector<const Movi
  */
 void UserInterface::editMovieDetails(const string& movieId, const Movie* currentMovie)
 {
-	int choice = 1;
+	unsigned short choice = 1;
 	string title, genre, language;
 	int duration;
 	while (choice != 0)
@@ -2225,7 +2225,7 @@ void UserInterface::displayCurrentMovieDetails(const string& movieId, const vect
 				<< endl;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -2346,7 +2346,7 @@ void UserInterface::viewTheatreDetails()
 	else
 	{
 		cout << "No theatres found for current owner" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 }
 
@@ -2365,7 +2365,7 @@ void UserInterface::displayTheatreDetails(const vector<const Theatre*>& theatres
 	if (theatres.empty())
 	{
 		cout << "No theatres available." << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	cout << string(112, '-') << endl;
@@ -2392,7 +2392,7 @@ void UserInterface::displayTheatreDetails(const vector<const Theatre*>& theatres
 				<< endl;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -2487,7 +2487,7 @@ void UserInterface::addMovie()
 	{
 		cout << "\nThe movie already exists!. Please try another. \n";
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -2514,7 +2514,7 @@ void UserInterface::reactivateUser()
 	{
 		cout << "Invalid User Id, Try again!" << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -2528,7 +2528,7 @@ void UserInterface::reactivateUser()
  */
 void UserInterface::viewLogsByType()
 {
-	int choice;
+	unsigned short choice;
 	logsTypeMenu();
 	util::readValueWithRetry(choice, "Select a type: ");
 	vector<const Log*> logs;
@@ -2545,7 +2545,7 @@ void UserInterface::viewLogsByType()
 		break;
 	default:
 		cout << "Invalid choice. Please try again!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		break;
 	}
@@ -2558,7 +2558,7 @@ void UserInterface::viewLogsByType()
 	{
 		cout << (*iterator)->toString() << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -2615,7 +2615,7 @@ void UserInterface::viewAllUsers()
 				<< endl;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -2635,7 +2635,7 @@ void UserInterface::viewProfile()
 	cout << "Name : " << currentUser->getUserName() << endl;
 	cout << "Email: " << currentUser->getEmail() << endl;
 	cout << "Phone Number: " << currentUser->getPhoneNumber() << endl;
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -2665,9 +2665,9 @@ void UserInterface::changePassword()
 	}
 	else
 	{
-		cout << "Password does not match." << endl;
+		cout << "Password cannot be changed." << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -2736,7 +2736,7 @@ void UserInterface::deactivateMovie()
 	{
 		cout << "\nNo movies with " << title << " name!.";
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -2782,7 +2782,7 @@ void UserInterface::activateMovie()
 	{
 		cout << "\nNo movies with " << title << " name!.";
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -2805,7 +2805,7 @@ void UserInterface::searchMovie()
 	else
 	{
 		cout << "No movie exists with name " << title << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 }
 
@@ -2824,7 +2824,7 @@ bool UserInterface::displayAllInactiveMovies()
 	if (movies.empty())
 	{
 		cout << "\nNo inactive movies!.";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return false;
 	}
 	displayMovie(movies);
@@ -3063,7 +3063,7 @@ void UserInterface::viewTheatreScreens(const string& theatreId)
 		}
 		cout << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -3102,7 +3102,7 @@ void UserInterface::displayMovieDetails(const vector<const Movie*>& movies)
 				<< endl;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -3123,7 +3123,7 @@ void UserInterface::searchTheatre()
 	if (theatres.empty())
 	{
 		cout << "\nNo theatres found" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	const User* authenticatedUser = m_controller->getAuthenticatedUser();
@@ -3169,7 +3169,7 @@ void UserInterface::displayTheatresForAdmin(const vector<const Theatre*>& theatr
 			<< setw(16) << (*iterator)->getTheatrePhoneNumber()
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -3201,7 +3201,7 @@ void UserInterface::displayTheatresForUsers(const vector<const Theatre*>& theatr
 			<< setw(16) << (*iterator)->getTheatrePhoneNumber()
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -3215,7 +3215,7 @@ void UserInterface::displayTheatresForUsers(const vector<const Theatre*>& theatr
  */
 void UserInterface::listAllTheatres()
 {
-	int choice;
+	unsigned short choice;
 	cout << "\n1. Active Theatres";
 	cout << "\n2. Inactive Theatres";
 	util::readValueWithRetry(choice, "\n Enter choice: ");
@@ -3238,7 +3238,7 @@ void UserInterface::listAllTheatres()
 		else
 		{
 			cout << "\nNo active theatres found!";
-			util::pressEnter();
+			util::pressEnterToContinue();
 		}
 	}
 	else if (choice == 2)
@@ -3259,13 +3259,79 @@ void UserInterface::listAllTheatres()
 		else
 		{
 			cout << "\nNo inactive theatres found!";
-			util::pressEnter();
+			util::pressEnterToContinue();
 		}
 	}
 	else
 	{
 		cout << "\nInvalid Choice!";
-		util::pressEnter();
+		util::pressEnterToContinue();
+	}
+}
+
+/*
+ * Function: UserInterface::listAllOwnerTheatres
+ * Description: Provides an interactive menu for owners to view theatres based on
+ *              their status (Active or Inactive). Prompts the user for a choice,
+ *              retrieves all theatres from the Controller, and displays them
+ *              according to the selected status. Handles invalid input gracefully.
+ * Parameters: None
+ * Returns: None
+ */
+void UserInterface::listAllOwnerTheatres()
+{
+	unsigned short choice;
+	cout << "\n1. Active Theatres";
+	cout << "\n2. Inactive Theatres";
+	util::readValueWithRetry(choice, "\n Enter choice: ");
+	if (choice == 1)
+	{
+		bool isActiveTheatreFound = false;
+		const vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
+		for (vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+		{
+			if ((*iterator)->getStatus() == Enums::TheatreStatus::ACTIVE)
+			{
+				isActiveTheatreFound = true;
+				break;
+			}
+		}
+		if (isActiveTheatreFound)
+		{
+			displayTheatres(theatres, Enums::TheatreStatus::ACTIVE);
+		}
+		else
+		{
+			cout << "\nNo active theatres found!" << endl;
+			util::pressEnterToContinue();
+		}
+	}
+	else if (choice == 2)
+	{
+		bool isInactiveTheatreFound = false;
+		const vector<const Theatre*> theatres = m_controller->getCurrentOwnerInactiveTheatres();
+		for (vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
+		{
+			if ((*iterator)->getStatus() == Enums::TheatreStatus::INACTIVE)
+			{
+				isInactiveTheatreFound = true;
+				break;
+			}
+		}
+		if (isInactiveTheatreFound)
+		{
+			displayTheatres(theatres, Enums::TheatreStatus::INACTIVE);
+		}
+		else
+		{
+			cout << "\nNo inactive theatres found!" << endl;
+			util::pressEnterToContinue();
+		}
+	}
+	else
+	{
+		cout << "\nInvalid Choice!" << endl;
+		util::pressEnterToContinue();
 	}
 }
 
@@ -3306,14 +3372,14 @@ void UserInterface::displayTheatres(const vector<const Theatre*>& theatres, Enum
 				<< endl;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
  * Function: displayMoviesInTheatre
  * Description: Displays movies available in the selected theatre.
  * Parameters:
- *    theatreId (std::string&) - Reference to store selected theatre ID
+ *    None
  * Returns:
  *    void
  */
@@ -3336,7 +3402,7 @@ void UserInterface::displayMoviesInTheatre()
 	if (!isTheatreIdValid)
 	{
 		cout << "Invalid Theatre id!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	const vector<const Movie*> movies = m_controller->getMoviesFromTheatre(theatreId);
@@ -3352,7 +3418,7 @@ void UserInterface::displayMoviesInTheatre()
  * Function: displayMoviesInTheatre
  * Description: Displays movies available in the selected theatre.
  * Parameters:
- *    theatreId (std::string&) - Reference to store selected theatre ID
+ *    theatreId (string&) - Reference to store selected theatre ID
  * Returns:
  *    void
  */
@@ -3508,7 +3574,7 @@ void UserInterface::displayOwnerTheatres(const vector<const Theatre*>& theatres)
 			<< setw(16) << (*iterator)->getCity()
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -3543,7 +3609,7 @@ void UserInterface::displayMovie(const vector<const Movie*>& movies)
 				<< endl;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -3564,7 +3630,7 @@ void UserInterface::addMovieToTheatre()
 	if (theatres.empty())
 	{
 		cout << "\nNo theatres found!";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	displayOwnerTheatres(theatres);
@@ -3573,14 +3639,14 @@ void UserInterface::addMovieToTheatre()
 	if (validateTheatreId(theatreId, theatreIds) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "\nInvalid Theatre ID!";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	const vector<const Movie*> movies = m_controller->getAllActiveMovies();
 	if (movies.empty())
 	{
 		cout << "\nNo active movies found!";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	displayMovie(movies);
@@ -3589,18 +3655,18 @@ void UserInterface::addMovieToTheatre()
 	if (validateMovieId(movieId, movieIds) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "\nInvalid Movie ID!";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	if (m_controller->addMovieToTheatre(theatreId, movieId) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "\nMovie successfully added to theatre!\n";
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 	else
 	{
 		cout << "\nMovie already exists in theatre!";
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 }
 
@@ -3684,12 +3750,12 @@ void UserInterface::addTheatre()
 		{
 			cout << "Something went wrong!.";
 		}
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 	else
 	{
 		cout << "\nTheatre already exist!.";
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 }
@@ -3794,7 +3860,7 @@ void UserInterface::displayEditTheatreMenu()
 void UserInterface::updateTheatre()
 {
 	string theatreId, name, city, address, phoneNumber, email;
-	int choice = 1;
+	unsigned short choice = 1;
 	const vector<const Theatre*> theatres = m_controller->getCurrentOwnerTheatres();
 	if (!theatres.empty())
 	{
@@ -3844,13 +3910,13 @@ void UserInterface::updateTheatre()
 		else
 		{
 			cout << "\nEnter the valid theatre id";
-			util::pressEnter();
+			util::pressEnterToContinue();
 		}
 	}
 	else
 	{
 		cout << "No theatres found has added" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 }
 
@@ -4039,7 +4105,7 @@ const Theatre* UserInterface::getCurrentTheatreById(const string& theatreId, con
 void UserInterface::validateTheatreRequest()
 {
 	string theatreId;
-	int choice;
+	unsigned short choice;
 	const vector<const Theatre*> pendingTheatres = m_controller->getPendingTheatres();
 	if (!pendingTheatres.empty())
 	{
@@ -4075,7 +4141,7 @@ void UserInterface::validateTheatreRequest()
 	{
 		cout << "\nNo pending theatre request!";
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4145,7 +4211,7 @@ void UserInterface::deactivateTheatreByOwner()
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4178,7 +4244,7 @@ void UserInterface::deactivateTheatreByAdmin()
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4211,7 +4277,7 @@ void UserInterface::reactivateTheatreByOwner()
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4244,7 +4310,7 @@ void UserInterface::reactivateTheatreByAdmin()
 	{
 		cout << "No theatres found for current owner" << endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4259,7 +4325,7 @@ void UserInterface::displayActiveShows()
 	if (shows.empty())
 	{
 		cout << "No shows available!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	displayShowDetails(shows);
@@ -4277,7 +4343,7 @@ void UserInterface::displayAllShows()
 	if (shows.empty())
 	{
 		cout << "No shows available!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	displayShowDetails(shows);
@@ -4317,7 +4383,7 @@ void UserInterface::displayShowDetails(const vector<const Show*> shows)
 			<< setw(22) << displayTimeAndDate((*iterator)->getStartTime())
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4368,14 +4434,14 @@ void UserInterface::cancelShow()
 	if (!isShowIdValid)
 	{
 		cout << "Show id is not valid!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	Enums::ProcessStatus isShowCancellable = m_controller->isShowChangable(showId);
 	if (isShowCancellable == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Show is not cancellable" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -4383,13 +4449,13 @@ void UserInterface::cancelShow()
 	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Show cancelled successfully" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 	}
 	else
 	{
 		cout << "Failed to cancel show" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 	}
 }
@@ -4407,7 +4473,7 @@ void UserInterface::viewShowStatus()
 	if (shows.empty())
 	{
 		cout << "No shows available" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -4426,12 +4492,12 @@ void UserInterface::viewShowStatus()
 	if (!isShowIdValid)
 	{
 		cout << "Show id is not valid!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	Enums::ShowStatus status = m_controller->getShowStatus(showId);
 	cout << " Show Status: " << Enums::getShowStatusString(status) << endl;
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -4459,14 +4525,14 @@ void UserInterface::updateShow()
 	if (!isShowIdValid)
 	{
 		cout << "Show id is not valid!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	Enums::ProcessStatus isShowUpdatable = m_controller->isShowChangable(showId);
 	if (isShowUpdatable == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Show cannot be updated because it has completed bookings!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 	}
 	time_t newTimeAndDate;
@@ -4474,26 +4540,26 @@ void UserInterface::updateShow()
 	if (status == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Invalid time!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
 	if (m_controller->isNewShowTimeConflicting(showId, newTimeAndDate) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Cannot update show time as it conflicts with the time of another show!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
 	if (m_controller->updateShow(newTimeAndDate, showId) == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "Show updated successfully!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 	else
 	{
 		cout << "Failed to update show!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 }
 
@@ -4519,7 +4585,7 @@ Enums::ProcessStatus UserInterface::getNewDateAndTime(time_t& time)
 	if (!isFutureDateTime(year, month, day, startTimeHour, startTimeMinute))
 	{
 		cout << "Cannot update a show with a past time/date!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return Enums::ProcessStatus::FAILED;
 	}
@@ -4547,7 +4613,7 @@ void UserInterface::listShowsForAMovie()
 	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Invalid movie id!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -4571,14 +4637,14 @@ Enums::ProcessStatus UserInterface::listShowsForAMovie(string& movieId, string& 
 	if (validateMovieIdInput(movies, movieId) == Enums::ProcessStatus::FAILED)
 	{
 		cout << "Invalid movie id!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return Enums::ProcessStatus::FAILED;
 	}
 	const vector<const Show*> shows = m_controller->getShowsForMovie(movieId);
 	if (shows.empty())
 	{
 		cout << "No shows available for movie!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return Enums::ProcessStatus::FAILED;
 	}
 	displayShowDetails(shows);
@@ -4595,7 +4661,7 @@ Enums::ProcessStatus UserInterface::listShowsForAMovie(string& movieId, string& 
 	if (!isShowIdValid)
 	{
 		cout << "Invalid show id!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return Enums::ProcessStatus::FAILED;
 	}
 	return Enums::ProcessStatus::SUCCESS;
@@ -4615,7 +4681,7 @@ void UserInterface::viewActiveTicketDetails()
 	if (tickets.empty())
 	{
 		cout << "No Tickets Available" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	viewTicketDetails(tickets);
@@ -4634,7 +4700,7 @@ void UserInterface::viewAllTickets()
 	if (tickets.empty())
 	{
 		cout << "No Tickets Available" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	viewTicketDetails(tickets);
@@ -4699,7 +4765,7 @@ void UserInterface::viewTicketDetails(const vector<const Ticket*>& tickets)
 			<< setw(12) << Enums::getTicketStatusString(ticket->getTicketStatus())
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 
 }
 
@@ -4763,7 +4829,7 @@ int UserInterface::displayPaymentOptions()
 	cout << "2. Debit Card\n";
 	cout << "3. UPI\n";
 	cout << "--------------------------" << endl;
-	int choice;
+	unsigned short choice;
 	util::readValueWithRetry(choice, "Enter choice: ");
 	return choice;
 }
@@ -4783,7 +4849,7 @@ void UserInterface::viewAllPayments()
 	if (allPayments.empty())
 	{
 		cout << "No Payment Record!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	cout << string(94, '-') << endl;
@@ -4808,7 +4874,7 @@ void UserInterface::viewAllPayments()
 			<< setw(22) << util::serializeTime(payment->getTimeStamp())
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4822,7 +4888,7 @@ void UserInterface::viewAllPayments()
 */
 void UserInterface::initiatePayment(const string& bookingId, double amount)
 {
-	int choice = displayPaymentOptions();
+	unsigned short choice = displayPaymentOptions();
 	Enums::PaymentMethod type = Enums::PaymentMethod::UPI;
 	Enums::ProcessStatus valid;
 
@@ -4856,7 +4922,7 @@ void UserInterface::initiatePayment(const string& bookingId, double amount)
 	{
 		cout << "Payment failed. Please book again\n";
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4880,7 +4946,7 @@ void UserInterface::viewAllBookings()
 		displayTheatreBookings(bookings);
 	default:
 		cout << "No Bookings available" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		break;
 	}
 }
@@ -4917,7 +4983,7 @@ void UserInterface::displayCustomerBookings(const vector<const Booking*> booking
 	if (bookings.empty())
 	{
 		cout << "No Bookings Available" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -4957,7 +5023,7 @@ void UserInterface::displayCustomerBookings(const vector<const Booking*> booking
 			}
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -4974,7 +5040,7 @@ void UserInterface::displayTheatreBookings(const vector<const Booking*> bookings
 	if (bookings.empty())
 	{
 		cout << "No Bookings Available" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -5038,7 +5104,7 @@ void UserInterface::displayTheatreBookings(const vector<const Booking*> bookings
 				<< setw(16) << Enums::getBookingStatusString((*bookingsIterator)->getStatus())
 				<< endl;
 		}
-		util::pressEnter();
+		util::pressEnterToContinue();
 	}
 }
 
@@ -5056,7 +5122,7 @@ void UserInterface::displayBookingDetails()
 	if (bookings.empty())
 	{
 		cout << "No bookings available to display!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -5076,7 +5142,7 @@ void UserInterface::displayBookingDetails()
 	if (!isBookingIdValid)
 	{
 		cout << "Booking id is not valid!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -5084,7 +5150,7 @@ void UserInterface::displayBookingDetails()
 	if (booking == nullptr)
 	{
 		cout << "Booking details could not be found!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -5142,7 +5208,7 @@ void UserInterface::displayBookingDetail(const Booking* booking)
 			cout << *iterator << endl;
 		}
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -5175,14 +5241,14 @@ void UserInterface::cancelBooking()
 	if (!isBookingIdValid)
 	{
 		cout << "Invalid Booking Id" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
 	Enums::ProcessStatus cancelStatus = m_controller->cancelBooking(bookingId);
 	string displayMessage = (cancelStatus == Enums::ProcessStatus::SUCCESS) ? "Booking cancelled successfully and payment refunded!" : "Failed to cancel Booking!";
 	cout << displayMessage << endl;
-	util::pressEnter();
+	util::pressEnterToContinue();
 	util::clear();
 }
 
@@ -5205,7 +5271,7 @@ void UserInterface::createBooking()
 	if (show == nullptr)
 	{
 		cout << "Failed to get show seat layout!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -5218,7 +5284,7 @@ void UserInterface::createBooking()
 	const Booking* booking = m_controller->bookSelectedSeats(showId, bookedSeatIds);
 	string message = (booking == nullptr) ? "Failed to complete booking!" : "Booking completed Successfully!";
 	cout << message << endl;
-	util::pressEnter();
+	util::pressEnterToContinue();
 	string bookingId = "";
 	double amount = 0.0;
 	if (booking != nullptr)
@@ -5270,7 +5336,7 @@ void UserInterface::selectSeats(int numberOfSeats, vector<string>& bookedSeatIds
 	if (seatAvailability == nullptr)
 	{
 		cout << "Failed to select seats!" << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		util::clear();
 		return;
 	}
@@ -5382,7 +5448,7 @@ void UserInterface::removeMovieFromTheatre()
 	{
 		cout << "Failed to remove movie\n";
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
@@ -5399,7 +5465,7 @@ void UserInterface::viewRefunds()
 	if (refunds.empty())
 	{
 		cout << "No refunds found." << endl;
-		util::pressEnter();
+		util::pressEnterToContinue();
 		return;
 	}
 	cout << left
@@ -5421,7 +5487,7 @@ void UserInterface::viewRefunds()
 			<< setw(20) << util::serializeTime(refund->getTime())
 			<< endl;
 	}
-	util::pressEnter();
+	util::pressEnterToContinue();
 }
 
 /*
