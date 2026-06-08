@@ -97,19 +97,19 @@ bool UserInterface::handleOperation(unsigned short choice)
 {
 	switch (choice)
 	{
-	case 1:
-		login();
-		break;
-	case 2:
-		registerUser();
-		break;
-	case 3:
-		m_controller->saveData();
-		cout << "Exiting..." << endl;
-		return false;
-	default:
-		cout << "Enter a valid choice!" << endl;
-		util::pressEnterToContinue();
+		case 1:
+			login();
+			break;
+		case 2:
+			registerUser();
+			break;
+		case 3:
+			m_controller->saveData();
+			cout << "Exiting..." << endl;
+			return false;
+		default:
+			cout << "Enter a valid choice!" << endl;
+			util::pressEnterToContinue();
 	}
 	return true;
 }
@@ -136,34 +136,34 @@ void UserInterface::login()
 	const Enums::UserType userType = get<1>(authenticationContext);
 	if (loginStatus == Enums::LoginStatus::USER_NOT_FOUND)
 	{
-		cout << "Error: User Not Found! Try Again\n";
+		cout << "Error: Invalid Credentials! Try Again\n";
 		util::pressEnterToContinue();
 		return;
 	}
 	if (loginStatus == Enums::LoginStatus::INVALID_PASSWORD)
 	{
-		cout << "Error: Invalid Password! Try Again\n";
+		cout << "Error: Invalid Credentials! Try Again\n";
 		util::pressEnterToContinue();
 		return;
 	}
 	util::clear();
 	switch (userType)
 	{
-	case Enums::UserType::ADMIN:
-	{
-		handleAdminMenuOperation();
-		break;
-	}
-	case Enums::UserType::THEATRE_OWNER:
-	{
-		handleTheatreOwnerMenuOperation();
-		break;
-	}
-	case Enums::UserType::CUSTOMER:
-	{
-		handleCustomerMenuOperation();
-		break;
-	}
+		case Enums::UserType::ADMIN:
+		{
+			handleAdminMenuOperation();
+			break;
+		}
+		case Enums::UserType::THEATRE_OWNER:
+		{
+			handleTheatreOwnerMenuOperation();
+			break;
+		}
+		case Enums::UserType::CUSTOMER:
+		{
+			handleCustomerMenuOperation();
+			break;
+		}
 	}
 	m_controller->logout();
 };
@@ -186,17 +186,17 @@ void UserInterface::registerUser()
 	util::readValueWithRetry(choice, "Enter a choice: ");
 	switch (choice)
 	{
-	case 1:
-		userType = Enums::UserType::CUSTOMER;
-		break;
-	case 2:
-		userType = Enums::UserType::THEATRE_OWNER;
-		break;
-	default:
-		cout << "Invalid Choice. Please Try again!" << endl;
-		util::pressEnterToContinue();
-		util::clear();
-		return;
+		case 1:
+			userType = Enums::UserType::CUSTOMER;
+			break;
+		case 2:
+			userType = Enums::UserType::THEATRE_OWNER;
+			break;
+		default:
+			cout << "Invalid Choice. Please Try again!" << endl;
+			util::pressEnterToContinue();
+			util::clear();
+			return;
 	}
 	handleUserDetailsInput(userName, email, password, phoneNumber);
 	if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
@@ -270,62 +270,62 @@ void UserInterface::handleAdminMenuOperation()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			adminUserManagementMenu();
-			break;
-		}
-		case 2:
-		{
-			adminMovieManagementMenu();
-			break;
-		}
-		case 3:
-		{
-			adminTheatreManagementMenu();
-			break;
-		}
-		case 4:
-		{
-			adminShowManagementMenu();
-			break;
-		}
-		case 5:
-		{
-			adminTicketManagementMenu();
-			break;
-		}
-		case 6:
-		{
-			viewLogsByType();
-			break;
-		}
-		case 7:
-		{
-			viewProfile();
-			break;
-		}
-		case 8:
-		{
-			changePassword();
-			break;
-		}
-		case 9:
-		{
-			viewNotifications();
-			break;
-		}
-		case 10:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice. Please try again!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				adminUserManagementMenu();
+				break;
+			}
+			case 2:
+			{
+				adminMovieManagementMenu();
+				break;
+			}
+			case 3:
+			{
+				adminTheatreManagementMenu();
+				break;
+			}
+			case 4:
+			{
+				adminShowManagementMenu();
+				break;
+			}
+			case 5:
+			{
+				adminTicketManagementMenu();
+				break;
+			}
+			case 6:
+			{
+				viewLogsByType();
+				break;
+			}
+			case 7:
+			{
+				viewProfile();
+				break;
+			}
+			case 8:
+			{
+				changePassword();
+				break;
+			}
+			case 9:
+			{
+				viewNotifications();
+				break;
+			}
+			case 10:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice. Please try again!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -357,42 +357,42 @@ void UserInterface::adminUserManagementMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			createUser();
-			break;
-		}
-		case 2:
-		{
-			viewAllUsers();
-			break;
-		}
-		case 3:
-		{
-			updateUserDetails();
-			break;
-		}
-		case 4:
-		{
-			deactivateUser();
-			break;
-		}
-		case 5:
-		{
-			reactivateUser();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				createUser();
+				break;
+			}
+			case 2:
+			{
+				viewAllUsers();
+				break;
+			}
+			case 3:
+			{
+				updateUserDetails();
+				break;
+			}
+			case 4:
+			{
+				deactivateUser();
+				break;
+			}
+			case 5:
+			{
+				reactivateUser();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -426,47 +426,47 @@ void UserInterface::adminMovieManagementMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			addMovie();
-			break;
-		}
-		case 2:
-		{
-			updateMovie();
-			break;
-		}
-		case 3:
-		{
-			displayAllMovies();
-			break;
-		}
-		case 4:
-		{
-			searchMovie();
-			break;
-		}
-		case 5:
-		{
-			deactivateMovie();
-			break;
-		}
-		case 6:
-		{
-			activateMovie();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				addMovie();
+				break;
+			}
+			case 2:
+			{
+				updateMovie();
+				break;
+			}
+			case 3:
+			{
+				displayAllMovies();
+				break;
+			}
+			case 4:
+			{
+				searchMovie();
+				break;
+			}
+			case 5:
+			{
+				deactivateMovie();
+				break;
+			}
+			case 6:
+			{
+				activateMovie();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -498,42 +498,42 @@ void UserInterface::adminTheatreManagementMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			validateTheatreRequest();
-			break;
-		}
-		case 2:
-		{
-			deactivateTheatreByAdmin();
-			break;
-		}
-		case 3:
-		{
-			reactivateTheatreByAdmin();
-			break;
-		}
-		case 4:
-		{
-			searchTheatre();
-			break;
-		}
-		case 5:
-		{
-			listAllTheatres();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				validateTheatreRequest();
+				break;
+			}
+			case 2:
+			{
+				deactivateTheatreByAdmin();
+				break;
+			}
+			case 3:
+			{
+				reactivateTheatreByAdmin();
+				break;
+			}
+			case 4:
+			{
+				searchTheatre();
+				break;
+			}
+			case 5:
+			{
+				listAllTheatres();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -561,22 +561,22 @@ void UserInterface::adminShowManagementMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			listShowsForAMovie();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				listShowsForAMovie();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -603,22 +603,22 @@ void UserInterface::adminTicketManagementMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			viewAllTickets();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				viewAllTickets();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -667,52 +667,52 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			ownerTheatreManagementMenu();
-			break;
-		}
-		case 2:
-		{
-			ownerShowManagementMenu();
-			break;
-		}
-		case 3:
-		{
-			ownerBookingManagementMenu();
-			break;
-		}
-		case 4:
-		{
-			viewNotifications();
-			break;
-		}
-		case 5:
-		{
-			viewProfile();
-			break;
-		}
-		case 6:
-		{
-			updateUserDetails();
-			break;
-		}
-		case 7:
-		{
-			changePassword();
-			break;
-		}
-		case 8:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice. Please try again!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				ownerTheatreManagementMenu();
+				break;
+			}
+			case 2:
+			{
+				ownerShowManagementMenu();
+				break;
+			}
+			case 3:
+			{
+				ownerBookingManagementMenu();
+				break;
+			}
+			case 4:
+			{
+				viewNotifications();
+				break;
+			}
+			case 5:
+			{
+				viewProfile();
+				break;
+			}
+			case 6:
+			{
+				updateUserDetails();
+				break;
+			}
+			case 7:
+			{
+				changePassword();
+				break;
+			}
+			case 8:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice. Please try again!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -873,82 +873,82 @@ void UserInterface::ownerScreenManagementMenu()
 
 		switch (choice)
 		{
-		case 1:
-		{
-			string name;
-			int rows, columns;
-			double amount;
-			util::readValueWithRetry(name, "Enter Screen Name: ");
-			util::readValueWithRetry(rows, "Enter Number of Rows: ");
-			util::readValueWithRetry(columns, "Enter Number of Columns: ");
-			util::readValueWithRetry(amount, "Enter Seat Price: ");
-			addScreen(theatreId, name, rows, columns, amount);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 2:
-		{
-			viewTheatreScreens(theatreId);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 3:
-		{
-			string screenId, name;
-			viewTheatreScreens(theatreId);
-			util::readValueWithRetry(screenId, "Enter Screen ID: ");
-			util::readValueWithRetry(name, "Enter New Name: ");
-			updateScreenName(theatreId, screenId, name);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 4:
-		{
-			string screenId;
-			viewTheatreScreens(theatreId);
-			util::readValueWithRetry(screenId, "Enter Screen ID to deactivate: ");
-			deactivateScreen(theatreId, screenId);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 5:
-		{
-			string screenId;
-			viewTheatreScreens(theatreId);
-			util::readValueWithRetry(screenId, "Enter Screen ID to reactivate: ");
-			reactivateScreen(theatreId, screenId);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 6:
-		{
-			string screenId, selectedScreenId = "";
-			viewTheatreScreens(theatreId);
-			util::readValueWithRetry(screenId, "Enter Screen ID for seat management: ");
-			const vector<const Screen*> screens = m_controller->getScreensFromTheatre(theatreId);
-			for (vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+			case 1:
 			{
-				if ((*iterator)->getScreenId() == screenId)
-				{
-					selectedScreenId = screenId;
-					break;
-				}
-			}
-			if (selectedScreenId.empty())
-			{
-				cout << "Invalid Screen ID!" << endl;
+				string name;
+				int rows, columns;
+				double amount;
+				util::readValueWithRetry(name, "Enter Screen Name: ");
+				util::readValueWithRetry(rows, "Enter Number of Rows: ");
+				util::readValueWithRetry(columns, "Enter Number of Columns: ");
+				util::readValueWithRetry(amount, "Enter Seat Price: ");
+				addScreen(theatreId, name, rows, columns, amount);
 				util::pressEnterToContinue();
 				break;
 			}
-			ownerSeatManagementMenu(selectedScreenId);
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 2:
+			{
+				viewTheatreScreens(theatreId);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 3:
+			{
+				string screenId, name;
+				viewTheatreScreens(theatreId);
+				util::readValueWithRetry(screenId, "Enter Screen ID: ");
+				util::readValueWithRetry(name, "Enter New Name: ");
+				updateScreenName(theatreId, screenId, name);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 4:
+			{
+				string screenId;
+				viewTheatreScreens(theatreId);
+				util::readValueWithRetry(screenId, "Enter Screen ID to deactivate: ");
+				deactivateScreen(theatreId, screenId);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 5:
+			{
+				string screenId;
+				viewTheatreScreens(theatreId);
+				util::readValueWithRetry(screenId, "Enter Screen ID to reactivate: ");
+				reactivateScreen(theatreId, screenId);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 6:
+			{
+				string screenId, selectedScreenId = "";
+				viewTheatreScreens(theatreId);
+				util::readValueWithRetry(screenId, "Enter Screen ID for seat management: ");
+				const vector<const Screen*> screens = m_controller->getScreensFromTheatre(theatreId);
+				for (vector<const Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
+				{
+					if ((*iterator)->getScreenId() == screenId)
+					{
+						selectedScreenId = screenId;
+						break;
+					}
+				}
+				if (selectedScreenId.empty())
+				{
+					cout << "Invalid Screen ID!" << endl;
+					util::pressEnterToContinue();
+					break;
+				}
+				ownerSeatManagementMenu(selectedScreenId);
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -980,50 +980,50 @@ void UserInterface::ownerSeatManagementMenu(const string& selectedScreenId)
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			viewSeatLayout(selectedScreenId);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 2:
-		{
-			int rows = 0, columns = 0;
-			double amount = 0.0;
-			util::readValueWithRetry(amount, "Enter Seat Price: ");
-			updateSeatLayout(selectedScreenId, rows, columns, amount);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 3:
-		{
-			string seatId;
-			viewSeatLayout(selectedScreenId);
-			util::readValueWithRetry(seatId, "Enter Seat ID to deactivate: ");
-			deactivateSeat(selectedScreenId, seatId);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 4:
-		{
-			string seatId;
-			viewSeatLayout(selectedScreenId);
-			util::readValueWithRetry(seatId, "Enter Seat ID to reactivate: ");
-			reactivateSeat(selectedScreenId, seatId);
-			util::pressEnterToContinue();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				viewSeatLayout(selectedScreenId);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 2:
+			{
+				int rows = 0, columns = 0;
+				double amount = 0.0;
+				util::readValueWithRetry(amount, "Enter Seat Price: ");
+				updateSeatLayout(selectedScreenId, rows, columns, amount);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 3:
+			{
+				string seatId;
+				viewSeatLayout(selectedScreenId);
+				util::readValueWithRetry(seatId, "Enter Seat ID to deactivate: ");
+				deactivateSeat(selectedScreenId, seatId);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 4:
+			{
+				string seatId;
+				viewSeatLayout(selectedScreenId);
+				util::readValueWithRetry(seatId, "Enter Seat ID to reactivate: ");
+				reactivateSeat(selectedScreenId, seatId);
+				util::pressEnterToContinue();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -1057,50 +1057,50 @@ void UserInterface::ownerShowManagementMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			addShow();
-			break;
-		}
-		case 2:
-		{
-			updateShow();
-			break;
-		}
-		case 3:
-		{
-			cancelShow();
-			break;
-		}
-		case 4:
-			displayActiveShows();
-			break;
-		case 5:
-		{
-			displayAllShows();
-			break;
-		}
-		case 6:
-		{
-			viewShowStatus();
-			break;
-		}
-		case 7:
-		{
-			listShowsForAMovie();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				addShow();
+				break;
+			}
+			case 2:
+			{
+				updateShow();
+				break;
+			}
+			case 3:
+			{
+				cancelShow();
+				break;
+			}
+			case 4:
+				displayActiveShows();
+				break;
+			case 5:
+			{
+				displayAllShows();
+				break;
+			}
+			case 6:
+			{
+				viewShowStatus();
+				break;
+			}
+			case 7:
+			{
+				listShowsForAMovie();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -1130,37 +1130,37 @@ void UserInterface::ownerBookingManagementMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			viewAllBookings();
-			break;
-		}
-		case 2:
-		{
-			displayBookingDetails();
-			break;
-		}
-		case 3:
-		{
-			viewAllPayments();
-			break;
-		}
-		case 4:
-		{
-			viewRefunds();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				viewAllBookings();
+				break;
+			}
+			case 2:
+			{
+				displayBookingDetails();
+				break;
+			}
+			case 3:
+			{
+				viewAllPayments();
+				break;
+			}
+			case 4:
+			{
+				viewRefunds();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -1210,52 +1210,52 @@ void UserInterface::handleCustomerMenuOperation()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			customerBrowseMenu();
-			break;
-		}
-		case 2:
-		{
-			customerBookingMenu();
-			break;
-		}
-		case 3:
-		{
-			customerTicketMenu();
-			break;
-		}
-		case 4:
-		{
-			viewNotifications();
-			break;
-		}
-		case 5:
-		{
-			viewProfile();
-			break;
-		}
-		case 6:
-		{
-			updateUserDetails();
-			break;
-		}
-		case 7:
-		{
-			changePassword();
-			break;
-		}
-		case 8:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice. Please try again!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				customerBrowseMenu();
+				break;
+			}
+			case 2:
+			{
+				customerBookingMenu();
+				break;
+			}
+			case 3:
+			{
+				customerTicketMenu();
+				break;
+			}
+			case 4:
+			{
+				viewNotifications();
+				break;
+			}
+			case 5:
+			{
+				viewProfile();
+				break;
+			}
+			case 6:
+			{
+				updateUserDetails();
+				break;
+			}
+			case 7:
+			{
+				changePassword();
+				break;
+			}
+			case 8:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice. Please try again!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -1286,37 +1286,37 @@ void UserInterface::customerBrowseMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			searchMovie();
-			break;
-		}
-		case 2:
-		{
-			listShowsForAMovie();
-			break;
-		}
-		case 3:
-		{
-			searchTheatre();
-			break;
-		}
-		case 4:
-		{
-			createBooking();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				searchMovie();
+				break;
+			}
+			case 2:
+			{
+				listShowsForAMovie();
+				break;
+			}
+			case 3:
+			{
+				searchTheatre();
+				break;
+			}
+			case 4:
+			{
+				createBooking();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -1348,42 +1348,42 @@ void UserInterface::customerBookingMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			viewAllBookings();
-			break;
-		}
-		case 2:
-		{
-			displayBookingDetails();
-			break;
-		}
-		case 3:
-		{
-			cancelBooking();
-			break;
-		}
-		case 4:
-		{
-			viewAllPayments();
-			break;
-		}
-		case 5:
-		{
-			viewRefunds();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				viewAllBookings();
+				break;
+			}
+			case 2:
+			{
+				displayBookingDetails();
+				break;
+			}
+			case 3:
+			{
+				cancelBooking();
+				break;
+			}
+			case 4:
+			{
+				viewAllPayments();
+				break;
+			}
+			case 5:
+			{
+				viewRefunds();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -1412,27 +1412,27 @@ void UserInterface::customerTicketMenu()
 		util::readValueWithRetry(choice, "Enter an option: ");
 		switch (choice)
 		{
-		case 1:
-		{
-			viewActiveTicketDetails();
-			break;
-		}
-		case 2:
-		{
-			viewTicketHistory();
-			break;
-		}
-		case 0:
-		{
-			isMenuActive = false;
-			break;
-		}
-		default:
-		{
-			cout << "Invalid choice!" << endl;
-			util::pressEnterToContinue();
-			break;
-		}
+			case 1:
+			{
+				viewActiveTicketDetails();
+				break;
+			}
+			case 2:
+			{
+				viewTicketHistory();
+				break;
+			}
+			case 0:
+			{
+				isMenuActive = false;
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice!" << endl;
+				util::pressEnterToContinue();
+				break;
+			}
 		}
 	}
 }
@@ -1733,20 +1733,20 @@ void UserInterface::createUser()
 	util::readValueWithRetry(choice, "Enter a choice: ");
 	switch (choice)
 	{
-	case 1:
-		userType = Enums::UserType::CUSTOMER;
-		break;
-	case 2:
-		userType = Enums::UserType::THEATRE_OWNER;
-		break;
-	case 3:
-		userType = Enums::UserType::ADMIN;
-		break;
-	default:
-		cout << "Invalid Choice. Please Try again!" << endl;
-		util::pressEnterToContinue();
-		util::clear();
-		return;
+		case 1:
+			userType = Enums::UserType::CUSTOMER;
+			break;
+		case 2:
+			userType = Enums::UserType::THEATRE_OWNER;
+			break;
+		case 3:
+			userType = Enums::UserType::ADMIN;
+			break;
+		default:
+			cout << "Invalid Choice. Please Try again!" << endl;
+			util::pressEnterToContinue();
+			util::clear();
+			return;
 	}
 	handleUserDetailsInput(userName, email, password, phoneNumber);
 	if (m_controller->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
@@ -1805,30 +1805,30 @@ void UserInterface::updateUserDetails()
 		util::readValueWithRetry(choice, "Enter a choice: ");
 		switch (choice)
 		{
-		case 1:
-			util::readValueWithRetry(input, "Enter username: ");
-			result = m_controller->setAuthenticatedUserUserName(input);
-			break;
-		case 2:
-			util::readValueWithRetry(input, "Enter email: ");
-			util::isEmailValid(input);
-			getUniqueEmail(input);
-			result = m_controller->setAuthenticatedUserEmail(input);
-			break;
-		case 3:
-			util::readValueWithRetry(input, "Enter phoneNumber: ");
-			util::isPhoneNumberValid(input);
-			getUniquePhoneNumber(input);
-			result = m_controller->setAuthenticatedUserPhoneNumber(input);
-			break;
-		case 4:
-			condition = false;
-			break;
-		default:
-			cout << "Enter a valid option!" << endl;
-			util::pressEnterToContinue();
-			util::clear();
-			break;
+			case 1:
+				util::readValueWithRetry(input, "Enter username: ");
+				result = m_controller->setAuthenticatedUserUserName(input);
+				break;
+			case 2:
+				util::readValueWithRetry(input, "Enter email: ");
+				util::isEmailValid(input);
+				getUniqueEmail(input);
+				result = m_controller->setAuthenticatedUserEmail(input);
+				break;
+			case 3:
+				util::readValueWithRetry(input, "Enter phoneNumber: ");
+				util::isPhoneNumberValid(input);
+				getUniquePhoneNumber(input);
+				result = m_controller->setAuthenticatedUserPhoneNumber(input);
+				break;
+			case 4:
+				condition = false;
+				break;
+			default:
+				cout << "Enter a valid option!" << endl;
+				util::pressEnterToContinue();
+				util::clear();
+				break;
 		}
 		if (choice >= 1 && choice <= 3)
 		{
@@ -2094,22 +2094,22 @@ void UserInterface::editMovieDetails(const string& movieId, const Movie* current
 		util::readValueWithRetry(choice, "\nEnter which details want to edit: ");
 		switch (choice)
 		{
-		case 1:
-			util::readValueWithRetry(title, "\nEnter the new Title: ");
-			changeMovieTitle(movieId, title, currentMovie);
-			break;
-		case 2:
-			util::readValueWithRetry(language, "\nEnter the new Language: ");
-			changeMovieLanguage(movieId, language, currentMovie);
-			break;
-		case 3:
-			util::readValueWithRetry(genre, "\nEnter the new Genre: ");
-			changeMovieGenre(movieId, genre, currentMovie);
-			break;
-		case 4:
-			util::readValueWithRetry(duration, "\nEnter the new Duration: ");
-			changeMovieDuration(movieId, duration, currentMovie);
-			break;
+			case 1:
+				util::readValueWithRetry(title, "\nEnter the new Title: ");
+				changeMovieTitle(movieId, title, currentMovie);
+				break;
+			case 2:
+				util::readValueWithRetry(language, "\nEnter the new Language: ");
+				changeMovieLanguage(movieId, language, currentMovie);
+				break;
+			case 3:
+				util::readValueWithRetry(genre, "\nEnter the new Genre: ");
+				changeMovieGenre(movieId, genre, currentMovie);
+				break;
+			case 4:
+				util::readValueWithRetry(duration, "\nEnter the new Duration: ");
+				changeMovieDuration(movieId, duration, currentMovie);
+				break;
 		}
 	}
 }
@@ -2534,20 +2534,20 @@ void UserInterface::viewLogsByType()
 	vector<const Log*> logs;
 	switch (choice)
 	{
-	case 1:
-		logs = m_controller->getLogsByType(Enums::LogType::SYSTEM_ACTIVITY);
-		break;
-	case 2:
-		logs = m_controller->getLogsByType(Enums::LogType::ERROR);
-		break;
-	case 3:
-		logs = m_controller->getLogsByType(Enums::LogType::UNKNOWN);
-		break;
-	default:
-		cout << "Invalid choice. Please try again!" << endl;
-		util::pressEnterToContinue();
-		util::clear();
-		break;
+		case 1:
+			logs = m_controller->getLogsByType(Enums::LogType::SYSTEM_ACTIVITY);
+			break;
+		case 2:
+			logs = m_controller->getLogsByType(Enums::LogType::ERROR);
+			break;
+		case 3:
+			logs = m_controller->getLogsByType(Enums::LogType::UNKNOWN);
+			break;
+		default:
+			cout << "Invalid choice. Please try again!" << endl;
+			util::pressEnterToContinue();
+			util::clear();
+			break;
 	}
 	util::clear();
 	if (logs.empty())

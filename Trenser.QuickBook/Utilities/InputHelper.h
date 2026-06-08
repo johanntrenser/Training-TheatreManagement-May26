@@ -44,10 +44,10 @@ namespace util
     }
 
     /*
-     * Function: readString
+     * Function: readValue
      * Description: Reads a string value from the console input stream.
      * Parameters:
-     *   - str: Reference to the string variable where the input will be stored.
+     *   - value: Reference to the string variable where the input will be stored.
      * Returns: None
      */
     inline void readValue(std::string& value)
@@ -107,7 +107,7 @@ namespace util
     }
 
     /*
-    * Function Name : readValueWithRetry (string overload)
+    * Function Name : readValueWithRetry (string overload`)
     * Description   : Reads a string value from user input with retry logic.
     *                 Keeps prompting until a non-empty string is entered.
     * Parameters    :
