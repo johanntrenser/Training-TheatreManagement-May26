@@ -1,5 +1,5 @@
 /*
- * File: util_clear.h
+ * File: OutputHelper.h
  * Description: Declares the clear() utility function for console management.
  *              Provides functionality to clear the console screen, improving
  *              readability and user experience in command-line applications.

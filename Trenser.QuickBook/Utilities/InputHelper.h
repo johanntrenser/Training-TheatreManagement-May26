@@ -23,7 +23,7 @@ namespace util
      *              Clears the input buffer and throws an exception if
      *              invalid input is detected.
      * Template Parameters:
-     *   - T: The type of value to be read (e.g., int, double, string).
+     *   - T: The type of value to be read (e.g., int, double).
      * Parameters:
      *   - value: Reference to the variable where the input will be stored.
      * Returns: None
@@ -117,11 +117,29 @@ namespace util
     {
         while (true)
         {
-            std::cout << prompt;
-            readValue(value);
-            if (!value.empty())
-                break;
-            std::cout << "Input cannot be empty. Please try again.\n";
+            try
+            {
+                std::cout << prompt;
+                readValue(value);
+                if (!value.empty())
+                {
+                    break;
+                }
+                std::cout << "Input cannot be empty. Please try again.\n";
+            }
+            catch (const std::invalid_argument& e)
+            {
+                std::cout << "Invalid input: " << e.what() << " Please try again.\n";
+            }
+            catch (const std::ios_base::failure& e)
+            {
+                std::cout << "Stream error: " << e.what() << " Please try again.\n";
+                std::cin.clear();
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << "Unexpected error: " << e.what() << " Please try again.\n";
+            }
         }
     }
 

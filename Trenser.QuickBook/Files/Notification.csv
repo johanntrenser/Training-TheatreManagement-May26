@@ -1,3 +1,5 @@
 NOTIFICATION ID,RECEIVER ID,MESSAGE,STATUS,TIME
 NF001,US002,Your Booking has been confirmed with Ticket ID: TK001,READ,2026-06-04 14:41
 NF002,US002,Your refund request for booking with id BKG001 has been processed successfully,READ,2026-06-04 14:46
+NF003,US002,Your Booking has been confirmed with Ticket ID: TK002,UNREAD,2026-06-08 12:10
+NF004,US002,Your Booking has been confirmed with Ticket ID: TK003,UNREAD,2026-06-08 12:11

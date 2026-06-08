@@ -39,3 +39,13 @@ LOG037,Payment with ID : PA001 has been refunded.,SYSTEM_ACTIVITY,2026-06-04 14:
 LOG038,Ticket with ID : TK001 has been cancelled.,SYSTEM_ACTIVITY,2026-06-04 14:46:22
 LOG039,Booking with ID : BKG001 has been cancelled.,SYSTEM_ACTIVITY,2026-06-04 14:46:22
 LOG040,User with ID : US001 has logged in.,SYSTEM_ACTIVITY,2026-06-04 14:47:48
+LOG041,User with ID : US005 has logged in.,SYSTEM_ACTIVITY,2026-06-08 12:07:52
+LOG042,User with ID : US005 has logged out.,ERROR,2026-06-08 12:07:54
+LOG043,User with ID : US002 has logged in.,SYSTEM_ACTIVITY,2026-06-08 12:08:45
+LOG044,Booking with ID : BKG002 has been created.,SYSTEM_ACTIVITY,2026-06-08 12:09:30
+LOG045,New Ticket with ID : TK002 has created.,SYSTEM_ACTIVITY,2026-06-08 12:10:36
+LOG046,Payment with ID : PA002 has been completetd,SYSTEM_ACTIVITY,2026-06-08 12:10:36
+LOG047,Booking with ID : BKG003 has been created.,SYSTEM_ACTIVITY,2026-06-08 12:10:55
+LOG048,New Ticket with ID : TK003 has created.,SYSTEM_ACTIVITY,2026-06-08 12:11:04
+LOG049,Payment with ID : PA003 has been completetd,SYSTEM_ACTIVITY,2026-06-08 12:11:04
+LOG050,User with ID : US002 has logged out.,ERROR,2026-06-08 12:11:24

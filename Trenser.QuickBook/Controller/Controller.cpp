@@ -368,7 +368,7 @@ const std::vector<const Movie*> Controller::getMoviesFromTheatre(const std::stri
  *      enum - UserType of the authenticated user if login is successful,
  *             otherwise USER_NOT_FOUND
  */
-pair<Enums::LoginStatus, Enums::UserType> Controller::login(string email, string password)
+const pair<Enums::LoginStatus, Enums::UserType> Controller::login(string email, string password)
 {
     return m_authenticationManagementService->login(email, password);
 }
