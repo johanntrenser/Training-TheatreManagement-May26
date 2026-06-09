@@ -200,7 +200,7 @@ std::string Refund::serialize()
  * Returns:
  *    A pointer to a newly created Refund object populated with the deserialized data.
  */
-Refund* Refund::deserialize(std::string& lines)
+Refund* Refund::deserialize(const std::string& lines)
 {
     std::string refundId, bookedTicketId, refundAmount, time, status, year, dash, space, month, day, hour, colon, minute;
     std::stringstream lineStream(lines);

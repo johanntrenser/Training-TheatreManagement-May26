@@ -43,5 +43,5 @@ public:
     void setStatus(Enums::PaymentStatus status);
     void setTimeStamp(const time_t timeStamp);
     std::string serialize();
-    static Payment* deserialize(std::string& lines);
+    static Payment* deserialize(const std::string& lines);
 };

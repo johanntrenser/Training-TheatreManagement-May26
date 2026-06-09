@@ -227,7 +227,7 @@ std::string Seat::serialize()
  * Returns:
  *    A pointer to a newly created Seat object populated with the deserialized data.
  */
-Seat* Seat::deserialize(std::string& line)
+Seat* Seat::deserialize(const std::string& line)
 {
     std::string seatId, screenId, seatRow, seatColumn, amount, seatStatus;
     std::stringstream lineStream(line);

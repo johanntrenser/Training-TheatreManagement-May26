@@ -50,6 +50,6 @@ public:
     void setSeatAvailability(ShowSeatAvailability* seatAvailability);
     void setShowStatus(Enums::ShowStatus showStatus);
     std::string serialize();
-    static Show* deserialize(std::string& line);
+    static Show* deserialize(const std::string& line);
     ~Show() = default;
 };

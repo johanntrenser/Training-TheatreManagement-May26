@@ -304,7 +304,7 @@ std::string User::serialize()
  * Returns:
  *    A pointer to a newly created User object populated with the deserialized data.
  */
-User* User::deserialize(std::string& line)
+User* User::deserialize(const std::string& line)
 {
     std::stringstream lineStream(line);
     std::string userId, userName, email, password, phoneNumber, type, status;

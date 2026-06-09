@@ -47,5 +47,5 @@ public:
     void setSeatStatus(Enums::SeatStatus seatStatus);
     void setSeatAmount(double amount);
     std::string serialize();
-    static Seat* deserialize(std::string& line);
+    static Seat* deserialize(const std::string& line);
 };

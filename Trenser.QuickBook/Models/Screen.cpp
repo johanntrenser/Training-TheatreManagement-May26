@@ -262,7 +262,7 @@ std::string Screen::serialize() const
  * parameter   : std::string& line - the CSV line containing serialized screen data
  * return type : Screen* - pointer to a newly created Screen object
  */
-Screen* Screen::deserialize(std::string& line)
+Screen* Screen::deserialize(const std::string& line)
 {
     std::string screenId, theatreId, name, totalRows, totalColumns, status;
     std::stringstream lineStream(line);

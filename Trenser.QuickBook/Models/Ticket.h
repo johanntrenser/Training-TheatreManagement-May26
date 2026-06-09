@@ -32,6 +32,6 @@ public:
 	void setCustomer(User* customer);
 	void setTicketStatus(Enums::TicketStatus status);
 	std::string serialize();
-	static Ticket* deserialize(std::string& line);
+	static Ticket* deserialize(const std::string& line);
 	~Ticket() = default;
 };

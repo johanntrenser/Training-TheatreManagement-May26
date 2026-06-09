@@ -197,7 +197,7 @@ std::string Notification::serialize()
  * Returns:
  *    Pointer to a newly constructed Notification object
  */
-Notification* Notification::deserialize(std::string& lines)
+Notification* Notification::deserialize(const std::string& lines)
 {
     std::string notificationId, receiverId, messgae, status, time, year, dash, space, month, day, hour, colon, minute;
     std::stringstream lineStream(lines);

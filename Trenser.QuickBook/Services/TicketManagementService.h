@@ -1,5 +1,3 @@
-#include <string>
-#include "DataStore.h"
 /*
  * File: TicketManagementService.h
  * Description: Declares the TicketManagementService class, which provides
@@ -11,6 +9,7 @@
  */
 #pragma once
 #include <map>
+#include <string>
 #include "DataStore.h"
 #include "FileManagement.h"
 #include "LogManagementService.h"

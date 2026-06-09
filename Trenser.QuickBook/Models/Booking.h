@@ -10,8 +10,8 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include "ApplicationConfig.h"
 #include <vector>
+#include "ApplicationConfig.h"
 #include "User.h"
 #include "Show.h"
 #include "Seat.h"
@@ -48,7 +48,7 @@ public:
     void setStatus(Enums::BookingStatus status);
     void setAmount(double amount);
     std::string serialize();
-    static Booking* deserialize(std::string& lines);
+    static Booking* deserialize(const std::string& lines);
 };
 
 
