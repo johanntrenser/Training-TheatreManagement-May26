@@ -1,0 +1,1 @@
+#include "SharedMemoryManager.h"

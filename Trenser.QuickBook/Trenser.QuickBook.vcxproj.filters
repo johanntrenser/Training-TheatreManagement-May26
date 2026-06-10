@@ -37,6 +37,9 @@
     <Filter Include="File">
       <UniqueIdentifier>{bb197fd2-8b1a-484e-8f83-c5080a748e32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SharedMemory">
+      <UniqueIdentifier>{6c0e1ef2-9492-4b86-8289-bab6ae5cc316}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Trenser.QuickBook.cpp">
@@ -165,6 +168,18 @@
     <ClCompile Include="Utilities\Datalinker.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="SharedMemory\SharedMemoryConfig.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\SharedStructs.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\SharedSizesManager.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\SharedMemoryManager.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h">
@@ -289,6 +304,18 @@
     </ClInclude>
     <ClInclude Include="Utilities\Datalinker.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\SharedStructs.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\SharedMemoryConfig.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\SharedSizesManager.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\SharedMemoryManager.h">
+      <Filter>SharedMemory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
