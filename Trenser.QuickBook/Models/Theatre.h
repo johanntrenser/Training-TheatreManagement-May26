@@ -63,6 +63,6 @@ public:
     std::vector<Screen*>& getScreensForUpdation();
     void addMovieToTheatre(Movie* movie);
     std::string serialize();
-    static Theatre* deserialize(std::string& line);
+    static Theatre* deserialize(const std::string& line);
     std::vector<Movie*>& getMovies();
 };

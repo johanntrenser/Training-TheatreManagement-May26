@@ -394,7 +394,7 @@ std::string Theatre::serialize()
  * Returns:
  *    Pointer to a newly constructed Theatre object
  */
-Theatre* Theatre::deserialize(std::string& line)
+Theatre* Theatre::deserialize(const std::string& line)
 {
     std::string theatreId, name, city, address, phoneNumber, email, theatreOwnerId, status, screenIds, movieIds;
     std::stringstream lineStream(line);

@@ -256,7 +256,7 @@ std::string Show::serialize()
  * Returns:
  *    A pointer to a newly created Show object populated with the deserialized data.
  */
-Show* Show::deserialize(std::string& line)
+Show* Show::deserialize(const std::string& line)
 {
     std::string showId, movieId, screenId, startTime, endTime, seatAvailabilityId, status, year, dash, space, month, day, hour, colon, minute;
     std::stringstream lineStream(line);

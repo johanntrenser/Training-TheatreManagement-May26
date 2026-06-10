@@ -33,5 +33,5 @@ public:
     void setTimestamp(const util::Timestamp& timestamp);
     std::string toString() const;
     std::string serialize();
-    static Log* deserialize(std::string& lines);
+    static Log* deserialize(const std::string& lines);
 };

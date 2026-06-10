@@ -25,12 +25,12 @@ public:
     bool reactivateTheatre(const std::string& theatreId);
     Enums::ProcessStatus deactivateTheatre(const std::string& theatreId);
     Theatre* viewTheatreDetails(const std::string& theatreId) const;
-    int viewTheatreStatus(const std::string& theatreId) const; // enum placeholder
+    int viewTheatreStatus(const std::string& theatreId) const;
     std::vector<const Theatre*> listAllTheatres() const;
     std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
     const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
     const std::vector<const Theatre*> getCurrentOwnerTheatres();
-    const std::vector<const Theatre*> getCurrentOwnerInavtiavteTheatres();
+    const std::vector<const Theatre*> getCurrentOwnerInactiveTheatres();
     const std::vector<std::string> getCurrentOwnerTheatreIds();
     const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
     const User* getAuthenticatedUser() const;

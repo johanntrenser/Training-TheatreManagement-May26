@@ -231,7 +231,7 @@ std::string Payment::serialize()
  * Returns:
  *    Pointer to a newly constructed Payment object
  */
-Payment* Payment::deserialize(std::string& lines)
+Payment* Payment::deserialize(const std::string& lines)
 {
     std::string paymentId, bookingId, amount, paymentMethod, paymentStatus, time, year, dash, space, month, day, hour, colon, minute;
     std::stringstream lineStream(lines);

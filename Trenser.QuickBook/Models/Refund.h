@@ -38,5 +38,5 @@ public:
     void setTime(time_t time);
     void setStatus(Enums::RefundStatus status);
     std::string serialize();
-    static Refund* deserialize(std::string& line);
+    static Refund* deserialize(const std::string& line);
 };

@@ -56,7 +56,7 @@ public:
 		ScreenManagementService* screenService,
 		SeatManagementService* seatService,
 		RefundManagementService* refundService);
-	std::pair<Enums::LoginStatus, Enums::UserType> login(std::string email, std::string password);
+	const std::pair<Enums::LoginStatus, Enums::UserType> login(std::string email, std::string password);
 	Enums::ProcessStatus registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
 	Enums::ProcessStatus isEmailUnique(const std::string& email);
 	Enums::ProcessStatus isPhoneNumberUnique(const std::string& phoneNumber);
@@ -73,7 +73,7 @@ public:
 	Enums::ProcessStatus reactivateMovie(const std::string& movieId);
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	const std::vector<const Theatre*> getCurrentOwnerTheatres();
-	const std::vector<const Theatre*> getCurrentOwnerInavtiavteTheatres();
+	const std::vector<const Theatre*> getCurrentOwnerInactiveTheatres();
 	const std::vector<std::string> getCurrentOwnerTheatreIds();
 	const std::vector<const Movie*> getMoviesFromTheatre(const std::string& theatreId);
 	const std::vector<const Theatre*> searchTheatreByName(const std::string& theatreName);
@@ -147,5 +147,6 @@ public:
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
 	const std::vector<Payment*> getAllPayments();
 	const std::vector<Refund*> getRefunds();
+	const std::vector<std::string> getSeatIdsFromBooking(const Booking* booking);
 	~Controller();
 };

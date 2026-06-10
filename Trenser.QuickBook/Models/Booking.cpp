@@ -244,7 +244,7 @@ std::string Booking::serialize()
  * Returns:
  *    A pointer to a newly created Booking object populated with the deserialized data.
  */
-Booking* Booking::deserialize(std::string& lines)
+Booking* Booking::deserialize(const std::string& lines)
 {
     std::string bookingId, customerId, showId, bookedSeat, status, amount;
     std::stringstream lineStream(lines);

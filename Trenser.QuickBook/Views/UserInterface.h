@@ -14,7 +14,7 @@ private:
 public:
 	UserInterface();
 	void run();
-	bool handleOperation(int choice);
+	bool handleOperation(unsigned short choice);
 	void login();
 	void registerUser();
 	void adminMenu();
@@ -78,6 +78,7 @@ public:
 	void displayTheatresForAdmin(const std::vector<const Theatre*>& theatres);
 	void displayTheatresForUsers(const std::vector<const Theatre*>& theatres);
 	void listAllTheatres();
+	void listAllOwnerTheatres();
 	void displayTheatres(const std::vector<const Theatre*>& theatres, Enums::TheatreStatus status);
 	void addTheatre();
 	void getUniqueTheatrePhoneNumber(std::string& phoneNumber);
@@ -160,4 +161,5 @@ public:
 	void ownerScreenManagementMenu();
 	void ownerSeatManagementMenu(const std::string& selectedScreenId);
 	void viewRefunds();
+	~UserInterface();
 };

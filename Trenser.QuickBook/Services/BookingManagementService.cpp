@@ -406,6 +406,27 @@ void BookingManagementService::cancelBookingForFailedPayment(const std::string& 
 }
 
 /*
+ * Function: BookingManagementService::getSeatIdsFromBooking
+ * Description: Retrieves the seat IDs associated with a given Booking object.
+ *              Iterates through the booked seats and collects their identifiers
+ *              into a vector of strings for further processing or display.
+ * Parameters:
+ *    booking - Pointer to the Booking object whose seat IDs are to be extracted
+ * Returns:
+ *    const std::vector<const std::string> - A vector containing the seat IDs
+ */
+const std::vector<std::string> BookingManagementService::getSeatIdsFromBooking(const Booking* booking)
+{
+    const std::vector<Seat*>& seats = booking->getBookedSeats();
+    std::vector<std::string> seatIds;
+    for (std::vector<Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
+    {
+        seatIds.push_back((*iterator)->getSeatId());
+    }
+    return seatIds;
+}
+
+/*
  * Function: BookingManagementService::saveBookingData
  * Description: Saves all booking data from the DataStore into a CSV file.
  *              Uses a configurable header (from config::Header::BOOKING_HEADER)

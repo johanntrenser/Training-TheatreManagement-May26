@@ -175,7 +175,7 @@ std::string Ticket::serialize()
  * Returns:
  *    A pointer to a newly created Ticket object populated with the deserialized data.
  */
-Ticket* Ticket::deserialize(std::string& line)
+Ticket* Ticket::deserialize(const std::string& line)
 {
 	std::stringstream lineStream(line);
 	std::string ticketId, paymentId, customerId;

@@ -172,7 +172,7 @@ std::string Log::serialize()
  * Returns:
  *    Pointer to a newly constructed Log object
  */
-Log* Log::deserialize(std::string& lines)
+Log* Log::deserialize(const std::string& lines)
 {
     std::string logId, logDescription,type,time;
     std::stringstream lineStream(lines);

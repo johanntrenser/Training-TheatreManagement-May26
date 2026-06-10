@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 
 namespace util
 {
@@ -23,7 +24,7 @@ namespace util
      *              Clears the input buffer and throws an exception if
      *              invalid input is detected.
      * Template Parameters:
-     *   - T: The type of value to be read (e.g., int, double, string).
+     *   - T: The type of value to be read (e.g., int, double).
      * Parameters:
      *   - value: Reference to the variable where the input will be stored.
      * Returns: None
@@ -39,13 +40,14 @@ namespace util
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             throw std::runtime_error("Invalid Console Input");
         }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
     /*
-     * Function: readString
+     * Function: readValue
      * Description: Reads a string value from the console input stream.
      * Parameters:
-     *   - str: Reference to the string variable where the input will be stored.
+     *   - value: Reference to the string variable where the input will be stored.
      * Returns: None
      */
     inline void readValue(std::string& value)
@@ -105,7 +107,7 @@ namespace util
     }
 
     /*
-    * Function Name : readValueWithRetry (string overload)
+    * Function Name : readValueWithRetry (string overload`)
     * Description   : Reads a string value from user input with retry logic.
     *                 Keeps prompting until a non-empty string is entered.
     * Parameters    :
@@ -117,11 +119,29 @@ namespace util
     {
         while (true)
         {
-            std::cout << prompt;
-            readValue(value);
-            if (!value.empty())
-                break;
-            std::cout << "Input cannot be empty. Please try again.\n";
+            try
+            {
+                std::cout << prompt;
+                readValue(value);
+                if (!value.empty())
+                {
+                    break;
+                }
+                std::cout << "Input cannot be empty. Please try again.\n";
+            }
+            catch (const std::invalid_argument& e)
+            {
+                std::cout << "Invalid input: " << e.what() << " Please try again.\n";
+            }
+            catch (const std::ios_base::failure& e)
+            {
+                std::cout << "Stream error: " << e.what() << " Please try again.\n";
+                std::cin.clear();
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << "Unexpected error: " << e.what() << " Please try again.\n";
+            }
         }
     }
 
@@ -145,7 +165,7 @@ namespace util
         str.erase(std::remove(str.begin(), str.end(), '\t'), str.end());
     }
 
-    void pressEnter();
+    void pressEnterToContinue();
 }
 
 namespace utils {

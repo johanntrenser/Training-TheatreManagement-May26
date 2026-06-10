@@ -49,5 +49,5 @@ public:
     std::string& encryption(std::string& password);
     static std::string decryption(std::string& password);
     std::string serialize();
-    static User* deserialize(std::string& line);
+    static User* deserialize(const std::string& line);
 };

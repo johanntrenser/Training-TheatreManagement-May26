@@ -1,4 +1,3 @@
-
 /*
  * File: ShowSeatAvailability.cpp
  * Description: Implements the ShowSeatAvailability class, which represents
@@ -156,7 +155,7 @@ std::string ShowSeatAvailability::serialize()
  * Returns:
  *    Pointer to a newly constructed Theatre object
  */
-ShowSeatAvailability* ShowSeatAvailability::deserialize(std::string& line)
+ShowSeatAvailability* ShowSeatAvailability::deserialize(const std::string& line)
 {
     std::string showSeatAvailabilityId, showId, seatBlock;
     std::stringstream lineStream(line);

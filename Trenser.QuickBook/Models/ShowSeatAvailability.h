@@ -31,5 +31,5 @@ public:
 	void setShow(Show* show);
 	void setSeatAvailabilityMap(std::map<std::string, Enums::BookingStatus>& seatAvailabilityMap);
 	std::string serialize();
-	static ShowSeatAvailability* deserialize(std::string& line);
+	static ShowSeatAvailability* deserialize(const std::string& line);
 };

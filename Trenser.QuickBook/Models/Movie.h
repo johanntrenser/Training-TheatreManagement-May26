@@ -42,5 +42,5 @@ public:
     void setDuration(int duration);
     void setStatus(Enums::MovieStatus status);
     std::string serialize();
-    static Movie* deserialize(std::string& lines);
+    static Movie* deserialize(const std::string& lines);
 };

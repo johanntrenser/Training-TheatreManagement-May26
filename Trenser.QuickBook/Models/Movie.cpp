@@ -215,7 +215,7 @@ std::string Movie::serialize()
  * Returns:
  *    Pointer to a newly constructed Movie object
  */
-Movie* Movie::deserialize(std::string& lines)
+Movie* Movie::deserialize(const std::string& lines)
 {
     std::string movieId, title, language, genre, duration, status;
     std::stringstream lineStream(lines);

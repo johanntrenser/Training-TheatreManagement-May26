@@ -39,5 +39,5 @@ public:
     void setStatus(Enums::NotificationStatus status);
     void setTime(const time_t time);
     std::string serialize();
-    static Notification* deserialize(std::string& lines);
+    static Notification* deserialize(const std::string& lines);
 };
