@@ -292,6 +292,41 @@ void UserManagementService::saveUserData()
 }
 
 /*
+ * Function: UserManagementService::isAdminPresent
+ * Description: Checks if any admin user exists in the system.
+ * Parameters:
+ *    None
+ * Returns:
+ *    true if an admin is present, false otherwise
+ */
+bool UserManagementService::isAdminPresent()
+{
+    const std::map<std::string, User*>& users = m_dataStore.getUsers();
+    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+    {
+        if (iterator->second && iterator->second->getUserType() == Enums::UserType::ADMIN)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ * Function: UserManagementService::createDefaultAdmin
+ * Description: Creates a default admin user with preset credentials and adds it to DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void UserManagementService::createDefaultAdmin()
+{
+    User* user = new User("US001", "admin", "admin@gmail.com", "Admin@123", "9999999999", Enums::UserType::ADMIN);
+    m_dataStore.addUser(user);
+}
+
+/*
  * Function: UserManagementService::loadUserData
  * Description: Loads all user data from a CSV file into memory.
  *              Reads each line from the file using FileManagement::readlines(PATH),
@@ -311,5 +346,9 @@ void UserManagementService::loadUserData()
     {
         User* user = User::deserialize(lines[index]);
         m_dataStore.addUser(user);
+    }
+    if (!isAdminPresent())
+    {
+        createDefaultAdmin();
     }
 }

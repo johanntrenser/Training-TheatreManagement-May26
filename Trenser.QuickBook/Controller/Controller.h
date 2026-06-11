@@ -24,6 +24,7 @@
 #include "ScreenManagementService.h"
 #include "SeatManagementService.h"
 #include "RefundManagementService.h"
+#include "ApplicationConfig.h"
 
 class Controller
 {
@@ -142,6 +143,7 @@ public:
 	const Show* getShowById(const std::string& showId);
 	const Booking* bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds);
 	void logout();
+	void ensureFolder(const char* path);
 	void saveData();
 	void loadDataFromFile();
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);

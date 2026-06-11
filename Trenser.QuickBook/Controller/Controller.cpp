@@ -9,6 +9,8 @@
  * Created: 20 May 2026
  */
 #include<iostream>
+#include <direct.h>
+#include <errno.h>
 using namespace::std;
 #include "Controller.h"
 #include "Datalinker.h"
@@ -1434,6 +1436,7 @@ const Booking* Controller::bookSelectedSeats(const std::string& showId, const st
  */
 void Controller::loadDataFromFile()
 {
+    ensureFolder(config::File::FILEPATH);
     m_userManagementService->loadUserData();
     m_movieManagementService->loadMovieData();
     m_theatreManagementService->loadTheatreData();
@@ -1450,6 +1453,23 @@ void Controller::loadDataFromFile()
     DataLinker linker;
     linker.linkTheatresAndScreens();
     linker.linkShowsAndSeatAvailability();
+}
+
+/*
+ * Function    : ensureFolder
+ * Description : Ensures that the specified folder exists on the file system.
+ *               If the folder does not exist, it attempts to create it.
+ *               If creation fails for any reason other than the folder
+ *               already existing, an error message is displayed.
+ * Parameters  : const char* path - The path of the folder to be created
+ * Return      : void
+ */
+void Controller::ensureFolder(const char* path) {
+    if (_mkdir(path) != 0) {
+        if (errno != EEXIST) {
+            std::cerr << "Failed to create folder!\n";
+        }
+    }
 }
 
 /*

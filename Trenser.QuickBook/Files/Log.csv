@@ -77,3 +77,5 @@ LOG075,User with ID : US001 has logged in.,SYSTEM_ACTIVITY,2026-06-08 20:51:00
 LOG076,User with ID : US001 has logged out.,ERROR,2026-06-08 20:51:16
 LOG077,User with ID : US005 has logged in.,SYSTEM_ACTIVITY,2026-06-08 21:09:23
 LOG078,User with ID : US005 has logged out.,ERROR,2026-06-08 21:09:31
+LOG079,User with ID : US001 has logged in.,SYSTEM_ACTIVITY,2026-06-11 12:26:51
+LOG080,User with ID : US001 has logged out.,ERROR,2026-06-11 12:27:15
