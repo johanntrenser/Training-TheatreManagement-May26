@@ -1,0 +1,250 @@
+/*
+ * File: Validator.cpp
+ * Description: Implements validation helper functions for user input fields
+ *              including password, email, and phone number. Ensures that
+ *              user provided data meets defined format.
+ * Author: Trenser
+ * Created: 20 May 2026
+ */
+#include <iostream>
+#include <regex>
+#include "Validator.h"
+#include "InputHelper.h"
+
+ /*
+  * Function: isPasswordValid
+  * Description: Validates and enforces password rules. A valid password must:
+  *                - Be at least 8 characters long
+  *                - Contain at least one uppercase letter
+  *                - Contain at least one lowercase letter
+  *                - Contain at least one digit
+  *                - Contain at least one special character
+  * Parameters:
+  *    value - Reference to the password string entered by the user
+  * Returns:
+  *    None
+  */
+void util::isPasswordValid(std::string& value)
+{
+    bool isPasswordValid = false;
+    bool hasUpper = false, hasLower = false, hasDigit = false, hasSpecial = false;
+    for (char ch : value) {
+        if (std::isupper(static_cast<unsigned char>(ch))) {
+            hasUpper = true;
+        }
+        else if (std::islower(static_cast<unsigned char>(ch))) {
+            hasLower = true;
+        }
+        else if (std::isdigit(static_cast<unsigned char>(ch))) {
+            hasDigit = true;
+        }
+        else {
+            hasSpecial = true;
+        }
+    }
+    if (value.size() >= 8 && hasUpper && hasLower && hasDigit && hasSpecial) {
+        std::cout << "Password format accepted!\n";
+        return;
+    }
+    while (!isPasswordValid)
+    {
+        std::cout << "Invalid password: must be at least 8 characters, contain upper, lower, digit, and special character.\n";
+        util::readValue(value);
+        hasUpper = hasLower = hasDigit = hasSpecial = false;
+        for (char ch : value) {
+            if (std::isupper(static_cast<unsigned char>(ch))) {
+                hasUpper = true;
+            }
+            else if (std::islower(static_cast<unsigned char>(ch))) {
+                hasLower = true;
+            }
+            else if (std::isdigit(static_cast<unsigned char>(ch))) {
+                hasDigit = true;
+            }
+            else {
+                hasSpecial = true;
+            }
+        }
+        if (value.size() >= 8 && hasUpper && hasLower && hasDigit && hasSpecial) {
+            std::cout << "Password set!\n";
+            isPasswordValid = true;
+        }
+    }
+}
+
+/*
+ * Function: isEmailValid
+ * Description: Validates an email address against a regex pattern.
+ * Parameters:
+ *    value - Reference to the email string entered by the user
+ * Returns:
+ *    None
+ */
+void util::isEmailValid(std::string& value)
+{
+    bool isValidEmail = false;
+    std::regex emailPattern(R"(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)");
+    if (std::regex_match(value, emailPattern)) {
+        std::cout << "Email address format accepted.\n";
+        return;
+    }
+    while (!isValidEmail) {
+        std::cout << "Invalid email address. Please enter a valid format such as example@domain.com: ";
+        util::readValue(value);
+        if (std::regex_match(value, emailPattern)) {
+            std::cout << "Email address format accepted.\n";
+            isValidEmail = true;
+        }
+    }
+}
+
+/*
+ * Function: util::isMovieDurationValid
+ * Description: Validates and enforces that the entered movie duration falls within the acceptable range.
+ *              If the duration is invalid, repeatedly prompts the user until a valid value is provided.
+ * Parameters:
+ *    value - Reference to an integer representing the movie duration in minutes
+ * Returns:
+ *    None (the validated duration is updated directly through the reference parameter)
+ */
+void util::isMovieDurationValid(int& value)
+{
+    bool isValidDuration = false;
+    if ((60 <= value) && (value <= 300))
+    {
+        isValidDuration = true;
+    }
+    while (!isValidDuration) {
+        std::cout << "\nInvalid Movie duration. Please enter a duration between 60 and 300 minitues: \n";
+        util::readValue(value);
+        if ((60 <= value) && (value <= 300))
+        {
+            std::cout << "Movie Duration accepted.\n";
+            isValidDuration = true;
+        }
+    }
+}
+
+/*
+ * Function: isPhoneNumberValid
+ * Description: Validates a phone number against a regex pattern.
+ *              A valid phone number must contain exactly 10 digits.
+ * Parameters:
+ *    value - Reference to the phone number string entered by the user
+ * Returns:
+ *    None
+ */
+void util::isPhoneNumberValid(std::string& value)
+{
+    bool isValidPhoneNumber = false;
+    std::regex phoneNumberPattern(R"(^[0-9]{10}$)");
+    if (std::regex_match(value, phoneNumberPattern)) {
+        std::cout << "Phone Number format accepted.\n";
+        return;
+    }
+    while (!isValidPhoneNumber)
+    {
+        std::cout << "Invalid phone number. Phone number should be of 10 digits.\n";
+        util::readValue(value);
+        if (std::regex_match(value, phoneNumberPattern)) {
+            std::cout << "Phone Number format accepted.\n";
+            isValidPhoneNumber = true;
+        }
+    }
+}
+
+/*
+* Function Name : validateCard
+* Description   : Validates card details by checking if the card number
+*                 has exactly 16 digits and CVV has exactly 3 digits.
+* Parameters    :
+*                  cardNumber - The card number entered by the user
+*                  expiry     - The expiry date of the card (MM/YY format)
+*                  cvv        - The CVV code of the card
+* Return Type   : bool
+*/
+bool util::validateCard(const std::string& cardNumber, const std::string& expiry, const std::string& cvv)
+{
+    if (cardNumber.size() != 16)
+    {
+        return false;
+    }
+    for (std::string::const_iterator iterator = cardNumber.begin(); iterator != cardNumber.end(); ++iterator)
+    {
+        if (!std::isdigit(static_cast<unsigned char>(*iterator)))
+        {
+            return false;
+        }
+    }
+    if (cvv.size() != 3)
+    {
+        return false;
+    }
+    for (std::string::const_iterator iterator = cvv.begin(); iterator != cvv.end(); ++iterator)
+    {
+        if (!std::isdigit(static_cast<unsigned char>(*iterator)))
+        {
+            return false;
+        }
+    }
+    if (expiry.size() != 5 || expiry[2] != '/')
+    {
+        return false;
+    }
+    for (int index = 0; index < 5; ++index)
+    {
+        if (index == 2)
+        {
+            continue;
+        }
+        if (!std::isdigit(static_cast<unsigned char>(expiry[index])))
+        {
+            return false;
+        }
+    }
+    int month = std::stoi(expiry.substr(0, 2));
+    if (month < 1 || month > 12)
+    {
+        return false;
+    }
+    return true;
+}
+
+/*
+* Function Name : validateUPI
+* Description   : Validates a UPI ID by checking if it contains '@' symbol.
+* Parameters    :
+*                  upiId - The UPI ID entered by the user
+* Return Type   : bool
+*/
+bool util::validateUPI(const std::string & upiId)
+{
+    size_t atPosition = upiId.find('@');
+    if (atPosition == std::string::npos || atPosition == 0 || atPosition == upiId.size() - 1)
+    {
+        return false;
+    }
+    if (upiId.find('@', atPosition + 1) != std::string::npos)
+    {
+        return false;
+    }
+    const std::string localPart = upiId.substr(0, atPosition);
+    const std::string provider = upiId.substr(atPosition + 1);
+    for (std::string::const_iterator iterator = localPart.begin(); iterator != localPart.end(); ++iterator)
+    {
+        char character = *iterator;
+        if (!std::isalnum(static_cast<unsigned char>(character)) && character != '.' && character != '_' && character != '-')
+        {
+            return false;
+        }
+    }
+    for (std::string::const_iterator iterator = provider.begin(); iterator != provider.end(); ++iterator)
+    {
+        char character = *iterator;
+        if (!std::isalnum(static_cast<unsigned char>(character)) && character != '.' && character != '-')
+        {
+            return false;
+        }
+    }
+    return true;
+}

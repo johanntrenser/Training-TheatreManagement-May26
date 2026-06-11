@@ -1,0 +1,33 @@
+/*
+ * File: PaymentManagementService.h
+ * Description: Declares the PaymentManagementService class, which provides
+ *              functionality for managing payments within the system.
+ *              This service will handle operations such as processing,
+ *              validating, and recording payment transactions.
+ * Author: Trenser
+ * Created: 20 May 2026
+ */
+#pragma once
+#include <string>
+#include "DataStore.h"
+#include "FileManagement.h"
+#include "LogManagementService.h"
+#include "NotificationManagementService.h"
+
+class PaymentManagementService
+{
+	DataStore& m_dataStore;
+    LogManagementService logManagementService;
+    NotificationManagementService m_notificationManagementService;
+    const std::string& PATH = config::File::PAYMENT_FILEPATH;
+public:
+    PaymentManagementService();
+    const std::string generatePaymentId();
+    Enums::ProcessStatus initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount);
+    Payment* getPaymentById(const std::string& paymentId);
+    Enums::ProcessStatus refundPayment(Ticket* ticket, Payment* payment);
+    const std::string generateRefundId();
+    void savePaymentData();
+    void loadPaymentData();
+    const std::vector<Payment*> getAllPayments();
+};
