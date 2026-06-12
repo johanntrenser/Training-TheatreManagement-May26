@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)Views;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)Views;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;$(ProjectDir)SharedMemory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,6 +156,7 @@
     <ClCompile Include="Services\TheatreManagementService.cpp" />
     <ClCompile Include="Services\TicketManagementService.cpp" />
     <ClCompile Include="Services\UserManagementService.cpp" />
+    <ClCompile Include="SharedMemory\SharedStructs.cpp" />
     <ClCompile Include="Trenser.QuickBook.cpp" />
     <ClCompile Include="Utilities\ApplicationConfig.cpp" />
     <ClCompile Include="Utilities\Datalinker.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="Services\TheatreManagementService.h" />
     <ClInclude Include="Services\TicketManagementService.h" />
     <ClInclude Include="Services\UserManagementService.h" />
+    <ClInclude Include="SharedMemory\SharedStructs.h" />
     <ClInclude Include="Utilities\ApplicationConfig.h" />
     <ClInclude Include="Utilities\Datalinker.h" />
     <ClInclude Include="Utilities\Enums.h" />
