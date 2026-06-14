@@ -15,6 +15,8 @@
 #include "DataStore.h"
 #include "FileManagement.h"
 #include "LogManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class UserManagementService
 {
@@ -22,6 +24,7 @@ private:
     DataStore& m_dataStore;
     LogManagementService logManagementService;
     const std::string& PATH = config::File::USER_FILEPATH;
+    NamedMutex m_mutex;
 public:
     UserManagementService();
     const std::string generateUserId();

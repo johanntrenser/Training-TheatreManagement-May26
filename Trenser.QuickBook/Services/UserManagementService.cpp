@@ -16,7 +16,7 @@
      * Returns: None
      */
 UserManagementService::UserManagementService()
-    : m_dataStore(DataStore::getInstance())
+    : m_dataStore(DataStore::getInstance()), m_mutex(config::MutexMappings::USER_MUTEX_NAME)
 {
 }
 
@@ -31,8 +31,8 @@ UserManagementService::UserManagementService()
  */
 const std::string UserManagementService::generateUserId()
 {
-    const std::map<std::string, User*>& users = m_dataStore.getUsers();
-    int idNumber = static_cast<int>(users.size()) + 1;
+    const int usersCount = m_dataStore.getUsersCount();
+    int idNumber = usersCount + 1;
     std::ostringstream buffer;
     buffer << "US" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -54,6 +54,7 @@ const std::string UserManagementService::generateUserId()
  */
 Enums::ProcessStatus UserManagementService::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
+    ScopedLock lock(m_mutex);
     User* user = nullptr;
     if (userType == Enums::UserType::ADMIN)
     {
@@ -94,7 +95,7 @@ const std::vector<const User*> UserManagementService::getActiveUsers() const
     std::vector<const User*> constUsers;
     if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::ADMIN)
     {
-        const std::map<std::string, User*> users = m_dataStore.getUsers();
+        const std::map<std::string, User*>& users = m_dataStore.getUsers();
         for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
         {
             if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
@@ -142,6 +143,7 @@ const std::vector<const User*> UserManagementService::getInactiveUsers() const
  */
 Enums::ProcessStatus UserManagementService::setAuthenticatedUserUserName(const std::string& username)
 {
+    ScopedLock lock(m_mutex);
     m_dataStore.setAuthenticatedUserName(username);
     return Enums::ProcessStatus::SUCCESS;
 }
@@ -157,6 +159,7 @@ Enums::ProcessStatus UserManagementService::setAuthenticatedUserUserName(const s
  */
 Enums::ProcessStatus UserManagementService::setAuthenticatedUserEmail(const std::string& email)
 {
+    ScopedLock lock(m_mutex);
     m_dataStore.setAuthenticatedUserEmail(email);
     return Enums::ProcessStatus::SUCCESS;
 }
@@ -172,6 +175,7 @@ Enums::ProcessStatus UserManagementService::setAuthenticatedUserEmail(const std:
  */
 Enums::ProcessStatus UserManagementService::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
 {
+    ScopedLock lock(m_mutex);
     m_dataStore.setAuthenticatedUserPhoneNumber(phoneNumber);
     return Enums::ProcessStatus::SUCCESS;
 }
@@ -188,6 +192,7 @@ Enums::ProcessStatus UserManagementService::setAuthenticatedUserPhoneNumber(cons
  */
 Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& userId)
 {
+    ScopedLock lock(m_mutex);
     std::map<std::string, User*> users = m_dataStore.getUsers();
     User* currentUser = m_dataStore.getAuthenticatedUser();
     for (std::map<std::string, User*>::iterator iterator = users.begin(); iterator != users.end(); ++iterator)
@@ -198,6 +203,11 @@ Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& us
             {
                 iterator->second->setStatus(Enums::UserStatus::INACTIVE);
                 std::string message = "User with ID : " + iterator->second->getUserId() + " deactivated.";
+                Enums::ProcessStatus status =  m_dataStore.updateUserStatus(iterator->second->getUserId(), iterator->second->getStatus());
+                if (status == Enums::ProcessStatus::FAILED)
+                {
+                    return Enums::ProcessStatus::FAILED;
+                }
                 logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
                 return Enums::ProcessStatus::SUCCESS;
             }
@@ -216,6 +226,7 @@ Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& us
      */
 Enums::ProcessStatus UserManagementService::reactivateUser(const std::string& userId)
 {
+    ScopedLock lock(m_mutex);
     std::map<std::string, User*> users = m_dataStore.getUsers();
     for (std::map<std::string, User*>::iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
@@ -225,6 +236,11 @@ Enums::ProcessStatus UserManagementService::reactivateUser(const std::string& us
             {
                 iterator->second->setStatus(Enums::UserStatus::ACTIVE);
                 std::string message = "User with ID : " + iterator->second->getUserId() + " reeactivated.";
+                Enums::ProcessStatus status = m_dataStore.updateUserStatus(iterator->second->getUserId(), iterator->second->getStatus());
+                if (status == Enums::ProcessStatus::FAILED)
+                {
+                    return Enums::ProcessStatus::FAILED;
+                }
                 logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
                 return Enums::ProcessStatus::SUCCESS;
             }
@@ -260,11 +276,12 @@ const User* const UserManagementService::getAuthenticatedUser()
  */
 Enums::ProcessStatus UserManagementService::changePassword(const std::string& currentPassword, const std::string& newPassword)
 {
+    ScopedLock lock(m_mutex);
     User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::string authenticatedUserPassword = authenticatedUser->getPassword();
     if (currentPassword == authenticatedUserPassword && newPassword != authenticatedUserPassword)
     {
-        authenticatedUser->setPassword(newPassword);
+        m_dataStore.setAuthenticatedUserPassword(newPassword);
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;
