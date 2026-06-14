@@ -11,12 +11,12 @@
 /*
  * Function: AuthenticationManagementService
  * Description: Default constructor that initializes the authentication service
- *              with a reference to the shared DataStore instance.
+ *              with a reference to the shared DataStore instance and named mutex.
  * Parameters: None
  * Returns: None
  */
 AuthenticationManagementService::AuthenticationManagementService() :
-    m_dataStore(DataStore::getInstance())
+    m_dataStore(DataStore::getInstance()), m_mutex(config::MutexMappings::USER_MUTEX_NAME)
 {
 }
 
@@ -51,12 +51,12 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
                 else
                 {
                     std::string message = "User with ID : " + iterator->second->getUserId() + " could not log in.";
-                    logManagementService.addLog(message, Enums::LogType::ERROR);
+                    logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
                     return std::make_pair(Enums::LoginStatus::USER_NOT_FOUND, Enums::UserType::USER_NOT_FOUND);
                 }
             }
             return std::make_pair(Enums::LoginStatus::INVALID_PASSWORD, Enums::UserType::USER_NOT_FOUND);
-        } 
+        }
     }
     return std::make_pair(Enums::LoginStatus::USER_NOT_FOUND, Enums::UserType::USER_NOT_FOUND);
 }
@@ -71,8 +71,8 @@ void AuthenticationManagementService::logout()
 {
     const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::string message = "User with ID : " + authenticatedUser->getUserId() + " has logged out.";
-    logManagementService.addLog(message, Enums::LogType::ERROR);
-	m_dataStore.setAuthenticatedUser(nullptr);
+    logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
+    m_dataStore.setAuthenticatedUser(nullptr);
 }
 
 /*
@@ -90,6 +90,7 @@ void AuthenticationManagementService::logout()
  */
 Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
 {
+    ScopedLock lock(m_mutex);
     User* user = nullptr;
     if (userType == Enums::UserType::ADMIN)
     {
@@ -115,7 +116,7 @@ Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::st
         return Enums::ProcessStatus::SUCCESS;
     }
     std::string message = "New user registration failed.";
-    logManagementService.addLog(message, Enums::LogType::ERROR);
+    logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
     return Enums::ProcessStatus::FAILED;
 }
 
@@ -130,11 +131,11 @@ Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::st
  */
 const std::string AuthenticationManagementService::generateUserId()
 {
-	const std::map<std::string, User*>& users = m_dataStore.getUsers();
-	int idNumber = static_cast<int>(users.size()) + 1;
-	std::ostringstream buffer;
-	buffer << "US" << std::setw(3) << std::setfill('0') << idNumber;
-	return buffer.str();
+    const std::map<std::string, User*>& users = m_dataStore.getUsers();
+    int idNumber = static_cast<int>(users.size()) + 1;
+    std::ostringstream buffer;
+    buffer << "US" << std::setw(3) << std::setfill('0') << idNumber;
+    return buffer.str();
 }
 
 /*
@@ -147,15 +148,15 @@ const std::string AuthenticationManagementService::generateUserId()
  */
 bool AuthenticationManagementService::isPhoneNumberUnique(const std::string& phoneNumber)
 {
-	const std::map<std::string, User*> users = m_dataStore.getUsers();
-	for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
-	{
-		if ((iterator->second)->getPhoneNumber() == phoneNumber)
-		{
-			return false;
-		}
-	}
-	return true;
+    const std::map<std::string, User*> users = m_dataStore.getUsers();
+    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+    {
+        if ((iterator->second)->getPhoneNumber() == phoneNumber)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 
@@ -169,16 +170,16 @@ bool AuthenticationManagementService::isPhoneNumberUnique(const std::string& pho
  */
 bool AuthenticationManagementService::isEmailIdUnique(const std::string& email)
 {
-	const std::map<std::string, User*> users = m_dataStore.getUsers();
-	if (!users.empty())
-	{
-		for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
-		{
-			if ((iterator->second)->getEmail() == email)
-			{
-				return false;
-			}
-		}
-	}
-	return true;
+    const std::map<std::string, User*> users = m_dataStore.getUsers();
+    if (!users.empty())
+    {
+        for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
+        {
+            if ((iterator->second)->getEmail() == email)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }

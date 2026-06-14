@@ -156,6 +156,9 @@
     <ClCompile Include="Services\TheatreManagementService.cpp" />
     <ClCompile Include="Services\TicketManagementService.cpp" />
     <ClCompile Include="Services\UserManagementService.cpp" />
+    <ClCompile Include="SharedMemory\MappedFileRegistry.cpp" />
+    <ClCompile Include="SharedMemory\NamedMutex.cpp" />
+    <ClCompile Include="SharedMemory\ScopedLock.cpp" />
     <ClCompile Include="SharedMemory\SharedStructs.cpp" />
     <ClCompile Include="Trenser.QuickBook.cpp" />
     <ClCompile Include="Utilities\ApplicationConfig.cpp" />
@@ -201,6 +204,10 @@
     <ClInclude Include="Services\TheatreManagementService.h" />
     <ClInclude Include="Services\TicketManagementService.h" />
     <ClInclude Include="Services\UserManagementService.h" />
+    <ClInclude Include="SharedMemory\MappedFile.h" />
+    <ClInclude Include="SharedMemory\MappedFileRegistry.h" />
+    <ClInclude Include="SharedMemory\NamedMutex.h" />
+    <ClInclude Include="SharedMemory\ScopedLock.h" />
     <ClInclude Include="SharedMemory\SharedStructs.h" />
     <ClInclude Include="Utilities\ApplicationConfig.h" />
     <ClInclude Include="Utilities\Datalinker.h" />

@@ -23,11 +23,14 @@
 #include "ShowSeatAvailability.h"
 #include "Theatre.h"
 #include "Ticket.h"
+#include "MappedFileRegistry.h"
+
 class DataStore
 {
 private:
 	DataStore() : m_currentUser(nullptr) {}
 	User* m_currentUser;
+	MappedFileRegistry m_registry;
 	std::map<std::string, User*> m_users;
 	std::map<std::string, Booking*> m_bookings;
 	std::map<std::string, Log*> m_logs;
@@ -42,6 +45,7 @@ private:
 	std::map<std::string, Theatre*> m_theatres;
 	std::map<std::string, Ticket*> m_tickets;
 public:
+	bool initialize();
 	const std::map<std::string, User*>& getUsers() const;
 	void addUser(User* user);
 	const std::map<std::string, Log*>& getLogs() const;

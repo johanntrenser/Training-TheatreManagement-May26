@@ -11,12 +11,15 @@
 #include <string>
 #include "DataStore.h"
 #include "LogManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class AuthenticationManagementService
 {
 private:
     DataStore& m_dataStore;
     LogManagementService logManagementService;
+    NamedMutex m_mutex;
 public:
     AuthenticationManagementService();
     std::pair<Enums::LoginStatus, Enums::UserType> login(const std::string& email, const std::string& password);

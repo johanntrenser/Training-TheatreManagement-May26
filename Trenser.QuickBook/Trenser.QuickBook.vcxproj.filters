@@ -169,7 +169,16 @@
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="SharedMemory\SharedStructs.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\MappedFileRegistry.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\NamedMutex.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\ScopedLock.cpp">
+      <Filter>SharedMemory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -297,7 +306,19 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="SharedMemory\SharedStructs.h">
-      <Filter>Header Files</Filter>
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\MappedFile.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\MappedFileRegistry.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\NamedMutex.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\ScopedLock.h">
+      <Filter>SharedMemory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

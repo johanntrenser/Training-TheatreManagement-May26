@@ -126,7 +126,7 @@ namespace Enums {
     enum class LogType
     {
         SYSTEM_ACTIVITY,
-        ERROR,
+        ERROR_LOG,
         UNKNOWN
     };
 
@@ -538,8 +538,8 @@ namespace Enums {
         {
         case LogType::SYSTEM_ACTIVITY:
             return "SYSTEM_ACTIVITY";
-        case LogType::ERROR:
-            return "ERROR";
+        case LogType::ERROR_LOG:
+            return "ERROR_LOG";
         case LogType::UNKNOWN:
             return "UNKNOWN";
         default:
@@ -553,9 +553,9 @@ namespace Enums {
         {
             return LogType::SYSTEM_ACTIVITY;
         }
-        if (input == "ERROR")
+        if (input == "ERROR_LOG")
         {
-            return LogType::ERROR;
+            return LogType::ERROR_LOG;
         }
         if (input == "UNKNOWN")
         {

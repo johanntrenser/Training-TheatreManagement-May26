@@ -93,7 +93,7 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     {
         bookingManagementService.cancelBookingForFailedPayment(bookingId);
         message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
-        logManagementService.addLog(message, Enums::LogType::ERROR);
+        logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
         return Enums::ProcessStatus::FAILED;
     }
     Enums::ProcessStatus status = ticketManagementService.generateTicket(payment, currentUser);
@@ -101,7 +101,7 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     {
         bookingManagementService.cancelBookingForFailedPayment(booking->getBookingId());
         message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
-        logManagementService.addLog(message, Enums::LogType::ERROR);
+        logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
         return Enums::ProcessStatus::FAILED;
     }
     payment->setStatus(Enums::PaymentStatus::SUCCESS);

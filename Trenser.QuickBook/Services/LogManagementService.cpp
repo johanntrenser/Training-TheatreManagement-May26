@@ -58,7 +58,7 @@ void LogManagementService::addLog(const std::string& description, const Enums::L
  *              log type. Iterates through the stored logs and filters them
  *              into a vector of immutable log pointers.
  * Parameters:
- *    const Enums::LogType logType - The type of logs to filter (e.g., ERROR, SYSTEM_ACTIVITY, UNKNOWN)
+ *    const Enums::LogType logType - The type of logs to filter (e.g., ERROR_LOG, SYSTEM_ACTIVITY, UNKNOWN)
  * Returns:
  *    const std::vector<const Log*> - Vector containing pointers to logs of the specified type
  */

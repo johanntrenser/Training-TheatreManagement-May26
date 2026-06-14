@@ -12,6 +12,20 @@
 using namespace std;
 
 /*
+ * Function: DataStore::initialize
+ * Description: Opens and initializes all mapped files managed by the
+ *              MappedFileRegistry.
+ * Parameters: None
+ * Returns:
+ *    true if all mapped files were initialized successfully,
+ *    false otherwise
+ */
+bool DataStore::initialize()
+{
+    return m_registry.openAll();
+}
+
+/*
  * Function: DataStore::getUsers
  * Description: Retrieves the collection of users stored in the DataStore.
  * Returns:
@@ -19,7 +33,7 @@ using namespace std;
  */
 const std::map<string, User*>& DataStore::getUsers() const
 {
-        return m_users;
+    return m_users;
 }
 
 /*

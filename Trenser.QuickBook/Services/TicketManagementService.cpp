@@ -80,7 +80,7 @@ Enums::ProcessStatus TicketManagementService::generateTicket(Payment* payment, U
 		return Enums::ProcessStatus::SUCCESS;
 	}
 	message = "Ticket generation failed.";
-	m_logManagementService.addLog(message, Enums::LogType::ERROR);
+	m_logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
 	return Enums::ProcessStatus::FAILED;
 }
 
@@ -180,7 +180,7 @@ Enums::ProcessStatus TicketManagementService::cancelTicket(const std::string& ti
 		return Enums::ProcessStatus::SUCCESS;
 	}
 	std::string message = "Ticket Id " + ticket->getTicketId() + " cancellation failed";
-	m_logManagementService.addLog(message, Enums::LogType::ERROR);
+	m_logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
 	return Enums::ProcessStatus::FAILED;
 }
 

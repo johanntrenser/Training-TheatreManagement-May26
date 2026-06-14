@@ -56,8 +56,8 @@ namespace config
         constexpr const int SCREEN_MAX_COUNT = 50;
         constexpr const int MOVIE_MAX_COUNT = 100;
         constexpr const int SEAT_MAX_COUNT = 1000;
-        constexpr const int TIME_MAX_COUNT = 30;
-        constexpr const int MESSAGE_MAX_COUNT = 500;
+        constexpr const int TIME_MAX_LENGTH = 30;
+        constexpr const int MESSAGE_MAX_LENGTH = 500;
         constexpr const int INITIAL_FILE_MAP_SIZE = 100;
     }
     namespace FileMappings
@@ -75,5 +75,21 @@ namespace config
         constexpr const char* USER_MAPPING_NAME = "QuickBookUsers";
         constexpr const char* TICKET_MAPPING_NAME = "QuickBookTickets";
         constexpr const char* SHOW_SEAT_MAPPING_NAME = "QuickBookAvailability";
+    }
+    namespace MutexMappings
+    {
+        constexpr const char* BOOKING_MUTEX_NAME = "QuickBookBookingsMutex";
+        constexpr const char* LOG_MUTEX_NAME = "QuickBookLogsMutex";
+        constexpr const char* MOVIE_MUTEX_NAME = "QuickBookMoviesMutex";
+        constexpr const char* NOTIFICATION_MUTEX_NAME = "QuickBookNotificationsMutex";
+        constexpr const char* PAYMENT_MUTEX_NAME = "QuickBookPaymentsMutex";
+        constexpr const char* REFUND_MUTEX_NAME = "QuickBookRefundsMutex";
+        constexpr const char* SCREEN_MUTEX_NAME = "QuickBookScreensMutex";
+        constexpr const char* SEAT_MUTEX_NAME = "QuickBookSeatsMutex";
+        constexpr const char* SHOW_MUTEX_NAME = "QuickBookShowsMutex";
+        constexpr const char* THEATRE_MUTEX_NAME = "QuickBookTheatresMutex";
+        constexpr const char* USER_MUTEX_NAME = "QuickBookUsersMutex";
+        constexpr const char* TICKET_MUTEX_NAME = "QuickBookTicketsMutex";
+        constexpr const char* SHOW_SEAT_MUTEX_NAME = "QuickBookAvailabilityMutex";
     }
 }

@@ -1,11 +1,24 @@
+/*
+ * File: SharedStructs.h
+ * Description: Declares the shared data structures used by the QuickBook
+ *              application for memory-mapped file storage and inter-process
+ *              communication. Defines the file metadata header and shared
+ *              representations of users, movies, theatres, screens, seats,
+ *              shows, bookings, payments, refunds, tickets, notifications,
+ *              show seat availability, and logs using fixed-size arrays and
+ *              primitive data types suitable for shared memory.
+ * Author: Trenser
+ * Created: 11 June 2026
+ */
 #pragma once
 #include "ApplicationConfig.h"
 
 struct FileHeader
 {
 	int recordCount;
-	int maxRecords;
+	int maximumRecords;
 	int recordSize;
+	int version;
 };
 
 struct SharedUser
@@ -72,8 +85,8 @@ struct SharedShow
 	char movieId[config::Limit::ID_MAX_LENGTH];
 	char screenId[config::Limit::ID_MAX_LENGTH];
 	char seatAvailabilityId[config::Limit::ID_MAX_LENGTH];
-	char startTime[config::Limit::TIME_MAX_COUNT];
-	char endTime[config::Limit::TIME_MAX_COUNT];
+	char startTime[config::Limit::TIME_MAX_LENGTH];
+	char endTime[config::Limit::TIME_MAX_LENGTH];
 	int  status;
 };
 
@@ -95,7 +108,7 @@ struct SharedPayment
 	char   customerId[config::Limit::ID_MAX_LENGTH];
 	double amount;
 	int    status;
-	char   time[config::Limit::TIME_MAX_COUNT];
+	char   time[config::Limit::TIME_MAX_LENGTH];
 };
 
 struct SharedRefund
@@ -105,7 +118,7 @@ struct SharedRefund
 	char   customerId[config::Limit::ID_MAX_LENGTH];
 	double amount;
 	int    status;
-	char   time[config::Limit::TIME_MAX_COUNT];
+	char   time[config::Limit::TIME_MAX_LENGTH];
 };
 
 struct SharedTicket
@@ -120,9 +133,9 @@ struct SharedNotification
 {
 	char notificationId[config::Limit::ID_MAX_LENGTH];
 	char userId[config::Limit::ID_MAX_LENGTH];
-	char message[config::Limit::MESSAGE_MAX_COUNT];
+	char message[config::Limit::MESSAGE_MAX_LENGTH];
 	int  status;
-	char time[config::Limit::TIME_MAX_COUNT];
+	char time[config::Limit::TIME_MAX_LENGTH];
 };
 
 struct SharedShowSeatAvailability
@@ -132,4 +145,12 @@ struct SharedShowSeatAvailability
 	char seatIds[config::Limit::SEAT_MAX_COUNT][config::Limit::ID_MAX_LENGTH];
 	int  seatStatuses[config::Limit::SEAT_MAX_COUNT];
 	int  seatCount;
+};
+
+struct SharedLog
+{
+	char logId[config::Limit::ID_MAX_LENGTH];
+	char description[config::Limit::MESSAGE_MAX_LENGTH];
+	int type;
+	char time[config::Limit::TIME_MAX_LENGTH];
 };

@@ -2538,7 +2538,7 @@ void UserInterface::viewLogsByType()
 			logs = m_controller->getLogsByType(Enums::LogType::SYSTEM_ACTIVITY);
 			break;
 		case 2:
-			logs = m_controller->getLogsByType(Enums::LogType::ERROR);
+			logs = m_controller->getLogsByType(Enums::LogType::ERROR_LOG);
 			break;
 		case 3:
 			logs = m_controller->getLogsByType(Enums::LogType::UNKNOWN);
@@ -2572,7 +2572,7 @@ void UserInterface::logsTypeMenu()
 	util::clear();
 	cout << "----------------Log Types Menu---------------" << endl;
 	cout << "1. " << Enums::getLogTypeString(Enums::LogType::SYSTEM_ACTIVITY) << endl;
-	cout << "2. " << Enums::getLogTypeString(Enums::LogType::ERROR) << endl;
+	cout << "2. " << Enums::getLogTypeString(Enums::LogType::ERROR_LOG) << endl;
 	cout << "3. " << Enums::getLogTypeString(Enums::LogType::UNKNOWN) << endl;
 	cout << "--------------------------" << endl;
 }
