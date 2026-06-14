@@ -31,8 +31,19 @@ bool DataStore::initialize()
  * Returns:
  *    A constant reference to the map of user IDs to User pointers.
  */
-const std::map<string, User*>& DataStore::getUsers() const
+const std::map<string, User*>& DataStore::getUsers()
 {
+    clearData();
+    MappedFile<SharedUser>* userRegistry = m_registry.getUsers();
+    if (userRegistry != nullptr)
+    {
+        int recordCount = 0;
+        SharedUser* users = userRegistry->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            m_users[users[index].userId] = User::deserialize(&users[index]);
+        }
+    }
     return m_users;
 }
 
@@ -722,6 +733,82 @@ void DataStore::addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvaila
 Show* DataStore::getShowDetailsById(std::string& id)
 {
     return m_shows[id];
+}
+
+
+void DataStore::clearData()
+{
+    for (std::map<std::string, Ticket*>::iterator iterator = m_tickets.begin(); iterator != m_tickets.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_tickets.clear();
+    for (std::map<std::string, Refund*>::iterator iterator = m_refunds.begin(); iterator != m_refunds.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_refunds.clear();
+    for (std::map<std::string, Payment*>::iterator iterator = m_payments.begin(); iterator != m_payments.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_payments.clear();
+    for (std::map<std::string, Booking*>::iterator iterator = m_bookings.begin(); iterator != m_bookings.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_bookings.clear();
+    for (std::map<std::string, ShowSeatAvailability*>::iterator iterator = m_showSeatAvailabilitys.begin(); iterator != m_showSeatAvailabilitys.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_showSeatAvailabilitys.clear();
+    for (std::map<std::string, Show*>::iterator iterator = m_shows.begin(); iterator != m_shows.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+
+    m_shows.clear();
+    for (std::map<std::string, Seat*>::iterator iterator = m_seats.begin(); iterator != m_seats.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_seats.clear();
+    for (std::map<std::string, Screen*>::iterator iterator = m_screens.begin(); iterator != m_screens.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_screens.clear();
+    for (std::map<std::string, Theatre*>::iterator iterator = m_theatres.begin(); iterator != m_theatres.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_theatres.clear();
+    for (std::map<std::string, Movie*>::iterator iterator = m_movies.begin(); iterator != m_movies.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_movies.clear();
+    for (std::map<std::string, Notification*>::iterator iterator = m_notifications.begin(); iterator != m_notifications.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_notifications.clear();
+    for (std::map<std::string, Log*>::iterator iterator = m_logs.begin(); iterator != m_logs.end(); ++iterator)
+    {
+        delete iterator->second;
+    }
+    m_logs.clear();
+    for (std::map<std::string, User*>::iterator iterator = m_users.begin(); iterator != m_users.end(); ++iterator)
+    {
+
+        if (m_currentUser && iterator->second && iterator->second->getUserId() == m_currentUser->getUserId())
+        {
+            continue;
+        }
+        delete iterator->second;
+    }
+    m_users.clear();
 }
 
 /*
