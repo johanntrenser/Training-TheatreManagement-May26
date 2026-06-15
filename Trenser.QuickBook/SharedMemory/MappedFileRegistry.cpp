@@ -213,6 +213,19 @@ MappedFile<SharedLog>* MappedFileRegistry::getLogs()
 }
 
 /*
+ * Function: getUsersCount
+ * Description: Retrieves the total number of users from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of users
+ */
+int MappedFileRegistry::getUsersCount() const
+{
+    return m_users->getRecordCount();
+}
+
+/*
 * Function: MappedFileRegistry::closeAll
 * Description: Releases all mapped file objects managed by the registry
 *              and resets their pointers to nullptr.

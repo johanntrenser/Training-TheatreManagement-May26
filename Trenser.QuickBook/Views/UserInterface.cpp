@@ -57,7 +57,6 @@ UserInterface::UserInterface()
  */
 void UserInterface::run()
 {
-	m_controller->loadDataFromFile();
 	bool isMenuActive = true;
 	while (isMenuActive)
 	{
@@ -74,12 +73,10 @@ void UserInterface::run()
 		catch (const runtime_error& e)
 		{
 			cout << "Runtime Exception: " << e.what();
-			m_controller->saveData();
 		}
 		catch (const exception& e)
 		{
 			cout << "Exception : " << e.what() << endl;
-			m_controller->saveData();
 		}
 	}
 }
@@ -104,7 +101,6 @@ bool UserInterface::handleOperation(unsigned short choice)
 			registerUser();
 			break;
 		case 3:
-			m_controller->saveData();
 			cout << "Exiting..." << endl;
 			return false;
 		default:

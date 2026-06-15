@@ -43,10 +43,21 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
             {
                 if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
                 {
-                    m_dataStore.setAuthenticatedUser(iterator->second);
-                    std::string message = "User with ID : " + iterator->second->getUserId() + " has logged in.";
-                    logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
-                    return std::make_pair(Enums::LoginStatus::USER_FOUND, iterator->second->getUserType());
+                    User* user = Factory::getObject<User>(
+                        iterator->second->getUserId(),
+                        iterator->second->getUserName(),
+                        iterator->second->getEmail(),
+                        iterator->second->getPassword(),
+                        iterator->second->getPhoneNumber(),
+                        iterator->second->getUserType());
+                    if (user != nullptr)
+                    {
+                        user->setStatus(iterator->second->getStatus());
+                        m_dataStore.setAuthenticatedUser(user);
+                        std::string message = "User with ID : " + user->getUserId() + " has logged in.";
+                        logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+                        return std::make_pair(Enums::LoginStatus::USER_FOUND, user->getUserType());
+                    }
                 }
                 else
                 {
@@ -71,7 +82,7 @@ void AuthenticationManagementService::logout()
 {
     const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::string message = "User with ID : " + authenticatedUser->getUserId() + " has logged out.";
-    logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
+    logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     m_dataStore.setAuthenticatedUser(nullptr);
 }
 
@@ -131,8 +142,8 @@ Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::st
  */
 const std::string AuthenticationManagementService::generateUserId()
 {
-    const std::map<std::string, User*>& users = m_dataStore.getUsers();
-    int idNumber = static_cast<int>(users.size()) + 1;
+    const int usersCount = m_dataStore.getUsersCount();
+    int idNumber = usersCount + 1;
     std::ostringstream buffer;
     buffer << "US" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();

@@ -34,11 +34,11 @@ bool DataStore::initialize()
 const std::map<string, User*>& DataStore::getUsers()
 {
     clearData();
-    MappedFile<SharedUser>* userRegistry = m_registry.getUsers();
-    if (userRegistry != nullptr)
+    MappedFile<SharedUser>* userFile = m_registry.getUsers();
+    if (userFile != nullptr)
     {
         int recordCount = 0;
-        SharedUser* users = userRegistry->getAllRecords(recordCount);
+        SharedUser* users = userFile->getAllRecords(recordCount);
         for (int index = 0; index < recordCount; ++index)
         {
             m_users[users[index].userId] = User::deserialize(&users[index]);
@@ -58,7 +58,12 @@ const std::map<string, User*>& DataStore::getUsers()
  */
 void DataStore::addUser(User* user)
 {
-    m_users[user->getUserId()] = user;
+    SharedUser sharedUser = user->serialize();
+    MappedFile<SharedUser>* userFile = m_registry.getUsers();
+    if (userFile != nullptr)
+    {
+        userFile->addRecord(sharedUser);
+    }
 }
 
 /*
@@ -109,6 +114,7 @@ DataStore& DataStore::getInstance()
  */
 void DataStore::setAuthenticatedUser(User* user)
 {
+    delete m_currentUser;
     m_currentUser = user;
 }
 
@@ -721,6 +727,20 @@ void DataStore::addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvaila
 }
 
 /*
+ * Function: getUsersCount
+ * Description: Retrieves the total number of users from the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of users
+ */
+int DataStore::getUsersCount() const
+{
+    int count = m_registry.getUsersCount();
+    return count;
+}
+
+/*
  * Function: DataStore::getShowById
  * Description: Retrieves a Show object from the DataStore by its unique show ID.
  *              Looks up the show in the internal map of shows and returns the pointer
@@ -735,7 +755,18 @@ Show* DataStore::getShowDetailsById(std::string& id)
     return m_shows[id];
 }
 
-
+/*
+ * Function: DataStore::clearData
+ * Description: Clears all in-memory maps maintained by the DataStore singleton.
+ *              Iterates through each container, deletes every heap-allocated
+ *              object, and then empties the map to release ownership. Ensures
+ *              proper cleanup of dynamically allocated resources to prevent
+ *              memory leaks.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 void DataStore::clearData()
 {
     for (std::map<std::string, Ticket*>::iterator iterator = m_tickets.begin(); iterator != m_tickets.end(); ++iterator)
@@ -801,11 +832,6 @@ void DataStore::clearData()
     m_logs.clear();
     for (std::map<std::string, User*>::iterator iterator = m_users.begin(); iterator != m_users.end(); ++iterator)
     {
-
-        if (m_currentUser && iterator->second && iterator->second->getUserId() == m_currentUser->getUserId())
-        {
-            continue;
-        }
         delete iterator->second;
     }
     m_users.clear();

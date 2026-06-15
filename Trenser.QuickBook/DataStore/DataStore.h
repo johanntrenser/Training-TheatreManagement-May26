@@ -97,6 +97,7 @@ public:
 	Booking* getBookingDetailsById(const std::string& bookingId);
 	std::map<std::string, ShowSeatAvailability*> getShowSeatAvailabilityList();
 	void addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvailability);
+	int getUsersCount() const;
 	void clearData();
 	~DataStore();
 };
