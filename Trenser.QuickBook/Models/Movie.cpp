@@ -192,14 +192,16 @@ void Movie::setStatus(Enums::MovieStatus status)
  * Returns:
  *    CSV string representing the user
  */
-std::string Movie::serialize()
+SharedMovie Movie::serialize()
 {
-    return m_movieId + config::delimeter::comma +
-        m_title + config::delimeter::comma +
-        m_language + config::delimeter::comma +
-        m_genre + config::delimeter::comma +
-        std::to_string(m_duration) + config::delimeter::comma +
-        Enums::getMovieStatusString(m_status);
+    SharedMovie sharedMovie{};
+    strncpy_s(sharedMovie.movieId, m_movieId.c_str(), sizeof(sharedMovie.movieId));
+    strncpy_s(sharedMovie.title, m_title.c_str(), sizeof(sharedMovie.title));
+    strncpy_s(sharedMovie.language, m_language.c_str(), sizeof(sharedMovie.language));
+    strncpy_s(sharedMovie.genre, m_genre.c_str(), sizeof(sharedMovie.genre));
+    sharedMovie.duration = m_duration;
+    sharedMovie.status = static_cast<int>(m_status);
+    return sharedMovie;
 }
 
 /*
@@ -215,16 +217,23 @@ std::string Movie::serialize()
  * Returns:
  *    Pointer to a newly constructed Movie object
  */
-Movie* Movie::deserialize(const std::string& lines)
+Movie* Movie::deserialize(const SharedMovie* sharedMovie)
 {
-    std::string movieId, title, language, genre, duration, status;
-    std::stringstream lineStream(lines);
-    getline(lineStream, movieId, ',');
-    getline(lineStream, title, ',');
-    getline(lineStream, language, ',');
-    getline(lineStream, genre, ',');
-    getline(lineStream, duration, ',');
-    getline(lineStream, status, ',');
-    Movie* movie = Factory::getObject<Movie>(movieId, title, language, genre, stoi(duration));
+    if (sharedMovie == nullptr)
+    {
+        return nullptr;
+    }
+    Enums::MovieStatus status = static_cast<Enums::MovieStatus>(sharedMovie->status);
+    Movie* movie = Factory::getObject<Movie>(
+        sharedMovie->movieId,
+        sharedMovie->title,
+        sharedMovie->language,
+        sharedMovie->genre,
+        sharedMovie->duration
+    );
+    if(movie!=nullptr)
+    {
+        movie->setStatus(status);
+    }
     return movie;
 }

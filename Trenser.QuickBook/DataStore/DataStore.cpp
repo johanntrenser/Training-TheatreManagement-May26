@@ -239,8 +239,19 @@ std::map<std::string, Notification*>& DataStore::getNotifications()
  * Returns:
  *    Constant reference to a map of movie IDs to Movie pointers
  */
-const std::map<string, Movie*>& DataStore::getMovies() const
+const std::map<string, Movie*>& DataStore::getMovies()
 {
+    clearData();
+    MappedFile<SharedMovie>* movieFile = m_registry.getMovies();
+    if (movieFile != nullptr)
+    {
+        int recordCount = 0;
+        SharedMovie* movie = movieFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            m_movies[movie[index].movieId] = Movie::deserialize(&movie[index]);
+        }
+    }
     return m_movies;
 }
 
@@ -254,7 +265,13 @@ const std::map<string, Movie*>& DataStore::getMovies() const
  */
 void DataStore::addMovieToSystem(Movie* movie)
 {
-    m_movies[movie->getMovieId()] = movie;
+    SharedMovie sharedMovie = movie->serialize();
+    MappedFile<SharedMovie>* movieFile = m_registry.getMovies();
+    if (movieFile)
+    {
+        movieFile->addRecord(sharedMovie);
+    }
+    delete movie;
 }
 
 /*
@@ -882,7 +899,7 @@ void DataStore::clearData()
 * Returns :
 *None
 */
-void DataStore::setAuthenticatedUserPassword(const std::string & password)
+void DataStore::setAuthenticatedUserPassword(const std::string& password)
 {
     if (!m_currentUser)
     {

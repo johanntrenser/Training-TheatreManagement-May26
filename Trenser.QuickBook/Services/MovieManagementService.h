@@ -10,12 +10,14 @@
 #pragma once
 #include "DataStore.h"
 #include "FileManagement.h"
+#include "ScopedLock.h"
 
 class MovieManagementService
 {
 private:
 	DataStore& m_dataStore;
 	const std::string& PATH = config::File::MOVIE_FILEPATH;
+	NamedMutex m_mutex;
 public:
 	MovieManagementService();
 	Enums::ProcessStatus addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);
