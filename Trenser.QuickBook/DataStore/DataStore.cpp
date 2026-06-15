@@ -327,14 +327,34 @@ std::map<std::string, Show*>& DataStore::getShowsForUpdation()
 
 /*
  * Function: getScreens
- * Description: get all the screens in the datastore
+ * Description: Retrieves all Screen objects from the mapped screens file.
+ *              Deserializes SharedScreen records, links them to their Theatre,
+ *              and registers them in the internal screen map. Avoids duplicate
+ *              entries by checking existing screen IDs.
  * Parameters:
  *    None
  * Returns:
- *    std::map<std::string, Screen*>& - reference of map of screens
+ *    const std::map<std::string, Screen*>& - Constant reference to the map of screen IDs to Screen pointers
  */
-const std::map<std::string, Screen*>& DataStore::getScreens() const
+const std::map<std::string, Screen*>& DataStore::getScreens()
 {
+    clearData();
+    MappedFile<SharedScreen>* screensFile = m_registry.getScreens();
+    if (screensFile)
+    {
+        int recordCount = 0;
+        SharedScreen* screens = screensFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            Screen* screen = Screen::deserialize(&screens[index]);
+            Theatre* theatre = getTheatreById(screens[index].theatreId);
+            if (theatre && screen)
+            {
+                screen->setTheatre(theatre);
+                m_screens[screen->getScreenId()] = screen;
+            }
+        }
+    }
     return m_screens;
 }
 
@@ -727,32 +747,43 @@ User* DataStore::getUserById(std::string& id)
 }
 
 /*
- * Function: DataStore::addSeat
- * Description: Adds a Seat object to the DataStore.
- *              Stores the seat in the internal map of seats, keyed by its unique Seat ID.
- *              If a seat with the same ID already exists, it will be overwritten with the new pointer.
+ * Function: addSeat
+ * Description: Serializes a Seat object, adds it to the mapped seats file,
+ *              and registers it in the internal seat map for quick lookup.
  * Parameters:
- *    seat - A pointer to the Seat object to be added.
+ *    seat - Pointer to the Seat object to be added
  * Returns:
  *    None
  */
+
 void DataStore::addSeat(Seat* seat)
 {
+    SharedSeat sharedSeat = seat->serialize();
+    MappedFile<SharedSeat>* seatFile = m_registry.getSeats();
+    if (seatFile)
+    {
+        seatFile->addRecord(sharedSeat);
+    }
     m_seats[seat->getSeatId()] = seat;
 }
 
 /*
- * Function: DataStore::addScreen
- * Description: Adds a Screen object to the DataStore.
- *              Stores the screen in the internal map of screens, keyed by its unique Screen ID.
- *              If a screen with the same ID already exists, it will be overwritten with the new pointer.
+ * Function: addScreen
+ * Description: Serializes a Screen object, adds it to the mapped screens file,
+ *              and registers it in the internal screen map for quick lookup.
  * Parameters:
- *    screen - A pointer to the Screen object to be added.
+ *    screen - Pointer to the Screen object to be added
  * Returns:
  *    None
  */
 void DataStore::addScreen(Screen* screen)
 {
+    SharedScreen sharedScreen = screen->serialize();
+    MappedFile<SharedScreen>* screenFile = m_registry.getScreens();
+    if (screenFile)
+    {
+        screenFile->addRecord(sharedScreen);
+    }
     m_screens[screen->getScreenId()] = screen;
 }
 
@@ -956,6 +987,20 @@ void DataStore::setAuthenticatedUserPassword(const std::string& password)
 }
 
 /*
+ * Function: getRecordCount
+ * Description: Retrieves the total number of records managed by the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of records
+ */
+int DataStore::getRecordCount() const
+{
+    int count = m_registry.getRecordCount();
+    return count;
+}
+
+/*
  * Function: updateUserStatus
  * Description: Updates the status of a user in the mapped users file.
  * Parameters:
@@ -973,6 +1018,64 @@ Enums::ProcessStatus DataStore::updateUserStatus(const std::string& userId, Enum
     MappedFile<SharedUser>* usersFile = m_registry.getUsers();
     SharedUser* sharedUser = usersFile->findById(userId.c_str());
     sharedUser->status = static_cast<int>(status);
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: updateScreenName
+ * Description: Updates the name of a screen in the mapped screens file.
+ *              Locates the screen record by ID, modifies its name, and flushes
+ *              changes to shared memory.
+ * Parameters:
+ *    screenId   - Identifier of the screen to update
+ *    screenName - New name to be applied to the screen
+ * Returns:
+ *    ProcessStatus::SUCCESS if update applied successfully,
+ *    ProcessStatus::FAILED if the screen or file could not be found
+ */
+Enums::ProcessStatus DataStore::updateScreenName(const std::string& screenId, const std::string& screenName)
+{
+    MappedFile<SharedScreen>* screensFile = m_registry.getScreens();
+    if (!screensFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedScreen* sharedScreen = screensFile->findById(screenId.c_str());
+    if (!sharedScreen)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strcpy_s(sharedScreen->name, sizeof(sharedScreen->name), screenName.c_str());
+    screensFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: updateScreenStatus
+ * Description: Updates the status of a screen in the mapped screens file.
+ *              Locates the screen record by ID, modifies its status, and flushes
+ *              changes to shared memory.
+ * Parameters:
+ *    screenId - Identifier of the screen to update
+ *    status   - New screen status to be applied
+ * Returns:
+ *    ProcessStatus::SUCCESS if update applied successfully,
+ *    ProcessStatus::FAILED if the screen or file could not be found
+ */
+Enums::ProcessStatus DataStore::updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status)
+{
+    MappedFile<SharedScreen>* screensFile = m_registry.getScreens();
+    if (!screensFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedScreen* sharedScreen = screensFile->findById(screenId.c_str());
+    if (!sharedScreen)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedScreen->status = static_cast<int>(status);
+    screensFile->flush();
     return Enums::ProcessStatus::SUCCESS;
 }
 

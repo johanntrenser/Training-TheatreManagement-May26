@@ -49,6 +49,6 @@ public:
     void setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid);
     void setScreenStatus(Enums::ScreenStatus screenStatus);
     std::vector<std::vector<Seat*>>& getSeatGridForUpdation();
-    static Screen* deserialize(const std::string& line);
-    std::string serialize() const;
+    static Screen* deserialize(const SharedScreen* sharedScreen);
+    SharedScreen serialize() const;
 };
