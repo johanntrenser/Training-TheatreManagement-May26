@@ -6,6 +6,7 @@
 #include "TheatreOwner.h"
 #include "Customer.h"
 #include "Factory.h"
+#include "AuthenticationManagementService.h"
 
 /*
      * Function: UserManagementService
@@ -55,6 +56,15 @@ const std::string UserManagementService::generateUserId()
 Enums::ProcessStatus UserManagementService::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
     ScopedLock lock(m_mutex);
+    AuthenticationManagementService authenticationService;
+    if (!authenticationService.isPhoneNumberUnique(phoneNumber))
+    {
+        return Enums::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS;
+    }
+    if (!authenticationService.isEmailIdUnique(email))
+    {
+        return Enums::ProcessStatus::EMAIL_ALREADY_EXISTS;
+    }
     User* user = nullptr;
     if (userType == Enums::UserType::ADMIN)
     {
@@ -90,8 +100,9 @@ Enums::ProcessStatus UserManagementService::createUser(const std::string& userNa
     * Parameters: None
     * Returns: Vector of User pointers representing all active users.
     */
-const std::vector<const User*> UserManagementService::getActiveUsers() const
+const std::vector<const User*> UserManagementService::getActiveUsers()
 {
+    ScopedLock lock(m_mutex);
     std::vector<const User*> constUsers;
     if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::ADMIN)
     {
@@ -114,8 +125,9 @@ const std::vector<const User*> UserManagementService::getActiveUsers() const
     * Parameters: None
     * Returns: Vector of User pointers representing all inactiveUsers users.
     */
-const std::vector<const User*> UserManagementService::getInactiveUsers() const
+const std::vector<const User*> UserManagementService::getInactiveUsers()
 {
+    ScopedLock lock(m_mutex);
     std::vector<const User*> constUsers;
     if (m_dataStore.getAuthenticatedUserType() == Enums::UserType::ADMIN)
     {
@@ -318,6 +330,10 @@ bool UserManagementService::isAdminPresent()
  */
 void UserManagementService::createDefaultAdmin()
 {
-    User* user = new User("US001", "admin", "admin@gmail.com", "Admin@123", "9999999999", Enums::UserType::ADMIN);
-    m_dataStore.addUser(user);
+    ScopedLock lock(m_mutex);
+    if (!isAdminPresent())
+    {
+        User* user = new User(generateUserId(), "admin", "admin@gmail.com", "Admin@123", "9999999999", Enums::UserType::ADMIN);
+        m_dataStore.addUser(user);
+    }
 }

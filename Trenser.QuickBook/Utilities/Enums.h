@@ -113,7 +113,9 @@ namespace Enums {
         FAILED,
         SUCCESS,
         ALREADY_EXISTS,
-        NOT_FOUND
+        NOT_FOUND,
+        EMAIL_ALREADY_EXISTS,
+        PHONE_NUMBER_ALREADY_EXISTS
     };
 
     enum class LoginStatus

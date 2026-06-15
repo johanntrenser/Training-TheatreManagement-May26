@@ -28,7 +28,10 @@
 class DataStore
 {
 private:
-	DataStore() : m_currentUser(nullptr) {}
+	DataStore() : m_currentUser(nullptr)
+	{
+		initialize();
+	}
 	User* m_currentUser;
 	MappedFileRegistry m_registry;
 	std::map<std::string, User*> m_users;

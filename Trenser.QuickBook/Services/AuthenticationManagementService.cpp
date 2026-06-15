@@ -102,6 +102,14 @@ void AuthenticationManagementService::logout()
 Enums::ProcessStatus AuthenticationManagementService::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string phoneNumber, Enums::UserType userType)
 {
     ScopedLock lock(m_mutex);
+    if (!isPhoneNumberUnique(phoneNumber))
+    {
+        return Enums::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS;
+    }
+    if (!isEmailIdUnique(email))
+    {
+        return Enums::ProcessStatus::EMAIL_ALREADY_EXISTS;
+    }
     User* user = nullptr;
     if (userType == Enums::UserType::ADMIN)
     {
@@ -159,6 +167,7 @@ const std::string AuthenticationManagementService::generateUserId()
  */
 bool AuthenticationManagementService::isPhoneNumberUnique(const std::string& phoneNumber)
 {
+    ScopedLock lock(m_mutex);
     const std::map<std::string, User*> users = m_dataStore.getUsers();
     for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
@@ -181,6 +190,7 @@ bool AuthenticationManagementService::isPhoneNumberUnique(const std::string& pho
  */
 bool AuthenticationManagementService::isEmailIdUnique(const std::string& email)
 {
+    ScopedLock lock(m_mutex);
     const std::map<std::string, User*> users = m_dataStore.getUsers();
     if (!users.empty())
     {

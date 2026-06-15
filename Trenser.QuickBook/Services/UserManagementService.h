@@ -29,8 +29,8 @@ public:
     UserManagementService();
     const std::string generateUserId();
     Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
-    const std::vector<const User*> getActiveUsers() const;
-    const std::vector<const User*> getInactiveUsers() const;
+    const std::vector<const User*> getActiveUsers();
+    const std::vector<const User*> getInactiveUsers();
     Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
     Enums::ProcessStatus setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
     Enums::ProcessStatus setAuthenticatedUserUserName(const std::string& userName);

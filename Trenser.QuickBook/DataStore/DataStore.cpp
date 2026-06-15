@@ -9,7 +9,7 @@
  */
 #include <sstream>
 #include <string>
-#include "DataStore.h"'
+#include "DataStore.h"
 using namespace std;
 
 /*
@@ -46,20 +46,6 @@ const std::map<string, User*>& DataStore::getUsers()
         }
     }
     return m_users;
-}
-
-/*
- * Function: getUsersCount
- * Description: Retrieves the total number of users from the registry.
- * Parameters:
- *    None
- * Returns:
- *    Integer count of users
- */
-int DataStore::getUsersCount() const
-{
-    int count = m_registry.getUsersCount();
-    return count;
 }
 
 /*
@@ -888,13 +874,14 @@ void DataStore::clearData()
     m_users.clear();
 }
 
-/*Function: setAuthenticatedUserPassword
+/*
+* Function: setAuthenticatedUserPassword
 * Description : Updates the password of the currently authenticated user.
 * Parameters :
 *phoneNumber - The new password to be set
 * Returns :
 *None
-* /
+*/
 void DataStore::setAuthenticatedUserPassword(const std::string & password)
 {
     if (!m_currentUser)
