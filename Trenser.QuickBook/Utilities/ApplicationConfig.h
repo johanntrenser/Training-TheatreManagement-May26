@@ -58,7 +58,8 @@ namespace config
         constexpr const int SEAT_MAX_COUNT = 1000;
         constexpr const int TIME_MAX_LENGTH = 30;
         constexpr const int MESSAGE_MAX_LENGTH = 500;
-        constexpr const int INITIAL_FILE_MAP_SIZE = 100;
+        constexpr const int INITIAL_FILE_MAP_SIZE = 1000;
+        constexpr const int SESSION_MAX_COUNT = 1000;
     }
     namespace FileMappings
     {
@@ -75,6 +76,7 @@ namespace config
         constexpr const char* USER_MAPPING_NAME = "QuickBookUsers";
         constexpr const char* TICKET_MAPPING_NAME = "QuickBookTickets";
         constexpr const char* SHOW_SEAT_MAPPING_NAME = "QuickBookAvailability";
+        constexpr const char* SESSION_MAPPING_NAME = "QuickBookSessions";
     }
     namespace MutexMappings
     {
@@ -91,5 +93,6 @@ namespace config
         constexpr const char* USER_MUTEX_NAME = "QuickBookUsersMutex";
         constexpr const char* TICKET_MUTEX_NAME = "QuickBookTicketsMutex";
         constexpr const char* SHOW_SEAT_MUTEX_NAME = "QuickBookAvailabilityMutex";
+        constexpr const char* SESSION_MUTEX_NAME = "QuickBookSessionsMutex";
     }
 }

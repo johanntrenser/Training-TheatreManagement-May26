@@ -226,6 +226,19 @@ int MappedFileRegistry::getUsersCount() const
 }
 
 /*
+ * Function: getLogsCount
+ * Description: Retrieves the total number of logs from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of logs
+ */
+int MappedFileRegistry::getLogsCount() const
+{
+    return m_logs->getRecordCount();
+}
+
+/*
 * Function: MappedFileRegistry::closeAll
 * Description: Releases all mapped file objects managed by the registry
 *              and resets their pointers to nullptr.

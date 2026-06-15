@@ -142,6 +142,12 @@ void UserInterface::login()
 		util::pressEnterToContinue();
 		return;
 	}
+	if (loginStatus == Enums::LoginStatus::USER_ALREADY_LOGGED_IN)
+	{
+		cout << "Error: User is already logged in! Try again\n";
+		util::pressEnterToContinue();
+		return;
+	}
 	util::clear();
 	switch (userType)
 	{

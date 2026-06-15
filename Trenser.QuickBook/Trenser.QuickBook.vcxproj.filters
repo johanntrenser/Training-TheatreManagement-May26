@@ -180,6 +180,9 @@
     <ClCompile Include="SharedMemory\ScopedLock.cpp">
       <Filter>SharedMemory</Filter>
     </ClCompile>
+    <ClCompile Include="SharedMemory\SessionManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h">
@@ -319,6 +322,9 @@
     </ClInclude>
     <ClInclude Include="SharedMemory\ScopedLock.h">
       <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\SessionManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@
 #include "Enums.h"
 #include "TimeStamp.h"
 #include "Factory.h"
+#include "SharedStructs.h"
 
 class Log
 {
@@ -32,6 +33,6 @@ public:
     void setLogType(const Enums::LogType logType);
     void setTimestamp(const util::Timestamp& timestamp);
     std::string toString() const;
-    std::string serialize();
-    static Log* deserialize(const std::string& lines);
+    SharedLog serialize();
+    static Log* deserialize(const SharedLog* sharedLog);
 };

@@ -122,7 +122,8 @@ namespace Enums {
     {
         USER_NOT_FOUND,
         INVALID_PASSWORD,
-        USER_FOUND
+        USER_FOUND,
+        USER_ALREADY_LOGGED_IN
     };
 
     enum class LogType

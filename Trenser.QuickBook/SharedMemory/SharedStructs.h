@@ -11,6 +11,8 @@
  * Created: 11 June 2026
  */
 #pragma once
+#define NOMINMAX
+#include <Windows.h>
 #include "ApplicationConfig.h"
 
 struct FileHeader
@@ -153,4 +155,16 @@ struct SharedLog
 	char description[config::Limit::MESSAGE_MAX_LENGTH];
 	int type;
 	char time[config::Limit::TIME_MAX_LENGTH];
+};
+
+struct SessionEntry
+{
+	char userId[config::Limit::ID_MAX_LENGTH];
+	DWORD processId;
+};
+
+struct SharedSession
+{
+	int sessionCount;
+	SessionEntry sessions[config::Limit::SESSION_MAX_COUNT];
 };

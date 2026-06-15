@@ -23,7 +23,8 @@ using namespace std;
  */
 bool DataStore::initialize()
 {
-    return m_registry.openAll();
+    return m_registry.openAll() && m_sessionManager.open();
+
 }
 
 /*
@@ -73,23 +74,39 @@ void DataStore::addUser(User* user)
  * Returns:
  *    A constant reference to the map of log IDs to Log pointers.
  */
-const std::map<std::string, Log*>& DataStore::getLogs() const
+const std::map<std::string, Log*>& DataStore::getLogs()
 {
+    clearData();
+    MappedFile<SharedLog>* logsFile = m_registry.getLogs();
+    if (logsFile != nullptr)
+    {
+        int recordCount = 0;
+        SharedLog* logs = logsFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            m_logs[logs[index].logId] = Log::deserialize(&logs[index]);
+        }
+    }
     return m_logs;
 }
 
 /*
  * Function: DataStore::addLog
- * Description: Adds a new log entry to the DataStore by inserting the log object
- *              into the internal map keyed by the log's unique ID.
+ * Description: Serializes a log object, adds it to the mapped logs file, and releases heap memory.
  * Parameters:
- *    log (Log*) - Pointer to the Log object to be added
+ *    user - Pointer to the Log object to be added
  * Returns:
  *    None
  */
 void DataStore::addLog(Log* log)
 {
-    m_logs[log->getLogId()] = log;
+    SharedLog sharedLog = log->serialize();
+    MappedFile<SharedLog>* logsFile = m_registry.getLogs();
+    if (logsFile)
+    {
+        logsFile->addRecord(sharedLog);
+    }
+    delete log;
 }
 
 /*
@@ -778,6 +795,20 @@ int DataStore::getUsersCount() const
 }
 
 /*
+ * Function: getLogsCount
+ * Description: Retrieves the total number of logs from the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of logs
+ */
+int DataStore::getLogsCount() const
+{
+    int count = m_registry.getLogsCount();
+    return count;
+}
+
+/*
  * Function: DataStore::getShowById
  * Description: Retrieves a Show object from the DataStore by its unique show ID.
  *              Looks up the show in the internal map of shows and returns the pointer
@@ -918,6 +949,57 @@ Enums::ProcessStatus DataStore::updateUserStatus(const std::string& userId, Enum
     SharedUser* sharedUser = usersFile->findById(userId.c_str());
     sharedUser->status = static_cast<int>(status);
     return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::isUserLoggedIn
+ * Description: Checks whether the specified user currently has an active
+ *              session in the shared session manager. Access is synchronized
+ *              using the session mutex to ensure thread safety.
+ * Parameters:
+ *    userId - Unique identifier of the user to be checked.
+ * Returns:
+ *    true if the user is currently logged in,
+ *    false otherwise.
+ */
+bool DataStore::isUserLoggedIn(const std::string& userId)
+{
+    ScopedLock lock(m_sessionMutex);
+    return m_sessionManager.isLoggedIn(userId);
+}
+
+/*
+ * Function: DataStore::addLoggedInUser
+ * Description: Adds the specified user to the shared session manager,
+ *              marking the user as currently logged in. Access is
+ *              synchronized using the session mutex.
+ * Parameters:
+ *    userId - Unique identifier of the user to be added to the active sessions.
+ * Returns:
+ *    true if the user session was added successfully,
+ *    false otherwise.
+ */
+bool DataStore::addLoggedInUser(const std::string& userId)
+{
+    ScopedLock lock(m_sessionMutex);
+    return m_sessionManager.addSession(userId);
+}
+
+/*
+ * Function: DataStore::removeLoggedInUser
+ * Description: Removes the specified user from the shared session manager,
+ *              marking the user as logged out. Access is synchronized
+ *              using the session mutex.
+ * Parameters:
+ *    userId - Unique identifier of the user to be removed from the active sessions.
+ * Returns:
+ *    true if the user session was removed successfully,
+ *    false otherwise.
+ */
+bool DataStore::removeLoggedInUser(const std::string& userId)
+{
+    ScopedLock lock(m_sessionMutex);
+    return m_sessionManager.removeSession(userId);
 }
 
 /*
