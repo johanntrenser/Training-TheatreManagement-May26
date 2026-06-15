@@ -46,7 +46,7 @@ private:
 	std::map<std::string, Ticket*> m_tickets;
 public:
 	bool initialize();
-	const std::map<std::string, User*>& getUsers() const;
+	const std::map<std::string, User*>& getUsers();
 	void addUser(User* user);
 	const std::map<std::string, Log*>& getLogs() const;
 	void addLog(Log* log);
@@ -97,5 +97,7 @@ public:
 	Booking* getBookingDetailsById(const std::string& bookingId);
 	std::map<std::string, ShowSeatAvailability*> getShowSeatAvailabilityList();
 	void addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvailability);
+	int getUsersCount() const;
+	void clearData();
 	~DataStore();
 };

@@ -271,27 +271,6 @@ Enums::ProcessStatus UserManagementService::changePassword(const std::string& cu
 }
 
 /*
- * Function: UserManagementService::saveData
- * Description: Saves all user data from the DataStore into a CSV file.
- *              Encrypts passwords before writing and overwrites existing file content.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened)
- */
-void UserManagementService::saveUserData()
-{
-    std::vector<std::string> lines;
-    lines.push_back(config::Header::USER_HEADER);
-    const std::map<std::string, User*> users = m_dataStore.getUsers();
-    for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
-    {
-        lines.push_back((iterator->second)->serialize());
-    }
-    FileManagement::writeLines(std::string(config::File::USER_FILEPATH), lines);
-}
-
-/*
  * Function: UserManagementService::isAdminPresent
  * Description: Checks if any admin user exists in the system.
  * Parameters:
@@ -324,31 +303,4 @@ void UserManagementService::createDefaultAdmin()
 {
     User* user = new User("US001", "admin", "admin@gmail.com", "Admin@123", "9999999999", Enums::UserType::ADMIN);
     m_dataStore.addUser(user);
-}
-
-/*
- * Function: UserManagementService::loadUserData
- * Description: Loads all user data from a CSV file into memory.
- *              Reads each line from the file using FileManagement::readlines(PATH),
- *              deserializes it into a User object via User::deserialize,
- *              and adds the User to the DataStore.
- *              This restores user information such as ID, name, email, password,
- *              phone number, type, and status into the system.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened or read)
- */
-void UserManagementService::loadUserData()
-{
-    std::vector<std::string> lines = FileManagement::readlines(PATH);
-    for (int index = 1; index < lines.size(); index++)
-    {
-        User* user = User::deserialize(lines[index]);
-        m_dataStore.addUser(user);
-    }
-    if (!isAdminPresent())
-    {
-        createDefaultAdmin();
-    }
 }

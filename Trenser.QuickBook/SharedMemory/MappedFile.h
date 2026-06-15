@@ -243,6 +243,19 @@ public:
 	}
 
 	/*
+	 * Function: getRecordCount
+	 * Description: Returns the record count stored in the mapped file header.
+	 * Parameters:
+	 *    None
+	 * Returns:
+	 *    Integer record count
+	 */
+	int getRecordCount() const
+	{
+		return m_header->recordCount;
+	}
+
+	/*
 	 * Function: MappedFile::~MappedFile
 	 * Description: Destructor that releases all resources associated
 	 *              with the mapped file by closing the mapping and file

@@ -35,8 +35,6 @@ public:
     Enums::ProcessStatus reactivateUser(const std::string& userId);
     Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
     const User* const getAuthenticatedUser();
-    void loadUserData();
-    void saveUserData();
     bool isAdminPresent();
     void createDefaultAdmin();
 };

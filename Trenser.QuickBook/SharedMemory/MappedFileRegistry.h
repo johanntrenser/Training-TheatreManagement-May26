@@ -61,6 +61,7 @@ public:
     MappedFile<SharedNotification>* getNotifications();
     MappedFile<SharedShowSeatAvailability>* getAvailability();
     MappedFile<SharedLog>* getLogs();
+    int getUsersCount() const;
     void closeAll();
     ~MappedFileRegistry()
     {
