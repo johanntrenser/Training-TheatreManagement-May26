@@ -7,8 +7,9 @@
  * Author: Trenser
  * Created: 20 May 2026
  */
-#include "DataStore.h"
 #include <sstream>
+#include <string>
+#include "DataStore.h"
 using namespace std;
 
 /*
@@ -49,21 +50,21 @@ const std::map<string, User*>& DataStore::getUsers()
 
 /*
  * Function: DataStore::addUser
- * Description: Adds a new user to the DataStore by inserting the user object
- *              into the internal map keyed by the user's unique ID.
+ * Description: Serializes a user object, adds it to the mapped users file, and releases heap memory.
  * Parameters:
- *    user (User*) - Pointer to the User object to be added
+ *    user - Pointer to the User object to be added
  * Returns:
  *    None
  */
 void DataStore::addUser(User* user)
 {
     SharedUser sharedUser = user->serialize();
-    MappedFile<SharedUser>* userFile = m_registry.getUsers();
-    if (userFile != nullptr)
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    if (usersFile)
     {
-        userFile->addRecord(sharedUser);
+        usersFile->addRecord(sharedUser);
     }
+    delete user;
 }
 
 /*
@@ -141,7 +142,19 @@ const Enums::UserType DataStore::getAuthenticatedUserType() const
  */
 void DataStore::setAuthenticatedUserName(const std::string& username)
 {
+    if (!m_currentUser)
+    {
+        return;
+    }
     m_currentUser->setUserName(username);
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    SharedUser* sharedUser = usersFile->findById(m_currentUser->getUserId().c_str());
+    if (sharedUser)
+    {
+        strncpy_s(sharedUser->username, username.c_str(), sizeof(sharedUser->username));
+    }
+    usersFile->flush();
+    return;
 }
 
 /*
@@ -154,7 +167,19 @@ void DataStore::setAuthenticatedUserName(const std::string& username)
  */
 void DataStore::setAuthenticatedUserEmail(const std::string& email)
 {
+    if (!m_currentUser)
+    {
+        return;
+    }
     m_currentUser->setEmail(email);
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    SharedUser* sharedUser = usersFile->findById(m_currentUser->getUserId().c_str());
+    if (sharedUser)
+    {
+        strncpy_s(sharedUser->email, email.c_str(), sizeof(sharedUser->email));
+    }
+    usersFile->flush();
+    return;
 }
 
 /*
@@ -167,7 +192,19 @@ void DataStore::setAuthenticatedUserEmail(const std::string& email)
  */
 void DataStore::setAuthenticatedUserPhoneNumber(const std::string& phoneNumber)
 {
+    if (!m_currentUser)
+    {
+        return;
+    }
     m_currentUser->setPhoneNumber(phoneNumber);
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    SharedUser* sharedUser = usersFile->findById(m_currentUser->getUserId().c_str());
+    if (sharedUser)
+    {
+        strncpy_s(sharedUser->phoneNumber, phoneNumber.c_str(), sizeof(sharedUser->phoneNumber));
+    }
+    usersFile->flush();
+    return;
 }
 
 /*
@@ -835,6 +872,52 @@ void DataStore::clearData()
         delete iterator->second;
     }
     m_users.clear();
+}
+
+/*
+* Function: setAuthenticatedUserPassword
+* Description : Updates the password of the currently authenticated user.
+* Parameters :
+*phoneNumber - The new password to be set
+* Returns :
+*None
+*/
+void DataStore::setAuthenticatedUserPassword(const std::string & password)
+{
+    if (!m_currentUser)
+    {
+        return;
+    }
+    m_currentUser->setPassword(password);
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    SharedUser* sharedUser = usersFile->findById(m_currentUser->getUserId().c_str());
+    if (sharedUser)
+    {
+        strncpy_s(sharedUser->password, password.c_str(), sizeof(sharedUser->password));
+    }
+    usersFile->flush();
+    return;
+}
+
+/*
+ * Function: updateUserStatus
+ * Description: Updates the status of a user in the mapped users file.
+ * Parameters:
+ *    userId - Identifier of the user
+ *    status - New user status (must not be NOT_FOUND)
+ * Returns:
+ *    ProcessStatus::SUCCESS if update applied, FAILED otherwise
+ */
+Enums::ProcessStatus DataStore::updateUserStatus(const std::string& userId, Enums::UserStatus status)
+{
+    if (status == Enums::UserStatus::NOT_FOUND)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    SharedUser* sharedUser = usersFile->findById(userId.c_str());
+    sharedUser->status = static_cast<int>(status);
+    return Enums::ProcessStatus::SUCCESS;
 }
 
 /*

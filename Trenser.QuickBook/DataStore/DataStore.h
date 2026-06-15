@@ -28,7 +28,10 @@
 class DataStore
 {
 private:
-	DataStore() : m_currentUser(nullptr) {}
+	DataStore() : m_currentUser(nullptr)
+	{
+		initialize();
+	}
 	User* m_currentUser;
 	MappedFileRegistry m_registry;
 	std::map<std::string, User*> m_users;
@@ -99,5 +102,7 @@ public:
 	void addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvailability);
 	int getUsersCount() const;
 	void clearData();
+	void setAuthenticatedUserPassword(const std::string& password);
+	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
 	~DataStore();
 };

@@ -85,6 +85,8 @@ Controller::Controller(AuthenticationManagementService* authService,
     m_seatManagementService(seatService),
     m_refundManagementService(refundService)
 {
+    ensureFolder(config::File::FILEPATH);
+    createDefaultAdmin();
 }
 
 /*
@@ -103,11 +105,7 @@ Controller::Controller(AuthenticationManagementService* authService,
  */
 Enums::ProcessStatus Controller::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
-    if (m_authenticationManagementService->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
-    {
-        return Enums::ProcessStatus::SUCCESS;
-    }
-    return Enums::ProcessStatus::FAILED;
+    return m_authenticationManagementService->registerUser(userName, email, password, phoneNumber, userType);
 }
 
 /*
@@ -725,11 +723,7 @@ Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string& movieI
  */
 Enums::ProcessStatus Controller::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
-    if (m_userManagementService->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
-    {
-        return Enums::ProcessStatus::SUCCESS;
-    }
-    return Enums::ProcessStatus::FAILED;
+    return m_userManagementService->createUser(userName, email, password, phoneNumber, userType);
 }
 
 /*
@@ -1479,6 +1473,19 @@ const std::vector<Refund*> Controller::getRefunds()
 const std::vector<std::string> Controller::getSeatIdsFromBooking(const Booking* booking)
 {
     return m_bookingManagementService->getSeatIdsFromBooking(booking);
+}
+
+/*
+ * Function: createDefaultAdmin
+ * Description: Creates a default admin user with preset credentials and adds it to DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void Controller::createDefaultAdmin()
+{
+    m_userManagementService->createDefaultAdmin();
 }
 
 /*

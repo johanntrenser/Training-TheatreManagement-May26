@@ -148,5 +148,6 @@ public:
 	const std::vector<Payment*> getAllPayments();
 	const std::vector<Refund*> getRefunds();
 	const std::vector<std::string> getSeatIdsFromBooking(const Booking* booking);
+	void createDefaultAdmin();
 	~Controller();
 };

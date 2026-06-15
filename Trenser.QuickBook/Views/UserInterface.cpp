@@ -195,9 +195,22 @@ void UserInterface::registerUser()
 			return;
 	}
 	handleUserDetailsInput(userName, email, password, phoneNumber);
-	if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+	Enums::ProcessStatus status = m_controller->registerUser(userName, email, password, phoneNumber, userType);
+	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "User registered successfully!" << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::EMAIL_ALREADY_EXISTS)
+	{
+		cout << "Email Already exists! Registration failed." << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS)
+	{
+		cout << "Phone Number Already exists! Registration failed." << endl;
 		util::pressEnterToContinue();
 		util::clear();
 	}
@@ -1745,9 +1758,22 @@ void UserInterface::createUser()
 			return;
 	}
 	handleUserDetailsInput(userName, email, password, phoneNumber);
-	if (m_controller->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+	Enums::ProcessStatus status = m_controller->createUser(userName, email, password, phoneNumber, userType);
+	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "User registered successfully!" << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::EMAIL_ALREADY_EXISTS)
+	{
+		cout << "Email Already exists! Registration failed." << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS)
+	{
+		cout << "Phone Number Already exists! Registration failed." << endl;
 		util::pressEnterToContinue();
 		util::clear();
 	}

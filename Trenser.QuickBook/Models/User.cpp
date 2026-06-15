@@ -277,11 +277,14 @@ std::string User::decryption(std::string& password)
 }
 
 /*
- * Function: serialize
- * Description: Converts User object into CSV format string
- * Returns:
- *    SharedUser object representing the user
- */
+* Function: serialize
+* Description: Converts a User object into a SharedUser struct
+*              suitable for storage in the memory-mapped file.
+*              Encrypts the password before storing.
+* Parameters: None
+* Returns:
+*    SharedUser - flat struct representation of this User
+*/
 SharedUser User::serialize()
 {
     SharedUser sharedUser{};
