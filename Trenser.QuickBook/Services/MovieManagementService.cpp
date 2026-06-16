@@ -22,7 +22,7 @@
   *    None
   */
 MovieManagementService::MovieManagementService() :
-	m_dataStore(DataStore::getInstance()), m_mutex(config::MutexMappings::USER_MUTEX_NAME)
+	m_dataStore(DataStore::getInstance()), m_mutex(config::MutexMappings::MOVIE_MUTEX_NAME)
 {
 }
 
