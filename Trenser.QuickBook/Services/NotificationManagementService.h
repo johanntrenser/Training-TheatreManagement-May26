@@ -23,6 +23,4 @@ public:
 	Enums::ProcessStatus sendNotificationToAllUsers(const std::string& message);
 	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
 	std::string convertNotificationObjectToStringFormat(const Notification* notification);
-	void saveNotificationData();
-	void loadNotificationData();
 };

@@ -167,21 +167,15 @@ void Notification::setTime(const time_t time)
  * Returns:
  *    CSV string representing the user
  */
-std::string Notification::serialize()
+SharedNotification Notification::serialize()
 {
-    std::string result = m_notificationId + config::delimeter::comma;
-    if (m_receiver)
-    {
-        result += m_receiver->getUserId() + config::delimeter::comma;
-    }
-    else
-    {
-        result += config::delimeter::comma;
-    }
-    result += m_message + config::delimeter::comma +
-        Enums::getNotificationStatusString(m_status) + config::delimeter::comma +
-        util::serializeTime(m_time);
-    return result;
+    SharedNotification sharedNotification;
+    strncpy_s(sharedNotification.notificationId, m_notificationId.c_str(), sizeof(sharedNotification.notificationId));
+    strncpy_s(sharedNotification.userId, (m_receiver ? m_receiver->getUserId().c_str() : ""), sizeof(sharedNotification.userId));
+    strncpy_s(sharedNotification.message, m_message.c_str(), sizeof(sharedNotification.message));
+    sharedNotification.status = static_cast<int>(m_status);
+    strncpy_s(sharedNotification.time, util::serializeTime(m_time).c_str(), sizeof(sharedNotification.time));
+    return sharedNotification;
 }
 
 /*
@@ -197,16 +191,20 @@ std::string Notification::serialize()
  * Returns:
  *    Pointer to a newly constructed Notification object
  */
-Notification* Notification::deserialize(const std::string& lines)
+Notification* Notification::deserialize(const SharedNotification* sharedNotification)
 {
-    std::string notificationId, receiverId, messgae, status, time, year, dash, space, month, day, hour, colon, minute;
-    std::stringstream lineStream(lines);
-    getline(lineStream, notificationId, ',');
-    getline(lineStream, receiverId, ',');
-    getline(lineStream, messgae, ',');
-    getline(lineStream, status, ',');
-    getline(lineStream, time, ',');
-    time_t convertedTime = util::deserializeTime(time);
-    Notification* notification = Factory::getObject<Notification>(notificationId, nullptr, messgae, convertedTime);
+    if (sharedNotification == nullptr)
+    {
+        return nullptr;
+    }
+    Enums::NotificationStatus status = static_cast<Enums::NotificationStatus>(sharedNotification->status);
+    time_t time = util::deserializeTime(sharedNotification->time);
+    Notification* notification = Factory::getObject<Notification>(
+        sharedNotification->notificationId,
+        nullptr,
+        sharedNotification->message,
+        time
+    );
+    notification->setStatus(status);
     return notification;
 }

@@ -50,7 +50,7 @@ const std::map<string, User*>& DataStore::getUsers()
 }
 
 /*
- * Function: DataStore::addUser
+ * Function: DataStore::add User
  * Description: Serializes a user object, adds it to the mapped users file, and releases heap memory.
  * Parameters:
  *    user - Pointer to the User object to be added
@@ -245,6 +245,21 @@ User* DataStore::getAuthenticatedUser() const
 */
 std::map<std::string, Notification*>& DataStore::getNotifications()
 {
+    clearData();
+    MappedFile<SharedNotification>* notificationFile = m_registry.getNotifications();
+    if (notificationFile != nullptr)
+    {
+        int recordCount = 0;
+        SharedNotification* notifications = notificationFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            std::string receiverId = notifications[index].userId;
+            User* receiver = getUserById(receiverId);
+            Notification* notification = Notification::deserialize(&notifications[index]);
+            notification->setReceiver(receiver);
+            m_notifications[notifications[index].notificationId] = notification;
+        }
+    }
     return m_notifications;
 }
 
@@ -1242,7 +1257,13 @@ void DataStore::addScreen(Screen* screen)
  */
 void DataStore::addNotification(Notification* notification)
 {
-    m_notifications[notification->getNotificationId()] = notification;
+    SharedNotification sharedNotification = notification->serialize();
+    MappedFile<SharedNotification>* notificationFile = m_registry.getNotifications();
+    if (notificationFile)
+    {
+        notificationFile->addRecord(sharedNotification);
+    }
+    delete notification;
 }
 
 /*

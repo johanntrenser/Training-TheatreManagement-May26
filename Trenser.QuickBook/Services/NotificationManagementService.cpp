@@ -64,7 +64,7 @@ Enums::ProcessStatus NotificationManagementService::sendNotification(User* recei
 		return Enums::ProcessStatus::FAILED;
 	}
 	notification->setStatus(Enums::NotificationStatus::UNREAD);
-	m_dataStore.getNotifications()[notification->getNotificationId()] = notification;
+	m_dataStore.addNotification(notification);
 	return Enums::ProcessStatus::SUCCESS;
 }
 
@@ -140,69 +140,4 @@ std::string NotificationManagementService::convertNotificationObjectToStringForm
 	}
 	std::string notificationMessage = "[" + timeString + "] : " + notification->getMessage();
 	return notificationMessage;
-}
-
-/*
- * Function: NotificationManagementService::saveNotificationData
- * Description: Saves all notification data from the DataStore into a CSV file.
- *              Includes notification details such as Notification ID, Receiver ID,
- *              message content, status, and timestamp.
- *              Overwrites existing file content.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened)
- */
-void NotificationManagementService::saveNotificationData()
-{
-	std::vector<std::string> lines;
-	lines.push_back(config::Header::NOTIFICATION_HEADER);
-	const std::map<std::string, Notification*>& notifications = m_dataStore.getNotifications();
-	for (std::map<std::string, Notification*>::const_iterator iterator = notifications.begin(); iterator != notifications.end(); ++iterator)
-	{
-		lines.push_back((iterator->second)->serialize());
-	}
-	FileManagement::writeLines(std::string(config::File::NOTIFICATION_FILEPATH), lines);
-}
-
-/*
- * Function: NotificationManagementService::loadtNotificationData
- * Description: Loads all notification data from a CSV file into memory.
- *              Reads each line from the file using FileManagement::readlines(PATH),
- *              deserializes it into a Notification object via Notification::deserialize,
- *              and restores the association with its receiver User if the receiver ID
- *              is present and found in the DataStore. Also sets the Notification status
- *              using Enums::getNotificationStatus before adding the reconstructed
- *              Notification to the DataStore.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened or read)
- */
-void NotificationManagementService::loadNotificationData()
-{
-	std::string notificationId, receiverId, message, status, time;
-	std::vector<std::string> lines = FileManagement::readlines(PATH);
-	for (int index = 1; index < lines.size(); ++index)
-	{
-		Notification* notification = Notification::deserialize(lines[index]);
-		std::stringstream lineStream(lines[index]);
-		getline(lineStream, notificationId, ',');
-		getline(lineStream, receiverId, ',');
-		getline(lineStream, message, ',');
-		getline(lineStream, status, ',');
-		getline(lineStream, time, ',');
-		if (!receiverId.empty())
-		{
-			User* receiver = m_dataStore.getUserById(receiverId);
-			notification->setReceiver(receiver);
-		}
-		Enums::NotificationStatus notificationStatus = Enums::getNotificationStatus(status);
-		if (notificationStatus == Enums::NotificationStatus::FAILED || notificationStatus == Enums::NotificationStatus::UNREAD)
-		{
-			notificationStatus = Enums::NotificationStatus::UNREAD;
-		}
-		notification->setStatus(notificationStatus);
-		m_dataStore.addNotification(notification);
-	}
 }
