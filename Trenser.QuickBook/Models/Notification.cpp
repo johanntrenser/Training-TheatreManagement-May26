@@ -162,10 +162,18 @@ void Notification::setTime(const time_t time)
 }
 
 /*
- * Function: serialize
- * Description: Converts Notification object into CSV format string
+ * Function: Notification::serialize
+ * Description: Converts a Notification object into a SharedNotification structure
+ *              suitable for shared memory storage. Copies attributes such as
+ *              notificationId, receiver userId (if available), message, status,
+ *              and time into fixed-size character arrays or primitive fields.
+ *              Uses strncpy_s for safe string copying and util::serializeTime
+ *              to convert the time_t value into a string representation.
+ *              This serialized form allows persistence and inter-process communication.
+ * Parameters:
+ *    None
  * Returns:
- *    CSV string representing the user
+ *    A SharedNotification structure containing the serialized data of the Notification object.
  */
 SharedNotification Notification::serialize()
 {
@@ -180,16 +188,17 @@ SharedNotification Notification::serialize()
 
 /*
  * Function: Notification::deserialize
- * Description: Converts a single CSV-formatted line into a Notification object.
- *              Extracts fields such as notificationId, receiverId, message, status,
- *              and time. The time string is parsed into its components (year, month,
- *              day, hour, minute) and converted into a time_t using util::createTime.
- *              The receiver User pointer is initialized to nullptr and can be set later
- *              when restoring relationships.
+ * Description: Converts a SharedNotification record from shared memory into a fully constructed
+ *              Notification object. Validates that the input pointer is not null, extracts
+ *              attributes such as notificationId, message, and time, and uses the Factory
+ *              to instantiate a Notification object. The receiver User pointer is initialized
+ *              as nullptr and can be set later by higher-level services. The Notification
+ *              status is restored from the serialized value. This ensures symmetry with
+ *              Notification::serialize for round-trip persistence.
  * Parameters:
- *    lines - reference to a CSV-formatted string containing notification data
+ *    sharedNotification - A pointer to a SharedNotification structure containing serialized notification data.
  * Returns:
- *    Pointer to a newly constructed Notification object
+ *    A pointer to a newly constructed Notification object, or nullptr if the input is null.
  */
 Notification* Notification::deserialize(const SharedNotification* sharedNotification)
 {

@@ -238,11 +238,18 @@ User* DataStore::getAuthenticatedUser() const
 }
 
 /*
-* Function Name : getNotifications
-* Description   : Returns all notifications stored in the datastore.
-* Parameters    : None
-* Return Type   : std::map<std::string, Notification*>&
-*/
+ * Function: DataStore::getNotifications
+ * Description: Retrieves all Notification records from shared memory and loads them into the DataStore.
+ *              Clears any existing notification data, fetches the mapped file of SharedNotification records
+ *              from the registry, deserializes each record into a Notification object, restores its
+ *              association with the corresponding User (receiver), and stores it in the internal map
+ *              keyed by Notification ID. Returns the updated map of notifications.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A reference to std::map<std::string, Notification*> containing all Notification objects
+ *    currently loaded in the DataStore.
+ */
 std::map<std::string, Notification*>& DataStore::getNotifications()
 {
     clearData();
@@ -1246,12 +1253,13 @@ void DataStore::addScreen(Screen* screen)
 
 /*
  * Function: DataStore::addNotification
- * Description: Adds or updates a Notification object in the DataStore.
- *              Uses the Notification’s unique ID as the key in the
- *              internal notifications map. If a Notification with the
- *              same ID already exists, it will be replaced.
+ * Description: Adds a Notification object to the system by serializing it into a SharedNotification record
+ *              and persisting it in shared memory via the registry. Retrieves the mapped file for notifications,
+ *              appends the serialized record if available, and then deletes the original Notification pointer
+ *              to prevent memory leaks. This ensures that notifications are stored centrally in shared memory
+ *              for system-wide access.
  * Parameters:
- *    notification - pointer to the Notification object to be stored
+ *    notification - A pointer to the Notification object to be added to the system.
  * Returns:
  *    None
  */
