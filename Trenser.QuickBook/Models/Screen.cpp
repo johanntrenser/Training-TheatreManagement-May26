@@ -246,7 +246,7 @@ std::vector<std::vector<Seat*>>& Screen::getSeatGridForUpdation()
  * Parameters:
  *    None
  * Returns:
- *    SharedScreen struct representation of this Screen
+ *    None
  */
 void Screen::serialize(SharedScreen& sharedScreen) const
 {
