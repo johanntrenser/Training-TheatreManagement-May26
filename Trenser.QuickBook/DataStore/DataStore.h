@@ -63,7 +63,7 @@ public:
 	void setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
 	void setAuthenticatedUserName(const std::string& userName);
 	std::map<std::string, Notification*>& getNotifications();
-	const std::map<std::string, Movie*>& getMovies() const;
+	const std::map<std::string, Movie*>& getMovies();
 	void addMovieToSystem(Movie* movie);
 	const std::map<std::string, Show*>& getShows() const;
 	std::map<std::string, Show*>& getShowsForUpdation();

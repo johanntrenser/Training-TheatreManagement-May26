@@ -187,44 +187,60 @@ void Movie::setStatus(Enums::MovieStatus status)
 }
 
 /*
- * Function: serialize
- * Description: Converts Movie object into CSV format string
+ * Function: Movie::serialize
+ * Description: Converts a Movie object into a SharedMovie structure suitable for
+ *              storage in shared memory. Copies string attributes (movieId, title,
+ *              language, genre) into fixed-size character arrays using strncpy_s
+ *              to ensure safe buffer handling. Stores duration and status as
+ *              primitive values. This serialized representation allows the Movie
+ *              to be persisted and retrieved across processes.
+ * Parameters:
+ *    None
  * Returns:
- *    CSV string representing the user
+ *    A SharedMovie structure containing the serialized data of the Movie object.
  */
-std::string Movie::serialize()
+SharedMovie Movie::serialize()
 {
-    return m_movieId + config::delimeter::comma +
-        m_title + config::delimeter::comma +
-        m_language + config::delimeter::comma +
-        m_genre + config::delimeter::comma +
-        std::to_string(m_duration) + config::delimeter::comma +
-        Enums::getMovieStatusString(m_status);
+    SharedMovie sharedMovie{};
+    strncpy_s(sharedMovie.movieId, m_movieId.c_str(), sizeof(sharedMovie.movieId));
+    strncpy_s(sharedMovie.title, m_title.c_str(), sizeof(sharedMovie.title));
+    strncpy_s(sharedMovie.language, m_language.c_str(), sizeof(sharedMovie.language));
+    strncpy_s(sharedMovie.genre, m_genre.c_str(), sizeof(sharedMovie.genre));
+    sharedMovie.duration = m_duration;
+    sharedMovie.status = static_cast<int>(m_status);
+    return sharedMovie;
 }
 
 /*
  * Function: Movie::deserialize
- * Description: Converts a single CSV-formatted line into a Movie object.
- *              Extracts fields such as movieId, title, language, genre,
- *              duration, and status. The duration string is converted
- *              into an integer using stoi. The Movie status and any
- *              associations (e.g., with Theatre or Shows) are initialized
- *              separately by higher-level services after deserialization.
+ * Description: Converts a SharedMovie record from shared memory into a fully constructed
+ *              Movie object. Validates that the input pointer is not null, extracts
+ *              attributes such as movieId, title, language, genre, duration, and status,
+ *              and uses the Factory to instantiate a Movie object. The Movie status is
+ *              then set based on the deserialized value. This ensures symmetry with
+ *              Movie::serialize for round-trip persistence.
  * Parameters:
- *    lines - reference to a CSV-formatted string containing movie data
+ *    sharedMovie - A pointer to a SharedMovie structure containing serialized movie data.
  * Returns:
- *    Pointer to a newly constructed Movie object
+ *    A pointer to a newly constructed Movie object, or nullptr if the input is null.
  */
-Movie* Movie::deserialize(const std::string& lines)
+Movie* Movie::deserialize(const SharedMovie* sharedMovie)
 {
-    std::string movieId, title, language, genre, duration, status;
-    std::stringstream lineStream(lines);
-    getline(lineStream, movieId, ',');
-    getline(lineStream, title, ',');
-    getline(lineStream, language, ',');
-    getline(lineStream, genre, ',');
-    getline(lineStream, duration, ',');
-    getline(lineStream, status, ',');
-    Movie* movie = Factory::getObject<Movie>(movieId, title, language, genre, stoi(duration));
+    if (sharedMovie == nullptr)
+    {
+        return nullptr;
+    }
+    Enums::MovieStatus status = static_cast<Enums::MovieStatus>(sharedMovie->status);
+    Movie* movie = Factory::getObject<Movie>(
+        sharedMovie->movieId,
+        sharedMovie->title,
+        sharedMovie->language,
+        sharedMovie->genre,
+        sharedMovie->duration
+    );
+    if(movie!=nullptr)
+    {
+        movie->setStatus(status);
+    }
     return movie;
 }

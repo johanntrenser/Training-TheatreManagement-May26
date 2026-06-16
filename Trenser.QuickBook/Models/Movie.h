@@ -12,6 +12,7 @@
 #include "ApplicationConfig.h"
 #include "Enums.h"
 #include "Factory.h"
+#include "SharedStructs.h"
 
 class Movie
 {
@@ -41,6 +42,6 @@ public:
     void setGenre(const std::string& genre);
     void setDuration(int duration);
     void setStatus(Enums::MovieStatus status);
-    std::string serialize();
-    static Movie* deserialize(const std::string& lines);
+    SharedMovie serialize();
+    static Movie* deserialize(const SharedMovie* sharedMovie);
 };
