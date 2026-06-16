@@ -200,51 +200,50 @@ void Seat::setSeatAmount(double amount)
 }
 
 /*
- * Function: serialize
- * Description: Converts Seat object into CSV format string
+ * Function: Seat::serialize
+ * Description: Converts a Seat object into a SharedSeat struct suitable
+ *              for storage in a memory-mapped file. Includes seat metadata
+ *              such as ID, screen ID, row, column, amount, and status.
+ * Parameters:
+ *    None
  * Returns:
- *    CSV string representing the user
+ *    SharedSeat struct representation of this Seat
  */
-std::string Seat::serialize()
+SharedSeat Seat::serialize()
 {
-    return m_seatId + config::delimeter::comma +
-        m_screen->getScreenId() + config::delimeter::comma +
-        std::string(1, m_seatRow) + config::delimeter::comma +
-        std::to_string(m_seatColumn) + config::delimeter::comma +
-        std::to_string(m_amount) + config::delimeter::comma +
-        Enums::getSeatStatusString(m_seatStatus);
+    SharedSeat sharedSeat{};
+    strncpy_s(sharedSeat.seatId, m_seatId.c_str(),
+        sizeof(sharedSeat.seatId));
+    strncpy_s(sharedSeat.screenId,
+        (m_screen ? m_screen->getScreenId().c_str() : ""),
+        sizeof(sharedSeat.screenId));
+    sharedSeat.seatRow = static_cast<int>(m_seatRow);
+    sharedSeat.seatColumn = m_seatColumn;
+    sharedSeat.amount = m_amount;
+    sharedSeat.status = static_cast<int>(m_seatStatus);
+    return sharedSeat;
 }
 
 /*
  * Function: Seat::deserialize
- * Description: Deserializes a single line of CSV-formatted seat data into a Seat object.
- *              Extracts fields such as Seat ID, Screen ID, row, column, amount, and status.
- *              Converts string values into appropriate types (char, int, double, enum).
- *              The Screen pointer is set to nullptr initially and can be linked later
- *              when the Screen object is available in the DataStore.
+ * Description: Reconstructs a Seat object from a SharedSeat struct.
+ *              Initializes seat attributes including ID, row, column,
+ *              amount, and status.
  * Parameters:
- *    line - A reference to a string containing one line of CSV seat data.
+ *    sharedSeat - Pointer to a SharedSeat struct containing serialized seat data
  * Returns:
- *    A pointer to a newly created Seat object populated with the deserialized data.
+ *    Pointer to a newly created Seat object, or nullptr if input is invalid
  */
-Seat* Seat::deserialize(const std::string& line)
+Seat* Seat::deserialize(const SharedSeat* sharedSeat)
 {
-    std::string seatId, screenId, seatRow, seatColumn, amount, seatStatus;
-    std::stringstream lineStream(line);
-    getline(lineStream, seatId, ',');
-    getline(lineStream, screenId, ',');
-    getline(lineStream, seatRow, ',');
-    getline(lineStream, seatColumn, ',');
-    getline(lineStream, amount, ',');
-    getline(lineStream, seatStatus, ',');
-    Enums::SeatStatus status = Enums::getSeatStatus(seatStatus);
-    util::trimWhitespace(amount);
-    util::trimWhitespace(seatId);
-    util::trimWhitespace(screenId);
-    util::trimWhitespace(seatRow);
-    util::trimWhitespace(seatColumn);
-    util::trimWhitespace(amount);
-    util::trimWhitespace(seatStatus);
-    Seat* seat = Factory::getObject<Seat>(seatId, nullptr, seatRow[0], stoi(seatColumn), stod(amount), status);
+    if (sharedSeat == nullptr) return nullptr;
+    Enums::SeatStatus status = static_cast<Enums::SeatStatus>(sharedSeat->status);
+    Seat* seat = Factory::getObject<Seat>(
+        sharedSeat->seatId,
+        nullptr,
+        static_cast<char>(sharedSeat->seatRow),
+        sharedSeat->seatColumn,
+        sharedSeat->amount,
+        status);
     return seat;
 }

@@ -226,6 +226,19 @@ int MappedFileRegistry::getUsersCount() const
 }
 
 /*
+ * Function: getRecordCount
+ * Description: Retrieves the total number of screen records from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of screen records
+ */
+int MappedFileRegistry::getRecordCount() const
+{
+    return m_screens->getRecordCount();
+}
+
+/*
  * Function: getLogsCount
  * Description: Retrieves the total number of logs from the mapped file registry.
  * Parameters:

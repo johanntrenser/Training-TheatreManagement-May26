@@ -72,7 +72,7 @@ public:
 	void addMovieToSystem(Movie* movie);
 	const std::map<std::string, Show*>& getShows() const;
 	std::map<std::string, Show*>& getShowsForUpdation();
-	const std::map<std::string, Screen*>& getScreens() const;
+	const std::map<std::string, Screen*>& getScreens();
 	const std::map<std::string, Theatre*>& getTheatres() const;
 	const std::map<std::string, Booking*>& getBookings() const;
 	void addTheatre(Theatre* theatre);
@@ -109,7 +109,10 @@ public:
 	int getLogsCount() const;
 	void clearData();
 	void setAuthenticatedUserPassword(const std::string& password);
+	int getRecordCount() const;
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
+	Enums::ProcessStatus updateScreenName(const std::string& screenId, const std::string& screenName);
+	Enums::ProcessStatus updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status);
 	bool isUserLoggedIn(const std::string& userId);
 	bool addLoggedInUser(const std::string& userId);
 	bool removeLoggedInUser(const std::string& userId);

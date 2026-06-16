@@ -78,6 +78,7 @@ struct SharedSeat
 	char screenId[config::Limit::ID_MAX_LENGTH];
 	int  seatRow;
 	int  seatColumn;
+	double amount;
 	int  status;
 };
 

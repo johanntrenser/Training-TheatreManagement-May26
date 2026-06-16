@@ -9,13 +9,17 @@
  */
 #pragma once
 #include "DataStore.h"
-#include "FileManagement.h"
+#include "LogManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class ScreenManagementService
 {
 private:
     DataStore& m_dataStore;
-    const std::string& PATH = config::File::SCREEN_FILEPATH;
+    LogManagementService m_logManagementService;
+    NamedMutex m_screenMutex;
+    NamedMutex m_seatMutex;
 public:
     ScreenManagementService();
     Enums::ProcessStatus addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount);
@@ -28,7 +32,5 @@ public:
     Enums::ProcessStatus reactivateScreen(const std::string& theatreId, const std::string& screenId);
     const std::vector<const Screen*> viewTheatreScreens(const std::string& theatreId);
     Enums::UserType getAuthenticatedUserType();
-    void saveScreenData();
-    void loadScreenData();
     std::string generateSeatId();
 };

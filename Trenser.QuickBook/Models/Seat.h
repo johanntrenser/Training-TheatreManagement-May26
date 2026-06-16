@@ -14,6 +14,7 @@
 #include "Enums.h"
 #include "Factory.h"
 #include "InputHelper.h"
+#include "SharedStructs.h"
 
 class Screen;
 
@@ -46,6 +47,6 @@ public:
     void setSeatColumn(int seatColumn);
     void setSeatStatus(Enums::SeatStatus seatStatus);
     void setSeatAmount(double amount);
-    std::string serialize();
-    static Seat* deserialize(const std::string& line);
+    SharedSeat serialize();
+    static Seat* deserialize(const SharedSeat* sharedSeat);
 };
