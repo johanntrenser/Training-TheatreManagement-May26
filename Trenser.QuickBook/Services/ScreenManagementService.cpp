@@ -27,7 +27,7 @@ ScreenManagementService::ScreenManagementService()
 */
 std::string ScreenManagementService::generateScreenId()
 {
-    const int count = m_dataStore.getRecordCount();
+    const int count = m_dataStore.getScreenCount();
     int idNumber = count + 1;
     std::ostringstream buffer;
     buffer << "SC" << std::setw(3) << std::setfill('0') << idNumber;
@@ -35,14 +35,14 @@ std::string ScreenManagementService::generateScreenId()
 }
 
 /*
-* Function Name : generateScreenId
+* Function Name : generateSeatId
 * Description   : Generates a unique ID for a new screen.
 * Parameters    : None
 * Return Type   : std::string
 */
 std::string ScreenManagementService::generateSeatId()
 {
-    const int count = m_dataStore.getRecordCount();
+    const int count = m_dataStore.getSeatCount();
     int idNumber = count + 1;
     std::ostringstream buffer;
     buffer << "ST" << std::setw(3) << std::setfill('0') << idNumber;

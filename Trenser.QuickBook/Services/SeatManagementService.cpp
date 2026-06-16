@@ -12,17 +12,19 @@
 #include <iomanip>
 #include "SeatManagementService.h"
 #include "Factory.h"
+#include "ApplicationConfig.h"
 
  /*
-  * Function: SeatManagementService
-  * Description: Initializes service with singleton DataStore instance.
-  * Parameters:
-  *    None
-  * Returns:
-  *    None
-  */
+ * Function: SeatManagementService
+ * Description: Constructs a SeatManagementService instance. Initializes the
+ *              reference to the singleton DataStore and sets up a mutex for
+ *              thread-safe seat operations using the configured mutex name.
+ * Parameters: None
+ * Returns: None
+ */
 SeatManagementService::SeatManagementService()
-    : m_dataStore(DataStore::getInstance())
+    : m_dataStore(DataStore::getInstance()),
+    m_mutex(config::MutexMappings::SEAT_MUTEX_NAME)
 {
 }
 
@@ -34,8 +36,8 @@ Return Type   : std::string
 */
 std::string SeatManagementService::generateSeatId()
 {
-    const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
-    int idNumber = static_cast<int>(seats.size()) + 1;
+    const int count = m_dataStore.getSeatCount();
+    int idNumber = count + 1;
     std::ostringstream buffer;
     buffer << "ST" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -53,6 +55,7 @@ std::string SeatManagementService::generateSeatId()
  */
 Enums::ProcessStatus SeatManagementService::updateSeatLayout(const std::string& selectedScreenId, int rows, int columns, double amount)
 {
+    ScopedLock lock(m_mutex);
     Screen* screen = m_dataStore.getScreenById(selectedScreenId);
     if (!screen)
     {
@@ -118,8 +121,9 @@ void SeatManagementService::clearSeatGrid(std::vector<std::vector<Seat*>>& seatG
  * Returns:
  *    Const reference to 2D vector of Seat pointers
  */
-const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(const std::string& selectedScreenId) const
+const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(const std::string& selectedScreenId)
 {
+    ScopedLock lock(m_mutex);
     Screen* screen = m_dataStore.getScreenById(selectedScreenId);
     return  screen->getSeatGrid();
 }
@@ -135,6 +139,7 @@ const std::vector<std::vector<Seat*>>& SeatManagementService::getSeatLayout(cons
  */
 Enums::ProcessStatus SeatManagementService::deactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
+    ScopedLock lock(m_mutex);
     Screen* screen = m_dataStore.getScreenById(selectedScreenId);
     if (!screen)
     {
@@ -156,6 +161,7 @@ Enums::ProcessStatus SeatManagementService::deactivateSeat(const std::string& se
                 {
                     return Enums::ProcessStatus::FAILED;
                 }
+                m_dataStore.updateSeatStatus(seatId, Enums::SeatStatus::BLOCKED);
                 (*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
                 return Enums::ProcessStatus::SUCCESS;
             }
@@ -175,12 +181,14 @@ Enums::ProcessStatus SeatManagementService::deactivateSeat(const std::string& se
  */
 Enums::ProcessStatus SeatManagementService::deactivateSeats(const std::string& selectedScreenId)
 {
+    ScopedLock lock(m_mutex);
     const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
     for (std::map<std::string, Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
     {
         if (iterator->second && iterator->second->getScreen() && iterator->second->getScreen()->getScreenId() == selectedScreenId)
         {
             Seat* seat = m_dataStore.getSeatById(iterator->second->getSeatId());
+            m_dataStore.updateSeatStatus(seat->getSeatId(), Enums::SeatStatus::BLOCKED);
             seat->setSeatStatus(Enums::SeatStatus::BLOCKED);
         }
     }
@@ -233,6 +241,7 @@ Enums::ProcessStatus SeatManagementService::hasActiveSeatBooking(Screen* screen,
  */
 Enums::ProcessStatus SeatManagementService::reactivateSeat(const std::string& selectedScreenId, const std::string& seatId)
 {
+    ScopedLock lock(m_mutex);
     Screen* screen = m_dataStore.getScreenById(selectedScreenId);
     if (!screen)
     {
@@ -247,6 +256,7 @@ Enums::ProcessStatus SeatManagementService::reactivateSeat(const std::string& se
             {
                 if ((*seatIterator)->getSeatStatus() == Enums::SeatStatus::BLOCKED)
                 {
+                    m_dataStore.updateSeatStatus(seatId, Enums::SeatStatus::AVAILABLE);
                     (*seatIterator)->setSeatStatus(Enums::SeatStatus::AVAILABLE);
                     return Enums::ProcessStatus::SUCCESS;
                 }
@@ -267,12 +277,14 @@ Enums::ProcessStatus SeatManagementService::reactivateSeat(const std::string& se
  */
 Enums::ProcessStatus SeatManagementService::reactivateSeats(const std::string& selectedScreenId)
 {
+    ScopedLock lock(m_mutex);
     const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
     for (std::map<std::string, Seat*>::const_iterator iterator = seats.begin(); iterator != seats.end(); ++iterator)
     {
         if (iterator->second && iterator->second->getScreen() && iterator->second->getScreen()->getScreenId() == selectedScreenId)
         {
             Seat* seat = m_dataStore.getSeatById(iterator->second->getSeatId());
+            m_dataStore.updateSeatStatus(seat->getSeatId(), Enums::SeatStatus::AVAILABLE);
             seat->setSeatStatus(Enums::SeatStatus::AVAILABLE);
         }
     }
@@ -408,7 +420,7 @@ void SeatManagementService::loadShowSeatAvailabilityData()
             std::map<std::string, Enums::BookingStatus> seatAvailabilityMap;
             while (getline(seatStream, seatEntry, config::delimeter::verticalBar[0]))
             {
-                int position = int(seatEntry.find(config::delimeter::colon));
+                size_t position = seatEntry.find(config::delimeter::colon);
                 if (position != std::string::npos)
                 {
                     std::string seatId = seatEntry.substr(0, position);

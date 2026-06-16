@@ -988,16 +988,30 @@ void DataStore::setAuthenticatedUserPassword(const std::string& password)
 }
 
 /*
- * Function: getRecordCount
+ * Function: getScreenCount
  * Description: Retrieves the total number of records managed by the registry.
  * Parameters:
  *    None
  * Returns:
  *    Integer count of records
  */
-int DataStore::getRecordCount() const
+int DataStore::getScreenCount() const
 {
-    int count = m_registry.getRecordCount();
+    int count = m_registry.getScreenCount();
+    return count;
+}
+
+/*
+ * Function: getSeatCount
+ * Description: Retrieves the total number of records managed by the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of records
+ */
+int DataStore::getSeatCount() const
+{
+    int count = m_registry.getSeatCount();
     return count;
 }
 
@@ -1077,6 +1091,35 @@ Enums::ProcessStatus DataStore::updateScreenStatus(const std::string& screenId, 
     }
     sharedScreen->status = static_cast<int>(status);
     screensFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: updateSeatStatus
+ * Description: Updates the status of a seat in the mapped seats file.
+ *              Locates the seat record by ID, modifies its status, and flushes
+ *              changes to shared memory.
+ * Parameters:
+ *    seatId - Identifier of the seat to update
+ *    status   - New seat status to be applied
+ * Returns:
+ *    ProcessStatus::SUCCESS if update applied successfully,
+ *    ProcessStatus::FAILED if the seat or file could not be found
+ */
+Enums::ProcessStatus DataStore::updateSeatStatus(const std::string& seatId, Enums::SeatStatus status)
+{
+    MappedFile<SharedSeat>* seatsFile = m_registry.getSeats();
+    if (!seatsFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedSeat* sharedSeat = seatsFile->findById(seatId.c_str());
+    if (!sharedSeat)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedSeat->status = static_cast<int>(status);
+    seatsFile->flush();
     return Enums::ProcessStatus::SUCCESS;
 }
 

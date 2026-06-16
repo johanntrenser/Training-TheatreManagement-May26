@@ -226,16 +226,29 @@ int MappedFileRegistry::getUsersCount() const
 }
 
 /*
- * Function: getRecordCount
+ * Function: getScreenCount
  * Description: Retrieves the total number of screen records from the mapped file registry.
  * Parameters:
  *    None
  * Returns:
  *    Integer count of screen records
  */
-int MappedFileRegistry::getRecordCount() const
+int MappedFileRegistry::getScreenCount() const
 {
     return m_screens->getRecordCount();
+}
+
+/*
+ * Function: getSeatCount
+ * Description: Retrieves the total number of seat records from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of seat records
+ */
+int MappedFileRegistry::getSeatCount() const
+{
+    return m_seats->getRecordCount();
 }
 
 /*
