@@ -24,16 +24,21 @@
 #include "Theatre.h"
 #include "Ticket.h"
 #include "MappedFileRegistry.h"
+#include "SessionManager.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class DataStore
 {
 private:
-	DataStore() : m_currentUser(nullptr)
+	DataStore() : m_currentUser(nullptr), m_sessionMutex(config::MutexMappings::SESSION_MUTEX_NAME)
 	{
 		initialize();
 	}
 	User* m_currentUser;
 	MappedFileRegistry m_registry;
+	SessionManager m_sessionManager;
+	NamedMutex m_sessionMutex;
 	std::map<std::string, User*> m_users;
 	std::map<std::string, Booking*> m_bookings;
 	std::map<std::string, Log*> m_logs;
@@ -51,7 +56,7 @@ public:
 	bool initialize();
 	const std::map<std::string, User*>& getUsers();
 	void addUser(User* user);
-	const std::map<std::string, Log*>& getLogs() const;
+	const std::map<std::string, Log*>& getLogs();
 	void addLog(Log* log);
 	DataStore(const DataStore&) = delete;
 	DataStore& operator=(const DataStore&) = delete;
@@ -101,8 +106,12 @@ public:
 	std::map<std::string, ShowSeatAvailability*> getShowSeatAvailabilityList();
 	void addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvailability);
 	int getUsersCount() const;
+	int getLogsCount() const;
 	void clearData();
 	void setAuthenticatedUserPassword(const std::string& password);
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
+	bool isUserLoggedIn(const std::string& userId);
+	bool addLoggedInUser(const std::string& userId);
+	bool removeLoggedInUser(const std::string& userId);
 	~DataStore();
 };

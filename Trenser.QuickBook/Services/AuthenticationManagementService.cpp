@@ -43,6 +43,10 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
             {
                 if (iterator->second->getStatus() == Enums::UserStatus::ACTIVE)
                 {
+                    if (m_dataStore.isUserLoggedIn(iterator->second->getUserId()))
+                    {
+                        return std::make_pair(Enums::LoginStatus::USER_ALREADY_LOGGED_IN, Enums::UserType::USER_NOT_FOUND);
+                    }
                     User* user = Factory::getObject<User>(
                         iterator->second->getUserId(),
                         iterator->second->getUserName(),
@@ -53,6 +57,7 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
                     if (user != nullptr)
                     {
                         user->setStatus(iterator->second->getStatus());
+                        m_dataStore.addLoggedInUser(user->getUserId());
                         m_dataStore.setAuthenticatedUser(user);
                         std::string message = "User with ID : " + user->getUserId() + " has logged in.";
                         logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
@@ -83,6 +88,7 @@ void AuthenticationManagementService::logout()
     const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::string message = "User with ID : " + authenticatedUser->getUserId() + " has logged out.";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    m_dataStore.removeLoggedInUser(authenticatedUser->getUserId());
     m_dataStore.setAuthenticatedUser(nullptr);
 }
 

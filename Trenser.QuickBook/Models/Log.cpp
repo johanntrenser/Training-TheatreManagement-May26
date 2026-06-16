@@ -148,43 +148,44 @@ std::string Log::toString() const
 
 /*
  * Function: serialize
- * Description: Converts Log object into CSV format string
+ * Description: Converts Log object into a SharedLog struct
  * Returns:
- *    CSV string representing the user
+ *    SharedLog struct containing log data
  */
-std::string Log::serialize()
+SharedLog Log::serialize()
 {
-    return m_logId + config::delimeter::comma +
-        m_description+config::delimeter::comma+
-        Enums::getLogTypeString(m_logType)+config::delimeter::comma+
-        m_timestamp.toString();
+    SharedLog sharedLog{};
+    strncpy_s(sharedLog.logId, m_logId.c_str(), sizeof(sharedLog.logId));
+    strncpy_s(sharedLog.description, m_description.c_str(), sizeof(sharedLog.description));
+    sharedLog.type = static_cast<int>(m_logType);
+    std::string time = m_timestamp.toString();
+    strncpy_s(sharedLog.time, time.c_str(), sizeof(sharedLog.time));
+    return sharedLog;
 }
 
 /*
  * Function: Log::deserialize
- * Description: Converts a single CSV-formatted line into a Log object.
- *              Extracts fields such as logId and logDescription from the line.
- *              The Log object is constructed with these values, while any
- *              additional associations (e.g., with User or System events)
- *              can be restored later by higher-level services.
+ * Description: Deserializes a single SharedLog object into a Log object.
+ *              Extracts fields such as logId and logDescription.
+ *              The Log object is constructed with these values.
  * Parameters:
- *    lines - reference to a CSV-formatted string containing log data
+ *    sharedLog - A pointer to a SharedLog object containing serialized Log data.
  * Returns:
  *    Pointer to a newly constructed Log object
  */
-Log* Log::deserialize(const std::string& lines)
+Log* Log::deserialize(const SharedLog* sharedLog)
 {
-    std::string logId, logDescription,type,time;
-    std::stringstream lineStream(lines);
-    getline(lineStream, logId, ',');
-    getline(lineStream, logDescription, ',');
-    getline(lineStream, type, ',');
-    getline(lineStream, time, ',');
-    Enums::LogType logType = Enums::getLogType(type);
-    Log* log = Factory::getObject<Log>(logId, logDescription, logType);
-    if (!time.empty())
+    if (sharedLog == nullptr)
     {
-        util::Timestamp timeStamp = util::Timestamp::fromString(time);
+        return nullptr;
+    }
+    std::string logId(sharedLog->logId);
+    std::string logDescription(sharedLog->description);
+    Enums::LogType logType = static_cast<Enums::LogType>(sharedLog->type);
+    Log* log = Factory::getObject<Log>(logId, logDescription, logType);
+    util::Timestamp timeStamp = util::Timestamp::fromString(sharedLog->time);
+    if (log != nullptr)
+    {
         log->setTimestamp(timeStamp);
     }
     return log;

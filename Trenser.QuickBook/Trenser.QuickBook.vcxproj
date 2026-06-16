@@ -159,6 +159,7 @@
     <ClCompile Include="SharedMemory\MappedFileRegistry.cpp" />
     <ClCompile Include="SharedMemory\NamedMutex.cpp" />
     <ClCompile Include="SharedMemory\ScopedLock.cpp" />
+    <ClCompile Include="SharedMemory\SessionManager.cpp" />
     <ClCompile Include="SharedMemory\SharedStructs.cpp" />
     <ClCompile Include="Trenser.QuickBook.cpp" />
     <ClCompile Include="Utilities\ApplicationConfig.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="SharedMemory\MappedFileRegistry.h" />
     <ClInclude Include="SharedMemory\NamedMutex.h" />
     <ClInclude Include="SharedMemory\ScopedLock.h" />
+    <ClInclude Include="SharedMemory\SessionManager.h" />
     <ClInclude Include="SharedMemory\SharedStructs.h" />
     <ClInclude Include="Utilities\ApplicationConfig.h" />
     <ClInclude Include="Utilities\Datalinker.h" />
