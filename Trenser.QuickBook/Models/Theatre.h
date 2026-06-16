@@ -27,7 +27,7 @@ private:
     std::string m_phoneNumber;
     std::string m_email;
     User* m_theatreOwner;
-    Enums::TheatreStatus m_status; // enum can be defined separately
+    Enums::TheatreStatus m_status;
     std::vector<Screen*> m_screens;
     std::vector<Movie*> m_movies;
 public:

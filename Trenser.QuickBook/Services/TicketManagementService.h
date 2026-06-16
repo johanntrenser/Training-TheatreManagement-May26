@@ -14,6 +14,8 @@
 #include "FileManagement.h"
 #include "LogManagementService.h"
 #include "NotificationManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class TicketManagementService
 {
@@ -21,7 +23,7 @@ private:
 	DataStore& m_dataStore;
 	LogManagementService m_logManagementService;
 	NotificationManagementService m_notificationManagementService;
-	const std::string& PATH = config::File::TICKET_FILEPATH;
+	NamedMutex m_mutex;
 public:
 	TicketManagementService();
 	Enums::ProcessStatus generateTicket(Payment* payment, User* customer);
@@ -31,6 +33,4 @@ public:
 	const std::vector<const Ticket*> viewTicketHistory();
 	Enums::UserType getAuthenticatedUserType() const;
 	Enums::ProcessStatus cancelTicket(const std::string& ticketId);
-	void saveTicketData();
-	void loadTicketData();
 };
