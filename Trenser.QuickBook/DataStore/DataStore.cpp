@@ -233,11 +233,15 @@ std::map<std::string, Notification*>& DataStore::getNotifications()
 
 /*
  * Function: DataStore::getMovies
- * Description: Retrieves the collection of movies stored in the DataStore.
+ * Description: Retrieves all Movie records from shared memory and loads them into the DataStore.
+ *              Clears any existing movie data, fetches the mapped file of SharedMovie records
+ *              from the registry, deserializes each record into a Movie object, and stores
+ *              them in the internal map keyed by Movie ID. Returns the updated map of movies.
  * Parameters:
  *    None
  * Returns:
- *    Constant reference to a map of movie IDs to Movie pointers
+ *    A const reference to std::map<std::string, Movie*> containing all Movie objects
+ *    currently loaded in the DataStore.
  */
 const std::map<string, Movie*>& DataStore::getMovies()
 {
@@ -257,9 +261,13 @@ const std::map<string, Movie*>& DataStore::getMovies()
 
 /*
  * Function: DataStore::addMovieToSystem
- * Description: Adds a new movie to the DataStore, indexed by its unique movie ID.
+ * Description: Adds a Movie object to the system by serializing it into a SharedMovie record
+ *              and persisting it in shared memory via the registry. Retrieves the mapped file
+ *              for movies, appends the serialized record if available, and then deletes the
+ *              original Movie pointer to prevent memory leaks. This ensures that movies are
+ *              stored centrally in shared memory for system-wide access.
  * Parameters:
- *    movie - Pointer to the Movie object to be added
+ *    movie - A pointer to the Movie object to be added to the system.
  * Returns:
  *    None
  */
