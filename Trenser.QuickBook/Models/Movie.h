@@ -22,7 +22,7 @@ private:
     std::string m_language;
     std::string m_genre;
     int m_duration;
-    Enums::MovieStatus m_status; // enum placeholder
+    Enums::MovieStatus m_status;
 public:
     Movie();
     Movie(const std::string& movieId,

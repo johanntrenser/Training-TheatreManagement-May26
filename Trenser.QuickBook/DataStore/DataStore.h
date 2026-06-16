@@ -97,7 +97,7 @@ public:
 	void addBooking(Booking* booking);
 	const Ticket* getTicketForBooking(const Booking* booking);
 	const std::map<std::string, Seat*>& getSeats() const;
-	User* getUserById(std::string& id);
+	User* getUserById(const std::string& userId);
 	Show* getShowDetailsById(std::string& id);
 	void addSeat(Seat* seat);
 	void addScreen(Screen* screen);
@@ -118,5 +118,8 @@ public:
 	bool isUserLoggedIn(const std::string& userId);
 	bool addLoggedInUser(const std::string& userId);
 	bool removeLoggedInUser(const std::string& userId);
+	int getTicketCount() const;
+	Enums::ProcessStatus updateTicketStatus(const std::string& ticketId, Enums::TicketStatus status);
+	Payment* getPaymentById(const std::string& paymentId);
 	~DataStore();
 };

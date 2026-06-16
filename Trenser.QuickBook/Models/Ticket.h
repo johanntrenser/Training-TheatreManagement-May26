@@ -12,6 +12,7 @@
 #include "Payment.h"
 #include "Enums.h"
 #include "Factory.h"
+#include "ApplicationConfig.h"
 
 class Ticket
 {
@@ -31,7 +32,7 @@ public:
 	void setPayment(Payment* payment);
 	void setCustomer(User* customer);
 	void setTicketStatus(Enums::TicketStatus status);
-	std::string serialize();
-	static Ticket* deserialize(const std::string& line);
+	void serialize(SharedTicket& sharedTicket) const;
+	static Ticket* deserialize(const SharedTicket* sharedTicket);
 	~Ticket() = default;
 };

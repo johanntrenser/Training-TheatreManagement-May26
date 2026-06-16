@@ -65,6 +65,7 @@ public:
     int getScreenCount() const;
     int getSeatCount() const;
     int getLogsCount() const;
+    int getTicketCount() const;
     void closeAll();
     ~MappedFileRegistry()
     {

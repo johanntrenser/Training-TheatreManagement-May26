@@ -530,24 +530,60 @@ Show* DataStore::getShowByIdForUpdation(const std::string& showId)
 
 /*
 * Function Name : getTickets
-* Description   : Returns all tickets stored in the datastore.
+* Description   : Returns all tickets stored in the mapped file of ticket records.
 * Parameters    : None
 * Return Type   : std::map<std::string, Ticket*>&
 */
 std::map<std::string, Ticket*>& DataStore::getTickets()
 {
+    clearData();
+    MappedFile<SharedTicket>* ticketFile = m_registry.getTickets();
+    if (ticketFile)
+    {
+        int recordCount = 0;
+        SharedTicket* tickets = ticketFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            Ticket* ticket = Ticket::deserialize(&tickets[index]);
+            if (ticket)
+            {
+                Payment* payment = getPaymentById(tickets[index].paymentId);
+                User* customer = getUserById(tickets[index].customerId);
+                if (payment)
+                {
+                    ticket->setPayment(payment);
+                }
+                if (customer)
+                {
+                    ticket->setCustomer(customer);
+                }
+                m_tickets[ticket->getTicketId()] = ticket;
+            }
+        }
+    }
     return m_tickets;
 }
 
 /*
-* Function Name : addTicket
-* Description   : Adds a ticket to the datastore.
-* Parameters    :
-*                  ticket - Ticket to be added
-* Return Type   : void
-*/
+ * Function: addTicket
+ * Description: Serializes a Ticket object into a SharedTicket struct,
+ *              adds it to the mapped tickets file,
+ *              and registers the Ticket pointer in the internal map
+ *              keyed by its unique Ticket ID.
+ * Parameters:
+ *    ticket - Pointer to the Ticket object to be added
+ * Returns:
+ *    None
+ */
 void DataStore::addTicket(Ticket* ticket)
 {
+    SharedTicket sharedTicket{};
+    ticket->serialize(sharedTicket);
+    MappedFile<SharedTicket>* ticketFile = m_registry.getTickets();
+    if (ticketFile)
+    {
+        ticketFile->addRecord(sharedTicket);
+    }
     m_tickets[ticket->getTicketId()] = ticket;
 }
 
@@ -732,18 +768,33 @@ const std::map<std::string, Seat*>& DataStore::getSeats() const
 }
 
 /*
- * Function: DataStore::getUserById
- * Description: Retrieves a User object from the DataStore by its unique ID.
- *              Looks up the internal users map using the provided ID key
- *              and returns the corresponding User pointer.
+ * Function: getUserById
+ * Description: Retrieves a User object from the mapped users file by its unique ID.
+ *              Locates the corresponding SharedUser record, deserializes it into
+ *              a User object, and registers it in the internal user map for quick lookup.
  * Parameters:
- *    id - reference to a string containing the User ID
+ *    userId - Unique identifier of the user to retrieve
  * Returns:
- *    Pointer to the User object if found, otherwise nullptr
+ *    Pointer to the User object if found and deserialized successfully,
+ *    nullptr if the user record does not exist or deserialization fails
  */
-User* DataStore::getUserById(std::string& id)
+User* DataStore::getUserById(const std::string& userId)
 {
-    return m_users[id];
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    if (usersFile)
+    {
+        SharedUser* sharedUser = usersFile->findById(userId.c_str());
+        if (sharedUser != nullptr)
+        {
+            User* user = User::deserialize(sharedUser);
+            if (user)
+            {
+                m_users[user->getUserId()] = user;
+            }
+            return m_users[userId];
+        }
+    }
+    return nullptr;
 }
 
 /*
@@ -878,6 +929,34 @@ int DataStore::getLogsCount() const
 Show* DataStore::getShowDetailsById(std::string& id)
 {
     return m_shows[id];
+}
+
+/*
+ * Function: updateTicketStatus
+ * Description: Updates the status of a ticket in the mapped tickets file.
+ *              Locates the ticket record by ID, modifies its status.
+ * Parameters:
+ *    ticketId - Identifier of the ticket to update
+ *    status   - New ticket status to be applied
+ * Returns:
+ *    ProcessStatus::SUCCESS if update applied successfully,
+ *    ProcessStatus::FAILED if the ticket or file could not be found
+ */
+Enums::ProcessStatus DataStore::updateTicketStatus(const std::string& ticketId, Enums::TicketStatus status)
+{
+    MappedFile<SharedTicket>* ticketFile = m_registry.getTickets();
+    if (!ticketFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTicket* sharedTicket = ticketFile->findById(ticketId.c_str());
+    if (!sharedTicket)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedTicket->status = static_cast<int>(status);
+    ticketFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
 }
 
 /*
@@ -1121,6 +1200,50 @@ Enums::ProcessStatus DataStore::updateSeatStatus(const std::string& seatId, Enum
     sharedSeat->status = static_cast<int>(status);
     seatsFile->flush();
     return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: getTicketCount
+ * Description: Retrieves the total number of ticket records managed by the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of ticket records
+ */
+int DataStore::getTicketCount() const
+{
+    int count = m_registry.getTicketCount();
+    return count;
+}
+
+/*
+ * Function: getPaymentById
+ * Description: Retrieves a Payment object from the mapped payments file by its unique ID.
+ *              Locates the corresponding SharedPayment record, deserializes it into
+ *              a Payment object, and registers it in the internal payment map for quick lookup.
+ * Parameters:
+ *    paymentId - Unique identifier of the payment to retrieve
+ * Returns:
+ *    Pointer to the Payment object if found and deserialized successfully,
+ *    nullptr if the payment record does not exist or deserialization fails
+ */
+Payment* DataStore::getPaymentById(const std::string& paymentId)
+{
+    MappedFile<SharedPayment>* paymentsFile = m_registry.getPayments();
+    if (paymentsFile)
+    {
+        SharedPayment* sharedPayment = paymentsFile->findById(paymentId.c_str());
+        if (sharedPayment != nullptr)
+        {
+            Payment* payment = nullptr; /* Payment::deserialize(sharedPayment); */
+            if (payment)
+            {
+                m_payments[payment->getPaymentId()] = payment;
+            }
+            return m_payments[paymentId];
+        }
+    }
+    return nullptr;
 }
 
 /*

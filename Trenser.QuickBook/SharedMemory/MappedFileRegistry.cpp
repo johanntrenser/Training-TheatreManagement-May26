@@ -265,6 +265,19 @@ int MappedFileRegistry::getLogsCount() const
 }
 
 /*
+ * Function: getTicketCount
+ * Description: Retrieves the total number of ticket records from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of ticket records
+ */
+int MappedFileRegistry::getTicketCount() const
+{
+    return m_tickets->getRecordCount();
+}
+
+/*
 * Function: MappedFileRegistry::closeAll
 * Description: Releases all mapped file objects managed by the registry
 *              and resets their pointers to nullptr.
