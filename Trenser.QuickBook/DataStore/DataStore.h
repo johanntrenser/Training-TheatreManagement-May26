@@ -109,10 +109,12 @@ public:
 	int getLogsCount() const;
 	void clearData();
 	void setAuthenticatedUserPassword(const std::string& password);
-	int getRecordCount() const;
+	int getScreenCount() const;
+	int getSeatCount() const;
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
 	Enums::ProcessStatus updateScreenName(const std::string& screenId, const std::string& screenName);
 	Enums::ProcessStatus updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status);
+	Enums::ProcessStatus updateSeatStatus(const std::string& seatId, Enums::SeatStatus status);
 	bool isUserLoggedIn(const std::string& userId);
 	bool addLoggedInUser(const std::string& userId);
 	bool removeLoggedInUser(const std::string& userId);

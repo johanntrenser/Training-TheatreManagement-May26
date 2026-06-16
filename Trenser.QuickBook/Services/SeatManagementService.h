@@ -12,18 +12,21 @@
 #include <vector>
 #include "DataStore.h"
 #include "FileManagement.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
+#include "LogManagementService.h"
 
 class SeatManagementService
 {
 private:
     DataStore& m_dataStore;
-    const std::string& PATH_SEAT = config::File::SEAT_FILEPATH;
-    const std::string& PATH_SHOW_SEAT = config::File::SHOW_SEAT_FILEPATH;
+    NamedMutex m_mutex;
+    LogManagementService m_logManagementService;
 public:
     SeatManagementService();
     Enums::ProcessStatus updateSeatLayout(const std::string& selectedScreenId, int newRows, int newColumns, double amount);
     void clearSeatGrid(std::vector<std::vector<Seat*>>& seatGrid);
-    const std::vector<std::vector<Seat*>>& getSeatLayout(const std::string& selectedScreenId) const;
+    const std::vector<std::vector<Seat*>>& getSeatLayout(const std::string& selectedScreenId);
     Enums::ProcessStatus deactivateSeat(const std::string& selectedScreenId, const std::string& seatId);
     Enums::ProcessStatus deactivateSeats(const std::string& selectedScreenId);
     Enums::ProcessStatus hasActiveSeatBooking(Screen* screen, const std::string& seatId);
