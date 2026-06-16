@@ -248,9 +248,8 @@ std::vector<std::vector<Seat*>>& Screen::getSeatGridForUpdation()
  * Returns:
  *    SharedScreen struct representation of this Screen
  */
-SharedScreen Screen::serialize() const
+void Screen::serialize(SharedScreen& sharedScreen) const
 {
-    SharedScreen sharedScreen{};
     strncpy_s(sharedScreen.screenId, m_screenId.c_str(), sizeof(sharedScreen.screenId));
     strncpy_s(sharedScreen.theatreId,
         (m_theatre ? m_theatre->getTheatreId().c_str() : ""),
@@ -273,7 +272,6 @@ SharedScreen Screen::serialize() const
             }
         }
     }
-    return sharedScreen;
 }
 
 /*

@@ -778,11 +778,12 @@ void DataStore::addSeat(Seat* seat)
  */
 void DataStore::addScreen(Screen* screen)
 {
-    SharedScreen sharedScreen = screen->serialize();
+    SharedScreen* sharedScreen = new SharedScreen();
+    screen->serialize(*sharedScreen);
     MappedFile<SharedScreen>* screenFile = m_registry.getScreens();
     if (screenFile)
     {
-        screenFile->addRecord(sharedScreen);
+        screenFile->addRecord(*sharedScreen);
     }
     m_screens[screen->getScreenId()] = screen;
 }
