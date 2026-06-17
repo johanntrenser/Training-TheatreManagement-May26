@@ -11,21 +11,23 @@
 #include "DataStore.h"
 #include "FileManagement.h"
 #include "LogManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class BookingManagementService
 {
 private:
 	DataStore& m_dataStore;
 	LogManagementService logManagementService;
-	const std::string& PATH = config::File::BOOKING_FILEPATH;
+	NamedMutex m_mutex;
 public:
 	BookingManagementService();
-	const std::vector<const Booking*> getAllBookings() const;
-	const std::vector<const Booking*> getTheatreBookings() const;
-	const std::vector<const Booking*> getCustomerBookings() const;
-	const std::vector<std::string> getAllBookingIds() const;
-	const Booking* getBookingById(const std::string& bookingId) const;
-	const std::vector<const Booking*> getCancellableCustomerBookings() const;
+	const std::vector<const Booking*> getAllBookings();
+	const std::vector<const Booking*> getTheatreBookings();
+	const std::vector<const Booking*> getCustomerBookings();
+	const std::vector<std::string> getAllBookingIds();
+	const Booking* getBookingById(const std::string& bookingId);
+	const std::vector<const Booking*> getCancellableCustomerBookings();
 	Enums::ProcessStatus cancelBooking(const std::string& bookingId);
 	const Booking* bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectSeatIds);
 	const std::string generateBookingId();
@@ -34,7 +36,5 @@ public:
 	Enums::ProcessStatus cancelTicketAndProcessRefund(const Booking* booking);
 	void cancelBookingForFailedPayment(const std::string& bookingId);
 	const std::vector<std::string> getSeatIdsFromBooking(const Booking*);
-	void saveBookingData();
-	void loadBookingData();
 };
 

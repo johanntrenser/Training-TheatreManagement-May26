@@ -3,6 +3,7 @@
 #include "BookingManagementService.h"
 #include "Factory.h"
 #include "TicketManagementService.h"
+#include "ApplicationConfig.h"
 
 /*
  * Function: BookingManagementService
@@ -12,7 +13,8 @@
  * Returns: None
  */
 BookingManagementService::BookingManagementService() :
-    m_dataStore(DataStore::getInstance())
+    m_dataStore(DataStore::getInstance()),
+    m_mutex(config::MutexMappings::BOOKING_MUTEX_NAME)
 {
 }
 
@@ -24,8 +26,9 @@ BookingManagementService::BookingManagementService() :
  * Returns:
  *    const std::vector<const Booking*> - List of bookings
  */
-const std::vector<const Booking*> BookingManagementService::getAllBookings() const
+const std::vector<const Booking*> BookingManagementService::getAllBookings()
 {
+    ScopedLock lock(m_mutex);
     std::vector<const Booking*> bookings;
     const User* user = m_dataStore.getAuthenticatedUser();
     Enums::UserType userType = Enums::UserType::USER_NOT_FOUND;
@@ -55,8 +58,9 @@ const std::vector<const Booking*> BookingManagementService::getAllBookings() con
  * Returns:
  *    const std::vector<const Booking*> - List of theatre bookings
  */
-const std::vector<const Booking*> BookingManagementService::getTheatreBookings() const
+const std::vector<const Booking*> BookingManagementService::getTheatreBookings()
 {
+    ScopedLock lock(m_mutex);
     std::vector<const Booking*> filteredBookings;
     const std::map<std::string, Booking*> bookings = m_dataStore.getBookings();
     const User* user = m_dataStore.getAuthenticatedUser();
@@ -91,8 +95,9 @@ const std::vector<const Booking*> BookingManagementService::getTheatreBookings()
  * Returns:
  *    const std::vector<const Booking*> - List of customer bookings
  */
-const std::vector<const Booking*> BookingManagementService::getCustomerBookings() const
+const std::vector<const Booking*> BookingManagementService::getCustomerBookings()
 {
+    ScopedLock lock(m_mutex);
     std::vector<const Booking*> filteredBookings;
     const std::map<std::string, Booking*> bookings = m_dataStore.getBookings();
     const User* user = m_dataStore.getAuthenticatedUser();
@@ -124,8 +129,9 @@ const std::vector<const Booking*> BookingManagementService::getCustomerBookings(
  * Returns:
  *    const std::vector<std::string> - List of booking IDs
  */
-const std::vector<std::string> BookingManagementService::getAllBookingIds() const
+const std::vector<std::string> BookingManagementService::getAllBookingIds()
 {
+    ScopedLock lock(m_mutex);
     const std::vector<const Booking*> bookings = getAllBookings();
     std::vector<std::string> bookingIds;
     for (std::vector<const Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
@@ -146,8 +152,9 @@ const std::vector<std::string> BookingManagementService::getAllBookingIds() cons
  * Returns:
  *    const Booking* - Pointer to the booking if found, nullptr otherwise
  */
-const Booking* BookingManagementService::getBookingById(const std::string& bookingId) const
+const Booking* BookingManagementService::getBookingById(const std::string& bookingId)
 {
+    ScopedLock lock(m_mutex);
     return m_dataStore.getBookingById(bookingId);
 }
 
@@ -159,8 +166,9 @@ const Booking* BookingManagementService::getBookingById(const std::string& booki
  * Returns:
  *    const std::vector<const Booking*> - List of cancellable bookings
  */
-const std::vector<const Booking*> BookingManagementService::getCancellableCustomerBookings() const
+const std::vector<const Booking*> BookingManagementService::getCancellableCustomerBookings()
 {
+    ScopedLock lock(m_mutex);
     std::vector<const Booking*> filteredBookings;
     const std::map<std::string, Booking*> bookings = m_dataStore.getBookings();
     const User* user = m_dataStore.getAuthenticatedUser();
@@ -197,6 +205,7 @@ const std::vector<const Booking*> BookingManagementService::getCancellableCustom
  */
 Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& bookingId)
 {
+    ScopedLock lock(m_mutex);
     Booking* booking = m_dataStore.getBookingByIdForUpdation(bookingId);
     if (booking == nullptr)
     {
@@ -229,6 +238,7 @@ Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& 
     if (numberOfBookedSeats == numberOfSeatsCancelled && ticketCancellationAndRefundStatus == Enums::ProcessStatus::SUCCESS)
     {
         showSeatAvailability->setSeatAvailabilityMap(seatMap);
+        m_dataStore.updateBookingStatus(bookingId, Enums::BookingStatus::CANCELLED);
         booking->setStatus(Enums::BookingStatus::CANCELLED);
         std::string message = "Booking with ID : " + booking->getBookingId() + " has been cancelled.";
         logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
@@ -251,6 +261,7 @@ Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& 
 */
 const Booking* BookingManagementService::bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds)
 {
+    ScopedLock lock(m_mutex);
     Show* show = m_dataStore.getShowByIdForUpdation(showId);
     if (show == nullptr)
     {
@@ -292,8 +303,8 @@ const Booking* BookingManagementService::bookSelectedSeats(const std::string& sh
 */
 const std::string BookingManagementService::generateBookingId()
 {
-    const std::map<std::string, Booking*>& bookings = m_dataStore.getBookings();
-    int idNumber = static_cast<int>(bookings.size()) + 1;
+    const int bookingsCount = m_dataStore.getBookingCount();
+    int idNumber = bookingsCount + 1;
     std::ostringstream buffer;
     buffer << "BKG" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -371,6 +382,7 @@ Enums::ProcessStatus BookingManagementService::cancelTicketAndProcessRefund(cons
 */
 void BookingManagementService::cancelBookingForFailedPayment(const std::string& bookingId)
 {
+    ScopedLock lock(m_mutex);
     Booking* booking = m_dataStore.getBookingByIdForUpdation(bookingId);
     if (booking == nullptr)
     {
@@ -401,6 +413,7 @@ void BookingManagementService::cancelBookingForFailedPayment(const std::string& 
     if (numberOfBookedSeats == numberOfSeatsCancelled)
     {
         showSeatAvailability->setSeatAvailabilityMap(seatMap);
+        m_dataStore.updateBookingStatus(bookingId, Enums::BookingStatus::CANCELLED);
         booking->setStatus(Enums::BookingStatus::CANCELLED);
     }
 }
@@ -424,84 +437,4 @@ const std::vector<std::string> BookingManagementService::getSeatIdsFromBooking(c
         seatIds.push_back((*iterator)->getSeatId());
     }
     return seatIds;
-}
-
-/*
- * Function: BookingManagementService::saveBookingData
- * Description: Saves all booking data from the DataStore into a CSV file.
- *              Uses a configurable header (from config::Header::BOOKING_HEADER)
- *              and delegates serialization of each Booking object to its
- *              serialize() method for consistent formatting.
- *              Overwrites existing file content.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened)
- */
-void BookingManagementService::saveBookingData()
-{
-    std::vector<std::string> lines;
-    lines.push_back(config::Header::BOOKING_HEADER);
-    const std::map<std::string, Booking*>& bookings = m_dataStore.getBookings();
-    for (std::map<std::string, Booking*>::const_iterator iterator = bookings.begin(); iterator != bookings.end(); ++iterator)
-    {
-        lines.push_back((iterator->second)->serialize());
-    }
-    FileManagement::writeLines(std::string(config::File::BOOKING_FILEPATH), lines);
-}
-
-/*
- * Function: BookingManagementService::loadBookingData
- * Description: Loads all booking data from a CSV file into memory.
- *              Reads each line from the file using FileManagement::readlines(PATH),
- *              deserializes it into a Booking object via Booking::deserialize,
- *              and restores associations with Customer, Show, and Booked Seats if their IDs
- *              are present and found in the DataStore.
- *              Finally, adds the reconstructed Booking to the DataStore.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened or read)
- */
-void BookingManagementService::loadBookingData()
-{
-    std::string bookingId, customerId, showId, bookedSeat, status, amount;
-    std::vector<std::string> lines = FileManagement::readlines(PATH);
-    for (int index = 1; index < lines.size(); index++)
-    {
-        Booking* booking = Booking::deserialize(lines[index]);
-        std::stringstream lineStream(lines[index]);
-        getline(lineStream, bookingId, ',');
-        getline(lineStream, customerId, ',');
-        getline(lineStream, showId, ',');
-        getline(lineStream, bookedSeat, ',');
-        getline(lineStream, status, ',');
-        getline(lineStream, amount, ',');
-        if (!customerId.empty())
-        {
-            User* customer = m_dataStore.getUserById(customerId);
-            booking->setCustomer(customer);
-        }
-        if (!showId.empty())
-        {
-            Show* show = m_dataStore.getShowDetailsById(showId);
-            booking->setShow(show);
-        }
-        if (!bookedSeat.empty())
-        {
-            std::vector<Seat*> seats;
-            std::stringstream seatStream(bookedSeat);
-            std::string seatId;
-            while (getline(seatStream, seatId, '|'))
-            {
-                Seat* seat = m_dataStore.getSeatById(seatId);
-                if (seat != nullptr)
-                {
-                    seats.push_back(seat);
-                }
-            }
-            booking->setBookedSeats(seats);
-        }
-        m_dataStore.addBooking(booking);
-    }
 }

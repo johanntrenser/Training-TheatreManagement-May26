@@ -68,6 +68,7 @@ public:
     int getRefundCount() const;
     int getLogsCount() const;
     int getTicketCount() const;
+    int getBookingCount() const;
     void closeAll();
     ~MappedFileRegistry()
     {

@@ -5,6 +5,7 @@
 #include "BookingManagementService.h"
 #include "Factory.h"
 #include "TimeStamp.h"
+#include "ApplicationConfig.h"
 
 PaymentManagementService::PaymentManagementService()
     : m_dataStore(DataStore::getInstance()),
