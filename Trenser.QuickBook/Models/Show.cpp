@@ -227,48 +227,54 @@ void Show::setShowStatus(Enums::ShowStatus showStatus)
 
 /*
  * Function: serialize
- * Description: Converts Show object into CSV format string
+ * Description: Converts Show object into a SharedShow object
  * Returns:
- *    CSV string representing the user
+ *    SharedShow - flat struct representation of this Show
  */
-std::string Show::serialize()
+SharedShow Show::serialize()
 {
-    return m_showId + config::delimeter::comma +
-        (m_movie ? m_movie->getMovieId() : "") + config::delimeter::comma +
-        (m_screen ? m_screen->getScreenId() : "") + config::delimeter::comma +
-        util::serializeTime(m_startTime) + config::delimeter::comma +
-        util::serializeTime(m_endTime) + config::delimeter::comma +
-        (m_seatAvailability ? m_seatAvailability->getShowAvailabiltyId() : "") + config::delimeter::comma +
-        Enums::getShowStatusString(m_showStatus);
+    SharedShow sharedShow{};
+    strncpy_s(sharedShow.showId, m_showId.c_str(), sizeof(sharedShow.showId));
+    strncpy_s(sharedShow.movieId, m_movie->getMovieId().c_str(), sizeof(sharedShow.movieId));
+    strncpy_s(sharedShow.screenId, m_screen->getScreenId().c_str(), sizeof(sharedShow.screenId));
+    strncpy_s(sharedShow.startTime, util::serializeTime(m_startTime).c_str(), sizeof(sharedShow.startTime));
+    strncpy_s(sharedShow.endTime, util::serializeTime(m_endTime).c_str(), sizeof(sharedShow.endTime));
+    strncpy_s(sharedShow.seatAvailabilityId, m_seatAvailability->getShowAvailabiltyId().c_str(), sizeof(sharedShow.seatAvailabilityId));
+    sharedShow.status = static_cast<int>(m_showStatus);
+    return sharedShow;
 }
 
 /*
  * Function: Show::deserialize
- * Description: Deserializes a single line of CSV-formatted show data into a Show object.
- *              Extracts fields such as Show ID, Movie ID, Screen ID, Start Time, End Time,
- *              Seat Availability ID, and Status. Parses the start and end time strings into
- *              their components (year, month, day, hour, minute) and converts them into
- *              time_t objects using util::createTime. The Movie, Screen, and SeatAvailability
- *              pointers are set to nullptr initially and can be linked later when those
- *              objects are available in the DataStore.
+ * Description: Reconstructs a Show object from a SharedShow struct stored in shared memory.
+ *              Converts start and end times from serialized format into time_t objects,
+ *              sets the Show status, and initializes associations (Movie, Screen,
+ *              SeatAvailability) as nullptr for later linking by the DataStore.
  * Parameters:
- *    line - A reference to a string containing one line of CSV show data.
+ *    sharedShow (const SharedShow*) - Pointer to a SharedShow struct containing show data
  * Returns:
- *    A pointer to a newly created Show object populated with the deserialized data.
+ *    Show* - Pointer to a newly constructed Show object if deserialization succeeds,
+ *            nullptr if input is invalid
  */
-Show* Show::deserialize(const std::string& line)
+Show* Show::deserialize(const SharedShow* sharedShow)
 {
-    std::string showId, movieId, screenId, startTime, endTime, seatAvailabilityId, status, year, dash, space, month, day, hour, colon, minute;
-    std::stringstream lineStream(line);
-    getline(lineStream, showId, ',');
-    getline(lineStream, movieId, ',');
-    getline(lineStream, screenId, ',');
-    getline(lineStream, startTime, ',');
-    getline(lineStream, endTime, ',');
-    getline(lineStream, seatAvailabilityId, ',');
-    getline(lineStream, status, ',');
-    time_t convertedStartTime = util::deserializeTime(startTime);
-    time_t convertedEndTime = util::deserializeTime(endTime);
-    Show* show = Factory::getObject<Show>(showId, nullptr, nullptr, convertedStartTime, convertedEndTime, nullptr);
+    if (sharedShow == nullptr)
+    {
+        return nullptr;
+    }
+    Enums::ShowStatus status = static_cast<Enums::ShowStatus>(sharedShow->status);
+    time_t convertedStartTime = util::deserializeTime(sharedShow->startTime);
+    time_t convertedEndTime = util::deserializeTime(sharedShow->endTime);
+    Show* show = Factory::getObject<Show>(
+        sharedShow->showId,
+        nullptr,
+        nullptr,
+        convertedStartTime,
+        convertedEndTime,
+        nullptr);
+    if (show != nullptr)
+    {
+        show->setShowStatus(status);
+    }
     return show;
 }

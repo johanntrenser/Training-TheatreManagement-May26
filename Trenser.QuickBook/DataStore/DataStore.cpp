@@ -300,28 +300,83 @@ void DataStore::addMovieToSystem(Movie* movie)
 }
 
 /*
- * Function: getShows
- * Description: Returns read?only access to all shows.
+ * Function: DataStore::getShows
+ * Description: Retrieves all Show objects from the mapped file registry.
+ *              Deserializes each SharedShow record, links associated Movie,
+ *              Screen, and ShowSeatAvailability objects, and caches them in
+ *              the internal map. Provides read-only access to the collection.
  * Parameters:
  *    None
  * Returns:
- *    Const reference to map of Show pointers
+ *    const std::map<std::string, Show*>& - Constant reference to the map of Show
+ *    objects keyed by Show ID. May be empty if no shows exist.
  */
-const std::map<std::string, Show*>& DataStore::getShows() const
+const std::map<std::string, Show*>& DataStore::getShows()
 {
+    clearData();
+    MappedFile<SharedShow>* showsFile = m_registry.getShows();
+    if (showsFile)
+    {
+        int recordCount = 0;
+        SharedShow* shows = showsFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            Show* show = Show::deserialize(&shows[index]);
+            Movie* movie = getMovieById(shows[index].movieId);
+            Screen* screen = getScreenById(shows[index].screenId);
+            ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(shows[index].seatAvailabilityId);
+            if (show && movie && screen && seatAvailability)
+            {
+                show->setMovie(movie);
+                show->setScreen(screen);
+                seatAvailability->setShow(show);
+                show->setSeatAvailability(seatAvailability);
+                std::vector<Screen*> screens;
+                m_shows[show->getShowId()] = show;
+            }
+        }
+    }
     return m_shows;
 }
 
 /*
- * Function: getShowsForUpdation
- * Description: Returns modifiable access to all shows.
+ * Function: DataStore::getShowsForUpdation
+ * Description: Retrieves all Show objects from the mapped file registry with
+ *              modifiable access. Deserializes each SharedShow record, links
+ *              associated Movie, Screen, and ShowSeatAvailability objects, and
+ *              caches them in the internal map. Allows updates to the collection.
  * Parameters:
  *    None
  * Returns:
- *    Reference to map of Show pointers
+ *    std::map<std::string, Show*>& - Reference to the map of Show objects keyed
+ *    by Show ID. May be empty if no shows exist.
  */
 std::map<std::string, Show*>& DataStore::getShowsForUpdation()
 {
+    clearData();
+    MappedFile<SharedShow>* showsFile = m_registry.getShows();
+    if (showsFile)
+    {
+        int recordCount = 0;
+        SharedShow* shows = showsFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            Show* show = Show::deserialize(&shows[index]);
+            Movie* movie = getMovieById(shows[index].movieId);
+            Screen* screen = getScreenById(shows[index].screenId);
+            ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(shows[index].seatAvailabilityId);
+
+            if (show && movie && screen && seatAvailability)
+            {
+                show->setMovie(movie);
+                show->setScreen(screen);
+                seatAvailability->setShow(show);
+                show->setSeatAvailability(seatAvailability);
+                std::vector<Screen*> screens;
+                m_shows[show->getShowId()] = show;
+            }
+        }
+    }
     return m_shows;
 }
 
@@ -360,16 +415,48 @@ const std::map<std::string, Screen*>& DataStore::getScreens()
 
 /*
  * Function: DataStore::getTheatres
- * Description: Provides access to the collection of theatres stored in the datastore.
- *              Returns a reference to the internal map containing all theatre records.
- * Parameters: None
+ * Description: Retrieves all Theatre objects from the mapped file registry.
+ *              Deserializes each SharedTheatre record, links TheatreOwner,
+ *              associated Movies, and Screens, and stores them in the internal map.
+ * Parameters:
+ *    None
  * Returns:
- *    A constant reference to a map where the key is the theatre ID (string) and
- *    the value is a pointer to the Theatre object. The map may be empty if no
- *    theatres are currently stored.
+ *    const std::map<std::string, Theatre*>& - Reference to the map of Theatre objects,
+ *    keyed by theatre ID. May be empty if no theatres exist.
  */
-const std::map<std::string, Theatre*>& DataStore::getTheatres() const
+const std::map<std::string, Theatre*>& DataStore::getTheatres()
 {
+    clearData();
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (theatresFile)
+    {
+        int recordCount = 0;
+        SharedTheatre* theatres = theatresFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            Theatre* theatre = Theatre::deserialize(&theatres[index]);
+            User* user = getUserById(theatres[index].ownerId);
+            if (theatre && user)
+            {
+                theatre->setTheatreOwner(user);
+                std::vector<Movie*> movies;
+                std::vector<Screen*> screens;
+                for (int movieIndex = 0; movieIndex < theatres[index].movieCount; ++movieIndex)
+                {
+                    Movie* movie = getMovieById(theatres[index].movieIds[movieIndex]);
+                    movies.push_back(movie);
+                }
+                for (int screenIndex = 0; screenIndex < theatres[index].screenCount; ++screenIndex)
+                {
+                    Screen* screen = getScreenById(theatres[index].screenIds[screenIndex]);
+                    screen->setTheatre(theatre);
+                    screens.push_back(screen);
+                }
+                theatre->setMovies(movies);
+                theatre->setScreens(screens);
+            }
+        }
+    }
     return m_theatres;
 }
 
@@ -427,15 +514,25 @@ const std::map<std::string, Booking*>& DataStore::getBookings()
 
 /*
  * Function: DataStore::addTheatre
- * Description: Adds a new theatre object to the data store using
- *              the theatre ID as the key.
+ * Description: Adds a Theatre object to the datastore and persists it in the
+ *              mapped file registry. Serializes the Theatre into a SharedTheatre
+ *              record, appends it to the mapped file, and updates the internal
+ *              theatre map. If an existing entry is present, it is deleted and
+ *              replaced with the new one.
  * Parameters:
- *    theatre (Theatre*) - Pointer to the theatre object to be added
+ *    theatre (Theatre*) - Pointer to the Theatre object to be added
  * Returns:
  *    void
  */
 void DataStore::addTheatre(Theatre* theatre)
 {
+    SharedTheatre sharedTheatre = theatre->serialize();
+    MappedFile<SharedTheatre>* theatreFile = m_registry.getTheatres();
+    if (theatreFile)
+    {
+        theatreFile->addRecord(sharedTheatre);
+    }
+    delete m_theatres[theatre->getTheatreId()];
     m_theatres[theatre->getTheatreId()] = theatre;
 }
 
@@ -447,50 +544,120 @@ void DataStore::addTheatre(Theatre* theatre)
  * Returns:
  *    Theatre* - Pointer to the theatre if found, nullptr otherwise
  */
-Theatre* DataStore::getTheatreById(const std::string& theatreId) const
+Theatre* DataStore::getTheatreById(const std::string& theatreId)
 {
-    std::map<std::string, Theatre*>::const_iterator iterator = m_theatres.find(theatreId);
-    if (iterator == m_theatres.end())
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (theatresFile)
     {
-        return nullptr;
+        SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+        if (sharedTheatre != nullptr)
+        {
+            Theatre* theatre = Theatre::deserialize(sharedTheatre);
+            User* user = getUserById(sharedTheatre->ownerId);
+            if (theatre && user)
+            {
+                theatre->setTheatreOwner(user);
+                std::vector<Movie*> movies;
+                std::vector<Screen*> screens;
+                for (int movieIndex = 0; movieIndex < sharedTheatre->movieCount; ++movieIndex)
+                {
+                    Movie* movie = getMovieById(sharedTheatre->movieIds[movieIndex]);
+                    movies.push_back(movie);
+                }
+                for (int screenIndex = 0; screenIndex < sharedTheatre->screenCount; ++screenIndex)
+                {
+                    Screen* screen = getScreenById(sharedTheatre->screenIds[screenIndex]);
+                    screen->setTheatre(theatre);
+                    screens.push_back(screen);
+                }
+                theatre->setMovies(movies);
+                theatre->setScreens(screens);
+            }
+            return m_theatres[theatreId];
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
  * Function: DataStore::getMovieById
- * Description: Retrieves a movie object based on its unique identifier.
+ * Description: Retrieves a Movie object by its unique identifier from the mapped file.
+ *              Deserializes the corresponding SharedMovie record and caches the Movie
+ *              in the datastore for reuse. Linking to related entities (e.g., theatres)
+ *              is deferred to higher-level services.
  * Parameters:
  *    movieId (const std::string&) - Unique identifier of the movie
  * Returns:
- *    Movie* - Pointer to the movie if found, nullptr otherwise
+ *    Movie* - Pointer to the Movie object if found and deserialized successfully,
+ *             nullptr otherwise
  */
-Movie* DataStore::getMovieById(const std::string& movieId) const
+Movie* DataStore::getMovieById(const std::string& movieId)
 {
-    std::map<std::string, Movie*>::const_iterator iterator = m_movies.find(movieId);
-    if (iterator == m_movies.end())
+    MappedFile<SharedMovie>* moviesFile = m_registry.getMovies();
+    if (moviesFile)
     {
-        return nullptr;
+        SharedMovie* sharedMovie = moviesFile->findById(movieId.c_str());
+        if (sharedMovie != nullptr)
+        {
+            Movie* movie = Movie::deserialize(sharedMovie);
+            if (movie)
+            {
+                delete m_movies[movie->getMovieId()];
+                m_movies[movie->getMovieId()] = movie;
+            }
+            return m_movies[movieId];
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
  * Function: DataStore::getScreenById
- * Description: Retrieves a screen object based on its unique identifier.
+ * Description: Retrieves a Screen object by its unique identifier from the mapped file.
+ *              Deserializes the SharedScreen record, constructs the seat grid,
+ *              links each Seat to the Screen, and caches the Screen in the datastore.
  * Parameters:
  *    screenId (const std::string&) - Unique identifier of the screen
  * Returns:
- *    Screen* - Pointer to the screen if found, nullptr otherwise
+ *    Screen* - Pointer to the Screen object if found, nullptr otherwise
  */
-Screen* DataStore::getScreenById(const std::string& screenId) const
+Screen* DataStore::getScreenById(const std::string& screenId)
 {
-    std::map<std::string, Screen*>::const_iterator iterator = m_screens.find(screenId);
-    if (iterator == m_screens.end())
+    MappedFile<SharedScreen>* screensFile = m_registry.getScreens();
+    if (screensFile)
     {
-        return nullptr;
+        SharedScreen* sharedScreen = screensFile->findById(screenId.c_str());
+        if (sharedScreen != nullptr)
+        {
+            Screen* screen = Screen::deserialize(sharedScreen);
+            if (screen)
+            {
+                std::vector<vector<Seat*>>& seats = screen->getSeatGridForUpdation();
+                int rows = sharedScreen->totalRows;
+                int columns = sharedScreen->totalColumns;
+                int seatIndex = 0;
+                for (int rowIndex = 0; rowIndex < rows; ++rowIndex)
+                {
+                    for (int columnIndex = 0; columnIndex < columns; ++columnIndex)
+                    {
+                        if (seatIndex < sharedScreen->seatCount)
+                        {
+                            Seat* seat = getSeatById(sharedScreen->seatIds[seatIndex]);
+                            if (seat)
+                            {
+                                seat->setScreen(screen);
+                                seats[rowIndex][columnIndex] = seat;
+                            }
+                        }
+                    }
+                }
+                delete m_screens[screen->getScreenId()];
+                m_screens[screen->getScreenId()] = screen;
+            }
+            return m_screens[screenId];
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
@@ -533,38 +700,85 @@ void DataStore::addShowSeatAvailability(ShowSeatAvailability* showSeatAvailabili
 
 /*
  * Function: DataStore::getShowById
- * Description: Retrieves a show object in read-only mode using its unique ID.
+ * Description: Retrieves a Show object in read-only mode using its unique identifier.
+ *              Deserializes the corresponding SharedShow record, links associated
+ *              Movie, Screen, and ShowSeatAvailability objects, and caches the Show
+ *              in the datastore. Existing entries are deleted and replaced.
  * Parameters:
  *    showId (const std::string&) - Unique identifier of the show
  * Returns:
- *    const Show* - Pointer to the show if found, nullptr otherwise
+ *    const Show* - Pointer to the Show object if found and deserialized successfully,
+ *                  nullptr otherwise
  */
 const Show* DataStore::getShowById(const std::string& showId)
 {
-    std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
-    if (iterator == m_shows.end())
+    MappedFile<SharedShow>* showsFile = m_registry.getShows();
+    if (showsFile)
     {
-        return nullptr;
+        SharedShow* sharedShow = showsFile->findById(showId.c_str());
+        if (sharedShow != nullptr)
+        {
+            Show* show = Show::deserialize(sharedShow);
+            Movie* movie = getMovieById(sharedShow->movieId);
+            Screen* screen = getScreenById(sharedShow->screenId);
+            ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(sharedShow->seatAvailabilityId);
+            if (show && movie && screen && seatAvailability)
+            {
+                show->setMovie(movie);
+                show->setScreen(screen);
+                seatAvailability->setShow(show);
+                show->setSeatAvailability(seatAvailability);
+                std::vector<Screen*> screens;
+                m_shows[show->getShowId()] = show;
+                delete m_shows[show->getShowId()];
+                m_shows[show->getShowId()] = show;
+                return m_shows[show->getShowId()];
+            }
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
  * Function: DataStore::getShowByIdForUpdation
- * Description: Retrieves a modifiable show object using its unique ID for update operations.
+ * Description: Retrieves a Show object in modifiable mode using its unique identifier.
+ *              Deserializes the corresponding SharedShow record, links associated
+ *              Movie, Screen, and ShowSeatAvailability objects, and caches the Show
+ *              in the datastore. Existing entries are deleted and replaced, allowing
+ *              updates to the Show object.
  * Parameters:
  *    showId (const std::string&) - Unique identifier of the show
  * Returns:
- *    Show* - Pointer to the show if found, nullptr otherwise
+ *    Show* - Pointer to the Show object if found and deserialized successfully,
+ *            nullptr otherwise
  */
 Show* DataStore::getShowByIdForUpdation(const std::string& showId)
 {
-    std::map<std::string, Show*>::const_iterator iterator = m_shows.find(showId);
-    if (iterator == m_shows.end())
+    MappedFile<SharedShow>* showsFile = m_registry.getShows();
+    if (showsFile)
     {
-        return nullptr;
+        SharedShow* sharedShow = showsFile->findById(showId.c_str());
+        if (sharedShow != nullptr)
+        {
+            Show* show = Show::deserialize(sharedShow);
+            Movie* movie = getMovieById(sharedShow->movieId);
+            Screen* screen = getScreenById(sharedShow->screenId);
+            ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(sharedShow->seatAvailabilityId);
+            if (show && movie && screen && seatAvailability)
+            {
+                show->setMovie(movie);
+                show->setScreen(screen);
+                seatAvailability->setShow(show);
+                show->setSeatAvailability(seatAvailability);
+                std::vector<Screen*> screens;
+                m_shows[show->getShowId()] = show;
+                delete m_shows[show->getShowId()];
+                m_shows[show->getShowId()] = show;
+                return m_shows[show->getShowId()];
+            }
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
@@ -794,20 +1008,33 @@ Booking* DataStore::getBookingByIdForUpdation(const std::string& bookingId)
 }
 
 /*
-* Function Name : getSeatById
-* Description   : Retrieves a seat using the provided seat ID.
-* Parameters    :
-*                  seatId - Unique identifier of the seat
-* Return Type   : Seat*
-*/
+ * Function: DataStore::getSeatById
+ * Description: Retrieves a Seat object by its unique identifier from the mapped file.
+ *              Deserializes the SharedSeat record and caches the Seat in the datastore.
+ *              Linking to its Screen is deferred until Screen construction.
+ * Parameters:
+ *    seatId (const std::string) - Unique identifier of the seat
+ * Returns:
+ *    Seat* - Pointer to the Seat object if found, nullptr otherwise
+ */
 Seat* DataStore::getSeatById(const std::string seatId)
 {
-    std::map<std::string, Seat*>::const_iterator iterator = m_seats.find(seatId);
-    if (iterator == m_seats.end())
+    MappedFile<SharedSeat>* seatsFile = m_registry.getSeats();
+    if (seatsFile)
     {
-        return nullptr;
+        SharedSeat* sharedSeat = seatsFile->findById(seatId.c_str());
+        if (sharedSeat != nullptr)
+        {
+            Seat* seat = Seat::deserialize(sharedSeat);
+            if (seat)
+            {
+                delete m_seats[seat->getSeatId()];
+                m_seats[seat->getSeatId()] = seat;
+            }
+            return m_seats[seatId];
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
@@ -907,6 +1134,7 @@ User* DataStore::getUserById(const std::string& userId)
             User* user = User::deserialize(sharedUser);
             if (user)
             {
+                delete m_users[user->getUserId()];
                 m_users[user->getUserId()] = user;
             }
             return m_users[userId];
@@ -933,6 +1161,7 @@ void DataStore::addSeat(Seat* seat)
     {
         seatFile->addRecord(sharedSeat);
     }
+    delete m_seats[seat->getSeatId()];
     m_seats[seat->getSeatId()] = seat;
 }
 
@@ -954,6 +1183,7 @@ void DataStore::addScreen(Screen* screen)
     {
         screenFile->addRecord(*sharedScreen);
     }
+    delete m_screens[screen->getScreenId()];
     m_screens[screen->getScreenId()] = screen;
 }
 
@@ -1031,6 +1261,20 @@ int DataStore::getUsersCount() const
 int DataStore::getLogsCount() const
 {
     int count = m_registry.getLogsCount();
+    return count;
+}
+
+/*
+ * Function: getTheatresCount
+ * Description: Retrieves the total number of theatres from the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of theatres
+ */
+int DataStore::getTheatresCount() const
+{
+    int count = m_registry.getTheatresCount();
     return count;
 }
 
@@ -1453,6 +1697,328 @@ Enums::ProcessStatus DataStore::updateRefundStatus(const std::string& refundId, 
 }
 
 /*
+ * Function: DataStore::updateShowStatus
+ * Description: Updates the status of a Show record in the mapped file registry.
+ *              Locates the SharedShow record by its unique identifier, modifies
+ *              the status field, and flushes the changes to persistent storage.
+ * Parameters:
+ *    showId (const std::string&) - Unique identifier of the show
+ *    status (Enums::ShowStatus)  - New status value to assign to the show
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the show record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateShowStatus(const std::string& showId, Enums::ShowStatus status)
+{
+    MappedFile<SharedShow>* showsFile = m_registry.getShows();
+    if (!showsFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedShow* sharedShow = showsFile->findById(showId.c_str());
+    if (!sharedShow)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedShow->status = static_cast<int>(status);
+    showsFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::addMovieToTheatre
+ * Description: Adds a Movie to a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, copies
+ *              the Movie ID into the movieIds array, increments the movieCount,
+ *              and flushes the changes to persistent storage.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ *    movieId   (const std::string&) - Unique identifier of the movie to add
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the movie was added and flushed successfully,
+ *                           FAILED if the theatre record is not found or the
+ *                           mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::addMovieToTheatre(const std::string& theatreId, const std::string& movieId)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strncpy_s(sharedTheatre->movieIds[sharedTheatre->movieCount], movieId.c_str(), sizeof(sharedTheatre->movieIds[0]));
+    sharedTheatre->movieCount++;
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateTheatreName
+ * Description: Updates the name of a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, copies
+ *              the new name into the struct, and flushes the changes to persistent storage.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ *    name      (const std::string&) - New name to assign to the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the theatre record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateTheatreName(const std::string& theatreId, const std::string& name)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strncpy_s(sharedTheatre->name, name.c_str(), sizeof(sharedTheatre->name));
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateTheatreCity
+ * Description: Updates the city field of a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, copies
+ *              the new city value into the struct, and flushes the changes to persistent storage.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ *    city      (const std::string&) - New city value to assign to the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the theatre record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateTheatreCity(const std::string& theatreId, const std::string& city)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strncpy_s(sharedTheatre->city, city.c_str(), sizeof(sharedTheatre->city));
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateTheatreAddress
+ * Description: Updates the address field of a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, copies
+ *              the new address value into the struct, and flushes the changes to persistent storage.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ *    address   (const std::string&) - New address value to assign to the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the theatre record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateTheatreAddress(const std::string& theatreId, const std::string& address)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strncpy_s(sharedTheatre->address, address.c_str(), sizeof(sharedTheatre->address));
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateTheatrePhoneNumber
+ * Description: Updates the phone number field of a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, copies
+ *              the new phone number value into the struct, and flushes the changes to persistent storage.
+ * Parameters:
+ *    theatreId   (const std::string&) - Unique identifier of the theatre
+ *    phoneNumber (const std::string&) - New phone number value to assign to the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the theatre record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateTheatrePhoneNumber(const std::string& theatreId, const std::string& phoneNumber)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strncpy_s(sharedTheatre->phoneNumber, phoneNumber.c_str(), sizeof(sharedTheatre->phoneNumber));
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateTheatreEmail
+ * Description: Updates the email field of a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, copies
+ *              the new email value into the struct, and flushes the changes to persistent storage.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ *    email     (const std::string&) - New email value to assign to the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the theatre record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateTheatreEmail(const std::string& theatreId, const std::string& email)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strncpy_s(sharedTheatre->email, email.c_str(), sizeof(sharedTheatre->email));
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateTheatreStatus
+ * Description: Updates the status field of a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, modifies
+ *              the status field, and flushes the changes to persistent storage.
+ * Parameters:
+ *    theatreId (const std::string&)    - Unique identifier of the theatre
+ *    status    (Enums::TheatreStatus)  - New status value to assign to the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the theatre record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateTheatreStatus(const std::string& theatreId, Enums::TheatreStatus status)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedTheatre->status = static_cast<int>(status);
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::clearMoviesFromTheatre
+ * Description: Removes all movies linked to a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, clears the
+ *              movieIds array, resets movieCount to zero, and flushes the changes.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the theatre record is not found or
+ *                           the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::clearMoviesFromTheatre(const std::string& theatreId)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    memset(sharedTheatre->movieIds, 0, sizeof(sharedTheatre->movieIds));
+    sharedTheatre->movieCount = 0;
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::removeMovieFromTheatre
+ * Description: Removes a Movie from a Theatre record in the mapped file registry.
+ *              Locates the SharedTheatre record by its unique identifier, searches
+ *              for the given Movie ID in the movieIds array, shifts remaining entries
+ *              to close the gap, decrements movieCount, and flushes the changes.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ *    movieId   (const std::string&) - Unique identifier of the movie to remove
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the movie was removed and flushed successfully,
+ *                           FAILED if the theatre record is not found, the movie
+ *                           is not present, or the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId)
+{
+    MappedFile<SharedTheatre>* theatresFile = m_registry.getTheatres();
+    if (!theatresFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+
+    SharedTheatre* sharedTheatre = theatresFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    int index = -1;
+    for (int movieIndex = 0; movieIndex < sharedTheatre->movieCount; ++movieIndex)
+    {
+        if (strcmp(sharedTheatre->movieIds[movieIndex], movieId.c_str()) == 0)
+        {
+            index = movieIndex;
+            break;
+        }
+    }
+    if (index == -1)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    for (int movieIndex = index; movieIndex < sharedTheatre->movieCount - 1; ++movieIndex)
+    {
+        strncpy_s(sharedTheatre->movieIds[movieIndex], sharedTheatre->movieIds[movieIndex + 1], sizeof(sharedTheatre->movieIds[0]));
+    }
+    memset(sharedTheatre->movieIds[sharedTheatre->movieCount - 1], 0, sizeof(sharedTheatre->movieIds[0]));
+    sharedTheatre->movieCount--;
+    theatresFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
  * Function: DataStore::isUserLoggedIn
  * Description: Checks whether the specified user currently has an active
  *              session in the shared session manager. Access is synchronized
@@ -1494,7 +2060,7 @@ bool DataStore::addLoggedInUser(const std::string& userId)
  * Parameters:
  *    userId - Unique identifier of the user to be removed from the active sessions.
  * Returns:
- *    true if the user session was removed successfully,
+ *    true if the user session was removed successfully, 
  *    false otherwise.
  */
 bool DataStore::removeLoggedInUser(const std::string& userId)
@@ -1546,6 +2112,39 @@ int DataStore::getBookingCount() const
 }
 
 /*
+* Function: DataStore::getShowSeatAvailabilityById
+* Description: Retrieves a ShowSeatAvailability object by its unique identifier
+*              from the mapped file. Deserializes the corresponding
+*              SharedShowSeatAvailability record, rebuilds the seat availability
+*              map, and caches the object in the datastore. If an existing entry
+*              is present, it is deleted and replaced with the new one.
+* Parameters:
+*    seatAvailabilityId (const std::string&) - Unique identifier of the seat availability record
+* Returns:
+*    ShowSeatAvailability* - Pointer to the ShowSeatAvailability object if found and
+*                            deserialized successfully, nullptr otherwise
+*/
+ShowSeatAvailability* DataStore::getShowSeatAvailabilityById(const std::string& seatAvailabilityId)
+{
+    MappedFile<SharedShowSeatAvailability>* seatAvailabilityFile = m_registry.getAvailability();
+    if (seatAvailabilityFile)
+    {
+        SharedShowSeatAvailability* sharedSeatAvailability = seatAvailabilityFile->findById(seatAvailabilityId.c_str());
+        if (sharedSeatAvailability != nullptr)
+        {
+            ShowSeatAvailability* showSeatAvailability = ShowSeatAvailability::deserialize(sharedSeatAvailability);
+            if (showSeatAvailability)
+            {
+                delete m_showSeatAvailabilitys[showSeatAvailability->getShowAvailabiltyId()];
+                m_showSeatAvailabilitys[showSeatAvailability->getShowAvailabiltyId()] = showSeatAvailability;
+            }
+            return m_showSeatAvailabilitys[seatAvailabilityId];
+        }
+    }
+    return nullptr;
+}
+
+/*
  * Function: DataStore::~DataStore
  * Description: Destructor for the DataStore singleton. Iterates through all
  *              in-memory maps and deletes every heap-allocated object in
@@ -1557,56 +2156,5 @@ int DataStore::getBookingCount() const
  */
 DataStore::~DataStore()
 {
-    for (std::map<std::string, Ticket*>::iterator iterator = m_tickets.begin(); iterator != m_tickets.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Refund*>::iterator iterator = m_refunds.begin(); iterator != m_refunds.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Payment*>::iterator iterator = m_payments.begin(); iterator != m_payments.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Booking*>::iterator iterator = m_bookings.begin(); iterator != m_bookings.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, ShowSeatAvailability*>::iterator iterator = m_showSeatAvailabilitys.begin(); iterator != m_showSeatAvailabilitys.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Show*>::iterator iterator = m_shows.begin(); iterator != m_shows.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Seat*>::iterator iterator = m_seats.begin(); iterator != m_seats.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Screen*>::iterator iterator = m_screens.begin(); iterator != m_screens.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Theatre*>::iterator iterator = m_theatres.begin(); iterator != m_theatres.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Movie*>::iterator iterator = m_movies.begin(); iterator != m_movies.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Notification*>::iterator iterator = m_notifications.begin(); iterator != m_notifications.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, Log*>::iterator iterator = m_logs.begin(); iterator != m_logs.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
-    for (std::map<std::string, User*>::iterator iterator = m_users.begin(); iterator != m_users.end(); ++iterator)
-    {
-        delete iterator->second;
-    }
+    clearData();
 }

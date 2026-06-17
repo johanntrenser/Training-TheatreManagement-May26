@@ -181,7 +181,7 @@
       <Filter>SharedMemory</Filter>
     </ClCompile>
     <ClCompile Include="SharedMemory\SessionManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>SharedMemory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -324,7 +324,7 @@
       <Filter>SharedMemory</Filter>
     </ClInclude>
     <ClInclude Include="SharedMemory\SessionManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>SharedMemory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

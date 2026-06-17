@@ -236,7 +236,10 @@ SharedSeat Seat::serialize()
  */
 Seat* Seat::deserialize(const SharedSeat* sharedSeat)
 {
-    if (sharedSeat == nullptr) return nullptr;
+    if (sharedSeat == nullptr)
+    {
+        return nullptr;
+    }
     Enums::SeatStatus status = static_cast<Enums::SeatStatus>(sharedSeat->status);
     Seat* seat = Factory::getObject<Seat>(
         sharedSeat->seatId,

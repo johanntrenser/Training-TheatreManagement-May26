@@ -337,77 +337,72 @@ void Theatre::addMovieToTheatre(Movie* movie)
 }
 
 /*
- * Function: serialize
- * Description: Converts Theatre object into CSV format string
+ * Function: Theatre::serialize
+ * Description: Converts a Theatre object into a SharedTheatre struct suitable
+ *              for shared memory storage. Copies all scalar fields and flattens
+ *              associations (ownerId, movieIds, screenIds) into fixed-size char arrays.
+ * Parameters:
+ *    None
  * Returns:
- *    CSV string representing the user
+ *    SharedTheatre - A fixed-size struct representing the Theatre in shared memory
  */
-std::string Theatre::serialize()
+SharedTheatre Theatre::serialize()
 {
-    std::string result = m_theatreId + config::delimeter::comma +
-        m_name + config::delimeter::comma +
-        m_city + config::delimeter::comma +
-        m_address + config::delimeter::comma +
-        m_phoneNumber + config::delimeter::comma +
-        m_email + config::delimeter::comma;
-    if (m_theatreOwner)
+    SharedTheatre sharedTheatre{};
+    strncpy_s(sharedTheatre.theatreId, m_theatreId.c_str(), sizeof(sharedTheatre.theatreId));
+    strncpy_s(sharedTheatre.name, m_name.c_str(), sizeof(sharedTheatre.name));
+    strncpy_s(sharedTheatre.city, m_city.c_str(), sizeof(sharedTheatre.city));
+    strncpy_s(sharedTheatre.address, m_address.c_str(), sizeof(sharedTheatre.address));
+    strncpy_s(sharedTheatre.phoneNumber, m_phoneNumber.c_str(), sizeof(sharedTheatre.phoneNumber));
+    strncpy_s(sharedTheatre.email, m_email.c_str(), sizeof(sharedTheatre.email));
+    if (m_theatreOwner != nullptr)
     {
-        result += m_theatreOwner->getUserId() + config::delimeter::comma;
+        strncpy_s(sharedTheatre.ownerId, m_theatreOwner->getUserId().c_str(), sizeof(sharedTheatre.ownerId));
     }
-    else
+    sharedTheatre.status = static_cast<int>(m_status);
+    for (std::vector<Movie*>::iterator iterator = m_movies.begin(); iterator != m_movies.end(); ++iterator)
     {
-        result += config::delimeter::comma;
+        strncpy_s(sharedTheatre.movieIds[sharedTheatre.movieCount], (*iterator)->getMovieId().c_str(), sizeof(sharedTheatre.movieIds[sharedTheatre.movieCount]));
+        sharedTheatre.movieCount++;
     }
-    result += Enums::getTheatreStatusString(m_status) + config::delimeter::comma;
-    if (!m_screens.empty())
+    for (std::vector<Screen*>::iterator iterator = m_screens.begin(); iterator != m_screens.end(); ++iterator)
     {
-        for (std::vector<Screen*>::const_iterator iterator = m_screens.begin(); iterator != m_screens.end(); ++iterator)
-        {
-            result += (*iterator)->getScreenId() + config::delimeter::verticalBar;
-        }
-        result += config::delimeter::comma;
+        strncpy_s(sharedTheatre.screenIds[sharedTheatre.screenCount], (*iterator)->getScreenId().c_str(), sizeof(sharedTheatre.screenIds[sharedTheatre.screenCount]));
+        sharedTheatre.screenCount++;
     }
-    else
-    {
-        result += config::delimeter::comma;
-    }
-    if (!m_movies.empty())
-    {
-        for (std::vector<Movie*>::const_iterator iterator = m_movies.begin(); iterator != m_movies.end(); ++iterator)
-        {
-            result += (*iterator)->getMovieId() + config::delimeter::verticalBar;
-        }
-    }
-    return result;
+    return sharedTheatre;
 }
 
 /*
  * Function: Theatre::deserialize
- * Description: Converts a single CSV-formatted line into a Theatre object.
- *              Extracts fields such as theatreId, name, city, address,
- *              phoneNumber, email, theatreOwnerId, status, screenIds, and movieIds.
- *              The TheatreOwner pointer and associations with Screens and Movies
- *              are initialized to nullptr or left empty, and can be restored later
+ * Description: Reconstructs a Theatre object from a SharedTheatre struct stored
+ *              in shared memory. Initializes basic fields (ID, name, city, address,
+ *              phoneNumber, email) and sets status. Associations with TheatreOwner,
+ *              Screens, and Movies are left unlinked and can be restored later
  *              by higher-level services.
  * Parameters:
- *    line - reference to a CSV-formatted string containing theatre data
+ *    sharedTheatre - Pointer to a SharedTheatre struct containing theatre data
  * Returns:
- *    Pointer to a newly constructed Theatre object
+ *    Theatre* - Pointer to a newly constructed Theatre object, or nullptr if input is invalid
  */
-Theatre* Theatre::deserialize(const std::string& line)
+Theatre* Theatre::deserialize(const SharedTheatre* sharedTheatre)
 {
-    std::string theatreId, name, city, address, phoneNumber, email, theatreOwnerId, status, screenIds, movieIds;
-    std::stringstream lineStream(line);
-    getline(lineStream, theatreId, ',');
-    getline(lineStream, name, ',');
-    getline(lineStream, city, ',');
-    getline(lineStream, address, ',');
-    getline(lineStream, phoneNumber, ',');
-    getline(lineStream, email, ',');
-    getline(lineStream, theatreOwnerId, ',');
-    getline(lineStream, status, ',');
-    getline(lineStream, screenIds, ',');
-    getline(lineStream, movieIds, ',');
-    Theatre* theatre = Factory::getObject<Theatre>(theatreId, name, city, address, phoneNumber, email, nullptr);
+    if (sharedTheatre == nullptr)
+    {
+        return nullptr;
+    }
+    Enums::TheatreStatus status = static_cast<Enums::TheatreStatus>(sharedTheatre->status);
+    Theatre* theatre = Factory::getObject<Theatre>(
+        sharedTheatre->theatreId,
+        sharedTheatre->name,
+        sharedTheatre->city,
+        sharedTheatre->address,
+        sharedTheatre->phoneNumber,
+        sharedTheatre->email,
+        nullptr);
+    if (theatre)
+    {
+        theatre->setStatus(status);
+    }
     return theatre;
 }
