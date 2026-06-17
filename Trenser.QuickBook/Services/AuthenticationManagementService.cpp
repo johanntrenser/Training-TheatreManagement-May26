@@ -47,6 +47,8 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
                     {
                         return std::make_pair(Enums::LoginStatus::USER_ALREADY_LOGGED_IN, Enums::UserType::USER_NOT_FOUND);
                     }
+                    m_event.init();
+                    m_event.startListener(Enums::getUserTypeString(iterator->second->getUserType()), iterator->second->getUserId());
                     User* user = Factory::getObject<User>(
                         iterator->second->getUserId(),
                         iterator->second->getUserName(),

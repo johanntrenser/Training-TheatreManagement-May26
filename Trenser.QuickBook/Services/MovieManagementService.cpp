@@ -68,6 +68,8 @@ Enums::ProcessStatus MovieManagementService::addMovieToSystem(const std::string&
 	if (movie != nullptr)
 	{
 		m_dataStore.addMovieToSystem(movie);
+		std::string message = "New Movie Added: "+ title;
+		m_event.notify(Enums::getUserTypeString(Enums::UserType::THEATRE_OWNER),"", message);
 		return Enums::ProcessStatus::SUCCESS;
 	}
 	return Enums::ProcessStatus::FAILED;

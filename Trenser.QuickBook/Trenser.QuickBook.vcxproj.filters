@@ -183,6 +183,9 @@
     <ClCompile Include="SharedMemory\SessionManager.cpp">
       <Filter>SharedMemory</Filter>
     </ClCompile>
+    <ClCompile Include="SharedMemory\NotificationEvent.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h">
@@ -324,6 +327,9 @@
       <Filter>SharedMemory</Filter>
     </ClInclude>
     <ClInclude Include="SharedMemory\SessionManager.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\NotificationEvent.h">
       <Filter>SharedMemory</Filter>
     </ClInclude>
   </ItemGroup>

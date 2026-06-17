@@ -170,3 +170,10 @@ struct SharedSession
 	int sessionCount;
 	SessionEntry sessions[config::Limit::SESSION_MAX_COUNT];
 };
+
+struct NotifyMessage
+{
+	char targetType[20];  
+	char targetId[20];    
+	char message[500];
+};

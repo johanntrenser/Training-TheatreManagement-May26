@@ -60,6 +60,7 @@ namespace config
         constexpr const int MESSAGE_MAX_LENGTH = 500;
         constexpr const int INITIAL_FILE_MAP_SIZE = 1000;
         constexpr const int SESSION_MAX_COUNT = 1000;
+        constexpr const int MAX_SHARED_BUFFER_SIZE = 1000;
     }
     namespace FileMappings
     {
