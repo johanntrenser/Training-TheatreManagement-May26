@@ -74,7 +74,7 @@ public:
 	std::map<std::string, Show*>& getShowsForUpdation();
 	const std::map<std::string, Screen*>& getScreens();
 	const std::map<std::string, Theatre*>& getTheatres() const;
-	const std::map<std::string, Booking*>& getBookings() const;
+	const std::map<std::string, Booking*>& getBookings();
 	void addTheatre(Theatre* theatre);
 	Theatre* getTheatreById(const std::string& theatreId) const;
 	Movie* getMovieById(const std::string& movieId) const;
@@ -125,5 +125,7 @@ public:
 	Payment* getPaymentById(const std::string& paymentId);
 	Enums::ProcessStatus updatePaymentStatus(const std::string& paymentId, Enums::PaymentStatus status);
 	Enums::ProcessStatus updateRefundStatus(const std::string& refundId, Enums::RefundStatus status);
+	int getBookingCount() const;
+	Enums::ProcessStatus updateBookingStatus(const std::string& bookingId, Enums::BookingStatus status);
 	~DataStore();
 };

@@ -1,4 +1,5 @@
 #include "RefundManagementService.h"
+#include "ApplicationConfig.h"
 
 /*
  * Function: RefundManagementService::RefundManagementService

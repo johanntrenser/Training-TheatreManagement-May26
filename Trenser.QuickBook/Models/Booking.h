@@ -17,6 +17,7 @@
 #include "Seat.h"
 #include "Factory.h"
 #include "InputHelper.h"
+#include "SharedStructs.h"
 
 class Booking
 {
@@ -47,8 +48,8 @@ public:
     void setBookedSeats(const std::vector<Seat*>& bookedSeats);
     void setStatus(Enums::BookingStatus status);
     void setAmount(double amount);
-    std::string serialize();
-    static Booking* deserialize(const std::string& lines);
+    void serialize(SharedBooking& sharedBooking) const;
+    static Booking* deserialize(const SharedBooking* sharedBooking);
 };
 
 

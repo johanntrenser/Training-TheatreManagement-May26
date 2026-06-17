@@ -374,15 +374,54 @@ const std::map<std::string, Theatre*>& DataStore::getTheatres() const
 }
 
 /*
- * Function: DataStore::getBookings
- * Description: Provides access to the collection of bookings stored in the DataStore.
+ * Function: getBookings
+ * Description: Retrieves all Booking objects from the mapped bookings file.
+ *              Deserializes SharedBooking records, links them to their associated
+ *              User, Show, and Seat objects, and registers them in the internal
+ *              bookings map keyed by booking ID.
  * Parameters:
  *    None
  * Returns:
- *    const std::map<std::string, Booking*>& - Map of booking IDs to Booking pointers
+ *    Constant reference to the map of Booking pointers keyed by booking ID,
+ *    representing all bookings currently loaded into the DataStore
  */
-const std::map<std::string, Booking*>& DataStore::getBookings() const
+const std::map<std::string, Booking*>& DataStore::getBookings()
 {
+    MappedFile<SharedBooking>* bookingFile = m_registry.getBookings();
+    if (bookingFile)
+    {
+        int recordCount = 0;
+        SharedBooking* bookings = bookingFile->getAllRecords(recordCount);
+        for (int indexOne = 0; indexOne < recordCount; ++indexOne)
+        {
+            Booking* booking = Booking::deserialize(&bookings[indexOne]);
+            if (!booking)
+            {
+                continue;
+            }
+            User* customer = getUserById(bookings[indexOne].customerId);
+            Show* show = nullptr; /*getShowById(bookings[indexOne].showId);*/
+            if (customer)
+            {
+                booking->setCustomer(customer);
+            }
+            if (show)
+            {
+                booking->setShow(show);
+            }
+            std::vector<Seat*> seats;
+            for (int indexTwo = 0; indexTwo < bookings[indexOne].seatCount; ++indexTwo)
+            {
+                Seat* seat = getSeatById(bookings[indexOne].seatIds[indexTwo]);
+                if (seat)
+                {
+                    seats.push_back(seat);
+                }
+            }
+            booking->setBookedSeats(seats);
+            m_bookings[booking->getBookingId()] = booking;
+        }
+    }
     return m_bookings;
 }
 
@@ -772,14 +811,25 @@ Seat* DataStore::getSeatById(const std::string seatId)
 }
 
 /*
-* Function Name : addBooking
-* Description   : Adds a booking object to the datastore.
-* Parameters    :
-*                  booking - Pointer to the booking object to be stored
-* Return Type   : void
-*/
+ * Function: DataStore::addBooking
+ * Description: Serializes a Booking object into a SharedBooking struct,
+ *              adds it to the mapped bookings file for persistence,
+ *              and registers the Booking pointer in the internal map
+ *              keyed by its unique Booking ID.
+ * Parameters:
+ *    booking - Pointer to the Booking object to be added
+ * Returns:
+ *    None
+ */
 void DataStore::addBooking(Booking* booking)
 {
+    SharedBooking sharedBooking {};
+    booking->serialize(sharedBooking);
+    MappedFile<SharedBooking>* bookingFile = m_registry.getBookings();
+    if (bookingFile)
+    {
+        bookingFile->addRecord(sharedBooking);
+    }
     m_bookings[booking->getBookingId()] = booking;
 }
 
@@ -1451,6 +1501,48 @@ bool DataStore::removeLoggedInUser(const std::string& userId)
 {
     ScopedLock lock(m_sessionMutex);
     return m_sessionManager.removeSession(userId);
+}
+
+/*
+ * Function: updateBookingStatus
+ * Description: Updates the status of a booking in the mapped bookings file.
+ *              Locates the booking record by its unique ID, modifies the status.
+ * Parameters:
+ *    bookingId - Identifier of the booking to update
+ *    status    - New booking status to be applied (Enums::BookingStatus)
+ * Returns:
+ *    ProcessStatus::SUCCESS if the update was applied successfully,
+ *    ProcessStatus::FAILED if the booking or file could not be found
+ */
+Enums::ProcessStatus DataStore::updateBookingStatus(const std::string& bookingId, Enums::BookingStatus status)
+{
+    MappedFile<SharedBooking>* bookingFile = m_registry.getBookings();
+    if (!bookingFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedBooking* sharedBooking = bookingFile->findById(bookingId.c_str());
+    if (!sharedBooking)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedBooking->status = static_cast<int>(status);
+    bookingFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: getBookingCount
+ * Description: Retrieves the total number of booking records managed by the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of booking records
+ */
+int DataStore::getBookingCount() const
+{
+    int count = m_registry.getBookingCount();
+    return count;
 }
 
 /*
