@@ -9,7 +9,7 @@ class MappedFile
 {
 private:
 	HANDLE m_fileHandle;
-	HANDLE m_mappingHandle;
+	HANDLE m_mappingHandle;	
 	void* m_filePointer;
 	FileHeader* m_header;
 	T* m_records;

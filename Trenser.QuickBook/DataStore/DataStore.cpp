@@ -603,49 +603,117 @@ Ticket* DataStore::getTicketById(const std::string& ticketId) const
 
 /*
  * Function: DataStore::addPayment
- * Description: Adds a new payment object to the DataStore, indexed by its unique payment ID.
+ * Description: Adds a new Payment object to the DataStore. Serializes the Payment
+ *              into a SharedPayment structure and persists it into the mapped file
+ *              storage. Also updates the in-memory payments collection with the
+ *              Payment pointer keyed by its unique payment ID.
  * Parameters:
  *    payment - Pointer to the Payment object to be added.
  * Returns: None
  */
 void DataStore::addPayment(Payment* payment)
 {
+    SharedPayment sharedPayment{};
+    payment->serialize(sharedPayment);
+    MappedFile<SharedPayment>* paymentFile = m_registry.getPayments();
+    if (paymentFile)
+    {
+        paymentFile->addRecord(sharedPayment);
+    }
     m_payments[payment->getPaymentId()] = payment;
 }
 
 /*
  * Function: DataStore::addRefund
- * Description: Adds a new addRefund object to the DataStore, indexed by its unique addRefund ID.
+ * Description: Adds a new Refund object to the DataStore. Serializes the Refund
+ *              into a SharedRefund structure and persists it into the mapped file
+ *              storage. Also updates the in-memory refunds collection with the
+ *              Refund pointer keyed by its unique refund ID.
  * Parameters:
- *    payment - Pointer to the addRefund object to be added.
+ *    refund - Pointer to the Refund object to be added.
  * Returns: None
  */
 void DataStore::addRefund(Refund* refund)
 {
+    SharedRefund sharedRefund{};
+    refund->serialize(sharedRefund);
+    MappedFile<SharedRefund>* refundFile = m_registry.getRefunds();
+    if (refundFile)
+    {
+        refundFile->addRecord(sharedRefund);
+    }
     m_refunds[refund->getRefundId()] = refund;
 }
 
 /*
  * Function: DataStore::getRefunds
- * Description: Retrieves the collection of getRefunds stored in the DataStore.
+ * Description: Retrieves all refunds from persistent storage and reconstructs
+ *              them into Refund objects. Deserializes records from the mapped file,
+ *              associates each Refund with its corresponding Ticket if available,
+ *              and updates the internal refunds map keyed by refund ID.
  * Parameters: None
  * Returns:
- *    Constant reference to a map of getRefunds IDs to getRefunds pointers.
+ *    A constant reference to the map of Refund pointers, keyed by their unique
+ *    refund IDs, representing all refunds currently loaded into the DataStore.
  */
-const std::map<std::string, Refund*>& DataStore::getRefunds() const
+const std::map<std::string, Refund*>& DataStore::getRefunds()
 {
+    MappedFile<SharedRefund>* refundFile = m_registry.getRefunds();
+    if (refundFile)
+    {
+        int recordCount = 0;
+        SharedRefund* refunds = refundFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            Refund* refund = Refund::deserialize(&refunds[index]);
+            if (refund)
+            {
+                Ticket* ticket = getTicketById(refunds[index].paymentId);
+                if (ticket)
+                {
+                    refund->setBookedTicket(ticket);
+                }
+                m_refunds[refund->getRefundId()] = refund;
+            }
+        }
+    }
     return m_refunds;
 }
 
 /*
  * Function: DataStore::getPayments
- * Description: Retrieves the collection of payments stored in the DataStore.
+ * Description: Retrieves all payments from persistent storage and reconstructs
+ *              them into Payment objects. Clears existing in-memory data,
+ *              deserializes records from the mapped file, and associates each
+ *              Payment with its corresponding Booking if available. Updates
+ *              the internal payments map keyed by payment ID.
  * Parameters: None
  * Returns:
- *    Constant reference to a map of payment IDs to Payment pointers.
+ *    A constant reference to the map of Payment pointers, keyed by their unique
+ *    payment IDs, representing all payments currently loaded into the DataStore.
  */
-const std::map<std::string, Payment*>& DataStore::getPayments() const
+const std::map<std::string, Payment*>& DataStore::getPayments()
 {
+    clearData();
+    MappedFile<SharedPayment>* paymentFile = m_registry.getPayments();
+    if (paymentFile)
+    {
+        int recordCount = 0;
+        SharedPayment* payments = paymentFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            Payment* payment = Payment::deserialize(&payments[index]);
+            if (payment)
+            {
+                Booking* booking = getBookingById(payments[index].bookingId);
+                if (booking)
+                {
+                    payment->setBooking(booking);
+                }
+                m_payments[payment->getPaymentId()] = payment;
+            }
+        }
+    }
     return m_payments;
 }
 
@@ -658,7 +726,7 @@ const std::map<std::string, Payment*>& DataStore::getPayments() const
  * Returns:
  *    const Booking* - Pointer to the booking if found, nullptr otherwise
  */
-const Booking* DataStore::getBookingById(const std::string& bookingId)
+Booking* DataStore::getBookingById(const std::string& bookingId)
 {
     std::map<std::string, Booking*>::const_iterator iterator = m_bookings.find(bookingId);
     if (iterator == m_bookings.end())
@@ -1095,6 +1163,34 @@ int DataStore::getSeatCount() const
 }
 
 /*
+ * Function: getPaymentCount
+ * Description: Retrieves the total number of records managed by the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of records
+ */
+int DataStore::getPaymentCount() const
+{
+    int count = m_registry.getPaymentCount();
+    return count;
+}
+
+/*
+ * Function: getRefundCount
+ * Description: Retrieves the total number of records managed by the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of records
+ */
+int DataStore::getRefundCount() const
+{
+    int count = m_registry.getRefundCount();
+    return count;
+}
+
+/*
  * Function: updateUserStatus
  * Description: Updates the status of a user in the mapped users file.
  * Parameters:
@@ -1235,7 +1331,7 @@ Payment* DataStore::getPaymentById(const std::string& paymentId)
         SharedPayment* sharedPayment = paymentsFile->findById(paymentId.c_str());
         if (sharedPayment != nullptr)
         {
-            Payment* payment = nullptr; /* Payment::deserialize(sharedPayment); */
+            Payment* payment = Payment::deserialize(sharedPayment);
             if (payment)
             {
                 m_payments[payment->getPaymentId()] = payment;
@@ -1244,6 +1340,66 @@ Payment* DataStore::getPaymentById(const std::string& paymentId)
         }
     }
     return nullptr;
+}
+
+/*
+ * Function: DataStore::updatePaymentStatus
+ * Description: Updates the status of a payment record in persistent storage.
+ *              Locates the SharedPayment entry by its unique payment ID, modifies
+ *              the status field, and flushes changes to the mapped file to ensure
+ *              persistence.
+ * Parameters:
+ *    paymentId - The unique identifier of the payment whose status is to be updated.
+ *    status    - The new status to be applied, represented as an Enums::PaymentStatus value.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the payment status was successfully updated.
+ *    Enums::ProcessStatus::FAILED if the mapped file or payment record could not be found.
+ */
+Enums::ProcessStatus DataStore::updatePaymentStatus(const std::string& paymentId, Enums::PaymentStatus status)
+{
+    MappedFile<SharedPayment>* paymentFile = m_registry.getPayments();
+    if (!paymentFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedPayment* sharedPayment = paymentFile->findById(paymentId.c_str());
+    if (!sharedPayment)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedPayment->status = static_cast<int>(status);
+    paymentFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateRefundStatus
+ * Description: Updates the status of a refund record in persistent storage.
+ *              Locates the SharedRefund entry by its unique refund ID, modifies
+ *              the status field, and flushes changes to the mapped file to ensure
+ *              persistence.
+ * Parameters:
+ *    refundId - The unique identifier of the refund whose status is to be updated.
+ *    status   - The new status to be applied, represented as an Enums::RefundStatus value.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the refund status was successfully updated.
+ *    Enums::ProcessStatus::FAILED if the mapped file or refund record could not be found.
+ */
+Enums::ProcessStatus DataStore::updateRefundStatus(const std::string& refundId, Enums::RefundStatus status)
+{
+    MappedFile<SharedRefund>* refundFile = m_registry.getRefunds();
+    if (!refundFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedRefund* sharedRefund = refundFile->findById(refundId.c_str());
+    if (!sharedRefund)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    sharedRefund->status = static_cast<int>(status);
+    refundFile->flush();
+    return Enums::ProcessStatus::SUCCESS;
 }
 
 /*

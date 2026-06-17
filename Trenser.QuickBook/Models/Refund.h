@@ -12,6 +12,7 @@
 #include "Ticket.h"
 #include "Factory.h"
 #include "InputHelper.h"
+#include "SharedStructs.h"
 
 class Refund
 {
@@ -37,6 +38,6 @@ public:
     void setRefundAmount(double refundAmount);
     void setTime(time_t time);
     void setStatus(Enums::RefundStatus status);
-    std::string serialize();
-    static Refund* deserialize(const std::string& line);
+    void serialize(SharedRefund& sharedRefund) const;
+    static Refund* deserialize(const SharedRefund* sharedRefund);
 };

@@ -13,13 +13,16 @@
 #include "FileManagement.h"
 #include "LogManagementService.h"
 #include "NotificationManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class PaymentManagementService
 {
 	DataStore& m_dataStore;
+    NamedMutex m_paymentMutex;
+    NamedMutex m_refundMutex;
     LogManagementService logManagementService;
     NotificationManagementService m_notificationManagementService;
-    const std::string& PATH = config::File::PAYMENT_FILEPATH;
 public:
     PaymentManagementService();
     const std::string generatePaymentId();
@@ -27,7 +30,5 @@ public:
     Payment* getPaymentById(const std::string& paymentId);
     Enums::ProcessStatus refundPayment(Ticket* ticket, Payment* payment);
     const std::string generateRefundId();
-    void savePaymentData();
-    void loadPaymentData();
     const std::vector<Payment*> getAllPayments();
 };

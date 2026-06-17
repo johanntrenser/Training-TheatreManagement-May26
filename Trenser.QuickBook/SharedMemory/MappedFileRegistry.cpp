@@ -252,6 +252,32 @@ int MappedFileRegistry::getSeatCount() const
 }
 
 /*
+ * Function: getPaymentCount
+ * Description: Retrieves the total number of payment records from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of payment records
+ */
+int MappedFileRegistry::getPaymentCount() const
+{
+    return m_payments->getRecordCount();
+}
+
+/*
+ * Function: getRefundCount
+ * Description: Retrieves the total number of refund records from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of refund records
+ */
+int MappedFileRegistry::getRefundCount() const
+{
+    return m_refunds->getRecordCount();
+}
+
+/*
  * Function: getLogsCount
  * Description: Retrieves the total number of logs from the mapped file registry.
  * Parameters:

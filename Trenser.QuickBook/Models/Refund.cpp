@@ -166,51 +166,59 @@ void Refund::setStatus(Enums::RefundStatus status)
 }
 
 /*
- * Function: serialize
- * Description: Converts Refund object into CSV format string
- * Returns:
- *    CSV string representing the user
+ * Function: Refund::serialize
+ * Description: Serializes the Refund object into a SharedRefund structure
+ *              for use in shared memory or inter-process communication.
+ *              Copies refund details such as refund ID, payment ID, customer ID,
+ *              refund amount, status, and timestamp into the provided
+ *              SharedRefund reference using safe string operations.
+ * Parameters:
+ *    sharedRefund - Reference to a SharedRefund structure that will be populated
+ *                   with the serialized refund data.
+ * Returns: None
  */
-std::string Refund::serialize()
+void Refund::serialize(SharedRefund& sharedRefund) const
 {
-    std::string result = m_refundId + config::delimeter::comma;
-    if (m_bookedTicket)
-    {
-        result += m_bookedTicket->getTicketId() + config::delimeter::comma;
-    }
-    else
-    {
-        result += config::delimeter::comma;
-    }
-    result += std::to_string(m_refundAmount) + config::delimeter::comma +
-        util::serializeTime(m_time) + config::delimeter::comma +
-        Enums::getRefundStatusString(m_status);
-    return result;
+    sharedRefund = {};
+    strncpy_s(sharedRefund.refundId, m_refundId.c_str(), sizeof(sharedRefund.refundId));
+    strncpy_s(sharedRefund.paymentId, 
+        (m_bookedTicket && m_bookedTicket->getPayment() ? m_bookedTicket->getPayment()->getPaymentId().c_str() : ""),
+        sizeof(sharedRefund.paymentId));
+    strncpy_s(sharedRefund.customerId,
+        (m_bookedTicket && m_bookedTicket->getCustomer()? m_bookedTicket->getCustomer()->getUserId().c_str() : ""), 
+        sizeof(sharedRefund.customerId));
+    sharedRefund.amount = m_refundAmount;
+    sharedRefund.status = static_cast<int>(m_status);
+    strncpy_s(sharedRefund.time, util::serializeTime(m_time).c_str(), sizeof(sharedRefund.time));
 }
 
 /*
  * Function: Refund::deserialize
- * Description: Deserializes a single line of CSV-formatted refund data into a Refund object.
- *              Extracts fields such as Refund ID, Booked Ticket ID, Refund Amount, Time, and Status.
- *              Parses the time string into its components (year, month, day, hour, minute) and converts
- *              it into a time_t object using util::createTime. The Booked Ticket pointer is set to nullptr
- *              initially and can be linked later when the Ticket object is available in the DataStore.
+ * Description: Deserializes a SharedRefund structure into a Refund object.
+ *              Converts serialized fields such as refund ID, amount, status,
+ *              and timestamp back into a Refund instance. Uses the Factory
+ *              to create the Refund object and applies the stored status.
  * Parameters:
- *    lines - A reference to a string containing one line of CSV refund data.
+ *    sharedRefund - Pointer to a SharedRefund structure containing serialized refund data.
  * Returns:
- *    A pointer to a newly created Refund object populated with the deserialized data.
+ *    Pointer to a newly created Refund object if deserialization succeeds.
+ *    nullptr if the provided SharedRefund pointer is null.
  */
-Refund* Refund::deserialize(const std::string& lines)
+Refund* Refund::deserialize(const SharedRefund* sharedRefund)
 {
-    std::string refundId, bookedTicketId, refundAmount, time, status, year, dash, space, month, day, hour, colon, minute;
-    std::stringstream lineStream(lines);
-    getline(lineStream, refundId, ',');
-    getline(lineStream, bookedTicketId, ',');
-    getline(lineStream, refundAmount, ',');
-    getline(lineStream, time, ',');
-    getline(lineStream, status, ',');
-    time_t convertedTime = util::deserializeTime(time);
-    util::trimWhitespace(refundAmount);
-    Refund* refund = Factory::getObject<Refund>(refundId, nullptr, stod(refundAmount), convertedTime);
+    if (sharedRefund == nullptr)
+    {
+        return nullptr;
+    }
+    time_t convertedTime = util::deserializeTime(sharedRefund->time);
+    Refund* refund = Factory::getObject<Refund>(
+        sharedRefund->refundId,
+        nullptr,
+        sharedRefund->amount,
+        convertedTime);
+    if (refund != nullptr)
+    {
+        refund->setStatus(static_cast<Enums::RefundStatus>(sharedRefund->status));
+    }
     return refund;
 }

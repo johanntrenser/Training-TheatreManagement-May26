@@ -89,9 +89,9 @@ public:
 	Ticket* getTicketById(const std::string& ticketId) const;
 	void addPayment(Payment* payment);
 	void addRefund(Refund* refund);
-	const std::map < std::string, Payment*>& getPayments() const;
-	const std::map<std::string, Refund*>& getRefunds() const;
-	const Booking* getBookingById(const std::string& bookingId);
+	const std::map < std::string, Payment*>& getPayments();
+	const std::map<std::string, Refund*>& getRefunds();
+	Booking* getBookingById(const std::string& bookingId);
 	Booking* getBookingByIdForUpdation(const std::string& bookingId);
 	Seat* getSeatById(const std::string seatId);
 	void addBooking(Booking* booking);
@@ -111,6 +111,8 @@ public:
 	void setAuthenticatedUserPassword(const std::string& password);
 	int getScreenCount() const;
 	int getSeatCount() const;
+	int getPaymentCount() const;
+	int getRefundCount() const;
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
 	Enums::ProcessStatus updateScreenName(const std::string& screenId, const std::string& screenName);
 	Enums::ProcessStatus updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status);
@@ -121,5 +123,7 @@ public:
 	int getTicketCount() const;
 	Enums::ProcessStatus updateTicketStatus(const std::string& ticketId, Enums::TicketStatus status);
 	Payment* getPaymentById(const std::string& paymentId);
+	Enums::ProcessStatus updatePaymentStatus(const std::string& paymentId, Enums::PaymentStatus status);
+	Enums::ProcessStatus updateRefundStatus(const std::string& refundId, Enums::RefundStatus status);
 	~DataStore();
 };
