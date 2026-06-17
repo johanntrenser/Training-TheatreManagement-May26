@@ -12,40 +12,13 @@
      * Returns: None
      */
 TheatreManagementService::TheatreManagementService() :
-    m_dataStore(DataStore::getInstance())
+    m_dataStore(DataStore::getInstance()),
+    m_theatreMutex(config::MutexMappings::THEATRE_MUTEX_NAME),
+    m_showMutex(config::MutexMappings::SHOW_MUTEX_NAME),
+    m_movieMutex(config::MutexMappings::MOVIE_MUTEX_NAME),
+    m_userMutex(config::MutexMappings::USER_MUTEX_NAME),
+    m_screenMutex(config::MutexMappings::SCREEN_MUTEX_NAME)
 {
-}
-
-/*
-     * Function: updateTheatreDetails
-     * Description: Updates the details of an existing theatre.
-     * Parameters:
-     *   - theatreId: Unique identifier of the theatre.
-     *   - name: Updated name of the theatre.
-     *   - address: Updated address of the theatre.
-     *   - phone: Updated contact phone number.
-     *   - email: Updated contact email.
-     * Returns: True if the details are successfully updated, false otherwise.
-     */
-bool TheatreManagementService::updateTheatreDetails(const std::string& theatreId,
-    const std::string& name,
-    const std::string& address,
-    const std::string& phone,
-    const std::string& email)
-{
-    return true;
-}
-
-/*
-     * Function: reactivateTheatre
-     * Description: Reactivates a previously deactivated theatre.
-     * Parameters:
-     *   - theatreId: Unique identifier of the theatre.
-     * Returns: True if the theatre is successfully reactivated, false otherwise.
-     */
-bool TheatreManagementService::reactivateTheatre(const std::string& theatreId)
-{
-    return true;
 }
 
 /*
@@ -57,13 +30,15 @@ bool TheatreManagementService::reactivateTheatre(const std::string& theatreId)
      */
 Enums::ProcessStatus TheatreManagementService::deactivateTheatre(const std::string& theatreId)
 {
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock showLock(m_showMutex);
     ScreenManagementService screenManagementService;
-    Theatre* theatre = getTheatreById(theatreId);
+    const std::map<std::string, Screen*>& screens = m_dataStore.getScreens();
+    Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (theatre == nullptr)
     {
         return Enums::ProcessStatus::FAILED;
     }
-    const std::map<std::string, Screen*>& screens = m_dataStore.getScreens();
     Enums::ProcessStatus screenDeactivateStatus = Enums::ProcessStatus::FAILED;
     for (std::map<std::string, Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
     {
@@ -82,7 +57,11 @@ Enums::ProcessStatus TheatreManagementService::deactivateTheatre(const std::stri
         if (iterator->second && iterator->second->getScreen() && iterator->second->getScreen()->getTheatre() && iterator->second->getScreen()->getTheatre()->getTheatreId() == theatreId)
         {
             Show* show = m_dataStore.getShowByIdForUpdation(iterator->second->getShowId());
-            show->setShowStatus(Enums::ShowStatus::CANCELLED);
+            if (show)
+            {
+                m_dataStore.updateShowStatus(show->getShowId(), Enums::ShowStatus::CANCELLED);
+                show->setShowStatus(Enums::ShowStatus::CANCELLED);
+            }
         }
     }
     return Enums::ProcessStatus::SUCCESS;
@@ -114,54 +93,6 @@ bool TheatreManagementService::isMovieAlreadyExistsInTheatre(Theatre* theatre, c
 }
 
 /*
- * Function: TheatreManagementService::getMovieById
- * Description: Retrieves a movie object from the datastore by its unique identifier.
- *              Iterates through the internal movie map and returns the corresponding
- *              Movie pointer if a match is found.
- * Parameters:
- *    movieId - A string representing the unique identifier of the movie to be retrieved.
- * Returns:
- *    Pointer to the Movie object if found.
- *    nullptr if no movie exists with the given ID.
- */
-Movie* TheatreManagementService::getMovieById(const std::string& movieId)
-{
-    const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
-    for (std::map<std::string, Movie*>::const_iterator iterator =movies.begin(); iterator != movies.end(); ++iterator)
-    {
-        if ((iterator->second)->getMovieId() == movieId)
-        {
-            return iterator->second;
-        }
-    }
-    return nullptr;
-}
-
-/*
- * Function: TheatreManagementService::getTheatreById
- * Description: Retrieves a theatre object from the datastore by its unique identifier.
- *              Iterates through the internal theatre map and returns the corresponding
- *              Theatre pointer if a match is found.
- * Parameters:
- *    theatreId - A string representing the unique identifier of the theatre to be retrieved.
- * Returns:
- *    Pointer to the Theatre object if found.
- *    nullptr if no theatre exists with the given ID.
- */
-Theatre* TheatreManagementService::getTheatreById(const std::string& theatreId)
-{
-    const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
-    for (std::map<std::string, Theatre*>::const_iterator iterator =theatres.begin(); iterator != theatres.end(); ++iterator)
-    {
-        if ((iterator->second)->getTheatreId() == theatreId)
-        {
-            return iterator->second;
-        }
-    }
-    return nullptr;
-}
-
-/*
      * Function: addMovieToTheatre
      * Description: Associates a movie with a specific theatre.
      * Parameters:
@@ -171,8 +102,10 @@ Theatre* TheatreManagementService::getTheatreById(const std::string& theatreId)
      */
 Enums::ProcessStatus TheatreManagementService::addMovieToTheatre(const std::string& theatreId, const std::string& movieId)
 {
-    Theatre* theatre = getTheatreById(theatreId);
-    Movie* movie = getMovieById(movieId);
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock movieLock(m_movieMutex);
+    Theatre* theatre = m_dataStore.getTheatreById(theatreId);
+    Movie* movie = m_dataStore.getMovieById(movieId);
     if (theatre == nullptr || movie == nullptr)
     {
         return Enums::ProcessStatus::FAILED;
@@ -181,32 +114,12 @@ Enums::ProcessStatus TheatreManagementService::addMovieToTheatre(const std::stri
     {
         return Enums::ProcessStatus::FAILED;
     }
+    if (m_dataStore.addMovieToTheatre(theatreId, movieId) != Enums::ProcessStatus::SUCCESS)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
     theatre->addMovieToTheatre(movie);
     return Enums::ProcessStatus::SUCCESS;
-}
-
-/*
-     * Function: viewTheatreDetails
-     * Description: Retrieves detailed information about a specific theatre.
-     * Parameters:
-     *   - theatreId: Unique identifier of the theatre.
-     * Returns: Pointer to the Theatre object containing details, or nullptr if not found.
-     */
-Theatre* TheatreManagementService::viewTheatreDetails(const std::string& theatreId) const
-{
-    return nullptr;
-}
-
-/*
-     * Function: viewTheatreStatus
-     * Description: Retrieves the current status of a theatre (active/inactive).
-     * Parameters:
-     *   - theatreId: Unique identifier of the theatre.
-     * Returns: Integer representing the theatre status (enum placeholder).
-     */
-int TheatreManagementService::viewTheatreStatus(const std::string& theatreId) const
-{
-    return 0; // placeholder enum value
 }
 
 /*
@@ -217,6 +130,7 @@ int TheatreManagementService::viewTheatreStatus(const std::string& theatreId) co
      */
 std::vector<const Theatre*> TheatreManagementService::listAllTheatres() const
 {
+    ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> theatres;
     const std::map<std::string, Theatre*>& allTheatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = allTheatres.begin(); iterator != allTheatres.end(); ++iterator)
@@ -224,18 +138,6 @@ std::vector<const Theatre*> TheatreManagementService::listAllTheatres() const
         theatres.push_back(iterator->second);
     }
     return theatres;
-}
-
-/*
-     * Function: listTheatresByCity
-     * Description: Retrieves a list of theatres located in a specific city.
-     * Parameters:
-     *   - city: Name of the city.
-     * Returns: Vector of Theatre pointers representing theatres in the given city.
-     */
-std::vector<Theatre*> TheatreManagementService::listTheatresByCity(const std::string& city) const
-{
-    return {};
 }
 
 /*
@@ -247,6 +149,7 @@ std::vector<Theatre*> TheatreManagementService::listTheatresByCity(const std::st
      */
 const std::vector<const Theatre*> TheatreManagementService::searchByTheatreName(const std::string& theatreName) const
 {
+    ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> resultantTheatres;
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
@@ -273,6 +176,7 @@ const std::vector<const Theatre*> TheatreManagementService::searchByTheatreName(
  */
 const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheatres()
 {
+    ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> ownerTheatres;
     const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
@@ -297,6 +201,7 @@ Return Type   : const std::vector<const Theatre*>
 */
 const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerInactiveTheatres()
 {
+    ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> ownerTheatres;
     const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
@@ -345,6 +250,8 @@ const std::vector<std::string> TheatreManagementService::getCurrentOwnerTheatreI
  */
 const std::vector<const Movie*> TheatreManagementService::getMoviesFromTheatre(const std::string& theatreId)
 {
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock movieLock(m_movieMutex);
     std::vector<const Theatre*> theatres = getCurrentOwnerTheatres();
     std::vector<const Movie*> theatreMovies;
     for (std::vector<const Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
@@ -388,6 +295,7 @@ const User* TheatreManagementService::getAuthenticatedUser() const
  */
 const std::vector<const Theatre*> TheatreManagementService::getAllTheatres()
 {
+    ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> theatresList;
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
@@ -408,8 +316,9 @@ const std::vector<const Theatre*> TheatreManagementService::getAllTheatres()
  */
 const std::string TheatreManagementService::generateTheatreId()
 {
-    const std::map<std::string, Theatre*>& theatre = m_dataStore.getTheatres();
-    int idNumber = static_cast<int>(theatre.size()) + 1;
+    ScopedLock lock(m_theatreMutex);
+    const int theatresCount = m_dataStore.getTheatresCount();
+    int idNumber = theatresCount + 1;
     std::ostringstream buffer;
     buffer << "TH" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -427,15 +336,17 @@ const std::string TheatreManagementService::generateTheatreId()
  */
 Enums::ProcessStatus TheatreManagementService::isTheatrePhoneNumberUnique(const std::string& phoneNumber)
 {
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock userLock(m_userMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
-    const std::map<std::string, User*>& users = m_dataStore.getUsers();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        if ((iterator->second)->getTheatrePhoneNumber() == phoneNumber) //function name
+        if ((iterator->second)->getTheatrePhoneNumber() == phoneNumber) 
         {
             return Enums::ProcessStatus::FAILED;
         }
     }
+    const std::map<std::string, User*>& users = m_dataStore.getUsers();
     for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
         if ((iterator->second)->getPhoneNumber() == phoneNumber)
@@ -458,8 +369,9 @@ Enums::ProcessStatus TheatreManagementService::isTheatrePhoneNumberUnique(const 
  */
 Enums::ProcessStatus TheatreManagementService::isTheatreEmailUnique(const std::string& email)
 {
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock userLock(m_userMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
-    const std::map<std::string, User*>& users = m_dataStore.getUsers();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
         if ((iterator->second)->getTheatreEmail() == email)
@@ -467,6 +379,7 @@ Enums::ProcessStatus TheatreManagementService::isTheatreEmailUnique(const std::s
             return Enums::ProcessStatus::FAILED;
         }
     }
+    const std::map<std::string, User*>& users = m_dataStore.getUsers();
     for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
         if ((iterator->second)->getEmail() == email)
@@ -493,6 +406,7 @@ Enums::ProcessStatus TheatreManagementService::isTheatreEmailUnique(const std::s
  */
 Enums::ProcessStatus TheatreManagementService::addTheatre(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email)
 {
+    ScopedLock lock(m_theatreMutex);
     Theatre* theatre = Factory::getObject<Theatre>(generateTheatreId(), name, city, address, phoneNumber, email, m_dataStore.getAuthenticatedUser());
     if (theatre != nullptr)
     {
@@ -518,6 +432,7 @@ Enums::ProcessStatus TheatreManagementService::addTheatre(const std::string& nam
  */
 Enums::ProcessStatus TheatreManagementService::isTheatreUniqueInSystem(const std::string& name, const std::string& city, const std::string& address, const std::string& phoneNumber, const std::string& email)
 {
+    ScopedLock lock(m_theatreMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
@@ -543,11 +458,16 @@ Enums::ProcessStatus TheatreManagementService::isTheatreUniqueInSystem(const std
  */
 Enums::ProcessStatus TheatreManagementService::setTheatreNameById(const std::string& theatreId, const std::string& name)
 {
+    ScopedLock lock(m_theatreMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
         if ((iterator->second)->getTheatreId() == theatreId)
         {
+            if (m_dataStore.updateTheatreName(theatreId, name) != Enums::ProcessStatus::SUCCESS)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             (iterator->second)->setName(name);
             return Enums::ProcessStatus::SUCCESS;
         }
@@ -569,11 +489,16 @@ Enums::ProcessStatus TheatreManagementService::setTheatreNameById(const std::str
  */
 Enums::ProcessStatus TheatreManagementService::setTheatreCityById(const std::string& theatreId, const std::string& city)
 {
+    ScopedLock lock(m_theatreMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
         if ((iterator->second)->getTheatreId() == theatreId)
         {
+            if (m_dataStore.updateTheatreCity(theatreId, city) != Enums::ProcessStatus::SUCCESS)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             (iterator->second)->setCity(city);
             return Enums::ProcessStatus::SUCCESS;
         }
@@ -595,11 +520,16 @@ Enums::ProcessStatus TheatreManagementService::setTheatreCityById(const std::str
  */
 Enums::ProcessStatus TheatreManagementService::setTheatreAddressById(const std::string& theatreId, const std::string& address)
 {
+    ScopedLock lock(m_theatreMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
         if ((iterator->second)->getTheatreId() == theatreId)
         {
+            if (m_dataStore.updateTheatreAddress(theatreId, address) != Enums::ProcessStatus::SUCCESS)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             (iterator->second)->setAddress(address);
             return Enums::ProcessStatus::SUCCESS;
         }
@@ -621,11 +551,16 @@ Enums::ProcessStatus TheatreManagementService::setTheatreAddressById(const std::
  */
 Enums::ProcessStatus TheatreManagementService::setTheatrePhoneNumberById(const std::string& theatreId, const std::string& phoneNumber)
 {
+    ScopedLock lock(m_theatreMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
         if ((iterator->second)->getTheatreId() == theatreId)
         {
+            if (m_dataStore.updateTheatrePhoneNumber(theatreId, phoneNumber) != Enums::ProcessStatus::SUCCESS)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             (iterator->second)->setTheatrePhoneNumber(phoneNumber);
             return Enums::ProcessStatus::SUCCESS;
         }
@@ -647,11 +582,16 @@ Enums::ProcessStatus TheatreManagementService::setTheatrePhoneNumberById(const s
  */
 Enums::ProcessStatus TheatreManagementService::setTheatreEmailById(const std::string& theatreId, const std::string& email)
 {
+    ScopedLock lock(m_theatreMutex);
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
         if ((iterator->second)->getTheatreId() == theatreId)
         {
+            if (m_dataStore.updateTheatreEmail(theatreId, email) != Enums::ProcessStatus::SUCCESS)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             (iterator->second)->setTheatreEmail(email);
             return Enums::ProcessStatus::SUCCESS;
         }
@@ -672,6 +612,7 @@ Enums::ProcessStatus TheatreManagementService::setTheatreEmailById(const std::st
  */
 const std::vector<const Theatre*> TheatreManagementService::getPendingTheatres()
 {
+    ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> theatresList;
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
@@ -698,6 +639,8 @@ const std::vector<const Theatre*> TheatreManagementService::getPendingTheatres()
  */
 Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus)
 {
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock screenLock(m_screenMutex);
     bool isTheatreDeactivatable = false;
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
@@ -710,9 +653,14 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
                 if (screens.empty())
                 {
                     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
-                    theatre->setMovies({});
-                    theatre->setStatus(Enums::TheatreStatus::INACTIVE);
-                    return Enums::ProcessStatus::SUCCESS;
+                    if (theatre && (m_dataStore.updateTheatreStatus(theatreId, Enums::TheatreStatus::INACTIVE) == Enums::ProcessStatus::SUCCESS)
+                        && (m_dataStore.clearMoviesFromTheatre(theatreId) == Enums::ProcessStatus::SUCCESS))
+                    {
+                        theatre->setMovies({});
+                        theatre->setStatus(Enums::TheatreStatus::INACTIVE);
+                        return Enums::ProcessStatus::SUCCESS;
+                    }
+                    return Enums::ProcessStatus::FAILED;
                 }
                 for (std::vector<Screen*>::const_iterator screenIterator = screens.begin(); screenIterator != screens.end(); ++screenIterator)
                 {
@@ -732,18 +680,27 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
             }
             else if (m_dataStore.getAuthenticatedUser()->getUserType() == Enums::UserType::ADMIN && theatreStatus == Enums::TheatreStatus::ACTIVE)
             {
-                (iterator->second)->setStatus(Enums::TheatreStatus::ACTIVE);
-                return Enums::ProcessStatus::SUCCESS;
+                if (m_dataStore.updateTheatreStatus(iterator->second->getTheatreId(), Enums::TheatreStatus::ACTIVE) == Enums::ProcessStatus::SUCCESS)
+                {
+                    (iterator->second)->setStatus(Enums::TheatreStatus::ACTIVE);
+                    return Enums::ProcessStatus::SUCCESS;
+                }
             }
             else if (m_dataStore.getAuthenticatedUser()->getUserType() == Enums::UserType::ADMIN && theatreStatus == Enums::TheatreStatus::PENDING)
             {
-                (iterator->second)->setStatus(Enums::TheatreStatus::PENDING);
-                return Enums::ProcessStatus::SUCCESS;
+                if (m_dataStore.updateTheatreStatus(iterator->second->getTheatreId(), Enums::TheatreStatus::PENDING) == Enums::ProcessStatus::SUCCESS)
+                {
+                    (iterator->second)->setStatus(Enums::TheatreStatus::PENDING);
+                    return Enums::ProcessStatus::SUCCESS;
+                }
             }
             else if (theatreStatus == Enums::TheatreStatus::PENDING)
             {
-                (iterator->second)->setStatus(Enums::TheatreStatus::PENDING);
-                return Enums::ProcessStatus::SUCCESS;   
+                if (m_dataStore.updateTheatreStatus(iterator->second->getTheatreId(), Enums::TheatreStatus::PENDING) == Enums::ProcessStatus::SUCCESS)
+                {
+                    (iterator->second)->setStatus(Enums::TheatreStatus::PENDING);
+                    return Enums::ProcessStatus::SUCCESS;
+                }
             }
             else
             {
@@ -755,9 +712,13 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
     if (deactivateStatus == Enums::ProcessStatus::SUCCESS)
     {
         Theatre* theatre = m_dataStore.getTheatreById(theatreId);
-        theatre->setMovies({});
-        theatre->setStatus(Enums::TheatreStatus::INACTIVE);
-        return Enums::ProcessStatus::SUCCESS;
+        if (theatre && (m_dataStore.updateTheatreStatus(theatreId, Enums::TheatreStatus::INACTIVE) == Enums::ProcessStatus::SUCCESS)
+            && (m_dataStore.clearMoviesFromTheatre(theatreId) == Enums::ProcessStatus::SUCCESS))
+        {
+            theatre->setMovies({});
+            theatre->setStatus(Enums::TheatreStatus::INACTIVE);
+            return Enums::ProcessStatus::SUCCESS;
+        }
     }
     else
     {
@@ -768,6 +729,8 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
 
 Enums::ProcessStatus TheatreManagementService::isScreenDeactivatable(Screen* screen)
 {
+    ScopedLock showLock(m_showMutex);
+    ScopedLock screenLock(m_screenMutex);
     ShowManagementService showManagementService;
     const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
@@ -799,6 +762,10 @@ Enums::ProcessStatus TheatreManagementService::isScreenDeactivatable(Screen* scr
  */
 Enums::ProcessStatus TheatreManagementService::removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId)
 {
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock showLock(m_showMutex);
+    ScopedLock movieLock(m_movieMutex);
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     User* currentOwner = m_dataStore.getAuthenticatedUser();
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (theatre == nullptr)
@@ -814,7 +781,6 @@ Enums::ProcessStatus TheatreManagementService::removeMovieFromTheatre(const std:
     {
         return Enums::ProcessStatus::FAILED;
     }
-    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
     {
         Show* show = iterator->second;
@@ -832,96 +798,12 @@ Enums::ProcessStatus TheatreManagementService::removeMovieFromTheatre(const std:
     {
         if ((*iterator)->getMovieId() == movieId)
         {
-            movies.erase(iterator);
-            return Enums::ProcessStatus::SUCCESS;
+            if (m_dataStore.removeMovieFromTheatre(theatre->getTheatreId(), movieId) == Enums::ProcessStatus::SUCCESS)
+            {
+                movies.erase(iterator);
+                return Enums::ProcessStatus::SUCCESS;
+            }
         }
     }
     return Enums::ProcessStatus::FAILED;
-}
-
-/*
- * Function: TheatreManagementService::saveTheatreData
- * Description: Saves all theatre data from the DataStore into a CSV file.
- *              Includes theatre details, status, associated screens, and movies.
- *              Overwrites existing file content.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened)
- */
-void TheatreManagementService::saveTheatreData()
-{
-    std::vector<std::string> lines;
-    lines.push_back(config::Header::THEATRE_HEADER);
-    const std::map<std::string, Theatre*> theatres = m_dataStore.getTheatres();
-    for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
-    {
-        lines.push_back((iterator->second)->serialize());
-    }
-    FileManagement::writeLines(std::string(config::File::THEATRE_FILEPATH), lines);
-}
-
-/*
- * Function: TheatreManagementService::loadTheatreData
- * Description: Loads all theatre data from a CSV file into memory.
- *              Reads each line from the file using FileManagement::readlines(PATH),
- *              deserializes it into a Theatre object via Theatre::deserialize,
- *              and restores associations with Screen and Movie objects if their IDs
- *              are present and found in the DataStore.
- *              Finally, adds the reconstructed Theatre to the DataStore.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened or read)
- */
-void TheatreManagementService::loadTheatreData()
-{
-    std::string theatreId;
-    std::string name;
-    std::string city;
-    std::string address;
-    std::string phoneNumber;
-    std::string email;
-    std::string theatreOwnerId;
-    std::string status;
-    std::string screenIds;
-    std::string movieIds;
-    std::vector<std::string> lines = FileManagement::readlines(PATH);
-    for (int index = 1; index < lines.size(); index++)
-    {
-        Theatre* theatre = Theatre::deserialize(lines[index]);
-        std::stringstream lineStream(lines[index]);
-        getline(lineStream, theatreId, ',');
-        getline(lineStream, name, ',');
-        getline(lineStream, city, ',');
-        getline(lineStream, address, ',');
-        getline(lineStream, phoneNumber, ',');
-        getline(lineStream, email, ',');
-        getline(lineStream, theatreOwnerId, ',');
-        getline(lineStream, status, ',');
-        getline(lineStream, screenIds, ',');
-        getline(lineStream, movieIds, ',');
-        theatre->setStatus(Enums::getTheatreStatus(status));
-        if (!theatreOwnerId.empty())
-        {
-            User* theatreOwner = m_dataStore.getUserById(theatreOwnerId);
-            theatre->setTheatreOwner(theatreOwner);
-        }
-        if (!movieIds.empty())
-        {
-            std::vector<Movie*> movies;
-            std::stringstream movieStream(movieIds);
-            std::string movieId;
-            while (getline(movieStream, movieId, '|'))
-            {
-                Movie* movie = m_dataStore.getMovieById(movieId);
-                if (movie != nullptr)
-                {
-                    movies.push_back(movie);
-                }
-            }
-            theatre->setMovies(movies);
-        }
-        m_dataStore.addTheatre(theatre);
-    }
 }

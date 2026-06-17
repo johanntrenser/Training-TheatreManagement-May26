@@ -37,8 +37,6 @@ public:
 	Enums::ProcessStatus isShowChangable(const std::string& showId);
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 	const Show* getShowById(const std::string& showId);
-	void saveShowData();
-	void loadShowData();
 	void updateShowStatuses();
 	void updateTicketStatusesForCompletedShows();
 };

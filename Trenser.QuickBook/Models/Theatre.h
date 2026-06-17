@@ -14,6 +14,7 @@
 #include "User.h"
 #include "Movie.h"
 #include "Factory.h"
+#include "SharedStructs.h"
 
 class Screen;
 
@@ -62,7 +63,7 @@ public:
     void setScreen(Screen* screen);
     std::vector<Screen*>& getScreensForUpdation();
     void addMovieToTheatre(Movie* movie);
-    std::string serialize();
-    static Theatre* deserialize(const std::string& line);
+    SharedTheatre serialize();
+    static Theatre* deserialize(const SharedTheatre* sharedTheatre);
     std::vector<Movie*>& getMovies();
 };
