@@ -13,6 +13,7 @@
 #include "Booking.h"
 #include "Factory.h"
 #include "InputHelper.h"
+#include "SharedStructs.h"
 
 class Payment
 {
@@ -42,6 +43,6 @@ public:
     void setPaymentMethod(Enums::PaymentMethod paymentMethod);
     void setStatus(Enums::PaymentStatus status);
     void setTimeStamp(const time_t timeStamp);
-    std::string serialize();
-    static Payment* deserialize(const std::string& lines);
+    void serialize(SharedPayment& sharedPayment) const;
+    static Payment* deserialize(const SharedPayment* sharedPayment);
 };

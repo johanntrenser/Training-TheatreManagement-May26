@@ -64,6 +64,8 @@ public:
     int getUsersCount() const;
     int getScreenCount() const;
     int getSeatCount() const;
+    int getPaymentCount() const;
+    int getRefundCount() const;
     int getLogsCount() const;
     int getTicketCount() const;
     void closeAll();

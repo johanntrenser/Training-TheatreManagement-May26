@@ -110,6 +110,7 @@ struct SharedPayment
 	char   bookingId[config::Limit::ID_MAX_LENGTH];
 	char   customerId[config::Limit::ID_MAX_LENGTH];
 	double amount;
+	int paymentMethod;
 	int    status;
 	char   time[config::Limit::TIME_MAX_LENGTH];
 };
