@@ -44,7 +44,8 @@ public:
         m_notifications(nullptr),
         m_availability(nullptr),
         m_logs(nullptr)
-    {}
+    {
+    }
     MappedFileRegistry(const MappedFileRegistry&) = delete;
     MappedFileRegistry& operator=(const MappedFileRegistry&) = delete;
     bool openAll();
@@ -70,6 +71,8 @@ public:
     int getTicketCount() const;
     int getBookingCount() const;
     int getTheatresCount() const;
+    int getShowCount() const;
+    int getShowSeatAvailabilityCount() const;
     void closeAll();
     ~MappedFileRegistry()
     {

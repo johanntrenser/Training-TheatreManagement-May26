@@ -24,7 +24,10 @@ void ShowManagementService::updateTicketStatusesForCompletedShows()
             const Show* show = ticket->getPayment()->getBooking()->getShow();
             if (show && show->getShowStatus() == Enums::ShowStatus::COMPLETED)
             {
-                ticket->setTicketStatus(Enums::TicketStatus::COMPLETED);
+                if (m_dataStore.updateTicketStatus(ticket->getTicketId(), Enums::TicketStatus::COMPLETED) == Enums::ProcessStatus::SUCCESS)
+                {
+                    ticket->setTicketStatus(Enums::TicketStatus::COMPLETED);
+                }
             }
         }
     }
@@ -52,14 +55,20 @@ void ShowManagementService::updateShowStatuses()
         {
             if (currentTime >= show->getStartTime() && currentTime < show->getEndTime())
             {
-                show->setShowStatus(Enums::ShowStatus::RUNNING);
+                if (m_dataStore.updateShowStatus(show->getShowId(), Enums::ShowStatus::RUNNING) == Enums::ProcessStatus::SUCCESS)
+                {
+                    show->setShowStatus(Enums::ShowStatus::RUNNING);
+                }
             }
         }
         if (show && show->getShowStatus() == Enums::ShowStatus::RUNNING)
         {
             if (currentTime >= show->getEndTime())
             {
-                show->setShowStatus(Enums::ShowStatus::COMPLETED);
+                if (m_dataStore.updateShowStatus(show->getShowId(), Enums::ShowStatus::COMPLETED) == Enums::ProcessStatus::SUCCESS)
+                {
+                    show->setShowStatus(Enums::ShowStatus::COMPLETED);
+                }
             }
         }
     }
@@ -76,8 +85,8 @@ void ShowManagementService::updateShowStatuses()
  */
 const std::string ShowManagementService::generateShowId()
 {
-    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
-    int idNumber = static_cast<int>(shows.size()) + 1;
+    const int count = m_dataStore.getShowCount();
+    int idNumber = count + 1;
     std::ostringstream buffer;
     buffer << "SHOW" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -91,8 +100,8 @@ const std::string ShowManagementService::generateShowId()
  */
 const std::string ShowManagementService::generateShowSeatAvailabilityId()
 {
-    const std::map<std::string, ShowSeatAvailability*>& showSeatAvailabilitys = m_dataStore.getShowSeatAvailabilitys();
-    int idNumber = static_cast<int>(showSeatAvailabilitys.size()) + 1;
+    const int count = m_dataStore.getShowSeatAvailabilityCount();
+    int idNumber = count + 1;
     std::ostringstream buffer;
     buffer << "SSA" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -110,6 +119,7 @@ const std::string ShowManagementService::generateShowSeatAvailabilityId()
  */
 Enums::ProcessStatus ShowManagementService::isMovieInTheatre(const std::string& movieId, const std::string& theatreId)
 {
+    ScopedLock lock(m_showMutex);
     TheatreManagementService theatreManagementService;
     const std::vector<const Movie*> movies =  theatreManagementService.getMoviesFromTheatre(theatreId);
     for (std::vector<const Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
@@ -132,6 +142,9 @@ Enums::ProcessStatus ShowManagementService::isMovieInTheatre(const std::string& 
  */
 const std::vector<const Screen*> ShowManagementService::getScreensFromTheatre(const std::string& theatreId)
 {
+    ScopedLock showLock(m_showMutex);
+    ScopedLock theatreLock(m_theatreMutex);
+    ScopedLock screenLock(m_screenMutex);
     std::vector<const Screen*> resultantScreens;
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (theatre == nullptr)
@@ -164,6 +177,8 @@ const std::vector<const Screen*> ShowManagementService::getScreensFromTheatre(co
  */
 Enums::ProcessStatus ShowManagementService::isShowTimeConflicting(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute)
 {
+    ScopedLock showLock(m_showMutex);
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     Movie* movie = m_dataStore.getMovieById(movieId);
     if (movie == nullptr)
     {
@@ -177,7 +192,6 @@ Enums::ProcessStatus ShowManagementService::isShowTimeConflicting(const std::str
     {
         return Enums::ProcessStatus::FAILED;
     }
-    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
     {
         if (iterator->second->getScreen() && ((iterator->second->getScreen()->getScreenId()) == screenId))
@@ -204,6 +218,9 @@ Enums::ProcessStatus ShowManagementService::isShowTimeConflicting(const std::str
  */
 Enums::ProcessStatus ShowManagementService::isNewShowTimeConflicting(const std::string& showId, const time_t& newStartTime)
 {
+    ScopedLock showLock(m_showMutex);
+    ScopedLock movieLock(m_movieMutex);
+    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     const Show* show = m_dataStore.getShowById(showId);
     if (show == nullptr)
     {
@@ -223,7 +240,6 @@ Enums::ProcessStatus ShowManagementService::isNewShowTimeConflicting(const std::
     {
         return Enums::ProcessStatus::FAILED;
     }
-    const std::map<std::string, Show*>& shows = m_dataStore.getShows();
     for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
     {
         if ((iterator->second->getScreen() && ((iterator->second->getScreen()->getScreenId()) == screenId)) && iterator->second->getShowId() != showId)
@@ -258,6 +274,9 @@ Enums::ProcessStatus ShowManagementService::isNewShowTimeConflicting(const std::
  */
 Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, const std::string& screenId, int year, int month, int day, int startTimeHour, int startTimeMinute)
 {
+    ScopedLock showMutex(m_showMutex);
+    ScopedLock movieMutex(m_movieMutex);
+    ScopedLock screenMutex(m_screenMutex);
     std::string showId = generateShowId();
     Movie* movie = m_dataStore.getMovieById(movieId);
     Screen* screen = m_dataStore.getScreenById(screenId);
@@ -321,6 +340,8 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
  */
 Enums::ProcessStatus ShowManagementService::updateShow(const time_t& startTime, const std::string& showId)
 {
+    ScopedLock showLock(m_showMutex);
+    ScopedLock movieLock(m_movieMutex);
     Show* show = m_dataStore.getShowByIdForUpdation(showId);
     if (show == nullptr)
     {
@@ -338,9 +359,13 @@ Enums::ProcessStatus ShowManagementService::updateShow(const time_t& startTime, 
     {
         return Enums::ProcessStatus::FAILED;
     }
-    show->setStartTime(startTime);
-    show->setEndTime(endTime);
-    return Enums::ProcessStatus::SUCCESS;
+    if (m_dataStore.updateShowTime(showId, startTime, endTime) == Enums::ProcessStatus::SUCCESS)
+    {
+        show->setStartTime(startTime);
+        show->setEndTime(endTime);
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
 }
 
 /*
@@ -351,6 +376,7 @@ Enums::ProcessStatus ShowManagementService::updateShow(const time_t& startTime, 
  */
 const std::vector<const Show*> ShowManagementService::getActiveShows()
 {
+    ScopedLock lock(m_showMutex);
     updateShowStatuses();
     std::vector<const Show*> filteredShows;
     std::string theatreOwnerId = m_dataStore.getAuthenticatedUser()->getUserId();
@@ -382,6 +408,7 @@ const std::vector<const Show*> ShowManagementService::getActiveShows()
  */
 const std::vector<std::string> ShowManagementService::getActiveShowIds()
 {
+    ScopedLock lock(m_showMutex);
     const std::vector<const Show*> shows = getActiveShows();
     std::vector<std::string> filteredShowIds;
     for (std::vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
@@ -402,6 +429,7 @@ const std::vector<std::string> ShowManagementService::getActiveShowIds()
  */
 const std::vector<const Show*> ShowManagementService::getAllShows()
 {
+    ScopedLock lock(m_showMutex);
     updateShowStatuses();
     std::vector<const Show*> filteredShows;
     std::string theatreOwnerId = m_dataStore.getAuthenticatedUser()->getUserId();
@@ -450,6 +478,7 @@ const std::vector<std::string> ShowManagementService::getAllShowIds()
  */
 Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId)
 {
+    ScopedLock lock(m_showMutex);
     updateShowStatuses();
     const Show* show = m_dataStore.getShowById(showId);
     if (show != nullptr)
@@ -469,6 +498,7 @@ Enums::ShowStatus ShowManagementService::getShowStatus(const std::string& showId
  */
 const std::vector<const Show*> ShowManagementService::getShowsForMovie(const std::string& movieId)
 {
+    ScopedLock lock(m_showMutex);
     updateShowStatuses();
     std::vector<const Show*> filteredShows;
     const std::map<std::string, Show*>& shows = m_dataStore.getShows();
@@ -503,6 +533,7 @@ const std::vector<const Show*> ShowManagementService::getShowsForMovie(const std
  */
 Enums::ProcessStatus ShowManagementService::isShowChangable(const std::string& showId)
 {
+    ScopedLock lock(m_showMutex);
     const Show* show = m_dataStore.getShowById(showId);
     if (show == nullptr)
     {
@@ -547,8 +578,12 @@ Enums::ProcessStatus ShowManagementService::setShowStatusById(const std::string&
     {
         return Enums::ProcessStatus::FAILED;
     }
-    show->setShowStatus(status);
-    return Enums::ProcessStatus::SUCCESS;
+    if (m_dataStore.updateShowStatus(showId, status) == Enums::ProcessStatus::SUCCESS)
+    {
+        show->setShowStatus(status);
+        return Enums::ProcessStatus::SUCCESS;
+    }
+    return Enums::ProcessStatus::FAILED;
 }
 
 /*

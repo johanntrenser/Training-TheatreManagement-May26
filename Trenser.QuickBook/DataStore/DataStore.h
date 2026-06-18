@@ -73,14 +73,14 @@ public:
 	const std::map<std::string, Show*>& getShows();
 	std::map<std::string, Show*>& getShowsForUpdation();
 	const std::map<std::string, Screen*>& getScreens();
-	const std::map<std::string, Theatre*>& getTheatres() const;
+	const std::map<std::string, Theatre*>& getTheatres();
 	const std::map<std::string, Booking*>& getBookings();
 	void addTheatre(Theatre* theatre);
 	Theatre* getTheatreById(const std::string& theatreId);
 	Movie* getMovieById(const std::string& movieId);
 	Screen* getScreenById(const std::string& screenId);
 	void addShow(Show* show);
-	const std::map<std::string, ShowSeatAvailability*>& getShowSeatAvailabilitys() const;
+	const std::map<std::string, ShowSeatAvailability*>& getShowSeatAvailabilitys();
 	void addShowSeatAvailability(ShowSeatAvailability* showSeatAvailability);
 	const Show* getShowById(const std::string& showId);
 	Show* getShowByIdForUpdation(const std::string& showId);
@@ -103,8 +103,6 @@ public:
 	void addScreen(Screen* screen);
 	void addNotification(Notification* notification);
 	Booking* getBookingDetailsById(const std::string& bookingId);
-	std::map<std::string, ShowSeatAvailability*> getShowSeatAvailabilityList();
-	void addShowSeatAvailabilityList(ShowSeatAvailability* showSeatAvailability);
 	int getUsersCount() const;
 	int getLogsCount() const;
 	int getTheatresCount() const;
@@ -114,6 +112,8 @@ public:
 	int getSeatCount() const;
 	int getPaymentCount() const;
 	int getRefundCount() const;
+	int getShowCount() const;
+	int getShowSeatAvailabilityCount() const;
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
 	Enums::ProcessStatus updateScreenName(const std::string& screenId, const std::string& screenName);
 	Enums::ProcessStatus updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status);
@@ -128,6 +128,7 @@ public:
 	Enums::ProcessStatus updateTheatreStatus(const std::string& theatreId, Enums::TheatreStatus status);
 	Enums::ProcessStatus clearMoviesFromTheatre(const std::string& theatreId);
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
+	Enums::ProcessStatus updateShowTime(const std::string& showId, const time_t& startTime, const time_t& endTime);
 	bool isUserLoggedIn(const std::string& userId);
 	bool addLoggedInUser(const std::string& userId);
 	bool removeLoggedInUser(const std::string& userId);

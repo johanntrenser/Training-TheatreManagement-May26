@@ -202,10 +202,10 @@ void Movie::setStatus(Enums::MovieStatus status)
 SharedMovie Movie::serialize()
 {
     SharedMovie sharedMovie{};
-    strncpy_s(sharedMovie.movieId, m_movieId.c_str(), sizeof(sharedMovie.movieId));
-    strncpy_s(sharedMovie.title, m_title.c_str(), sizeof(sharedMovie.title));
-    strncpy_s(sharedMovie.language, m_language.c_str(), sizeof(sharedMovie.language));
-    strncpy_s(sharedMovie.genre, m_genre.c_str(), sizeof(sharedMovie.genre));
+    strncpy_s(sharedMovie.movieId, sizeof(sharedMovie.movieId), m_movieId.c_str(), _TRUNCATE);
+    strncpy_s(sharedMovie.title, sizeof(sharedMovie.title), m_title.c_str(), _TRUNCATE);
+    strncpy_s(sharedMovie.language, sizeof(sharedMovie.language), m_language.c_str(), _TRUNCATE);
+    strncpy_s(sharedMovie.genre, sizeof(sharedMovie.genre), m_genre.c_str(), _TRUNCATE);
     sharedMovie.duration = m_duration;
     sharedMovie.status = static_cast<int>(m_status);
     return sharedMovie;

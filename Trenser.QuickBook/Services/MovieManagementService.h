@@ -34,6 +34,4 @@ public:
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	std::vector<const Movie*> getAllInactiveMovies();
 	Enums::ProcessStatus isMovieDeactivatable(const std::string& movieId);
-	void saveMovieData();
-	void loadMovieData();
 };

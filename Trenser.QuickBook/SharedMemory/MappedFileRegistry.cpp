@@ -330,6 +330,32 @@ int MappedFileRegistry::getTheatresCount() const
 }
 
 /*
+ * Function: getShowsCount
+ * Description: Retrieves the total number of shows from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of shows
+ */
+int MappedFileRegistry::getShowCount() const
+{
+    return m_shows->getRecordCount();
+}
+
+/*
+ * Function: getShowSeatAvailabilityCount
+ * Description: Retrieves the total number of showSeatAvailabilities from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of showSeatAvailabilities
+ */
+int MappedFileRegistry::getShowSeatAvailabilityCount() const
+{
+    return m_availability->getRecordCount();
+}
+
+/*
 * Function: MappedFileRegistry::closeAll
 * Description: Releases all mapped file objects managed by the registry
 *              and resets their pointers to nullptr.

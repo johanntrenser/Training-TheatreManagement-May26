@@ -120,15 +120,17 @@ void ShowSeatAvailability::setSeatAvailabilityMap(std::map<std::string, Enums::B
  */
 void ShowSeatAvailability::serialize(SharedShowSeatAvailability& sharedSeatAvailability)
 {
-    strncpy_s(sharedSeatAvailability.availabilityId, m_showSeatAvailabilityId.c_str(), sizeof(sharedSeatAvailability.availabilityId));
-    strncpy_s(sharedSeatAvailability.showId, m_show->getShowId().c_str(), sizeof(sharedSeatAvailability.showId));
+    strncpy_s(sharedSeatAvailability.availabilityId, sizeof(sharedSeatAvailability.availabilityId), m_showSeatAvailabilityId.c_str(), _TRUNCATE);
+    strncpy_s(sharedSeatAvailability.showId, sizeof(sharedSeatAvailability.showId), m_show->getShowId().c_str(), _TRUNCATE);
     sharedSeatAvailability.seatCount = static_cast<int>(m_seatAvailabilityMap.size());
     int seatIndex = 0;
-    for (std::map<std::string, Enums::BookingStatus>::iterator iterator = m_seatAvailabilityMap.begin(); iterator != m_seatAvailabilityMap.end(); ++iterator)
+    for (std::map<std::string, Enums::BookingStatus>::iterator iterator = m_seatAvailabilityMap.begin();
+        iterator != m_seatAvailabilityMap.end(); ++iterator)
     {
         std::string seatId = iterator->first;
-        strncpy_s(sharedSeatAvailability.seatIds[seatIndex], seatId.c_str(), sizeof(sharedSeatAvailability.seatIds[seatIndex]));
+        strncpy_s(sharedSeatAvailability.seatIds[seatIndex], sizeof(sharedSeatAvailability.seatIds[seatIndex]), seatId.c_str(), _TRUNCATE);
         sharedSeatAvailability.seatStatuses[seatIndex] = static_cast<int>(iterator->second);
+        seatIndex++;
     }
 }
 

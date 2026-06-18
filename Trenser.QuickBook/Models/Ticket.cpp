@@ -148,13 +148,9 @@ void Ticket::setTicketStatus(Enums::TicketStatus status)
 void Ticket::serialize(SharedTicket& sharedTicket) const
 {
 	sharedTicket = {};
-	strncpy_s(sharedTicket.ticketId, m_ticketId.c_str(), sizeof(sharedTicket.ticketId));
-	strncpy_s(sharedTicket.paymentId, 
-		(m_payment ? m_payment->getPaymentId().c_str() : ""), 
-		sizeof(sharedTicket.paymentId));
-	strncpy_s(sharedTicket.customerId, 
-		(m_customer ? m_customer->getUserId().c_str() : ""), 
-		sizeof(sharedTicket.customerId));
+	strncpy_s(sharedTicket.ticketId, sizeof(sharedTicket.ticketId), m_ticketId.c_str(), _TRUNCATE);
+	strncpy_s(sharedTicket.paymentId, sizeof(sharedTicket.paymentId), (m_payment ? m_payment->getPaymentId().c_str() : ""), _TRUNCATE);
+	strncpy_s(sharedTicket.customerId, sizeof(sharedTicket.customerId), (m_customer ? m_customer->getUserId().c_str() : ""), _TRUNCATE);
 	sharedTicket.status = static_cast<int>(m_status);
 }
 

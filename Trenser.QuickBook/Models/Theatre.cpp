@@ -349,25 +349,25 @@ void Theatre::addMovieToTheatre(Movie* movie)
 SharedTheatre Theatre::serialize()
 {
     SharedTheatre sharedTheatre{};
-    strncpy_s(sharedTheatre.theatreId, m_theatreId.c_str(), sizeof(sharedTheatre.theatreId));
-    strncpy_s(sharedTheatre.name, m_name.c_str(), sizeof(sharedTheatre.name));
-    strncpy_s(sharedTheatre.city, m_city.c_str(), sizeof(sharedTheatre.city));
-    strncpy_s(sharedTheatre.address, m_address.c_str(), sizeof(sharedTheatre.address));
-    strncpy_s(sharedTheatre.phoneNumber, m_phoneNumber.c_str(), sizeof(sharedTheatre.phoneNumber));
-    strncpy_s(sharedTheatre.email, m_email.c_str(), sizeof(sharedTheatre.email));
+    strncpy_s(sharedTheatre.theatreId, sizeof(sharedTheatre.theatreId), m_theatreId.c_str(), _TRUNCATE);
+    strncpy_s(sharedTheatre.name, sizeof(sharedTheatre.name), m_name.c_str(), _TRUNCATE);
+    strncpy_s(sharedTheatre.city, sizeof(sharedTheatre.city), m_city.c_str(), _TRUNCATE);
+    strncpy_s(sharedTheatre.address, sizeof(sharedTheatre.address), m_address.c_str(), _TRUNCATE);
+    strncpy_s(sharedTheatre.phoneNumber, sizeof(sharedTheatre.phoneNumber), m_phoneNumber.c_str(), _TRUNCATE);
+    strncpy_s(sharedTheatre.email, sizeof(sharedTheatre.email), m_email.c_str(), _TRUNCATE);
     if (m_theatreOwner != nullptr)
     {
-        strncpy_s(sharedTheatre.ownerId, m_theatreOwner->getUserId().c_str(), sizeof(sharedTheatre.ownerId));
+        strncpy_s(sharedTheatre.ownerId, sizeof(sharedTheatre.ownerId), m_theatreOwner->getUserId().c_str(), _TRUNCATE);
     }
     sharedTheatre.status = static_cast<int>(m_status);
     for (std::vector<Movie*>::iterator iterator = m_movies.begin(); iterator != m_movies.end(); ++iterator)
     {
-        strncpy_s(sharedTheatre.movieIds[sharedTheatre.movieCount], (*iterator)->getMovieId().c_str(), sizeof(sharedTheatre.movieIds[sharedTheatre.movieCount]));
+        strncpy_s(sharedTheatre.movieIds[sharedTheatre.movieCount], sizeof(sharedTheatre.movieIds[sharedTheatre.movieCount]), (*iterator)->getMovieId().c_str(), _TRUNCATE);
         sharedTheatre.movieCount++;
     }
     for (std::vector<Screen*>::iterator iterator = m_screens.begin(); iterator != m_screens.end(); ++iterator)
     {
-        strncpy_s(sharedTheatre.screenIds[sharedTheatre.screenCount], (*iterator)->getScreenId().c_str(), sizeof(sharedTheatre.screenIds[sharedTheatre.screenCount]));
+        strncpy_s(sharedTheatre.screenIds[sharedTheatre.screenCount], sizeof(sharedTheatre.screenIds[sharedTheatre.screenCount]), (*iterator)->getScreenId().c_str(), _TRUNCATE);
         sharedTheatre.screenCount++;
     }
     return sharedTheatre;

@@ -208,16 +208,15 @@ void Payment::setTimeStamp(const time_t timeStamp)
 void Payment::serialize(SharedPayment& sharedPayment) const
 {
     sharedPayment = {};
-    strncpy_s(sharedPayment.paymentId, m_paymentId.c_str(), sizeof(sharedPayment.paymentId));
-    strncpy_s(sharedPayment.bookingId, 
-        (m_booking ? m_booking->getBookingId().c_str() : ""), sizeof(sharedPayment.bookingId));
-    strncpy_s(sharedPayment.customerId, 
-        (m_booking && m_booking->getCustomer() ? m_booking->getCustomer()->getUserId().c_str() : ""),
-        sizeof(sharedPayment.customerId));
+    strncpy_s(sharedPayment.paymentId, sizeof(sharedPayment.paymentId), m_paymentId.c_str(), _TRUNCATE);
+    strncpy_s(sharedPayment.bookingId, sizeof(sharedPayment.bookingId),
+        (m_booking ? m_booking->getBookingId().c_str() : ""), _TRUNCATE);
+    strncpy_s(sharedPayment.customerId, sizeof(sharedPayment.customerId),
+        (m_booking && m_booking->getCustomer() ? m_booking->getCustomer()->getUserId().c_str() : ""), _TRUNCATE);
     sharedPayment.amount = m_amount;
     sharedPayment.paymentMethod = static_cast<int>(m_paymentMethod);
     sharedPayment.status = static_cast<int>(m_status);
-    strncpy_s(sharedPayment.time, util::serializeTime(m_timeStamp).c_str(), sizeof(sharedPayment.time));
+    strncpy_s(sharedPayment.time, sizeof(sharedPayment.time), util::serializeTime(m_timeStamp).c_str(), _TRUNCATE);
 }
 
 /*
