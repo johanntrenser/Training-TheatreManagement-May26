@@ -234,12 +234,12 @@ void Show::setShowStatus(Enums::ShowStatus showStatus)
 SharedShow Show::serialize()
 {
     SharedShow sharedShow{};
-    strncpy_s(sharedShow.showId, m_showId.c_str(), sizeof(sharedShow.showId));
-    strncpy_s(sharedShow.movieId, m_movie->getMovieId().c_str(), sizeof(sharedShow.movieId));
-    strncpy_s(sharedShow.screenId, m_screen->getScreenId().c_str(), sizeof(sharedShow.screenId));
-    strncpy_s(sharedShow.startTime, util::serializeTime(m_startTime).c_str(), sizeof(sharedShow.startTime));
-    strncpy_s(sharedShow.endTime, util::serializeTime(m_endTime).c_str(), sizeof(sharedShow.endTime));
-    strncpy_s(sharedShow.seatAvailabilityId, m_seatAvailability->getShowAvailabiltyId().c_str(), sizeof(sharedShow.seatAvailabilityId));
+    strncpy_s(sharedShow.showId, sizeof(sharedShow.showId), m_showId.c_str(), _TRUNCATE);
+    strncpy_s(sharedShow.movieId, sizeof(sharedShow.movieId), m_movie->getMovieId().c_str(), _TRUNCATE);
+    strncpy_s(sharedShow.screenId, sizeof(sharedShow.screenId), m_screen->getScreenId().c_str(), _TRUNCATE);
+    strncpy_s(sharedShow.startTime, sizeof(sharedShow.startTime), util::serializeTime(m_startTime).c_str(), _TRUNCATE);
+    strncpy_s(sharedShow.endTime, sizeof(sharedShow.endTime), util::serializeTime(m_endTime).c_str(), _TRUNCATE);
+    strncpy_s(sharedShow.seatAvailabilityId, sizeof(sharedShow.seatAvailabilityId), m_seatAvailability->getShowAvailabiltyId().c_str(), _TRUNCATE);
     sharedShow.status = static_cast<int>(m_showStatus);
     return sharedShow;
 }

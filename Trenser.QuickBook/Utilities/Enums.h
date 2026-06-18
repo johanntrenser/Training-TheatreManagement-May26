@@ -151,6 +151,8 @@ namespace Enums {
             return "INACTIVE";
         case TheatreStatus::UNDER_MAINTENANCE:
             return "UNDER_MAINTENANCE";
+        case TheatreStatus::PENDING:
+            return "PENDING";
         default:
             return "UNKNOWN";
         }
@@ -169,6 +171,10 @@ namespace Enums {
         if (input == "UNDER_MAINTENANCE")
         {
             return TheatreStatus::UNDER_MAINTENANCE;
+        }
+        if (input == "PENDING")
+        {
+            return TheatreStatus::PENDING;
         }
         return TheatreStatus::INACTIVE;
     }

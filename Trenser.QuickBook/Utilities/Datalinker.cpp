@@ -35,7 +35,7 @@ Return Type   : void
 */
 void DataLinker::linkShowsAndSeatAvailability()
 {
-    const std::map<std::string, ShowSeatAvailability*>& availabilities = m_dataStore.getShowSeatAvailabilityList();
+    const std::map<std::string, ShowSeatAvailability*>& availabilities = m_dataStore.getShowSeatAvailabilitys();
     for (std::map<std::string, ShowSeatAvailability*>::const_iterator iterator = availabilities.begin(); iterator != availabilities.end(); ++iterator)
     {
         ShowSeatAvailability* availability = iterator->second;

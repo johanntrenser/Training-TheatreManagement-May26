@@ -288,11 +288,11 @@ std::string User::decryption(std::string& password)
 SharedUser User::serialize()
 {
     SharedUser sharedUser{};
-    strncpy_s(sharedUser.userId, m_userId.c_str(), sizeof(sharedUser.userId));
-    strncpy_s(sharedUser.username, m_userName.c_str(), sizeof(sharedUser.username));
-    strncpy_s(sharedUser.email, m_email.c_str(), sizeof(sharedUser.email));
-    strncpy_s(sharedUser.password, encryption(m_password).c_str(), sizeof(sharedUser.password));
-    strncpy_s(sharedUser.phoneNumber, m_phoneNumber.c_str(), sizeof(sharedUser.phoneNumber));
+    strncpy_s(sharedUser.userId, sizeof(sharedUser.userId), m_userId.c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.username, sizeof(sharedUser.username), m_userName.c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.email, sizeof(sharedUser.email), m_email.c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.password, sizeof(sharedUser.password), encryption(m_password).c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.phoneNumber, sizeof(sharedUser.phoneNumber), m_phoneNumber.c_str(), _TRUNCATE);
     sharedUser.userType = static_cast<int>(m_userType);
     sharedUser.status = static_cast<int>(m_status);
     return sharedUser;

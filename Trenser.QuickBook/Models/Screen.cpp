@@ -250,11 +250,10 @@ std::vector<std::vector<Seat*>>& Screen::getSeatGridForUpdation()
  */
 void Screen::serialize(SharedScreen& sharedScreen) const
 {
-    strncpy_s(sharedScreen.screenId, m_screenId.c_str(), sizeof(sharedScreen.screenId));
-    strncpy_s(sharedScreen.theatreId,
-        (m_theatre ? m_theatre->getTheatreId().c_str() : ""),
-        sizeof(sharedScreen.theatreId));
-    strncpy_s(sharedScreen.name, m_name.c_str(), sizeof(sharedScreen.name));
+    strncpy_s(sharedScreen.screenId, sizeof(sharedScreen.screenId), m_screenId.c_str(), _TRUNCATE);
+    strncpy_s(sharedScreen.theatreId, sizeof(sharedScreen.theatreId),
+        (m_theatre ? m_theatre->getTheatreId().c_str() : ""), _TRUNCATE);
+    strncpy_s(sharedScreen.name, sizeof(sharedScreen.name), m_name.c_str(), _TRUNCATE);
     sharedScreen.totalRows = m_totalRows;
     sharedScreen.totalColumns = m_totalColumns;
     sharedScreen.status = static_cast<int>(m_screenStatus);
@@ -266,8 +265,9 @@ void Screen::serialize(SharedScreen& sharedScreen) const
             if (sharedScreen.seatCount < config::Limit::SEAT_MAX_COUNT)
             {
                 strncpy_s(sharedScreen.seatIds[sharedScreen.seatCount],
+                    sizeof(sharedScreen.seatIds[0]),
                     seat->getSeatId().c_str(),
-                    sizeof(sharedScreen.seatIds[0]));
+                    _TRUNCATE);
                 sharedScreen.seatCount++;
             }
         }

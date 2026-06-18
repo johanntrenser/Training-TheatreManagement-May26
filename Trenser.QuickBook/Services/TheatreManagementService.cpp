@@ -182,7 +182,7 @@ const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerTheat
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner() == authenticatedUser) && (iterator->second->getStatus() == Enums::TheatreStatus::ACTIVE))
+        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner()->getUserId() == authenticatedUser->getUserId()) && (iterator->second->getStatus() == Enums::TheatreStatus::ACTIVE))
         {
             ownerTheatres.push_back(iterator->second);
         }
@@ -207,7 +207,7 @@ const std::vector<const Theatre*> TheatreManagementService::getCurrentOwnerInact
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner() == authenticatedUser) && (iterator->second->getStatus() == Enums::TheatreStatus::INACTIVE))
+        if ((iterator->second != nullptr) && ((iterator->second)->getTheatreOwner()->getUserId() == authenticatedUser->getUserId()) && (iterator->second->getStatus() == Enums::TheatreStatus::INACTIVE))
         {
             ownerTheatres.push_back(iterator->second);
         }

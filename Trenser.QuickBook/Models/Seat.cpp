@@ -212,11 +212,9 @@ void Seat::setSeatAmount(double amount)
 SharedSeat Seat::serialize()
 {
     SharedSeat sharedSeat{};
-    strncpy_s(sharedSeat.seatId, m_seatId.c_str(),
-        sizeof(sharedSeat.seatId));
-    strncpy_s(sharedSeat.screenId,
-        (m_screen ? m_screen->getScreenId().c_str() : ""),
-        sizeof(sharedSeat.screenId));
+    strncpy_s(sharedSeat.seatId, sizeof(sharedSeat.seatId), m_seatId.c_str(), _TRUNCATE);
+    strncpy_s(sharedSeat.screenId, sizeof(sharedSeat.screenId),
+        (m_screen ? m_screen->getScreenId().c_str() : ""), _TRUNCATE);
     sharedSeat.seatRow = static_cast<int>(m_seatRow);
     sharedSeat.seatColumn = m_seatColumn;
     sharedSeat.amount = m_amount;

@@ -155,11 +155,11 @@ std::string Log::toString() const
 SharedLog Log::serialize()
 {
     SharedLog sharedLog{};
-    strncpy_s(sharedLog.logId, m_logId.c_str(), sizeof(sharedLog.logId));
-    strncpy_s(sharedLog.description, m_description.c_str(), sizeof(sharedLog.description));
+    strncpy_s(sharedLog.logId, sizeof(sharedLog.logId), m_logId.c_str(), _TRUNCATE);
+    strncpy_s(sharedLog.description, sizeof(sharedLog.description), m_description.c_str(), _TRUNCATE);
     sharedLog.type = static_cast<int>(m_logType);
     std::string time = m_timestamp.toString();
-    strncpy_s(sharedLog.time, time.c_str(), sizeof(sharedLog.time));
+    strncpy_s(sharedLog.time, sizeof(sharedLog.time), time.c_str(), _TRUNCATE);
     return sharedLog;
 }
 
