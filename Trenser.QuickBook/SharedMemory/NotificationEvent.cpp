@@ -1,4 +1,4 @@
-/*
+﻿/*
  * File: NotificationEvent.cpp
  * Description: Implements the NotificationEvent class, which provides inter-process
  *              communication for notifications using shared memory, named events,
@@ -30,15 +30,16 @@ const size_t NotificationEvent::m_SHARED_BUFFER_SIZE = config::Limit::MAX_SHARED
  * Returns:
  *    None
  */
-void NotificationEvent::init()
+void NotificationEvent::init(const std::string& userId)
 {
+	std::string NotificationSharedMemory = config::FileMappings::NOTIFICATION_EVENT_MAPPING_NAME + userId;
 	m_hMapFile = CreateFileMappingA(
 		INVALID_HANDLE_VALUE,
 		NULL,
 		PAGE_READWRITE,
 		0,
 		sizeof(NotifyMessage),
-		"NotificationSharedMemory" 
+		NotificationSharedMemory.c_str()
 	);
 	if (m_hMapFile == nullptr)
 	{
@@ -57,11 +58,12 @@ void NotificationEvent::init()
 		m_hMapFile = nullptr;
 		return;
 	}
+	std::string eventName = config::MutexMappings::NOTIFICATION_EVENT_MUTEX_NAME + userId;
 	m_hEvent = CreateEventA(
 		NULL,
-		TRUE,
 		FALSE,
-		"Event"
+		FALSE,
+		eventName.c_str()
 	);
 	if (m_hEvent == nullptr)
 	{
@@ -70,18 +72,18 @@ void NotificationEvent::init()
 		m_pointerToBuffer = nullptr;
 		m_hMapFile = nullptr;
 	}
-	m_mutex = new NamedMutex("NotificationMutex");
+	m_mutex = new NamedMutex(config::MutexMappings::NOTIFICATION_MUTEX_NAME);
 }
 
 /*
  * Function: NotificationEvent::notify
- * Description: Sends a notification message to the shared memory buffer and signals
- *              the event to notify listeners. Validates that shared resources
- *              (buffer, event, mutex) are initialized before proceeding.
- *              Acquires a scoped lock on the named mutex to ensure thread-safe
- *              access to the shared buffer, writes the target type, target ID,
- *              and message into the NotifyMessage structure, and sets the event
- *              to signal that a new message is available.
+ * Description: Sends a notification message to a user-specific shared memory buffer
+ *              and signals the corresponding event. Validates that the event handle
+ *              and mutex are initialized before proceeding. Acquires a scoped lock
+ *              on the named mutex to ensure thread-safe access, creates or opens a
+ *              shared memory segment identified by the targetId, writes the target
+ *              type, target ID, and message into the NotifyMessage structure, and
+ *              signals the user-specific event. Cleans up handles after signaling.
  * Parameters:
  *    targetType      - The type of target (e.g., "ALL", "USER_TYPE").
  *    targetId        - The specific user ID for targeted messages.
@@ -91,18 +93,112 @@ void NotificationEvent::init()
  */
 void NotificationEvent::notify(const std::string& targetType, const std::string& targetId, const std::string& incomingMessage)
 {
-	if (!m_pointerToBuffer || !m_hEvent || !m_mutex)
+	if (!m_hEvent || !m_mutex)
 	{
 		return;
 	}
 	ScopedLock lock(*m_mutex);
-	NotifyMessage* message = reinterpret_cast<NotifyMessage*>(m_pointerToBuffer);
+	std::string NotificationSharedMemory = config::FileMappings::NOTIFICATION_EVENT_MAPPING_NAME + targetId;
+	m_hMapFile = CreateFileMappingA(
+		INVALID_HANDLE_VALUE,
+		NULL,
+		PAGE_READWRITE,
+		0,
+		sizeof(NotifyMessage),
+		NotificationSharedMemory.c_str()
+	);
+	if (m_hMapFile == nullptr)
+	{
+		return;
+	}
+	char* pointerToBuffer = (char*)MapViewOfFile(
+		m_hMapFile,
+		FILE_MAP_ALL_ACCESS,
+		0,
+		0,
+		sizeof(NotifyMessage)
+	);
+	if (pointerToBuffer == nullptr)
+	{
+		CloseHandle(m_hMapFile);
+		m_hMapFile = nullptr;
+		return;
+	}
+	NotifyMessage* message = reinterpret_cast<NotifyMessage*>(pointerToBuffer);
 	strncpy_s(message->targetType, targetType.c_str(), _TRUNCATE);
 	strncpy_s(message->targetId, targetId.c_str(), _TRUNCATE);
 	strncpy_s(message->message, incomingMessage.c_str(), _TRUNCATE);
-	if (!SetEvent(m_hEvent))
+	std::string eventName = config::MutexMappings::NOTIFICATION_EVENT_MUTEX_NAME + targetId;
+	HANDLE targetEvent = OpenEventA(EVENT_MODIFY_STATE, FALSE, eventName.c_str());
+	if (targetEvent != nullptr)
 	{
-		return;
+		SetEvent(targetEvent);
+		CloseHandle(targetEvent);
+	}
+}
+
+/*
+ * Function: NotificationEvent::notify
+ * Description: Sends a notification message to multiple user-specific shared memory buffers
+ *              and signals their corresponding events. Iterates through the list of target IDs,
+ *              validates that the event handle and mutex are initialized, and acquires a scoped
+ *              lock on the mutex for thread-safe access. For each target ID, creates or opens a
+ *              shared memory segment identified by "NotificationSharedMemory_<targetId>", writes
+ *              the target type, target ID, and message into the NotifyMessage structure, and signals
+ *              the corresponding event "Event_<targetId>". Cleans up event handles after signaling.
+ * Parameters:
+ *    targetType      - The type of target (e.g., "ALL", "USER_TYPE").
+ *    targetIds       - A vector of user IDs to which the notification should be sent.
+ *    incomingMessage - The notification message content.
+ * Returns:
+ *    None
+ */
+void NotificationEvent::notify(const std::string& targetType,const std::vector<std::string>& targetIds, const std::string& incomingMessage)
+{
+	for (int index = 0; index < targetIds.size(); index++)
+	{
+		if (!m_hEvent || !m_mutex)
+		{
+			return;
+		}
+		ScopedLock lock(*m_mutex);
+		std::string NotificationSharedMemory = config::FileMappings::NOTIFICATION_EVENT_MAPPING_NAME + targetIds[index];
+		m_hMapFile = CreateFileMappingA(
+			INVALID_HANDLE_VALUE,
+			NULL,
+			PAGE_READWRITE,
+			0,
+			sizeof(NotifyMessage),
+			NotificationSharedMemory.c_str()
+		);
+		if (m_hMapFile == nullptr)
+		{
+			return;
+		}
+		char* pointerToBuffer = (char*)MapViewOfFile(
+			m_hMapFile,
+			FILE_MAP_ALL_ACCESS,
+			0,
+			0,
+			sizeof(NotifyMessage)
+		);
+		if (pointerToBuffer == nullptr)
+		{
+			CloseHandle(m_hMapFile);
+			m_hMapFile = nullptr;
+			return;
+		}
+		NotifyMessage* message = reinterpret_cast<NotifyMessage*>(pointerToBuffer);
+		strncpy_s(message->targetType, targetType.c_str(), _TRUNCATE);
+		strncpy_s(message->targetId, targetIds[index].c_str(), _TRUNCATE);
+		strncpy_s(message->message, incomingMessage.c_str(), _TRUNCATE);
+		std::string eventName = config::MutexMappings::NOTIFICATION_EVENT_MUTEX_NAME + targetIds[index];
+		HANDLE targetEvent = OpenEventA(EVENT_MODIFY_STATE, FALSE, eventName.c_str());
+		if (targetEvent != nullptr)
+		{
+			SetEvent(targetEvent);
+			CloseHandle(targetEvent);
+		}
 	}
 }
 
@@ -113,17 +209,16 @@ void NotificationEvent::notify(const std::string& targetType, const std::string&
  *              the listener acquires a scoped lock on the shared buffer, retrieves
  *              the message, and checks if it is intended for the current user
  *              (based on target type and target ID). If the message is relevant,
- *              it is displayed at the bottom of the console window. The message
- *              is automatically cleared after 10 seconds by a detached thread.
+ *              it is displayed at the bottom of the console window.
  * Parameters:
  *    currentUserType - The type of the current user (e.g., "ADMIN", "CLIENT").
  *    currentUserId   - The unique identifier of the current user.
  * Returns:
  *    None
  */
-void NotificationEvent::startListener(const std::string& currentUserType, const std::string& currentUserId)
+void NotificationEvent::startListener(const std::string& currentUserType, const std::string& currentUserId, const std::string& userName)
 {
-	std::thread([currentUserType, currentUserId]()
+	std::thread([currentUserType, currentUserId, userName]()
 		{
 			while (true)
 			{
@@ -136,14 +231,12 @@ void NotificationEvent::startListener(const std::string& currentUserType, const 
 					targetId = currentMessage->targetId;
 					message = currentMessage->message;
 				}
-				ResetEvent(m_hEvent);
-
 				bool isTheMessageForMe = false;
-				if (targetType == "ALL")
+				if (targetType == config::UserType::ALL_USER)
 				{
 					isTheMessageForMe = true;
 				}
-				else if (targetType == currentUserType && targetId.empty())
+				else if (targetType == currentUserType && !targetId.empty())
 				{
 					isTheMessageForMe = true;
 				}
@@ -155,27 +248,8 @@ void NotificationEvent::startListener(const std::string& currentUserType, const 
 				{
 					continue;
 				}
-
-				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				CONSOLE_SCREEN_BUFFER_INFO csbi;
-				GetConsoleScreenBufferInfo(hConsole, &csbi);
-
-				COORD position;
-				position.X = 0;
-				position.Y = csbi.srWindow.Bottom;
-
-				DWORD written;
-				std::wstring wideMessage = toWide(message);
-				WriteConsoleOutputCharacterW(hConsole, wideMessage.c_str(), (DWORD)wideMessage.size(), position, &written);
-
-				std::thread([hConsole, position, wideMessage]()
-					{
-						std::this_thread::sleep_for(std::chrono::seconds(10));
-						DWORD written;
-						std::wstring blank(wideMessage.size(), L' ');
-						WriteConsoleOutputCharacterW(hConsole, blank.c_str(), (DWORD)blank.size(), position, &written);
-					}).detach();
-				}
+				displayNotification(message, userName);
+			}
 		}).detach();
 }
 
@@ -194,6 +268,41 @@ std::wstring NotificationEvent::toWide(const std::string& inputString)
 {
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	return converter.from_bytes(inputString);
+}
+
+/*
+ * Function: NotificationEvent::displayNotification
+ * Description: Displays a notification message at the bottom of the Windows console
+ *              for a specific user. Converts the message and username into a wide
+ *              string, writes it to the console output buffer, and keeps it visible
+ *              for a configured duration. After the delay, a detached thread clears
+ *              the message by overwriting it with blank spaces, ensuring the console
+ *              remains uncluttered.
+ * Parameters:
+ *    message  - The notification message content to display.
+ *    userName - The name of the user associated with the notification.
+ * Returns:
+ *    None
+ */
+void NotificationEvent::displayNotification(const std::string& message,const std::string& userName)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	COORD position;
+	position.X = 0;
+	position.Y = csbi.srWindow.Bottom;
+	DWORD written;
+	std::wstring wideMessage = toWide(userName + config::delimeter::colon + message);
+	WriteConsoleOutputCharacterW(hConsole, wideMessage.c_str(), (DWORD)wideMessage.size(), position, &written);
+	std::this_thread::sleep_for(std::chrono::seconds(config::Limit::MAX_NOTIFICATION_TIMER));
+	std::thread([hConsole, position, wideMessage]()
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(config::Limit::MAX_NOTIFICATION_TIMER));
+			DWORD written;
+			std::wstring blank(wideMessage.size(), L' ');
+			WriteConsoleOutputCharacterW(hConsole, blank.c_str(), (DWORD)blank.size(), position, &written);
+		}).detach();
 }
 
 /*

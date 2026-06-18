@@ -173,7 +173,7 @@ struct SharedSession
 
 struct NotifyMessage
 {
-	char targetType[20];  
-	char targetId[20];    
-	char message[500];
+	char targetType[config::Limit::MAX_TARGET_TYPE_SIZE];
+	char targetId[config::Limit::MAX_TARGET_ID_TYPE_SIZE];    
+	char message[config::Limit::MESSAGE_MAX_LENGTH];
 };

@@ -69,7 +69,7 @@ Enums::ProcessStatus MovieManagementService::addMovieToSystem(const std::string&
 	{
 		m_dataStore.addMovieToSystem(movie);
 		std::string message = "New Movie Added: "+ title;
-		m_event.notify(Enums::getUserTypeString(Enums::UserType::THEATRE_OWNER),"", message);
+		m_event.notify("", getAllTheatreOwnersId(), message);
 		return Enums::ProcessStatus::SUCCESS;
 	}
 	return Enums::ProcessStatus::FAILED;
@@ -389,4 +389,30 @@ Enums::ProcessStatus MovieManagementService::isMovieDeactivatable(const std::str
 		return Enums::ProcessStatus::FAILED;
 	}
 	return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: MovieManagementService::getAllTheatreOwnersId
+ * Description: Retrieves the IDs of all active theatre owners from the system.
+ *              Iterates through the user map in the DataStore, checks each user’s
+ *              status and type, and collects the IDs of those who are active and
+ *              classified as THEATRE_OWNER. Returns the list of theatre owner IDs
+ *              for use in operations such as assigning movies or sending notifications.
+ * Parameters:
+ *    None
+ * Returns:
+ *    A std::vector<std::string> containing the user IDs of all active theatre owners.
+ */
+std::vector<std::string> MovieManagementService::getAllTheatreOwnersId()
+{
+	std::vector<std::string> theatreOwnerIds;
+	const std::map<std::string, User*> users = m_dataStore.getUsers();
+	for (auto theatreOwner : users)
+	{
+		if(theatreOwner.second->getStatus()==Enums::UserStatus::ACTIVE && theatreOwner.second->getUserType()==Enums::UserType::THEATRE_OWNER)
+		{
+			theatreOwnerIds.push_back(theatreOwner.second->getUserId());
+		}
+	}
+	return theatreOwnerIds;
 }
