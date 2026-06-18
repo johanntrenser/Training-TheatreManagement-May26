@@ -15,6 +15,7 @@
 #include "NotificationManagementService.h"
 #include "NamedMutex.h"
 #include "ScopedLock.h"
+#include "NotificationEvent.h"
 
 class PaymentManagementService
 {
@@ -23,6 +24,7 @@ class PaymentManagementService
     NamedMutex m_refundMutex;
     LogManagementService logManagementService;
     NotificationManagementService m_notificationManagementService;
+    NotificationEvent m_event;
 public:
     PaymentManagementService();
     const std::string generatePaymentId();

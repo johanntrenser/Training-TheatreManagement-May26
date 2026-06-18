@@ -411,6 +411,8 @@ Enums::ProcessStatus TheatreManagementService::addTheatre(const std::string& nam
     if (theatre != nullptr)
     {
         m_dataStore.addTheatre(theatre);
+        std::string message = "New Theatre has been added : " + name;
+        m_event.notify(Enums::getUserTypeString(Enums::UserType::ADMIN),"", message);
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;
@@ -683,6 +685,8 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
                 if (m_dataStore.updateTheatreStatus(iterator->second->getTheatreId(), Enums::TheatreStatus::ACTIVE) == Enums::ProcessStatus::SUCCESS)
                 {
                     (iterator->second)->setStatus(Enums::TheatreStatus::ACTIVE);
+                    std::string message = "Your theatre " + (iterator->second)->getName() + "has been approved!";
+                    m_event.notify("", (iterator->second)->getTheatreOwner()->getUserId(), message);
                     return Enums::ProcessStatus::SUCCESS;
                 }
             }

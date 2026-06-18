@@ -16,6 +16,7 @@
 #include "DataStore.h"
 #include "NamedMutex.h"
 #include "ScopedLock.h"
+#include "NotificationEvent.h"
 
 class TheatreManagementService
 {
@@ -26,6 +27,7 @@ class TheatreManagementService
     NamedMutex m_movieMutex;
     NamedMutex m_userMutex;
     NamedMutex m_screenMutex;
+    NotificationEvent m_event;
 public:
     TheatreManagementService();
     Enums::ProcessStatus deactivateTheatre(const std::string& theatreId);

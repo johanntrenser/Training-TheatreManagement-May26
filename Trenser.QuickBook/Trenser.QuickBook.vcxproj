@@ -158,6 +158,7 @@
     <ClCompile Include="Services\UserManagementService.cpp" />
     <ClCompile Include="SharedMemory\MappedFileRegistry.cpp" />
     <ClCompile Include="SharedMemory\NamedMutex.cpp" />
+    <ClCompile Include="SharedMemory\NotificationEvent.cpp" />
     <ClCompile Include="SharedMemory\ScopedLock.cpp" />
     <ClCompile Include="SharedMemory\SessionManager.cpp" />
     <ClCompile Include="SharedMemory\SharedStructs.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="SharedMemory\MappedFile.h" />
     <ClInclude Include="SharedMemory\MappedFileRegistry.h" />
     <ClInclude Include="SharedMemory\NamedMutex.h" />
+    <ClInclude Include="SharedMemory\NotificationEvent.h" />
     <ClInclude Include="SharedMemory\ScopedLock.h" />
     <ClInclude Include="SharedMemory\SessionManager.h" />
     <ClInclude Include="SharedMemory\SharedStructs.h" />

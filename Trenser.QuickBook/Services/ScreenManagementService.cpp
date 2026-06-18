@@ -36,7 +36,7 @@ std::string ScreenManagementService::generateScreenId()
 
 /*
 * Function Name : generateSeatId
-* Description   : Generates a unique ID for a new screen.
+* Description   : Generates a unique ID for a new seat.
 * Parameters    : None
 * Return Type   : std::string
 */
