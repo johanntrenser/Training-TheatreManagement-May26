@@ -209,6 +209,11 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
     Enums::ProcessStatus status = hasActiveShows(theatreId, screenId);
     if (status == Enums::ProcessStatus::SUCCESS)
     {
+        theatre = m_dataStore.getTheatreById(theatreId);
+        if (!theatre)
+        {
+            return Enums::ProcessStatus::FAILED;
+        }
         std::vector<Screen*>& screens = theatre->getScreensForUpdation();
         for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
         {

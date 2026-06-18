@@ -118,6 +118,7 @@ struct SharedPayment
 struct SharedRefund
 {
 	char   refundId[config::Limit::ID_MAX_LENGTH];
+	char   ticketId[config::Limit::ID_MAX_LENGTH];
 	char   paymentId[config::Limit::ID_MAX_LENGTH];
 	char   customerId[config::Limit::ID_MAX_LENGTH];
 	double amount;

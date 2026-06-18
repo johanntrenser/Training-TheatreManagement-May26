@@ -150,6 +150,11 @@ Enums::ProcessStatus SeatManagementService::deactivateSeat(const std::string& se
     {
         return Enums::ProcessStatus::FAILED;
     }
+    screen = m_dataStore.getScreenById(selectedScreenId);
+    if (!screen)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
     std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGridForUpdation();
     for (std::vector<std::vector<Seat*>>::iterator rowIterator = seatGrid.begin(); rowIterator != seatGrid.end(); ++rowIterator)
     {
@@ -206,11 +211,12 @@ Enums::ProcessStatus SeatManagementService::deactivateSeats(const std::string& s
  */
 Enums::ProcessStatus SeatManagementService::hasActiveSeatBooking(Screen* screen, const std::string& seatId)
 {
+    std::string screenId = screen->getScreenId();
     std::map<std::string, Show*>& shows = m_dataStore.getShowsForUpdation();
     for (std::map<std::string, Show*>::iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
     {
         Show* show = iterator->second;
-        if (show->getScreen()->getScreenId() == screen->getScreenId())
+        if (show->getScreen()->getScreenId() == screenId)
         {
             if (show->getShowStatus() == Enums::ShowStatus::RUNNING || show->getShowStatus() == Enums::ShowStatus::SCHEDULED)
             {

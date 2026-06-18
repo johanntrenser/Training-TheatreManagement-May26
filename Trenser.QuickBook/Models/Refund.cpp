@@ -181,10 +181,9 @@ void Refund::serialize(SharedRefund& sharedRefund) const
 {
     sharedRefund = {};
     strncpy_s(sharedRefund.refundId, sizeof(sharedRefund.refundId), m_refundId.c_str(), _TRUNCATE);
-    strncpy_s(sharedRefund.paymentId, sizeof(sharedRefund.paymentId),
-        (m_bookedTicket && m_bookedTicket->getPayment() ? m_bookedTicket->getPayment()->getPaymentId().c_str() : ""), _TRUNCATE);
-    strncpy_s(sharedRefund.customerId, sizeof(sharedRefund.customerId),
-        (m_bookedTicket && m_bookedTicket->getCustomer() ? m_bookedTicket->getCustomer()->getUserId().c_str() : ""), _TRUNCATE);
+    strncpy_s(sharedRefund.ticketId, sizeof(sharedRefund.ticketId), (m_bookedTicket ? m_bookedTicket->getTicketId().c_str() : ""), _TRUNCATE);
+    strncpy_s(sharedRefund.paymentId, sizeof(sharedRefund.paymentId), (m_bookedTicket && m_bookedTicket->getPayment() ? m_bookedTicket->getPayment()->getPaymentId().c_str() : ""), _TRUNCATE);
+    strncpy_s(sharedRefund.customerId, sizeof(sharedRefund.customerId), (m_bookedTicket && m_bookedTicket->getCustomer() ? m_bookedTicket->getCustomer()->getUserId().c_str() : ""), _TRUNCATE);
     sharedRefund.amount = m_refundAmount;
     sharedRefund.status = static_cast<int>(m_status);
     strncpy_s(sharedRefund.time, sizeof(sharedRefund.time), util::serializeTime(m_time).c_str(), _TRUNCATE);

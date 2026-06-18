@@ -904,17 +904,33 @@ void DataStore::addTicket(Ticket* ticket)
 }
 
 /*
-* Function Name : getTicketById
-* Description   : Retrieves a ticket from the datastore based on the provided Ticket ID.
-*                 Returns a pointer to the Ticket if found, otherwise returns nullptr.
-* Parameters    :
-*                  ticketId - The unique identifier of the ticket to be retrieved
-* Return Type   : Ticket*
-*/
-Ticket* DataStore::getTicketById(const std::string& ticketId) const
+ * Function: getTicketById
+ * Description: Retrieves a Ticket object from the mapped tickets file by its unique ID.
+ *              Locates the corresponding SharedTicket record, deserializes it into
+ *              a Ticket object, and registers it in the internal tickets map for quick lookup.
+ * Parameters:
+ *    ticketId - Unique identifier of the ticket to retrieve
+ * Returns:
+ *    Pointer to the Ticket object if found and deserialized successfully,
+ *    nullptr if the ticket record does not exist or deserialization fails
+ */
+Ticket* DataStore::getTicketById(const std::string& ticketId)
 {
-    std::map<std::string, Ticket*>::const_iterator ticket = m_tickets.find(ticketId);
-    return ticket->second;
+    MappedFile<SharedTicket>* ticketsFile = m_registry.getTickets();
+    if (ticketsFile)
+    {
+        SharedTicket* sharedTicket = ticketsFile->findById(ticketId.c_str());
+        if (sharedTicket != nullptr)
+        {
+            Ticket* ticket = Ticket::deserialize(sharedTicket);
+            if (ticket)
+            {
+                m_tickets[ticket->getTicketId()] = ticket;
+            }
+            return m_tickets[ticketId];
+        }
+    }
+    return nullptr;
 }
 
 /*
@@ -984,7 +1000,7 @@ const std::map<std::string, Refund*>& DataStore::getRefunds()
             Refund* refund = Refund::deserialize(&refunds[index]);
             if (refund)
             {
-                Ticket* ticket = getTicketById(refunds[index].paymentId);
+                Ticket* ticket = getTicketById(refunds[index].ticketId);
                 if (ticket)
                 {
                     refund->setBookedTicket(ticket);

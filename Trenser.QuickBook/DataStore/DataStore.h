@@ -86,7 +86,7 @@ public:
 	Show* getShowByIdForUpdation(const std::string& showId);
 	std::map<std::string, Ticket*>& getTickets();
 	void addTicket(Ticket* ticket);
-	Ticket* getTicketById(const std::string& ticketId) const;
+	Ticket* getTicketById(const std::string& ticketId);
 	void addPayment(Payment* payment);
 	void addRefund(Refund* refund);
 	const std::map < std::string, Payment*>& getPayments();
