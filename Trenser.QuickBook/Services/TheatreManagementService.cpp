@@ -412,7 +412,7 @@ Enums::ProcessStatus TheatreManagementService::addTheatre(const std::string& nam
     {
         m_dataStore.addTheatre(theatre);
         std::string message = "New Theatre has been added : " + name;
-        m_event.notify("", getAllAdminOwnersId(), message);
+        m_event.notify("", getAllAdminsId(), message);
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;
@@ -832,7 +832,7 @@ Enums::ProcessStatus TheatreManagementService::removeMovieFromTheatre(const std:
  * Returns:
  *    A std::vector<std::string> containing the user IDs of all active admin users.
  */
-std::vector<std::string> TheatreManagementService::getAllAdminOwnersId()
+std::vector<std::string> TheatreManagementService::getAllAdminsId()
 {
     std::vector<std::string> theatreOwnerIds;
     const std::map<std::string, User*> users = m_dataStore.getUsers();
