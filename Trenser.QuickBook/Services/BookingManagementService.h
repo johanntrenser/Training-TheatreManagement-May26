@@ -13,6 +13,7 @@
 #include "LogManagementService.h"
 #include "NamedMutex.h"
 #include "ScopedLock.h"
+#include "NotificationEvent.h"
 
 class BookingManagementService
 {
@@ -20,6 +21,7 @@ private:
 	DataStore& m_dataStore;
 	LogManagementService logManagementService;
 	NamedMutex m_mutex;
+	NotificationEvent m_event;
 public:
 	BookingManagementService();
 	const std::vector<const Booking*> getAllBookings();

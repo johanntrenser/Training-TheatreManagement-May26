@@ -220,6 +220,7 @@ Enums::ProcessStatus UserManagementService::deactivateUser(const std::string& us
                 {
                     return Enums::ProcessStatus::FAILED;
                 }
+                m_event.notify("", iterator->second->getUserId(), "Your account has been deactivated by an administrator.");
                 logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
                 return Enums::ProcessStatus::SUCCESS;
             }

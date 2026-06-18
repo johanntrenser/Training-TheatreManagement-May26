@@ -17,6 +17,7 @@
 #include "LogManagementService.h"
 #include "NamedMutex.h"
 #include "ScopedLock.h"
+#include "NotificationEvent.h"
 
 class UserManagementService
 {
@@ -25,6 +26,7 @@ private:
     LogManagementService logManagementService;
     const std::string& PATH = config::File::USER_FILEPATH;
     NamedMutex m_mutex;
+    NotificationEvent m_event;
 public:
     UserManagementService();
     const std::string generateUserId();
