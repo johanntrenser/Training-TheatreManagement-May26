@@ -20,13 +20,15 @@ const size_t NotificationEvent::m_SHARED_BUFFER_SIZE = config::Limit::MAX_SHARED
 /*
  * Function: NotificationEvent::init
  * Description: Initializes the shared memory, event, and mutex resources required
- *              for inter-process notification communication. Creates a file mapping
- *              for the NotifyMessage structure, maps it into the process address space,
- *              and sets up a named event for signaling. Also initializes a named mutex
- *              to ensure thread-safe access to the shared buffer. If any step fails,
- *              resources are cleaned up to prevent leaks.
+ *              for inter-process notification communication for a specific user.
+ *              Creates a file mapping for the NotifyMessage structure using a
+ *              user-specific name, maps it into the process address space, and
+ *              sets up a named event for signaling notifications. Also initializes
+ *              a named mutex to ensure thread-safe access to the shared buffer.
+ *              If any step fails, resources are cleaned up to prevent leaks.
  * Parameters:
- *    None
+ *    userId - The unique identifier of the user for whom the notification
+ *             resources are being initialized.
  * Returns:
  *    None
  */
@@ -205,14 +207,17 @@ void NotificationEvent::notify(const std::string& targetType,const std::vector<s
 /*
  * Function: NotificationEvent::startListener
  * Description: Starts a background listener thread that continuously waits for
- *              notification events from shared memory. When an event is signaled,
- *              the listener acquires a scoped lock on the shared buffer, retrieves
- *              the message, and checks if it is intended for the current user
- *              (based on target type and target ID). If the message is relevant,
- *              it is displayed at the bottom of the console window.
+ *              notification events from shared memory for a specific user. When
+ *              an event is signaled, the listener acquires a scoped lock on the
+ *              shared buffer, retrieves the message, and checks if it is intended
+ *              for the current user (based on target type and target ID). If the
+ *              message is relevant, it is displayed in the console using the
+ *              displayNotification method, which prefixes the message with the
+ *              user’s name and auto-clears it after a configured duration.
  * Parameters:
- *    currentUserType - The type of the current user (e.g., "ADMIN", "CLIENT").
+ *    currentUserType - The type of the current user (e.g., "ADMIN", "THEATRE_OWNER","CUSTOMER").
  *    currentUserId   - The unique identifier of the current user.
+ *    userName        - The display name of the user, used to prefix notifications.
  * Returns:
  *    None
  */
