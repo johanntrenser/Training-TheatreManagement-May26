@@ -54,5 +54,6 @@ public:
     Enums::ProcessStatus addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
     bool isMovieAlreadyExistsInTheatre(Theatre* theatre, const std::string& movieId);
     Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
+    std::vector<std::string> getAllAdminsId();
     Enums::ProcessStatus isScreenDeactivatable(Screen* screen);
 };

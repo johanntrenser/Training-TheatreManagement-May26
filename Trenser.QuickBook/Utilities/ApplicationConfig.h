@@ -100,6 +100,7 @@ namespace config
         constexpr const char* SHOW_SEAT_MUTEX_NAME = "QuickBookAvailabilityMutex";
         constexpr const char* SESSION_MUTEX_NAME = "QuickBookSessionsMutex";
         constexpr const char* NOTIFICATION_EVENT_MUTEX_NAME = "QuickBookNotificationsEvent_";
+        constexpr const char* NOTIFICATION_MUTEX_EVENT_NAME = "QuickBookNotificationsMutex_";
     }
     namespace UserType
     {

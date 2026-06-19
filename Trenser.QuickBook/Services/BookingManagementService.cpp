@@ -241,6 +241,7 @@ Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& 
         m_dataStore.updateBookingStatus(bookingId, Enums::BookingStatus::CANCELLED);
         booking->setStatus(Enums::BookingStatus::CANCELLED);
         std::string message = "Booking with ID : " + booking->getBookingId() + " has been cancelled.";
+        m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), message);
         logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
         return Enums::ProcessStatus::SUCCESS;
     }
@@ -283,6 +284,8 @@ const Booking* BookingManagementService::bookSelectedSeats(const std::string& sh
     double amount = getBookingAmount(seats);
     Booking* booking = Factory::getObject<Booking>(generateBookingId(), customer, show, seats, Enums::BookingStatus::PENDING, amount);
     std::string message = "Booking with ID : " + booking->getBookingId() + " has been created.";
+    std::string notificationMessage = "Your booking was successful.";
+    m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), notificationMessage);
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     if (booking != nullptr)
     {
