@@ -502,6 +502,7 @@ const std::map<std::string, Theatre*>& DataStore::getTheatres()
  */
 const std::map<std::string, Booking*>& DataStore::getBookings()
 {
+    clearData();
     MappedFile<SharedBooking>* bookingFile = m_registry.getBookings();
     if (bookingFile)
     {
@@ -1000,6 +1001,7 @@ void DataStore::addRefund(Refund* refund)
  */
 const std::map<std::string, Refund*>& DataStore::getRefunds()
 {
+    clearData();
     MappedFile<SharedRefund>* refundFile = m_registry.getRefunds();
     if (refundFile)
     {
@@ -1061,38 +1063,102 @@ const std::map<std::string, Payment*>& DataStore::getPayments()
 
 /*
  * Function: DataStore::getBookingById
- * Description: Retrieves a booking object from the DataStore by its unique ID.
+ * Description: Retrieves a Booking object from the mapped bookings file by its unique ID.
+ *              Locates the corresponding SharedBooking record, deserializes it into
+ *              a Booking object, and restores associations with its related Customer,
+ *              Show, and Seat objects. Registers the reconstructed Booking in the
+ *              internal bookings map keyed by booking ID.
  * Parameters:
- *    bookingId (const std::string&) - Unique identifier of the booking
+ *    bookingId - Unique identifier of the booking to retrieve
  * Returns:
- *    const Booking* - Pointer to the booking if found, nullptr otherwise
+ *    Pointer to the Booking object if found and deserialized successfully,
+ *    nullptr if the booking record does not exist or deserialization fails
  */
 Booking* DataStore::getBookingById(const std::string& bookingId)
 {
-    std::map<std::string, Booking*>::const_iterator iterator = m_bookings.find(bookingId);
-    if (iterator == m_bookings.end())
+    MappedFile<SharedBooking>* bookingsFile = m_registry.getBookings();
+    if (bookingsFile)
     {
-        return nullptr;
+        SharedBooking* sharedBooking = bookingsFile->findById(bookingId.c_str());
+        if (sharedBooking != nullptr)
+        {
+            Booking* booking = Booking::deserialize(sharedBooking);
+            if (booking)
+            {
+                User* customer = getUserById(sharedBooking->customerId);
+                Show* show = getShowByIdForUpdation(sharedBooking->showId);
+                if (customer)
+                {
+                    booking->setCustomer(customer);
+                }
+                if (show)
+                {
+                    booking->setShow(show);
+                }
+                std::vector<Seat*> seats;
+                for (int index = 0; index < sharedBooking->seatCount; ++index)
+                {
+                    Seat* seat = getSeatById(sharedBooking->seatIds[index]);
+                    if (seat) seats.push_back(seat);
+                }
+                booking->setBookedSeats(seats);
+                /*delete m_bookings[bookingId];*/
+                m_bookings[bookingId] = booking;
+            }
+            return m_bookings[bookingId];
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
  * Function: DataStore::getBookingByIdForUpdation
- * Description: Retrieves a booking object by ID for modification.
+ * Description: Retrieves a Booking object from the mapped bookings file by its unique ID.
+ *              Locates the corresponding SharedBooking record, deserializes it into
+ *              a Booking object, and restores associations with its related Customer,
+ *              Show, and Seat objects. Registers the reconstructed Booking in the
+ *              internal bookings map keyed by booking ID.
  * Parameters:
- *    bookingId (const std::string&) - Unique identifier of the booking
+ *    bookingId - Unique identifier of the booking to retrieve
  * Returns:
- *    Booking* - Pointer to the booking if found, nullptr otherwise
+ *    Pointer to the Booking object if found and deserialized successfully,
+ *    nullptr if the booking record does not exist or deserialization fails
  */
 Booking* DataStore::getBookingByIdForUpdation(const std::string& bookingId)
 {
-    std::map<std::string, Booking*>::const_iterator iterator = m_bookings.find(bookingId);
-    if (iterator == m_bookings.end())
+    MappedFile<SharedBooking>* bookingsFile = m_registry.getBookings();
+    if (bookingsFile)
     {
-        return nullptr;
+        SharedBooking* sharedBooking = bookingsFile->findById(bookingId.c_str());
+        if (sharedBooking != nullptr)
+        {
+            Booking* booking = Booking::deserialize(sharedBooking);
+            if (booking)
+            {
+                User* customer = getUserById(sharedBooking->customerId);
+                Show* show = getShowByIdForUpdation(sharedBooking->showId);
+                if (customer)
+                {
+                    booking->setCustomer(customer);
+                }
+                if (show)
+                {
+                    booking->setShow(show);
+                }
+                std::vector<Seat*> seats;
+                for (int index = 0; index < sharedBooking->seatCount; ++index)
+                {
+                    Seat* seat = getSeatById(sharedBooking->seatIds[index]);
+                    if (seat) seats.push_back(seat);
+                }
+                booking->setBookedSeats(seats);
+                /*delete m_bookings[bookingId];*/
+                m_bookings[bookingId] = booking;
+            }
+            return m_bookings[bookingId];
+        }
     }
-    return iterator->second;
+    return nullptr;
 }
 
 /*
@@ -1160,7 +1226,12 @@ void DataStore::addBooking(Booking* booking)
 */
 const Ticket* DataStore::getTicketForBooking(const Booking* booking)
 {
-    Payment* payment = nullptr;
+    if (!booking)
+    {
+        return nullptr;
+    }
+    getPayments();
+    std::string paymentId;
     std::string bookingId = booking->getBookingId();
     for (std::map<std::string, Payment*>::iterator iterator = m_payments.begin(); iterator != m_payments.end(); ++iterator)
     {
@@ -1169,17 +1240,19 @@ const Ticket* DataStore::getTicketForBooking(const Booking* booking)
             Booking* booking = iterator->second->getBooking();
             if (booking != nullptr && booking->getBookingId() == bookingId)
             {
-                payment = iterator->second;
+                paymentId = iterator->second->getPaymentId();
+                break;
             }
         }
     }
-    if (payment == nullptr)
+    if (paymentId.empty())
     {
         return nullptr;
     }
+    getTickets();
     for (std::map<std::string, Ticket*>::iterator iterator = m_tickets.begin(); iterator != m_tickets.end(); ++iterator)
     {
-        if (iterator->second && iterator->second->getPayment() && iterator->second->getPayment()->getPaymentId() == payment->getPaymentId())
+        if (iterator->second && iterator->second->getPayment() && iterator->second->getPayment()->getPaymentId() == paymentId)
         {
             return iterator->second;
         }
@@ -1189,15 +1262,41 @@ const Ticket* DataStore::getTicketForBooking(const Booking* booking)
 
 /*
  * Function: DataStore::getSeats
- * Description: Retrieves all seats stored in the DataStore.
+ * Description: Retrieves all Seat objects from the mapped seats file.
+ *              Clears existing in-memory data, deserializes SharedSeat records,
+ *              links each Seat to its corresponding Screen, and registers them
+ *              in the internal seats map keyed by seat ID.
  * Parameters:
  *    None
  * Returns:
- *    A constant reference to a map containing all Seat objects,
- *    keyed by their unique seat IDs.
+ *    Constant reference to the map of Seat pointers keyed by seat ID,
+ *    representing all seats currently loaded into the DataStore
  */
-const std::map<std::string, Seat*>& DataStore::getSeats() const
+const std::map<std::string, Seat*>& DataStore::getSeats()
 {
+    clearData();
+    MappedFile<SharedSeat>* seatsFile = m_registry.getSeats();
+    if (seatsFile)
+    {
+        int recordCount = 0;
+        SharedSeat* seats = seatsFile->getAllRecords(recordCount);
+        for (int index = 0; index < recordCount; ++index)
+        {
+            if (m_seats.find(seats[index].seatId) == m_seats.end())
+            {
+                Seat* seat = Seat::deserialize(&seats[index]);
+                if (seat)
+                {
+                    Screen* screen = getScreenById(seats[index].screenId);
+                    if (screen)
+                    {
+                        seat->setScreen(screen);
+                    }
+                    m_seats[seat->getSeatId()] = seat;
+                }
+            }
+        }
+    }
     return m_seats;
 }
 
@@ -2345,6 +2444,36 @@ ShowSeatAvailability* DataStore::getShowSeatAvailabilityById(const std::string& 
         }
     }
     return nullptr;
+}
+
+/*
+ * Function: DataStore::isCurrentUserStillActive
+ * Description: Checks whether the currently authenticated user is still marked
+ *              as ACTIVE in the mapped users file. Returns false if no user is
+ *              authenticated or if the user record is missing.
+ * Parameters:
+ *    None
+ * Returns:
+ *    true if the current user exists and has ACTIVE status,
+ *    false otherwise
+ */
+bool DataStore::isCurrentUserStillActive()
+{
+    if (!m_currentUser)
+    {
+        return false;
+    }
+    MappedFile<SharedUser>* usersFile = m_registry.getUsers();
+    if (!usersFile)
+    {
+        return true;
+    }
+    SharedUser* sharedUser = usersFile->findById(m_currentUser->getUserId().c_str());
+    if (!sharedUser)
+    {
+        return false;
+    }
+    return static_cast<Enums::UserStatus>(sharedUser->status) == Enums::UserStatus::ACTIVE;
 }
 
 /*

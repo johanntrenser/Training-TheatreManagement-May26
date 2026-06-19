@@ -167,7 +167,10 @@ void UserInterface::login()
 			break;
 		}
 	}
-	m_controller->logout();
+	if (m_controller->getAuthenticatedUser() != nullptr)
+	{
+		m_controller->logout();
+	}
 };
 
 /*
@@ -280,6 +283,11 @@ void UserInterface::handleAdminMenuOperation()
 	unsigned short choice;
 	while (isMenuActive)
 	{
+		if (m_controller->checkAndHandleForcedLogout())
+		{
+			showForceLogoutMessage(isMenuActive);
+			return;
+		}
 		util::clear();
 		adminMenu();
 		util::readValueWithRetry(choice, "Enter an option: ");
@@ -677,6 +685,11 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 	unsigned short choice;
 	while (isMenuActive)
 	{
+		if (m_controller->checkAndHandleForcedLogout())
+		{
+			showForceLogoutMessage(isMenuActive);
+			return;
+		}
 		util::clear();
 		theatreOwnerMenu();
 		util::readValueWithRetry(choice, "Enter an option: ");
@@ -1220,6 +1233,11 @@ void UserInterface::handleCustomerMenuOperation()
 	unsigned short choice;
 	while (isMenuActive)
 	{
+		if (m_controller->checkAndHandleForcedLogout())
+		{
+			showForceLogoutMessage(isMenuActive);
+			return;
+		}
 		util::clear();
 		customerMenu();
 		util::readValueWithRetry(choice, "Enter an option: ");
@@ -5515,6 +5533,14 @@ void UserInterface::viewRefunds()
 			<< setw(20) << util::serializeTime(refund->getTime())
 			<< endl;
 	}
+	util::pressEnterToContinue();
+}
+
+void UserInterface::showForceLogoutMessage(bool& isMenuActive)
+{
+	util::clear();
+	cout << "Your account has been deactivated by the Admin. You have been logged out." << endl;
+	isMenuActive = false;
 	util::pressEnterToContinue();
 }
 

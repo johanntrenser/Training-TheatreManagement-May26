@@ -96,7 +96,7 @@ public:
 	Seat* getSeatById(const std::string seatId);
 	void addBooking(Booking* booking);
 	const Ticket* getTicketForBooking(const Booking* booking);
-	const std::map<std::string, Seat*>& getSeats() const;
+	const std::map<std::string, Seat*>& getSeats();
 	User* getUserById(const std::string& userId);
 	Show* getShowDetailsById(std::string& id);
 	void addSeat(Seat* seat);
@@ -142,5 +142,6 @@ public:
 	int getBookingCount() const;
 	Enums::ProcessStatus updateBookingStatus(const std::string& bookingId, Enums::BookingStatus status);
 	ShowSeatAvailability* getShowSeatAvailabilityById(const std::string& seatAvailabilityId);
+	bool isCurrentUserStillActive();
 	~DataStore();
 };

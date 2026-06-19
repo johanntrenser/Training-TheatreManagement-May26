@@ -1489,6 +1489,21 @@ void Controller::createDefaultAdmin()
 }
 
 /*
+ * Function: checkAndHandleForcedLogout
+ * Description: Delegates the forced logout check to the AuthenticationManagementService.
+ *              Returns true if the current user has been deactivated and logout
+ *              handling was performed, otherwise false.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Boolean value indicating whether a forced logout occurred
+ */
+bool Controller::checkAndHandleForcedLogout()
+{
+    return m_authenticationManagementService->checkAndHandleForcedLogout();
+}
+
+/*
  * Function: Controller::~Controller
  * Description: Destructor. Cleans up allocated memory by deleting all
  *              management service pointers.

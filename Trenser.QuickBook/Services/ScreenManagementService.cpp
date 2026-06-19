@@ -152,6 +152,7 @@ void ScreenManagementService::cleanupSeatGrid(std::vector<std::vector<Seat*>>& s
     {
         for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
         {
+            m_dataStore.updateSeatStatus((*seatIterator)->getSeatId(), Enums::SeatStatus::BLOCKED);
             (*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
         }
     }

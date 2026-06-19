@@ -149,5 +149,6 @@ public:
 	const std::vector<Refund*> getRefunds();
 	const std::vector<std::string> getSeatIdsFromBooking(const Booking* booking);
 	void createDefaultAdmin();
+	bool checkAndHandleForcedLogout();
 	~Controller();
 };
