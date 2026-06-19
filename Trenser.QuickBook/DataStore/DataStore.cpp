@@ -668,6 +668,7 @@ Screen* DataStore::getScreenById(const std::string& screenId)
             {
                 m_screens[screen->getScreenId()] = screen;
                 std::vector<vector<Seat*>>& seats = screen->getSeatGridForUpdation();
+                seats.clear();
                 int rows = sharedScreen->totalRows;
                 int columns = sharedScreen->totalColumns;
                 int seatIndex = 0;
@@ -792,9 +793,13 @@ const Show* DataStore::getShowById(const std::string& showId)
         {
             Show* show = Show::deserialize(sharedShow);
             Movie* movie = getMovieById(sharedShow->movieId);
-            Screen* screen = getScreenById(sharedShow->screenId);
             const std::string theatreId = getTheatreIdFromScreen(sharedShow->screenId);
             Theatre* theatre = getTheatreById(theatreId);
+            Screen* screen = m_screens[sharedShow->screenId];
+            if (!screen)
+            {
+                screen = getScreenById(sharedShow->screenId);
+            }
             ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(sharedShow->seatAvailabilityId);
             if (show && movie && screen && seatAvailability && theatre)
             {
@@ -835,9 +840,13 @@ Show* DataStore::getShowByIdForUpdation(const std::string& showId)
         {
             Show* show = Show::deserialize(sharedShow);
             Movie* movie = getMovieById(sharedShow->movieId);
-            Screen* screen = getScreenById(sharedShow->screenId);
             const std::string theatreId = getTheatreIdFromScreen(sharedShow->screenId);
             Theatre* theatre = getTheatreById(theatreId);
+            Screen* screen = m_screens[sharedShow->screenId]; 
+            if (!screen)
+            {
+                screen = getScreenById(sharedShow->screenId);
+            }
             ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(sharedShow->seatAvailabilityId);
             if (show && movie && screen && seatAvailability && theatre)
             {
@@ -1703,6 +1712,20 @@ int DataStore::getShowSeatAvailabilityCount() const
 }
 
 /*
+ * Function: getNotificationsCount
+ * Description: Retrieves the total number of notifications from the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of notifications
+ */
+int DataStore::getNotificationsCount() const
+{
+    int count = m_registry.getNotificationsCount();
+    return count;
+}
+
+/*
  * Function: updateUserStatus
  * Description: Updates the status of a user in the mapped users file.
  * Parameters:
@@ -2307,6 +2330,45 @@ Enums::ProcessStatus DataStore::addScreenToTheatre(const std::string& theatreId,
     strncpy_s(sharedTheatre->screenIds[sharedTheatre->screenCount], sizeof(sharedTheatre->screenIds[0]), screenId.c_str(), _TRUNCATE);
     sharedTheatre->screenCount++;
     return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::updateSeatStatusInAvailability
+ * Description: Updates the booking status of a specific seat in a ShowSeatAvailability record.
+ *              Locates the SharedShowSeatAvailability struct by its availability ID, searches
+ *              for the matching seatId in the seatIds array, and updates its corresponding
+ *              seatStatuses entry. Flushes the changes to persistent storage.
+ * Parameters:
+ *    availabilityId (const std::string&) - Unique identifier of the ShowSeatAvailability record
+ *    seatId         (const std::string&) - Unique identifier of the seat to update
+ *    status         (Enums::BookingStatus) - New booking status to assign to the seat
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the update and flush succeed,
+ *                           FAILED if the record or seat is not found,
+ *                           or the mapped file is unavailable
+ */
+Enums::ProcessStatus DataStore::updateShowSeatAvailabilityStatus(const std::string& availabilityId, const std::string& seatId, Enums::BookingStatus status)
+{
+    MappedFile<SharedShowSeatAvailability>* availabilityFile = m_registry.getAvailability();
+    if (!availabilityFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedShowSeatAvailability* sharedAvailability = availabilityFile->findById(availabilityId.c_str());
+    if (!sharedAvailability)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    for (int index = 0; index < sharedAvailability->seatCount; ++index)
+    {
+        if (seatId == sharedAvailability->seatIds[index])
+        {
+            sharedAvailability->seatStatuses[index] = static_cast<int>(status);
+            availabilityFile->flush();
+            return Enums::ProcessStatus::SUCCESS;
+        }
+    }
+    return Enums::ProcessStatus::FAILED;
 }
 
 /*

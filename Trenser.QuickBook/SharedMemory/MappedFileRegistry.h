@@ -74,6 +74,7 @@ public:
     int getNotificationsCount() const;
     int getShowCount() const;
     int getShowSeatAvailabilityCount() const;
+    int getNotificationsCount() const;
     void closeAll();
     ~MappedFileRegistry()
     {

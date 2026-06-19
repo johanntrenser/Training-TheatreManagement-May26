@@ -112,8 +112,11 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     m_dataStore.updatePaymentStatus(payment->getPaymentId(), Enums::PaymentStatus::SUCCESS);
     payment->setStatus(Enums::PaymentStatus::SUCCESS);
     m_dataStore.addPayment(payment);
-    booking->setStatus(Enums::BookingStatus::CONFIRMED);
-    message = "Payment with ID : " + payment->getPaymentId() + " has been completed";
+    if (m_dataStore.updateBookingStatus(booking->getBookingId(), Enums::BookingStatus::CONFIRMED) == Enums::ProcessStatus::SUCCESS)
+    {
+        booking->setStatus(Enums::BookingStatus::CONFIRMED);
+    }
+    message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     std::string notificationMessage = "Ticket is successfully booked ";
     m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), notificationMessage);
