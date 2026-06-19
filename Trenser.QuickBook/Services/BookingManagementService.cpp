@@ -287,6 +287,7 @@ const Booking* BookingManagementService::bookSelectedSeats(const std::string& sh
     std::string notificationMessage = "Your booking was successful.";
     m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), notificationMessage);
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    m_notificationManagementService.sendNotification(m_dataStore.getAuthenticatedUser(), message);
     if (booking != nullptr)
     {
         m_dataStore.addBooking(booking);

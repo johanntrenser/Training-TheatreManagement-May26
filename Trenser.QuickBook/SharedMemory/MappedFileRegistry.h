@@ -71,6 +71,7 @@ public:
     int getTicketCount() const;
     int getBookingCount() const;
     int getTheatresCount() const;
+    int getNotificationsCount() const;
     int getShowCount() const;
     int getShowSeatAvailabilityCount() const;
     void closeAll();

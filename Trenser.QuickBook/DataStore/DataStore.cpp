@@ -1455,6 +1455,20 @@ int DataStore::getTheatresCount() const
 }
 
 /*
+ * Function: getNotificationsCount
+ * Description: Retrieves the total number of notifications from the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of notifications
+ */
+int DataStore::getNotificationsCount() const
+{
+    int count = m_registry.getNotificationsCount();
+    return count;
+}
+
+/*
  * Function: DataStore::getShowById
  * Description: Retrieves a Show object from the DataStore by its unique show ID.
  *              Looks up the show in the internal map of shows and returns the pointer

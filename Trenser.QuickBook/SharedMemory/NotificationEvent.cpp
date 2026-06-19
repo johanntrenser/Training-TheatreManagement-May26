@@ -244,7 +244,7 @@ void NotificationEvent::startListener(const std::string& currentUserType, const 
                     message = currentMessage->message;
                 }
                 bool isTheMessageForMe = false;
-                if (targetType == "ALL")
+                if (targetType == config::UserType::ALL_USER)
                 {
                     isTheMessageForMe = true;
                 }
@@ -261,15 +261,15 @@ void NotificationEvent::startListener(const std::string& currentUserType, const 
                     continue;
                 }
                 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-                CONSOLE_SCREEN_BUFFER_INFO csbi;
-                GetConsoleScreenBufferInfo(hConsole, &csbi);
+                CONSOLE_SCREEN_BUFFER_INFO consoleScreenBufferInfo;
+                GetConsoleScreenBufferInfo(hConsole, &consoleScreenBufferInfo);
                 COORD position;
                 position.X = 0;
-                position.Y = csbi.srWindow.Bottom;
+                position.Y = consoleScreenBufferInfo.srWindow.Bottom;
                 DWORD written;
                 std::wstring wideMessage = toWide(userName + config::delimeter::colon + message);
                 WriteConsoleOutputCharacterW(hConsole, wideMessage.c_str(), (DWORD)wideMessage.size(), position, &written);
-                std::this_thread::sleep_for(std::chrono::seconds(10));
+                std::this_thread::sleep_for(std::chrono::seconds(config::Limit::MAX_NOTIFICATION_TIMER));
                 DWORD written1;
                 std::wstring blank(wideMessage.size(), L' ');
                 WriteConsoleOutputCharacterW(hConsole, blank.c_str(), (DWORD)blank.size(), position, &written1);

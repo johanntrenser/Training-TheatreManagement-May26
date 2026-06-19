@@ -39,7 +39,7 @@ namespace config
     {
         constexpr const char* comma = ",";
         constexpr const char* verticalBar = "|";
-        constexpr const char* colon = ":";
+        constexpr const char* colon = " : ";
     }
     namespace Limit
     {

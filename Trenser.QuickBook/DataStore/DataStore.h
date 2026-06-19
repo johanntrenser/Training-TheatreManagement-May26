@@ -106,6 +106,7 @@ public:
 	int getUsersCount() const;
 	int getLogsCount() const;
 	int getTheatresCount() const;
+	int getNotificationsCount() const;
 	void clearData();
 	void setAuthenticatedUserPassword(const std::string& password);
 	int getScreenCount() const;

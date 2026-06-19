@@ -22,7 +22,7 @@
 * Return Type   : Constructor
 */
 NotificationManagementService::NotificationManagementService()
-	: m_dataStore(DataStore::getInstance())
+	: m_dataStore(DataStore::getInstance()),m_notificationMutex(config::MutexMappings::NOTIFICATION_MUTEX_NAME)
 {
 }
 
@@ -34,13 +34,11 @@ NotificationManagementService::NotificationManagementService()
 */
 std::string NotificationManagementService::generateNotificationId()
 {
-	const std::map<std::string, Notification*>& notifications = m_dataStore.getNotifications();
-	int idNumber = static_cast<int>(notifications.size()) + 1;
+	ScopedLock lock(m_notificationMutex);
+	const int notificationCount = m_dataStore.getNotificationsCount();
+	int idNumber = notificationCount + 1;
 	std::ostringstream buffer;
-	buffer << "NF"
-		<< std::setw(3)
-		<< std::setfill('0')
-		<< idNumber;
+	buffer << "NF" << std::setw(3) << std::setfill('0') << idNumber;
 	return buffer.str();
 }
 

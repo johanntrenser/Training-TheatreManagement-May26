@@ -684,9 +684,14 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
             {
                 if (m_dataStore.updateTheatreStatus(iterator->second->getTheatreId(), Enums::TheatreStatus::ACTIVE) == Enums::ProcessStatus::SUCCESS)
                 {
+                    if (iterator->second == nullptr)
+                    {
+                        return Enums::ProcessStatus::FAILED;
+                    }
                     (iterator->second)->setStatus(Enums::TheatreStatus::ACTIVE);
                     std::string message = "Your theatre " + (iterator->second)->getName() + " has been approved!";
                     m_event.notify("", (iterator->second)->getTheatreOwner()->getUserId(), message);
+                    m_notificationManagementService.sendNotification((iterator->second)->getTheatreOwner(), message);
                     return Enums::ProcessStatus::SUCCESS;
                 }
             }
@@ -733,6 +738,21 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
     return Enums::ProcessStatus::FAILED;
 }
 
+/*
+ * Function: TheatreManagementService::isScreenDeactivatable
+ * Description: Determines whether a given screen can be deactivated. Acquires locks
+ *              on both the show and screen mutexes to ensure thread-safe access.
+ *              Iterates through all shows in the DataStore, checking if any show
+ *              is associated with the provided screen. If a match is found, delegates
+ *              to ShowManagementService::isShowChangable to verify whether the show
+ *              linked to the screen can be modified or removed. Returns the result
+ *              of that check. If no associated show is found, returns FAILED.
+ * Parameters:
+ *    screen - A pointer to the Screen object to be checked for deactivation eligibility.
+ * Returns:
+ *    Enums::ProcessStatus::SUCCESS if the screen can be deactivated,
+ *    Enums::ProcessStatus::FAILED otherwise.
+ */
 Enums::ProcessStatus TheatreManagementService::isScreenDeactivatable(Screen* screen)
 {
     ScopedLock showLock(m_showMutex);

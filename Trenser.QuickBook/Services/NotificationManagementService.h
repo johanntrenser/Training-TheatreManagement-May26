@@ -16,6 +16,7 @@ class NotificationManagementService
 private:
 	DataStore& m_dataStore;
 	const std::string& PATH = config::File::NOTIFICATION_FILEPATH;
+	mutable NamedMutex m_notificationMutex;
 public:
 	NotificationManagementService();
 	std::string generateNotificationId();
