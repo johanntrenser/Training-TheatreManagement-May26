@@ -356,7 +356,6 @@ const std::map<std::string, Show*>& DataStore::getShows()
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
                 show->setSeatAvailability(seatAvailability);
-                std::vector<Screen*> screens;
                 m_shows[show->getShowId()] = show;
             }
         }
@@ -399,7 +398,6 @@ std::map<std::string, Show*>& DataStore::getShowsForUpdation()
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
                 show->setSeatAvailability(seatAvailability);
-                std::vector<Screen*> screens;
                 m_shows[show->getShowId()] = show;
             }
         }
@@ -604,7 +602,7 @@ Theatre* DataStore::getTheatreById(const std::string& theatreId)
                 }
                 theatre->setMovies(movies);
                 theatre->setScreens(screens);
-                //delete m_theatres[theatreId];
+                delete m_theatres[theatreId];
                 m_theatres[theatre->getTheatreId()] = theatre;
             }
             return m_theatres[theatreId];
@@ -636,7 +634,7 @@ Movie* DataStore::getMovieById(const std::string& movieId)
             Movie* movie = Movie::deserialize(sharedMovie);
             if (movie)
             {
-                //delete m_movies[movie->getMovieId()];
+                delete m_movies[movie->getMovieId()];
                 m_movies[movie->getMovieId()] = movie;
             }
             return m_movies[movieId];
@@ -690,7 +688,7 @@ Screen* DataStore::getScreenById(const std::string& screenId)
                     }
                     seats.push_back(seatRow);
                 }
-                //delete m_screens[screen->getScreenId()];
+                delete m_screens[screen->getScreenId()];
                 m_screens[screen->getScreenId()] = screen;
             }
             return m_screens[screenId];
@@ -808,7 +806,7 @@ const Show* DataStore::getShowById(const std::string& showId)
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
                 show->setSeatAvailability(seatAvailability);
-                //delete m_shows[show->getShowId()];
+                delete m_shows[show->getShowId()];
                 m_shows[show->getShowId()] = show;
                 return m_shows[show->getShowId()];
             }
@@ -855,7 +853,7 @@ Show* DataStore::getShowByIdForUpdation(const std::string& showId)
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
                 show->setSeatAvailability(seatAvailability);
-                //delete m_shows[show->getShowId()];
+                delete m_shows[show->getShowId()];
                 m_shows[show->getShowId()] = show;
                 return m_shows[show->getShowId()];
             }
@@ -1111,7 +1109,7 @@ Booking* DataStore::getBookingById(const std::string& bookingId)
                     if (seat) seats.push_back(seat);
                 }
                 booking->setBookedSeats(seats);
-                /*delete m_bookings[bookingId];*/
+                delete m_bookings[bookingId];
                 m_bookings[bookingId] = booking;
             }
             return m_bookings[bookingId];
@@ -1161,7 +1159,7 @@ Booking* DataStore::getBookingByIdForUpdation(const std::string& bookingId)
                     if (seat) seats.push_back(seat);
                 }
                 booking->setBookedSeats(seats);
-                /*delete m_bookings[bookingId];*/
+                delete m_bookings[bookingId];
                 m_bookings[bookingId] = booking;
             }
             return m_bookings[bookingId];
@@ -1191,7 +1189,7 @@ Seat* DataStore::getSeatById(const std::string seatId)
             Seat* seat = Seat::deserialize(sharedSeat);
             if (seat)
             {
-                //delete m_seats[seat->getSeatId()];
+                delete m_seats[seat->getSeatId()];
                 m_seats[seat->getSeatId()] = seat;
             }
             return m_seats[seatId];
@@ -1331,7 +1329,7 @@ User* DataStore::getUserById(const std::string& userId)
             User* user = User::deserialize(sharedUser);
             if (user)
             {
-                //delete m_users[user->getUserId()];
+                delete m_users[user->getUserId()];
                 m_users[user->getUserId()] = user;
             }
             return m_users[userId];
@@ -1460,20 +1458,6 @@ int DataStore::getLogsCount() const
 int DataStore::getTheatresCount() const
 {
     int count = m_registry.getTheatresCount();
-    return count;
-}
-
-/*
- * Function: getNotificationsCount
- * Description: Retrieves the total number of notifications from the registry.
- * Parameters:
- *    None
- * Returns:
- *    Integer count of notifications
- */
-int DataStore::getNotificationsCount() const
-{
-    int count = m_registry.getNotificationsCount();
     return count;
 }
 

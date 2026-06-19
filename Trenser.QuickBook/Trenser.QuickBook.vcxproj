@@ -164,9 +164,7 @@
     <ClCompile Include="SharedMemory\SharedStructs.cpp" />
     <ClCompile Include="Trenser.QuickBook.cpp" />
     <ClCompile Include="Utilities\ApplicationConfig.cpp" />
-    <ClCompile Include="Utilities\Datalinker.cpp" />
     <ClCompile Include="Utilities\Enums.cpp" />
-    <ClCompile Include="Utilities\FileManagement.cpp" />
     <ClCompile Include="Utilities\InputHelper.cpp" />
     <ClCompile Include="Utilities\OutputHelper.cpp" />
     <ClCompile Include="Utilities\TimeStamp.cpp" />
@@ -214,9 +212,7 @@
     <ClInclude Include="SharedMemory\SessionManager.h" />
     <ClInclude Include="SharedMemory\SharedStructs.h" />
     <ClInclude Include="Utilities\ApplicationConfig.h" />
-    <ClInclude Include="Utilities\Datalinker.h" />
     <ClInclude Include="Utilities\Enums.h" />
-    <ClInclude Include="Utilities\FileManagement.h" />
     <ClInclude Include="Utilities\InputHelper.h" />
     <ClInclude Include="Utilities\OutputHelper.h" />
     <ClInclude Include="Utilities\TimeStamp.h" />

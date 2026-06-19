@@ -13,7 +13,6 @@
 #include <errno.h>
 using namespace::std;
 #include "Controller.h"
-#include "Datalinker.h"
 
  /*
   * Function: Controller::Controller
