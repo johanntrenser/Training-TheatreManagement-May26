@@ -685,14 +685,9 @@ Enums::ProcessStatus TheatreManagementService::setTheatreStatusById(const std::s
                 if (m_dataStore.updateTheatreStatus(iterator->second->getTheatreId(), Enums::TheatreStatus::ACTIVE) == Enums::ProcessStatus::SUCCESS)
                 {
                     (iterator->second)->setStatus(Enums::TheatreStatus::ACTIVE);
-                    std::string message = "Your theatre " + (iterator->second)->getName() + "has been approved!";
+                    std::string message = "Your theatre " + (iterator->second)->getName() + " has been approved!";
                     m_event.notify("", (iterator->second)->getTheatreOwner()->getUserId(), message);
                     return Enums::ProcessStatus::SUCCESS;
-                }
-                else
-                {
-                    std::string message = "Your theatre " + (iterator->second)->getName() + "has been Rejected!";
-                    m_event.notify("", (iterator->second)->getTheatreOwner()->getUserId(), message);
                 }
             }
             else if (m_dataStore.getAuthenticatedUser()->getUserType() == Enums::UserType::ADMIN && theatreStatus == Enums::TheatreStatus::PENDING)

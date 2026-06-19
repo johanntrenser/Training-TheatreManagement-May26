@@ -45,6 +45,5 @@ public:
 	void notify(const std::string& targetType,const std::vector<std::string>& targetIds, const std::string& message);
 	void startListener(const std::string& currentUserType, const std::string& currentUserId,const std::string& userName);
 	static std::wstring toWide(const std::string& str);
-	static void displayNotification(const std::string& message,const std::string& userName);
 	~NotificationEvent();
 };
