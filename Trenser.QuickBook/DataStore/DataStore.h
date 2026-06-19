@@ -129,6 +129,8 @@ public:
 	Enums::ProcessStatus clearMoviesFromTheatre(const std::string& theatreId);
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
 	Enums::ProcessStatus updateShowTime(const std::string& showId, const time_t& startTime, const time_t& endTime);
+	Enums::ProcessStatus addScreenToTheatre(const std::string& theatreId, const std::string& screenId);
+	const std::string getTheatreIdFromScreen(const std::string& screenId);
 	bool isUserLoggedIn(const std::string& userId);
 	bool addLoggedInUser(const std::string& userId);
 	bool removeLoggedInUser(const std::string& userId);

@@ -346,9 +346,12 @@ const std::map<std::string, Show*>& DataStore::getShows()
             Show* show = Show::deserialize(&shows[index]);
             Movie* movie = getMovieById(shows[index].movieId);
             Screen* screen = getScreenById(shows[index].screenId);
+            const std::string theatreId = getTheatreIdFromScreen(shows[index].screenId);
+            Theatre* theatre = getTheatreById(theatreId);
             ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(shows[index].seatAvailabilityId);
-            if (show && movie && screen && seatAvailability)
+            if (show && movie && screen && seatAvailability && theatre)
             {
+                screen->setTheatre(theatre);
                 show->setMovie(movie);
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
@@ -386,10 +389,12 @@ std::map<std::string, Show*>& DataStore::getShowsForUpdation()
             Show* show = Show::deserialize(&shows[index]);
             Movie* movie = getMovieById(shows[index].movieId);
             Screen* screen = getScreenById(shows[index].screenId);
+            const std::string theatreId = getTheatreIdFromScreen(shows[index].screenId);
+            Theatre* theatre = getTheatreById(theatreId);
             ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(shows[index].seatAvailabilityId);
-
-            if (show && movie && screen && seatAvailability)
+            if (show && movie && screen && seatAvailability && theatre)
             {
+                screen->setTheatre(theatre);
                 show->setMovie(movie);
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
@@ -598,7 +603,7 @@ Theatre* DataStore::getTheatreById(const std::string& theatreId)
                 }
                 theatre->setMovies(movies);
                 theatre->setScreens(screens);
-                delete m_theatres[theatreId];
+                //delete m_theatres[theatreId];
                 m_theatres[theatre->getTheatreId()] = theatre;
             }
             return m_theatres[theatreId];
@@ -630,7 +635,7 @@ Movie* DataStore::getMovieById(const std::string& movieId)
             Movie* movie = Movie::deserialize(sharedMovie);
             if (movie)
             {
-                delete m_movies[movie->getMovieId()];
+                //delete m_movies[movie->getMovieId()];
                 m_movies[movie->getMovieId()] = movie;
             }
             return m_movies[movieId];
@@ -660,6 +665,7 @@ Screen* DataStore::getScreenById(const std::string& screenId)
             Screen* screen = Screen::deserialize(sharedScreen);
             if (screen)
             {
+                m_screens[screen->getScreenId()] = screen;
                 std::vector<vector<Seat*>>& seats = screen->getSeatGridForUpdation();
                 int rows = sharedScreen->totalRows;
                 int columns = sharedScreen->totalColumns;
@@ -682,7 +688,7 @@ Screen* DataStore::getScreenById(const std::string& screenId)
                     }
                     seats.push_back(seatRow);
                 }
-                delete m_screens[screen->getScreenId()];
+                //delete m_screens[screen->getScreenId()];
                 m_screens[screen->getScreenId()] = screen;
             }
             return m_screens[screenId];
@@ -786,15 +792,17 @@ const Show* DataStore::getShowById(const std::string& showId)
             Show* show = Show::deserialize(sharedShow);
             Movie* movie = getMovieById(sharedShow->movieId);
             Screen* screen = getScreenById(sharedShow->screenId);
+            const std::string theatreId = getTheatreIdFromScreen(sharedShow->screenId);
+            Theatre* theatre = getTheatreById(theatreId);
             ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(sharedShow->seatAvailabilityId);
-            if (show && movie && screen && seatAvailability)
+            if (show && movie && screen && seatAvailability && theatre)
             {
+                screen->setTheatre(theatre);
                 show->setMovie(movie);
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
                 show->setSeatAvailability(seatAvailability);
-                std::vector<Screen*> screens;
-                delete m_shows[show->getShowId()];
+                //delete m_shows[show->getShowId()];
                 m_shows[show->getShowId()] = show;
                 return m_shows[show->getShowId()];
             }
@@ -827,15 +835,17 @@ Show* DataStore::getShowByIdForUpdation(const std::string& showId)
             Show* show = Show::deserialize(sharedShow);
             Movie* movie = getMovieById(sharedShow->movieId);
             Screen* screen = getScreenById(sharedShow->screenId);
+            const std::string theatreId = getTheatreIdFromScreen(sharedShow->screenId);
+            Theatre* theatre = getTheatreById(theatreId);
             ShowSeatAvailability* seatAvailability = getShowSeatAvailabilityById(sharedShow->seatAvailabilityId);
-            if (show && movie && screen && seatAvailability)
+            if (show && movie && screen && seatAvailability && theatre)
             {
+                screen->setTheatre(theatre);
                 show->setMovie(movie);
                 show->setScreen(screen);
                 seatAvailability->setShow(show);
                 show->setSeatAvailability(seatAvailability);
-                std::vector<Screen*> screens;
-                delete m_shows[show->getShowId()];
+                //delete m_shows[show->getShowId()];
                 m_shows[show->getShowId()] = show;
                 return m_shows[show->getShowId()];
             }
@@ -1106,7 +1116,7 @@ Seat* DataStore::getSeatById(const std::string seatId)
             Seat* seat = Seat::deserialize(sharedSeat);
             if (seat)
             {
-                delete m_seats[seat->getSeatId()];
+                //delete m_seats[seat->getSeatId()];
                 m_seats[seat->getSeatId()] = seat;
             }
             return m_seats[seatId];
@@ -1213,7 +1223,7 @@ User* DataStore::getUserById(const std::string& userId)
             User* user = User::deserialize(sharedUser);
             if (user)
             {
-                delete m_users[user->getUserId()];
+                //delete m_users[user->getUserId()];
                 m_users[user->getUserId()] = user;
             }
             return m_users[userId];
@@ -2149,6 +2159,66 @@ Enums::ProcessStatus DataStore::updateShowTime(const std::string& showId, const 
     strncpy_s(sharedShow->endTime, util::serializeTime(endTime).c_str(), sizeof(sharedShow->endTime));
     showsFile->flush();
     return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::addScreenToTheatre
+ * Description: Associates a screen with a theatre by appending the screen ID
+ *              to the SharedTheatre record in the mapped file. Updates the
+ *              screen count and ensures the maximum limit is not exceeded.
+ * Parameters:
+ *    theatreId (const std::string&) - Unique identifier of the theatre
+ *    screenId  (const std::string&) - Unique identifier of the screen
+ * Returns:
+ *    Enums::ProcessStatus - SUCCESS if the screen is added,
+ *                           FAILED if the theatre record is not found,
+ *                           the mapped file is unavailable,
+ *                           or the screen count exceeds the maximum limit
+ */
+Enums::ProcessStatus DataStore::addScreenToTheatre(const std::string& theatreId, const std::string& screenId)
+{
+    MappedFile<SharedTheatre>* theatreFile = m_registry.getTheatres();
+    if (!theatreFile)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    SharedTheatre* sharedTheatre = theatreFile->findById(theatreId.c_str());
+    if (!sharedTheatre)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    if (sharedTheatre->screenCount >= config::Limit::SCREEN_MAX_COUNT)
+    {
+        return Enums::ProcessStatus::FAILED;
+    }
+    strncpy_s(sharedTheatre->screenIds[sharedTheatre->screenCount], sizeof(sharedTheatre->screenIds[0]), screenId.c_str(), _TRUNCATE);
+    sharedTheatre->screenCount++;
+    return Enums::ProcessStatus::SUCCESS;
+}
+
+/*
+ * Function: DataStore::getTheatreIdFromScreen
+ * Description: Retrieves the theatre ID associated with a given screen ID
+ *              by looking up the SharedScreen record in the mapped file.
+ * Parameters:
+ *    screenId (const std::string&) - Unique identifier of the screen
+ * Returns:
+ *    const std::string - Theatre ID if found, empty string otherwise
+ */
+const std::string DataStore::getTheatreIdFromScreen(const std::string& screenId)
+{
+    std::string theatreId = "";
+    MappedFile<SharedScreen>* screensFile = m_registry.getScreens();
+    if(!screensFile)
+    {
+        return theatreId;
+    }
+    SharedScreen* sharedScreen = screensFile->findById(screenId.c_str());
+    if(sharedScreen)
+    {
+        theatreId = sharedScreen->theatreId;
+    }
+    return theatreId;
 }
 
 /*

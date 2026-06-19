@@ -84,6 +84,10 @@ Enums::ProcessStatus ScreenManagementService::addScreen(const std::string& theat
         {
             screen->setSeatGrid(seatGrid);
             m_dataStore.addScreen(screen);
+            if (m_dataStore.addScreenToTheatre(theatre->getTheatreId(), screen->getScreenId()) == Enums::ProcessStatus::FAILED)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             theatre->setScreen(screen);
             std::string message = "Screen " + screen->getScreenId() + " added to theatre " + theatreId;
             m_logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
