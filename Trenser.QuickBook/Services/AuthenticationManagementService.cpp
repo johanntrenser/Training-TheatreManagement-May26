@@ -212,3 +212,25 @@ bool AuthenticationManagementService::isEmailIdUnique(const std::string& email)
     }
     return true;
 }
+
+/*
+ * Function: checkAndHandleForcedLogout
+ * Description: Verifies whether the currently authenticated user is still active.
+ *              If inactive, removes the user from the logged-in sessions and clears
+ *              the authenticated user reference to enforce logout.
+ * Parameters:
+ *    None
+ * Returns:
+ *    true if the user was deactivated and logout was handled,
+ *    false if the user remains active
+ */
+bool AuthenticationManagementService::checkAndHandleForcedLogout()
+{
+    if (!m_dataStore.isCurrentUserStillActive())
+    {
+        m_dataStore.removeLoggedInUser(m_dataStore.getAuthenticatedUser()->getUserId());
+        m_dataStore.setAuthenticatedUser(nullptr);
+        return true;
+    }
+    return false;
+}

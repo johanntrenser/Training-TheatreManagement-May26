@@ -84,6 +84,10 @@ Enums::ProcessStatus ScreenManagementService::addScreen(const std::string& theat
         {
             screen->setSeatGrid(seatGrid);
             m_dataStore.addScreen(screen);
+            if (m_dataStore.addScreenToTheatre(theatre->getTheatreId(), screen->getScreenId()) == Enums::ProcessStatus::FAILED)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             theatre->setScreen(screen);
             std::string message = "Screen " + screen->getScreenId() + " added to theatre " + theatreId;
             m_logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
@@ -148,6 +152,7 @@ void ScreenManagementService::cleanupSeatGrid(std::vector<std::vector<Seat*>>& s
     {
         for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
         {
+            m_dataStore.updateSeatStatus((*seatIterator)->getSeatId(), Enums::SeatStatus::BLOCKED);
             (*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
         }
     }
@@ -209,6 +214,11 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
     Enums::ProcessStatus status = hasActiveShows(theatreId, screenId);
     if (status == Enums::ProcessStatus::SUCCESS)
     {
+        theatre = m_dataStore.getTheatreById(theatreId);
+        if (!theatre)
+        {
+            return Enums::ProcessStatus::FAILED;
+        }
         std::vector<Screen*>& screens = theatre->getScreensForUpdation();
         for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
         {

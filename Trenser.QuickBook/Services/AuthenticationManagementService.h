@@ -30,6 +30,7 @@ public:
     const std::string generateUserId();
     bool isPhoneNumberUnique(const std::string&);
     bool isEmailIdUnique(const std::string&);
+    bool checkAndHandleForcedLogout();
     ~AuthenticationManagementService() = default;
 };
 

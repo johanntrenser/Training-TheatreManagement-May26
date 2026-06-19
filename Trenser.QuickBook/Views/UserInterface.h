@@ -161,5 +161,6 @@ public:
 	void ownerScreenManagementMenu();
 	void ownerSeatManagementMenu(const std::string& selectedScreenId);
 	void viewRefunds();
+	void showForceLogoutMessage(bool& isMenuActive);
 	~UserInterface();
 };

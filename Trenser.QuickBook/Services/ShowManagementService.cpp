@@ -296,7 +296,7 @@ Enums::ProcessStatus ShowManagementService::addShow(const std::string& movieId, 
     }
     int buffer = 10;
     time_t endTime = startTime + (movie->getDuration() + buffer) * 60;
-    Show* show = Factory::getObject<Show>(showId, movie, screen, startTime, endTime, new ShowSeatAvailability());
+    Show* show = Factory::getObject<Show>(showId, movie, screen, startTime, endTime, nullptr);
     if (show == nullptr)
     {
         return Enums::ProcessStatus::FAILED;

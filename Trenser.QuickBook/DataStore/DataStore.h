@@ -86,7 +86,7 @@ public:
 	Show* getShowByIdForUpdation(const std::string& showId);
 	std::map<std::string, Ticket*>& getTickets();
 	void addTicket(Ticket* ticket);
-	Ticket* getTicketById(const std::string& ticketId) const;
+	Ticket* getTicketById(const std::string& ticketId);
 	void addPayment(Payment* payment);
 	void addRefund(Refund* refund);
 	const std::map < std::string, Payment*>& getPayments();
@@ -96,7 +96,7 @@ public:
 	Seat* getSeatById(const std::string seatId);
 	void addBooking(Booking* booking);
 	const Ticket* getTicketForBooking(const Booking* booking);
-	const std::map<std::string, Seat*>& getSeats() const;
+	const std::map<std::string, Seat*>& getSeats();
 	User* getUserById(const std::string& userId);
 	Show* getShowDetailsById(std::string& id);
 	void addSeat(Seat* seat);
@@ -129,6 +129,8 @@ public:
 	Enums::ProcessStatus clearMoviesFromTheatre(const std::string& theatreId);
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
 	Enums::ProcessStatus updateShowTime(const std::string& showId, const time_t& startTime, const time_t& endTime);
+	Enums::ProcessStatus addScreenToTheatre(const std::string& theatreId, const std::string& screenId);
+	const std::string getTheatreIdFromScreen(const std::string& screenId);
 	bool isUserLoggedIn(const std::string& userId);
 	bool addLoggedInUser(const std::string& userId);
 	bool removeLoggedInUser(const std::string& userId);
@@ -140,5 +142,6 @@ public:
 	int getBookingCount() const;
 	Enums::ProcessStatus updateBookingStatus(const std::string& bookingId, Enums::BookingStatus status);
 	ShowSeatAvailability* getShowSeatAvailabilityById(const std::string& seatAvailabilityId);
+	bool isCurrentUserStillActive();
 	~DataStore();
 };
