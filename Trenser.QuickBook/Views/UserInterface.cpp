@@ -4801,10 +4801,6 @@ void UserInterface::viewTicketDetails(const vector<const Ticket*>& tickets)
 		{
 			cout << setw(15) << ticket->getCustomer()->getUserName();
 		}
-		else
-		{
-			cout << setw(15) << "-";
-		}
 		cout << setw(12) << ticket->getPayment()->getPaymentId()
 			<< setw(10) << ticket->getPayment()->getAmount()
 			<< setw(12) << ticket->getPayment()->getBooking()->getBookingId()

@@ -115,6 +115,7 @@ public:
 	int getRefundCount() const;
 	int getShowCount() const;
 	int getShowSeatAvailabilityCount() const;
+	int getNotificationsCount() const;
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
 	Enums::ProcessStatus updateScreenName(const std::string& screenId, const std::string& screenName);
 	Enums::ProcessStatus updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status);
@@ -131,6 +132,7 @@ public:
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
 	Enums::ProcessStatus updateShowTime(const std::string& showId, const time_t& startTime, const time_t& endTime);
 	Enums::ProcessStatus addScreenToTheatre(const std::string& theatreId, const std::string& screenId);
+	Enums::ProcessStatus updateShowSeatAvailabilityStatus(const std::string& availabilityId, const std::string& seatId, Enums::BookingStatus status);
 	const std::string getTheatreIdFromScreen(const std::string& screenId);
 	bool isUserLoggedIn(const std::string& userId);
 	bool addLoggedInUser(const std::string& userId);

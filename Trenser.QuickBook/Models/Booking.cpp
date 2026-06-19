@@ -201,7 +201,6 @@ void Booking::setAmount(double amount)
  */
 void Booking::serialize(SharedBooking& sharedBooking) const
 {
-    sharedBooking = {};
     strncpy_s(sharedBooking.bookingId, m_bookingId.c_str(), sizeof(sharedBooking.bookingId));
     strncpy_s(sharedBooking.customerId, 
         (m_customer ? m_customer->getUserId().c_str() : ""), 

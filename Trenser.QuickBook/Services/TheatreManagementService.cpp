@@ -412,7 +412,7 @@ Enums::ProcessStatus TheatreManagementService::addTheatre(const std::string& nam
     {
         m_dataStore.addTheatre(theatre);
         std::string message = "New Theatre has been added : " + name;
-        m_event.notify("", getAllAdminsId(), message);
+        m_event.notify("",getAllAdminsId(), message);
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;

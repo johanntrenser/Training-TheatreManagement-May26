@@ -229,6 +229,10 @@ Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& 
     {
         if ((*iterator) != nullptr)
         {
+            m_dataStore.updateShowSeatAvailabilityStatus(
+                showSeatAvailability->getShowAvailabiltyId(),
+                (*iterator)->getSeatId(),
+                Enums::BookingStatus::NOT_BOOKED);
             seatMap[(*iterator)->getSeatId()] = Enums::BookingStatus::NOT_BOOKED;
             ++numberOfSeatsCancelled;
         }
@@ -276,6 +280,10 @@ const Booking* BookingManagementService::bookSelectedSeats(const std::string& sh
     std::map<std::string, Enums::BookingStatus> seatMap = showSeatAvailability->getSeatAvailabilityMap();
     for (std::vector<std::string>::const_iterator iterator = selectedSeatIds.begin(); iterator != selectedSeatIds.end(); ++iterator)
     {
+        m_dataStore.updateShowSeatAvailabilityStatus(
+            showSeatAvailability->getShowAvailabiltyId(),
+            (*iterator),
+            Enums::BookingStatus::CONFIRMED);
         seatMap[(*iterator)] = Enums::BookingStatus::CONFIRMED;
     }
     std::vector<Seat*> seats;
