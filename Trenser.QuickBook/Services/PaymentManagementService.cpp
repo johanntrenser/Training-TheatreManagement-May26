@@ -119,7 +119,7 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     std::string notificationMessage = "Ticket is successfully booked ";
-    m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), notificationMessage);
+    //m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), notificationMessage);
     m_notificationManagementService.sendNotification(m_dataStore.getAuthenticatedUser(), message);
     return Enums::ProcessStatus::SUCCESS;
 }
@@ -175,7 +175,7 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Pay
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     message = "Your refund request for booking with id " + booking->getBookingId() + " has been processed successfully";
     m_notificationManagementService.sendNotification(ticket->getCustomer(), message);
-    m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), message);
+    //m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), message);
     return Enums::ProcessStatus::SUCCESS;
 }
 

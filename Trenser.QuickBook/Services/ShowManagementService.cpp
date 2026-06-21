@@ -21,8 +21,22 @@ void ShowManagementService::updateTicketStatusesForCompletedShows()
         Ticket* ticket = iterator->second;
         if (ticket && ticket->getTicketStatus() == Enums::TicketStatus::ACTIVE)
         {
-            const Show* show = ticket->getPayment()->getBooking()->getShow();
-            if (show && show->getShowStatus() == Enums::ShowStatus::COMPLETED)
+            Payment* payment = ticket->getPayment();
+            if (!payment)
+            {
+                continue;
+            }
+            Booking* booking = payment->getBooking();
+            if (!booking)
+            {
+                continue;
+            }
+            Show* show = booking->getShow();
+            if (!show)
+            {
+                continue;
+            }
+            if (show->getShowStatus() == Enums::ShowStatus::COMPLETED)
             {
                 if (m_dataStore.updateTicketStatus(ticket->getTicketId(), Enums::TicketStatus::COMPLETED) == Enums::ProcessStatus::SUCCESS)
                 {

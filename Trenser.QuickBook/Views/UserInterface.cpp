@@ -5324,9 +5324,17 @@ void UserInterface::createBooking()
 	vector<string> bookedSeatIds;
 	selectSeats(numberOfSeats, bookedSeatIds, show);
 	const Booking* booking = m_controller->bookSelectedSeats(showId, bookedSeatIds);
-	string message = (booking == nullptr) ? "Failed to complete booking!" : "Booking completed Successfully!";
-	cout << message << endl;
-	util::pressEnterToContinue();
+	if (booking == nullptr)
+	{
+		cout << "Failed to complete booking!" << endl;
+		util::pressEnterToContinue();
+		return;
+	}
+	else
+	{
+		cout << "Booking completed Successfully!" << endl;
+		util::pressEnterToContinue();
+	}
 	string bookingId = "";
 	double amount = 0.0;
 	if (booking != nullptr)

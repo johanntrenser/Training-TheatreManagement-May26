@@ -49,16 +49,9 @@ std::pair<Enums::LoginStatus, Enums::UserType> AuthenticationManagementService::
                     }
                     m_event.init(iterator->second->getUserId());
                     m_event.startListener(Enums::getUserTypeString(iterator->second->getUserType()), iterator->second->getUserId(), iterator->second->getUserName());
-                    User* user = Factory::getObject<User>(
-                        iterator->second->getUserId(),
-                        iterator->second->getUserName(),
-                        iterator->second->getEmail(),
-                        iterator->second->getPassword(),
-                        iterator->second->getPhoneNumber(),
-                        iterator->second->getUserType());
+                    User* user = iterator->second;
                     if (user != nullptr)
                     {
-                        user->setStatus(iterator->second->getStatus());
                         m_dataStore.addLoggedInUser(user->getUserId());
                         m_dataStore.setAuthenticatedUser(user);
                         std::string message = "User with ID : " + user->getUserId() + " has logged in.";
