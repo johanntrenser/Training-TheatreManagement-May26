@@ -93,7 +93,7 @@ public:
 	void addRefund(Refund* refund);
 	const std::map < std::string, Payment*>& getPayments();
 	const std::map<std::string, Refund*>& getRefunds();
-	Booking* getBookingById(const std::string& bookingId);
+	const Booking* getBookingById(const std::string& bookingId);
 	Booking* getBookingByIdForUpdation(const std::string& bookingId);
 	Seat* getSeatById(const std::string seatId);
 	void addBooking(Booking* booking);
@@ -116,6 +116,7 @@ public:
 	int getRefundCount() const;
 	int getShowCount() const;
 	int getShowSeatAvailabilityCount() const;
+	int getNotificationCount() const;
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
 	Enums::ProcessStatus updateScreenName(const std::string& screenId, const std::string& screenName);
 	Enums::ProcessStatus updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status);

@@ -330,6 +330,19 @@ int MappedFileRegistry::getTheatresCount() const
 }
 
 /*
+ * Function: getNotificationsCount
+ * Description: Retrieves the total number of notifications from the mapped file registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of notifications
+ */
+int MappedFileRegistry::getNotificationsCount() const
+{
+    return m_theatres->getRecordCount();
+}
+
+/*
  * Function: getShowsCount
  * Description: Retrieves the total number of shows from the mapped file registry.
  * Parameters:

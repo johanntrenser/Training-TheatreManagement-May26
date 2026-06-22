@@ -710,10 +710,10 @@ const std::map<std::string, Payment*>& DataStore::getPayments()
  * Parameters:
  *    bookingId - Unique identifier of the booking to retrieve
  * Returns:
- *    Pointer to the Booking object if found and deserialized successfully,
+ *    const pointer to the Booking object if found and deserialized successfully,
  *    nullptr if the booking record does not exist or deserialization fails
  */
-Booking* DataStore::getBookingById(const std::string& bookingId)
+const Booking* DataStore::getBookingById(const std::string& bookingId)
 {
     refreshBookingById(bookingId);
     rebuildBookingRelationship(bookingId);
@@ -1218,6 +1218,20 @@ int DataStore::getShowCount() const
 int DataStore::getShowSeatAvailabilityCount() const
 {
     int count = m_registry.getShowSeatAvailabilityCount();
+    return count;
+}
+
+/*
+ * Function: getNotificationCount
+ * Description: Retrieves the total number of records managed by the registry.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Integer count of records
+ */
+int DataStore::getNotificationCount() const
+{
+    int count = m_registry.getNotificationsCount();
     return count;
 }
 

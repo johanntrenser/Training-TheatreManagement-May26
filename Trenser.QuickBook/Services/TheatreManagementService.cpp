@@ -128,7 +128,7 @@ Enums::ProcessStatus TheatreManagementService::addMovieToTheatre(const std::stri
      * Parameters: None
      * Returns: Vector of Theatre pointers representing all theatres.
      */
-std::vector<const Theatre*> TheatreManagementService::listAllTheatres() const
+std::vector<const Theatre*> TheatreManagementService::listAllTheatres()
 {
     ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> theatres;
@@ -147,7 +147,7 @@ std::vector<const Theatre*> TheatreManagementService::listAllTheatres() const
      *   - name: Name of the theatre to search for.
      * Returns: Pointer to the Theatre object if found, or nullptr otherwise.
      */
-const std::vector<const Theatre*> TheatreManagementService::searchByTheatreName(const std::string& theatreName) const
+const std::vector<const Theatre*> TheatreManagementService::searchByTheatreName(const std::string& theatreName)
 {
     ScopedLock lock(m_theatreMutex);
     std::vector<const Theatre*> resultantTheatres;

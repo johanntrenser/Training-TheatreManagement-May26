@@ -22,7 +22,7 @@ class TheatreManagementService
 {
     DataStore& m_dataStore;
     const std::string& PATH = config::File::THEATRE_FILEPATH;
-    mutable NamedMutex m_theatreMutex;
+    NamedMutex m_theatreMutex;
     NamedMutex m_showMutex;
     NamedMutex m_movieMutex;
     NamedMutex m_userMutex;
@@ -32,8 +32,8 @@ class TheatreManagementService
 public:
     TheatreManagementService();
     Enums::ProcessStatus deactivateTheatre(const std::string& theatreId);
-    std::vector<const Theatre*> listAllTheatres() const;
-    const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
+    std::vector<const Theatre*> listAllTheatres();
+    const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName);
     const std::vector<const Theatre*> getCurrentOwnerTheatres();
     const std::vector<const Theatre*> getCurrentOwnerInactiveTheatres();
     const std::vector<std::string> getCurrentOwnerTheatreIds();

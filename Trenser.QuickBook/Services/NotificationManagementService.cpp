@@ -34,7 +34,7 @@ Return Type   : std::string
 */
 std::string NotificationManagementService::generateNotificationId()
 {
-	const int notificationCount = m_dataStore.getNotificationsCount();
+	const int notificationCount = m_dataStore.getNotificationCount();
 	int idNumber = notificationCount + 1;
 	std::ostringstream buffer;
 	buffer << "NF" << std::setw(3) << std::setfill('0') << idNumber;
