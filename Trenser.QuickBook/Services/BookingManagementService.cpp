@@ -271,6 +271,10 @@ const Booking* BookingManagementService::bookSelectedSeats(const std::string& sh
     {
         return nullptr;
     }
+    if (show->getShowStatus() == Enums::ShowStatus::CANCELLED)
+    {
+        return nullptr;
+    }
     ShowSeatAvailability* showSeatAvailability = show->getSeatAvailability();
     if (showSeatAvailability == nullptr)
     {
