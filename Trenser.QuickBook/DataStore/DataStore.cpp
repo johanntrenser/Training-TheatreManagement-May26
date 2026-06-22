@@ -4082,6 +4082,27 @@ void DataStore::rebuildNotificationRelationship(const std::string& notificationI
 }
 
 /*
+ * Function: DataStore::updateNotificationStatus
+ * Description: Updates the status of a notification in the mapped notifications file.
+ *              Locates the SharedNotification record by its unique ID and modifies
+ *              the status field to reflect the new NotificationStatus value.
+ * Parameters:
+ *    notificationId - Unique identifier of the notification to update
+ *    status         - New notification status to be applied (Enums::NotificationStatus)
+ * Returns:
+ *    None
+ */
+void DataStore::updateNotificationStatus(const std::string& notificationId, Enums::NotificationStatus status)
+{
+    SharedNotification* sharedNotification = m_registry.getNotifications()->findById(notificationId.c_str());
+    if (!sharedNotification)
+    {
+        return;
+    }
+    sharedNotification->status = static_cast<int>(status);
+}
+
+/*
  * Function: DataStore::~DataStore
  * Description: Destructor for the DataStore singleton. Iterates through all
  *              in-memory maps and deletes every heap-allocated object in

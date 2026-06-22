@@ -204,5 +204,6 @@ public:
 	void rebuildTicketRelationship(const std::string& ticketId);
 	void rebuildRefundRelationship(const std::string& refundId);
 	void rebuildNotificationRelationship(const std::string& notificationId);
+	void updateNotificationStatus(const std::string& notificationId, Enums::NotificationStatus status);
 	~DataStore();
 };

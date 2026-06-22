@@ -270,9 +270,8 @@ void NotificationEvent::startListener(const std::string& currentUserType, const 
                 std::wstring wideMessage = toWide(userName + config::delimeter::colon + message);
                 WriteConsoleOutputCharacterW(hConsole, wideMessage.c_str(), (DWORD)wideMessage.size(), position, &written);
                 std::this_thread::sleep_for(std::chrono::seconds(config::Limit::MAX_NOTIFICATION_TIMER));
-                DWORD written1;
                 std::wstring blank(wideMessage.size(), L' ');
-                WriteConsoleOutputCharacterW(hConsole, blank.c_str(), (DWORD)blank.size(), position, &written1);
+                WriteConsoleOutputCharacterW(hConsole, blank.c_str(), (DWORD)blank.size(), position, &written);
             }
         }).detach();
 }
