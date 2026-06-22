@@ -84,7 +84,6 @@ Controller::Controller(AuthenticationManagementService* authService,
     m_seatManagementService(seatService),
     m_refundManagementService(refundService)
 {
-    ensureFolder(config::File::FILEPATH);
     createDefaultAdmin();
 }
 

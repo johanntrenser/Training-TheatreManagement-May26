@@ -10,6 +10,8 @@
 #pragma once
 #include <string>
 #include <map>
+#include <direct.h>
+#include <errno.h>
 #include "User.h"
 #include "Booking.h"
 #include "Log.h"
@@ -205,5 +207,6 @@ public:
 	void rebuildRefundRelationship(const std::string& refundId);
 	void rebuildNotificationRelationship(const std::string& notificationId);
 	void updateNotificationStatus(const std::string& notificationId, Enums::NotificationStatus status);
+	void ensureFolder(const char* path);
 	~DataStore();
 };

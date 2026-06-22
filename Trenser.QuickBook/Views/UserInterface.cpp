@@ -4421,12 +4421,20 @@ void UserInterface::displayShowDetails(const vector<const Show*> shows)
 	cout << string(98, '-') << endl;
 	for (vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
 	{
+		const Show* show = *iterator;
+		if (!show)
+		{
+			continue;
+		}
+		const Screen* screen = show->getScreen();
+		const Theatre* theatre = (screen ? screen->getTheatre() : nullptr);
+		const Movie* movie = show->getMovie();
 		cout << left
-			<< setw(14) << (*iterator)->getShowId()
-			<< setw(22) << (*iterator)->getScreen()->getTheatre()->getName()
-			<< setw(14) << (*iterator)->getScreen()->getScreenId()
-			<< setw(26) << (*iterator)->getMovie()->getTitle()
-			<< setw(22) << displayTimeAndDate((*iterator)->getStartTime())
+			<< setw(14) << show->getShowId()
+			<< setw(22) << (theatre ? theatre->getName() : "N/A")
+			<< setw(14) << (screen ? screen->getScreenId() : "N/A")
+			<< setw(26) << (movie ? movie->getTitle() : "N/A")
+			<< setw(22) << displayTimeAndDate(show->getStartTime())
 			<< endl;
 	}
 	util::pressEnterToContinue();

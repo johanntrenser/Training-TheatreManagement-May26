@@ -23,6 +23,7 @@ using namespace std;
  */
 bool DataStore::initialize()
 {
+    ensureFolder(config::File::FILEPATH);
     if (!(m_registry.openAll() && m_sessionManager.open()))
     {
         return false;
@@ -2926,6 +2927,8 @@ void DataStore::rebuildTheatreRelationships()
         theatre->getScreensForUpdation().clear();
         for (int screenIndex = 0; screenIndex < sharedTheatre.screenCount; ++screenIndex)
         {
+            refreshScreenById(sharedTheatre.screenIds[index]);
+            rebuildScreenRelationship(sharedTheatre.screenIds[screenIndex]);
             Screen* screen = findScreenById(sharedTheatre.screenIds[screenIndex]);
             if (screen)
             {
@@ -3893,6 +3896,7 @@ void DataStore::rebuildShowRelationship(const std::string& showId)
     refreshMovieById(sharedShow->movieId);
     show->setMovie(findMovieById(sharedShow->movieId));
     refreshScreenById(sharedShow->screenId);
+    rebuildScreenRelationship(sharedShow->screenId);
     show->setScreen(findScreenById(sharedShow->screenId));
     refreshShowSeatAvailabilityById(sharedShow->seatAvailabilityId);
     show->setSeatAvailability(findShowSeatAvailabilityById(sharedShow->seatAvailabilityId));
@@ -3923,6 +3927,7 @@ void DataStore::rebuildShowSeatAvailabilityRelationship(const std::string& avail
     }
     ShowSeatAvailability* availability = iterator->second;
     refreshShowById(sharedAvailability->showId);
+    rebuildShowRelationship(sharedAvailability->showId);
     availability->setShow(findShowById(sharedAvailability->showId));
 }
 
@@ -3953,6 +3958,7 @@ void DataStore::rebuildBookingRelationship(const std::string& bookingId)
     refreshUserById(sharedBooking->customerId);
     booking->setCustomer(findUserById(sharedBooking->customerId));
     refreshShowById(sharedBooking->showId);
+    rebuildShowRelationship(sharedBooking->showId);
     booking->setShow(findShowById(sharedBooking->showId));
     std::vector<Seat*> seats;
     for (int index = 0; index < sharedBooking->seatCount; ++index)
@@ -3992,6 +3998,7 @@ void DataStore::rebuildPaymentRelationship(const std::string& paymentId)
     }
     Payment* payment = iterator->second;
     refreshBookingById(sharedPayment->bookingId);
+    rebuildBookingRelationship(sharedPayment->bookingId);
     payment->setBooking(findBookingById(sharedPayment->bookingId));
 }
 
@@ -4020,6 +4027,7 @@ void DataStore::rebuildTicketRelationship(const std::string& ticketId)
     }
     Ticket* ticket = iterator->second;
     refreshPaymentById(sharedTicket->paymentId);
+    rebuildPaymentRelationship(sharedTicket->paymentId);
     ticket->setPayment(findPaymentById(sharedTicket->paymentId));
     refreshUserById(sharedTicket->customerId);
     ticket->setCustomer(findUserById(sharedTicket->customerId));
@@ -4050,6 +4058,7 @@ void DataStore::rebuildRefundRelationship(const std::string& refundId)
     }
     Refund* refund = iterator->second;
     refreshTicketById(sharedRefund->ticketId);
+    rebuildTicketRelationship(sharedRefund->ticketId);
     refund->setBookedTicket(findTicketById(sharedRefund->ticketId));
 }
 
@@ -4100,6 +4109,23 @@ void DataStore::updateNotificationStatus(const std::string& notificationId, Enum
         return;
     }
     sharedNotification->status = static_cast<int>(status);
+}
+
+/*
+ * Function    : ensureFolder
+ * Description : Ensures that the specified folder exists on the file system.
+ *               If the folder does not exist, it attempts to create it.
+ *               If creation fails for any reason other than the folder
+ *               already existing, an error message is displayed.
+ * Parameters  : const char* path - The path of the folder to be created
+ * Return      : void
+ */
+void DataStore::ensureFolder(const char* path) {
+    if (_mkdir(path) != 0) {
+        if (errno != EEXIST) {
+            std::cerr << "Failed to create folder!\n";
+        }
+    }
 }
 
 /*
