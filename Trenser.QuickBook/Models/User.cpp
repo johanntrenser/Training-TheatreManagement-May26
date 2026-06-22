@@ -221,18 +221,19 @@ void User::setStatus(Enums::UserStatus status)
  * Parameters:
  *    password - Reference to the string to encrypt
  * Returns:
- *    None (modifies the string directly)
+ *    std::string - encrypted password
  */
-std::string& User::encryption(std::string& password)
+std::string User::encryption(const std::string& password)
 {
+    std::string result = password;
     int index = 0;
-    while (password[index] != '\0')
+    while (result[index] != '\0')
     {
-        password[index] = char(int(password[index]) + 10);
+        result[index] = char(int(password[index]) + 10);
         index++;
     }
-    reverseString(password);
-    return password;
+    reverseString(result);
+    return result;
 }
 
 /*
@@ -262,17 +263,17 @@ void User::reverseString(std::string& password)
  * Parameters:
  *    password - Reference to the string to decrypt
  * Returns:
- *    None (modifies the string directly)
+ *    std::string - decrypted password
  */
 std::string User::decryption(std::string& password)
 {
+    reverseString(password);
     int index = 0;
     while (password[index] != '\0')
     {
         password[index] = char(int(password[index]) - 10);
         index++;
     }
-    reverseString(password);
     return password;
 }
 
@@ -291,7 +292,8 @@ SharedUser User::serialize()
     strncpy_s(sharedUser.userId, sizeof(sharedUser.userId), m_userId.c_str(), _TRUNCATE);
     strncpy_s(sharedUser.username, sizeof(sharedUser.username), m_userName.c_str(), _TRUNCATE);
     strncpy_s(sharedUser.email, sizeof(sharedUser.email), m_email.c_str(), _TRUNCATE);
-    strncpy_s(sharedUser.password, sizeof(sharedUser.password), encryption(m_password).c_str(), _TRUNCATE);
+    std::string passwordCopy = m_password;
+    strncpy_s(sharedUser.password, sizeof(sharedUser.password), encryption(passwordCopy).c_str(), _TRUNCATE);
     strncpy_s(sharedUser.phoneNumber, sizeof(sharedUser.phoneNumber), m_phoneNumber.c_str(), _TRUNCATE);
     sharedUser.userType = static_cast<int>(m_userType);
     sharedUser.status = static_cast<int>(m_status);

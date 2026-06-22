@@ -4585,9 +4585,9 @@ void UserInterface::updateShow()
 	Enums::ProcessStatus isShowUpdatable = m_controller->isShowChangable(showId);
 	if (isShowUpdatable == Enums::ProcessStatus::FAILED)
 	{
-		cout << "Show cannot be updated because it has completed bookings!" << endl;
+		cout << "Show cannot be updated because it has confirmed bookings!" << endl;
 		util::pressEnterToContinue();
-		util::clear();
+		return;
 	}
 	time_t newTimeAndDate;
 	Enums::ProcessStatus status = getNewDateAndTime(newTimeAndDate);
@@ -4994,6 +4994,7 @@ void UserInterface::viewAllBookings()
 		break;
 	case Enums::UserType::THEATRE_OWNER:
 		displayTheatreBookings(bookings);
+		break;
 	default:
 		cout << "No Bookings available" << endl;
 		util::pressEnterToContinue();
