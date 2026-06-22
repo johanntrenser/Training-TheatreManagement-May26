@@ -356,19 +356,6 @@ int MappedFileRegistry::getShowSeatAvailabilityCount() const
 }
 
 /*
- * Function: getNotificationsCount
- * Description: Retrieves the total number of notification from the mapped file registry.
- * Parameters:
- *    None
- * Returns:
- *    Integer count of notification
- */
-int MappedFileRegistry::getNotificationsCount() const
-{
-    return m_notifications->getRecordCount();
-}
-
-/*
 * Function: MappedFileRegistry::closeAll
 * Description: Releases all mapped file objects managed by the registry
 *              and resets their pointers to nullptr.

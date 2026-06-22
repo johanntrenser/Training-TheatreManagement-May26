@@ -34,7 +34,6 @@ Return Type   : std::string
 */
 std::string NotificationManagementService::generateNotificationId()
 {
-	ScopedLock lock(m_notificationMutex);
 	const int notificationCount = m_dataStore.getNotificationsCount();
 	int idNumber = notificationCount + 1;
 	std::ostringstream buffer;
@@ -52,6 +51,7 @@ Return Type   : Enums::ProcessStatus
 */
 Enums::ProcessStatus NotificationManagementService::sendNotification(User* receiver, const std::string& message)
 {
+    ScopedLock lock(m_notificationMutex);
     if (!receiver)
     {
         return Enums::ProcessStatus::FAILED;
@@ -75,8 +75,8 @@ Return Type   : Enums::ProcessStatus
 */
 Enums::ProcessStatus NotificationManagementService::sendNotificationToAllUsers(const std::string& message)
 {
+    ScopedLock lock(m_notificationMutex);
     const std::map<std::string, User*>& users = m_dataStore.getUsers();
-
     for (std::map<std::string, User*>::const_iterator iterator = users.begin(); iterator != users.end(); ++iterator)
     {
         sendNotification(iterator->second, message);
@@ -94,6 +94,7 @@ Return Type   : std::vector<std::string>
 */
 std::vector<std::string> NotificationManagementService::getUnreadNotifications(int batchSize, int& remainingUnreadCount)
 {
+    ScopedLock lock(m_notificationMutex);
     std::vector<std::string> unreadNotifications;
     const User* currentUser = m_dataStore.getAuthenticatedUser();
     const std::map<std::string, Notification*>& notifications = m_dataStore.getNotifications();
@@ -108,6 +109,7 @@ std::vector<std::string> NotificationManagementService::getUnreadNotifications(i
                 std::string notificationMessage = convertNotificationObjectToStringFormat(notification);
                 unreadNotifications.push_back(notificationMessage);
                 notification->setStatus(Enums::NotificationStatus::READ);
+                m_dataStore.updateNotificationStatus(notification->getNotificationId(), Enums::NotificationStatus::READ);
                 ++displayedCount;
             }
             else

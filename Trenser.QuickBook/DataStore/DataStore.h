@@ -10,6 +10,8 @@
 #pragma once
 #include <string>
 #include <map>
+#include <direct.h>
+#include <errno.h>
 #include "User.h"
 #include "Booking.h"
 #include "Log.h"
@@ -114,7 +116,6 @@ public:
 	int getRefundCount() const;
 	int getShowCount() const;
 	int getShowSeatAvailabilityCount() const;
-	int getNotificationsCount() const;
 	Enums::ProcessStatus updateUserStatus(const std::string& userId, Enums::UserStatus status);
 	Enums::ProcessStatus updateScreenName(const std::string& screenId, const std::string& screenName);
 	Enums::ProcessStatus updateScreenStatus(const std::string& screenId, Enums::ScreenStatus status);
@@ -145,5 +146,67 @@ public:
 	Enums::ProcessStatus updateBookingStatus(const std::string& bookingId, Enums::BookingStatus status);
 	ShowSeatAvailability* getShowSeatAvailabilityById(const std::string& seatAvailabilityId);
 	bool isCurrentUserStillActive();
+	void refreshUsers();
+	void refreshTheatres();
+	void refreshScreens();
+	void refreshMovies();
+	void refreshShows();
+	void refreshSeats();
+	void refreshBookings();
+	void refreshPayments();
+	void refreshTickets();
+	void refreshRefunds();
+	void refreshNotifications();
+	void refreshLogs();
+	void refreshShowSeatAvailabilitys();
+	User* findUserById(const std::string& userId);
+	Movie* findMovieById(const std::string& movieId);
+	Theatre* findTheatreById(const std::string& theatreId);
+	Screen* findScreenById(const std::string& screenId);
+	Seat* findSeatById(const std::string& seatId);
+	Show* findShowById(const std::string& showId);
+	ShowSeatAvailability* findShowSeatAvailabilityById(const std::string& availabilityId);
+	Booking* findBookingById(const std::string& bookingId);
+	Payment* findPaymentById(const std::string& paymentId);
+	Refund* findRefundById(const std::string& refundId);
+	Ticket* findTicketById(const std::string& ticketId);
+	Notification* findNotificationById(const std::string& notificationId);
+	Log* findLogById(const std::string& logId);
+	void rebuildRelationships();
+	void rebuildTheatreRelationships();
+	void rebuildScreenRelationships();
+	void rebuildSeatRelationships();
+	void rebuildShowSeatAvailabilityRelationships();
+	void rebuildShowRelationships();
+	void rebuildBookingRelationships();
+	void rebuildPaymentRelationships();
+	void rebuildTicketRelationships();
+	void rebuildRefundRelationships();
+	void rebuildNotificationRelationships();
+	void refreshUserById(const std::string& userId);
+	void refreshMovieById(const std::string& movieId);
+	void refreshTheatreById(const std::string& theatreId);
+	void refreshScreenById(const std::string& screenId);
+	void refreshSeatById(const std::string& seatId);
+	void refreshShowById(const std::string& showId);
+	void refreshShowSeatAvailabilityById(const std::string& availabilityId);
+	void refreshBookingById(const std::string& bookingId);
+	void refreshPaymentById(const std::string& paymentId);
+	void refreshTicketById(const std::string& ticketId);
+	void refreshRefundById(const std::string& refundId);
+	void refreshNotificationById(const std::string& notificationId);
+	void refreshLogById(const std::string& logId);
+	void rebuildTheatreRelationship(const std::string& theatreId);
+	void rebuildScreenRelationship(const std::string& screenId);
+	void rebuildSeatRelationship(const std::string& seatId);
+	void rebuildShowRelationship(const std::string& showId);
+	void rebuildShowSeatAvailabilityRelationship(const std::string& availabilityId);
+	void rebuildBookingRelationship(const std::string& bookingId);
+	void rebuildPaymentRelationship(const std::string& paymentId);
+	void rebuildTicketRelationship(const std::string& ticketId);
+	void rebuildRefundRelationship(const std::string& refundId);
+	void rebuildNotificationRelationship(const std::string& notificationId);
+	void updateNotificationStatus(const std::string& notificationId, Enums::NotificationStatus status);
+	void ensureFolder(const char* path);
 	~DataStore();
 };

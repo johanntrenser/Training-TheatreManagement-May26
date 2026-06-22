@@ -258,8 +258,8 @@ const std::vector<const Movie*> TheatreManagementService::getMoviesFromTheatre(c
     {
         if ((*iterator)->getTheatreId() == theatreId)
         {
-            std::vector<Movie*> movies = (*iterator)->getMovies();
-            for (std::vector<Movie*>::iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+            const std::vector<Movie*>& movies = (*iterator)->getMovies();
+            for (std::vector<Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
             {
                 theatreMovies.push_back((*iterator));
             }
@@ -819,7 +819,7 @@ Enums::ProcessStatus TheatreManagementService::removeMovieFromTheatre(const std:
             return Enums::ProcessStatus::FAILED;
         }
     }
-    std::vector<Movie*>& movies = theatre->getMovies();
+    std::vector<Movie*>& movies = theatre->getMoviesForUpdation();
     for (std::vector<Movie*>::iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
     {
         if ((*iterator)->getMovieId() == movieId)

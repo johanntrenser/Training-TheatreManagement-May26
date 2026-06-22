@@ -245,7 +245,6 @@ Enums::ProcessStatus BookingManagementService::cancelBooking(const std::string& 
         m_dataStore.updateBookingStatus(bookingId, Enums::BookingStatus::CANCELLED);
         booking->setStatus(Enums::BookingStatus::CANCELLED);
         std::string message = "Booking with ID : " + booking->getBookingId() + " has been cancelled.";
-        m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), message);
         logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
         return Enums::ProcessStatus::SUCCESS;
     }
@@ -272,12 +271,24 @@ const Booking* BookingManagementService::bookSelectedSeats(const std::string& sh
     {
         return nullptr;
     }
+    if (show->getShowStatus() == Enums::ShowStatus::CANCELLED)
+    {
+        return nullptr;
+    }
     ShowSeatAvailability* showSeatAvailability = show->getSeatAvailability();
     if (showSeatAvailability == nullptr)
     {
         return nullptr;
     }
     std::map<std::string, Enums::BookingStatus> seatMap = showSeatAvailability->getSeatAvailabilityMap();
+    for (std::vector<std::string>::const_iterator iterator = selectedSeatIds.begin(); iterator != selectedSeatIds.end(); ++iterator)
+    {
+       
+        if (seatMap[(*iterator)] == Enums::BookingStatus::CONFIRMED)
+        {
+            return nullptr;
+        }
+    }
     for (std::vector<std::string>::const_iterator iterator = selectedSeatIds.begin(); iterator != selectedSeatIds.end(); ++iterator)
     {
         m_dataStore.updateShowSeatAvailabilityStatus(
@@ -293,7 +304,6 @@ const Booking* BookingManagementService::bookSelectedSeats(const std::string& sh
     Booking* booking = Factory::getObject<Booking>(generateBookingId(), customer, show, seats, Enums::BookingStatus::PENDING, amount);
     std::string message = "Booking with ID : " + booking->getBookingId() + " has been created.";
     std::string notificationMessage = "Your booking was successful.";
-    m_event.notify("", m_dataStore.getAuthenticatedUser()->getUserId(), notificationMessage);
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
     m_notificationManagementService.sendNotification(m_dataStore.getAuthenticatedUser(), message);
     if (booking != nullptr)

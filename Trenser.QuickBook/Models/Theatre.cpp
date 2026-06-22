@@ -302,7 +302,7 @@ void Theatre::setScreens(const std::vector<Screen*>& screens)
  * Returns:
  *    A reference to std::vector<Movie*> containing all movies linked to the Theatre.
  */
-std::vector<Movie*>& Theatre::getMovies()
+std::vector<Movie*>& Theatre::getMoviesForUpdation()
 {
     return m_movies;
 }

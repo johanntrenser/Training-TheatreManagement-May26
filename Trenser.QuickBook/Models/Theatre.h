@@ -65,5 +65,5 @@ public:
     void addMovieToTheatre(Movie* movie);
     SharedTheatre serialize();
     static Theatre* deserialize(const SharedTheatre* sharedTheatre);
-    std::vector<Movie*>& getMovies();
+    std::vector<Movie*>& getMoviesForUpdation();
 };

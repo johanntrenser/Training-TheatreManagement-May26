@@ -4421,12 +4421,20 @@ void UserInterface::displayShowDetails(const vector<const Show*> shows)
 	cout << string(98, '-') << endl;
 	for (vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
 	{
+		const Show* show = *iterator;
+		if (!show)
+		{
+			continue;
+		}
+		const Screen* screen = show->getScreen();
+		const Theatre* theatre = (screen ? screen->getTheatre() : nullptr);
+		const Movie* movie = show->getMovie();
 		cout << left
-			<< setw(14) << (*iterator)->getShowId()
-			<< setw(22) << (*iterator)->getScreen()->getTheatre()->getName()
-			<< setw(14) << (*iterator)->getScreen()->getScreenId()
-			<< setw(26) << (*iterator)->getMovie()->getTitle()
-			<< setw(22) << displayTimeAndDate((*iterator)->getStartTime())
+			<< setw(14) << show->getShowId()
+			<< setw(22) << (theatre ? theatre->getName() : "N/A")
+			<< setw(14) << (screen ? screen->getScreenId() : "N/A")
+			<< setw(26) << (movie ? movie->getTitle() : "N/A")
+			<< setw(22) << displayTimeAndDate(show->getStartTime())
 			<< endl;
 	}
 	util::pressEnterToContinue();
@@ -4577,9 +4585,9 @@ void UserInterface::updateShow()
 	Enums::ProcessStatus isShowUpdatable = m_controller->isShowChangable(showId);
 	if (isShowUpdatable == Enums::ProcessStatus::FAILED)
 	{
-		cout << "Show cannot be updated because it has completed bookings!" << endl;
+		cout << "Show cannot be updated because it has confirmed bookings!" << endl;
 		util::pressEnterToContinue();
-		util::clear();
+		return;
 	}
 	time_t newTimeAndDate;
 	Enums::ProcessStatus status = getNewDateAndTime(newTimeAndDate);
@@ -4986,6 +4994,7 @@ void UserInterface::viewAllBookings()
 		break;
 	case Enums::UserType::THEATRE_OWNER:
 		displayTheatreBookings(bookings);
+		break;
 	default:
 		cout << "No Bookings available" << endl;
 		util::pressEnterToContinue();
@@ -5324,9 +5333,17 @@ void UserInterface::createBooking()
 	vector<string> bookedSeatIds;
 	selectSeats(numberOfSeats, bookedSeatIds, show);
 	const Booking* booking = m_controller->bookSelectedSeats(showId, bookedSeatIds);
-	string message = (booking == nullptr) ? "Failed to complete booking!" : "Booking completed Successfully!";
-	cout << message << endl;
-	util::pressEnterToContinue();
+	if (booking == nullptr)
+	{
+		cout << "Failed to complete booking!" << endl;
+		util::pressEnterToContinue();
+		return;
+	}
+	else
+	{
+		cout << "Booking completed Successfully!" << endl;
+		util::pressEnterToContinue();
+	}
 	string bookingId = "";
 	double amount = 0.0;
 	if (booking != nullptr)
