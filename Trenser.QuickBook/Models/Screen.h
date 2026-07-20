@@ -12,6 +12,7 @@
 #include <vector>
 #include "Enums.h"
 #include "Factory.h"
+#include "SharedStructs.h"
 
 class Theatre;
 class Seat;
@@ -49,6 +50,6 @@ public:
     void setSeatGrid(const std::vector<std::vector<Seat*>>& seatGrid);
     void setScreenStatus(Enums::ScreenStatus screenStatus);
     std::vector<std::vector<Seat*>>& getSeatGridForUpdation();
-    static Screen* deserialize(const std::string& line);
-    std::string serialize() const;
+    static Screen* deserialize(const SharedScreen* sharedScreen);
+    void serialize(SharedScreen& sharedScreen) const;
 };

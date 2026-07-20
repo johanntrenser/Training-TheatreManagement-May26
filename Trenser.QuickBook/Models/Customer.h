@@ -21,4 +21,3 @@ public:
         const std::string& phoneNumber,
         Enums::UserType type);
 };
-

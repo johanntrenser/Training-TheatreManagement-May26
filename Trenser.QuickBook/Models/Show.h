@@ -49,7 +49,7 @@ public:
     void setEndTime(time_t endTime);
     void setSeatAvailability(ShowSeatAvailability* seatAvailability);
     void setShowStatus(Enums::ShowStatus showStatus);
-    std::string serialize();
-    static Show* deserialize(const std::string& line);
+    SharedShow serialize();
+    static Show* deserialize(const SharedShow* sharedShow);
     ~Show() = default;
 };

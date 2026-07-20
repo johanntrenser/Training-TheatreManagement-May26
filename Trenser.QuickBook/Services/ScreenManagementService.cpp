@@ -4,6 +4,7 @@
 #include "ScreenManagementService.h"
 #include "Factory.h"
 #include "SeatManagementService.h"
+#include "ApplicationConfig.h"
 
 /*
 * Function Name : ScreenManagementService
@@ -12,7 +13,9 @@
 * Return Type   : Constructor
 */
 ScreenManagementService::ScreenManagementService()
-    : m_dataStore(DataStore::getInstance())
+    : m_dataStore(DataStore::getInstance()),
+      m_screenMutex(config::MutexMappings::SCREEN_MUTEX_NAME),
+      m_seatMutex(config::MutexMappings::SEAT_MUTEX_NAME)
 {
 }
 
@@ -24,23 +27,23 @@ ScreenManagementService::ScreenManagementService()
 */
 std::string ScreenManagementService::generateScreenId()
 {
-    const std::map<std::string, Screen*>& screens = m_dataStore.getScreens();
-    int idNumber = static_cast<int>(screens.size()) + 1;
+    const int count = m_dataStore.getScreenCount();
+    int idNumber = count + 1;
     std::ostringstream buffer;
     buffer << "SC" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
 }
 
 /*
-* Function Name : generateScreenId
-* Description   : Generates a unique ID for a new screen.
+* Function Name : generateSeatId
+* Description   : Generates a unique ID for a new seat.
 * Parameters    : None
 * Return Type   : std::string
 */
 std::string ScreenManagementService::generateSeatId()
 {
-    const std::map<std::string, Seat*>& seats = m_dataStore.getSeats();
-    int idNumber = static_cast<int>(seats.size()) + 1;
+    const int count = m_dataStore.getSeatCount();
+    int idNumber = count + 1;
     std::ostringstream buffer;
     buffer << "ST" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -58,6 +61,8 @@ std::string ScreenManagementService::generateSeatId()
 */
 Enums::ProcessStatus ScreenManagementService::addScreen(const std::string& theatreId, const std::string& name, int seatRows, int seatColumns, double seatAmount)
 {
+    ScopedLock screenLock(m_screenMutex);
+    ScopedLock seatLock(m_seatMutex);
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (!theatre)
     {
@@ -79,7 +84,13 @@ Enums::ProcessStatus ScreenManagementService::addScreen(const std::string& theat
         {
             screen->setSeatGrid(seatGrid);
             m_dataStore.addScreen(screen);
+            if (m_dataStore.addScreenToTheatre(theatre->getTheatreId(), screen->getScreenId()) == Enums::ProcessStatus::FAILED)
+            {
+                return Enums::ProcessStatus::FAILED;
+            }
             theatre->setScreen(screen);
+            std::string message = "Screen " + screen->getScreenId() + " added to theatre " + theatreId;
+            m_logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
             return Enums::ProcessStatus::SUCCESS;
         }
         else
@@ -141,6 +152,7 @@ void ScreenManagementService::cleanupSeatGrid(std::vector<std::vector<Seat*>>& s
     {
         for (std::vector<Seat*>::iterator seatIterator = (*rowIterator).begin(); seatIterator != (*rowIterator).end(); ++seatIterator)
         {
+            m_dataStore.updateSeatStatus((*seatIterator)->getSeatId(), Enums::SeatStatus::BLOCKED);
             (*seatIterator)->setSeatStatus(Enums::SeatStatus::BLOCKED);
         }
     }
@@ -158,6 +170,7 @@ void ScreenManagementService::cleanupSeatGrid(std::vector<std::vector<Seat*>>& s
 */
 Enums::ProcessStatus ScreenManagementService::updateScreenName(const std::string& theatreId, const std::string& screenId, const std::string& name)
 {
+    ScopedLock lock(m_screenMutex);
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (!theatre)
     {
@@ -172,6 +185,7 @@ Enums::ProcessStatus ScreenManagementService::updateScreenName(const std::string
         }
         if ((*iterator)->getScreenId() == screenId)
         {
+            m_dataStore.updateScreenName(screenId, name);
             (*iterator)->setName(name);
             return Enums::ProcessStatus::SUCCESS;
         }
@@ -189,6 +203,8 @@ Enums::ProcessStatus ScreenManagementService::updateScreenName(const std::string
 */
 Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string& theatreId, const std::string& screenId)
 {
+    ScopedLock screenLock(m_screenMutex);
+    ScopedLock seatLock(m_seatMutex);
     SeatManagementService seatManagementService;
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (!theatre)
@@ -198,6 +214,11 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
     Enums::ProcessStatus status = hasActiveShows(theatreId, screenId);
     if (status == Enums::ProcessStatus::SUCCESS)
     {
+        theatre = m_dataStore.getTheatreById(theatreId);
+        if (!theatre)
+        {
+            return Enums::ProcessStatus::FAILED;
+        }
         std::vector<Screen*>& screens = theatre->getScreensForUpdation();
         for (std::vector<Screen*>::iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
         {
@@ -207,6 +228,7 @@ Enums::ProcessStatus ScreenManagementService::deactivateScreen(const std::string
                 {
                     return Enums::ProcessStatus::ALREADY_EXISTS;
                 }
+                m_dataStore.updateScreenStatus(screenId, Enums::ScreenStatus::UNAVAILABLE);
                 (*iterator)->setScreenStatus(Enums::ScreenStatus::UNAVAILABLE);
                 Enums::ProcessStatus seatDeactivationStatus = seatManagementService.deactivateSeats(screenId);
                 return seatDeactivationStatus;
@@ -254,6 +276,8 @@ Enums::ProcessStatus ScreenManagementService::hasActiveShows(const std::string& 
 */
 Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string& theatreId, const std::string& screenId)
 {
+    ScopedLock screenLock(m_screenMutex);
+    ScopedLock seatLock(m_seatMutex);
     SeatManagementService seatManagementService;
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     std::vector<Screen*>& screens = theatre->getScreensForUpdation();
@@ -265,6 +289,7 @@ Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string
             {
                 return Enums::ProcessStatus::ALREADY_EXISTS;
             }
+            m_dataStore.updateScreenStatus(screenId, Enums::ScreenStatus::AVAILABLE);
             (*iterator)->setScreenStatus(Enums::ScreenStatus::AVAILABLE);
             Enums::ProcessStatus seatReactivationStatus = seatManagementService.reactivateSeats(screenId);
             return seatReactivationStatus;
@@ -285,6 +310,7 @@ Enums::ProcessStatus ScreenManagementService::reactivateScreen(const std::string
 */
 const std::vector<const Screen*> ScreenManagementService::viewTheatreScreens(const std::string& theatreId)
 {
+    ScopedLock lock(m_screenMutex);
     Theatre* theatre = m_dataStore.getTheatreById(theatreId);
     if (!theatre)
     {
@@ -295,14 +321,14 @@ const std::vector<const Screen*> ScreenManagementService::viewTheatreScreens(con
     Enums::UserType userType = m_dataStore.getAuthenticatedUserType();
     if (userType == Enums::UserType::ADMIN || userType == Enums::UserType::THEATRE_OWNER)
     {
-        for (auto screen : screens)
+        for (Screen* screen : screens)
         {
             result.push_back(screen);
         }
     }
     else if (userType == Enums::UserType::CUSTOMER)
     {
-        for (auto screen : screens)
+        for (Screen* screen : screens)
         {
             if (screen->getScreenStatus() == Enums::ScreenStatus::AVAILABLE)
             {
@@ -323,62 +349,4 @@ const std::vector<const Screen*> ScreenManagementService::viewTheatreScreens(con
 Enums::UserType ScreenManagementService::getAuthenticatedUserType()
 {
     return m_dataStore.getAuthenticatedUserType();
-}
-
-/*
- * Function: ScreenManagementService::saveScreenData
- * Description: Saves all screen data from the DataStore into a CSV file.
- *              Includes screen details such as Screen ID, Theatre ID, name, total rows, total columns,
- *              seat layout (seat IDs written row by row, separated by '|'), and screen status.
- *              Overwrites existing file content.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened)
- */
-void ScreenManagementService::saveScreenData()
-{
-    std::vector<std::string> lines;
-    lines.push_back(config::Header::SCREEN_HEADER);
-    const std::map<std::string, Screen*>& screens = m_dataStore.getScreens();
-    for (std::map<std::string, Screen*>::const_iterator iterator = screens.begin(); iterator != screens.end(); ++iterator)
-    {
-        if (iterator->second)
-        {
-            lines.push_back((iterator->second)->serialize());
-        }
-    }
-    FileManagement::writeLines(std::string(config::File::SCREEN_FILEPATH), lines);
-}
-
-/*
- * name        : loadScreenData
- * description : Loads screen data from the CSV file, deserializes each line into a Screen object,
- *               resolves references to Theatre, sets status, and adds the Screen to datastore.
- * parameter   : None
- * return type : void
- */
-void ScreenManagementService::loadScreenData()
-{
-    std::string screenId, theatreId, name, totalRows, totalColumns, status;
-    std::vector<std::string> lines = FileManagement::readlines(PATH);
-    for (int index = 1; index < lines.size(); index++)
-    {
-        Screen* screen = Screen::deserialize(lines[index]);
-        std::stringstream lineStream(lines[index]);
-        getline(lineStream, screenId, ',');
-        getline(lineStream, theatreId, ',');
-        getline(lineStream, name, ',');
-        getline(lineStream, totalRows, ',');
-        getline(lineStream, totalColumns, ',');
-        getline(lineStream, status, ',');
-        if (!theatreId.empty())
-        {
-            Theatre* theatre = m_dataStore.getTheatreById(theatreId);
-            screen->setTheatre(theatre);
-        }
-        Enums::ScreenStatus screenStatus = Enums::getScreenStatus(status);
-        screen->setScreenStatus(screenStatus);
-        m_dataStore.addScreen(screen);
-    }
 }

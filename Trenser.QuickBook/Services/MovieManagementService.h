@@ -9,13 +9,16 @@
  */
 #pragma once
 #include "DataStore.h"
-#include "FileManagement.h"
+#include "ScopedLock.h"
+#include "NotificationEvent.h"
 
 class MovieManagementService
 {
 private:
 	DataStore& m_dataStore;
 	const std::string& PATH = config::File::MOVIE_FILEPATH;
+	NamedMutex m_mutex;
+	NotificationEvent m_event;
 public:
 	MovieManagementService();
 	Enums::ProcessStatus addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration);
@@ -32,6 +35,5 @@ public:
 	const std::vector<const Movie*> searchDeactivatedMovieByTitle(const std::string& title);
 	std::vector<const Movie*> getAllInactiveMovies();
 	Enums::ProcessStatus isMovieDeactivatable(const std::string& movieId);
-	void saveMovieData();
-	void loadMovieData();
+	std::vector<std::string> getAllTheatreOwnersId();
 };

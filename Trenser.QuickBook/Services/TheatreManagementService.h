@@ -11,24 +11,29 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "FileManagement.h"
 #include "Theatre.h"
 #include "DataStore.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
+#include "NotificationEvent.h"
+#include "NotificationManagementService.h"
 
 class TheatreManagementService
 {
     DataStore& m_dataStore;
     const std::string& PATH = config::File::THEATRE_FILEPATH;
+    NamedMutex m_theatreMutex;
+    NamedMutex m_showMutex;
+    NamedMutex m_movieMutex;
+    NamedMutex m_userMutex;
+    NamedMutex m_screenMutex;
+    NotificationEvent m_event;
+    NotificationManagementService m_notificationManagementService;
 public:
     TheatreManagementService();
-    bool updateTheatreDetails(const std::string& theatreId, const std::string& name, const std::string& address, const std::string& phone, const std::string& email);
-    bool reactivateTheatre(const std::string& theatreId);
     Enums::ProcessStatus deactivateTheatre(const std::string& theatreId);
-    Theatre* viewTheatreDetails(const std::string& theatreId) const;
-    int viewTheatreStatus(const std::string& theatreId) const;
-    std::vector<const Theatre*> listAllTheatres() const;
-    std::vector<Theatre*> listTheatresByCity(const std::string& city) const;
-    const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName) const;
+    std::vector<const Theatre*> listAllTheatres();
+    const std::vector<const Theatre*> searchByTheatreName(const std::string& theatreName);
     const std::vector<const Theatre*> getCurrentOwnerTheatres();
     const std::vector<const Theatre*> getCurrentOwnerInactiveTheatres();
     const std::vector<std::string> getCurrentOwnerTheatreIds();
@@ -48,11 +53,8 @@ public:
     const std::vector<const Theatre*> getPendingTheatres();
     Enums::ProcessStatus setTheatreStatusById(const std::string& theatreId, Enums::TheatreStatus& theatreStatus);
     Enums::ProcessStatus addMovieToTheatre(const std::string& theatreId, const std::string& movieId);
-    Theatre* getTheatreById(const std::string& theatreId);
-    Movie* getMovieById(const std::string& movieId);
     bool isMovieAlreadyExistsInTheatre(Theatre* theatre, const std::string& movieId);
     Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
+    std::vector<std::string> getAllAdminsId();
     Enums::ProcessStatus isScreenDeactivatable(Screen* screen);
-    void saveTheatreData();
-    void loadTheatreData();
 };

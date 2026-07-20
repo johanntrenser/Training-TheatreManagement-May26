@@ -11,15 +11,24 @@
 #pragma once
 #include <ctime>
 #include "DataStore.h"
-#include "FileManagement.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class ShowManagementService
 {
 private:
 	DataStore& m_dataStore;
-	const std::string& PATH = config::File::SHOW_FILEPATH;
+	NamedMutex m_showMutex;
+	NamedMutex m_screenMutex;
+	NamedMutex m_theatreMutex;
+	NamedMutex m_movieMutex;
 public:
-	ShowManagementService() : m_dataStore(DataStore::getInstance()) {}
+	ShowManagementService() : m_dataStore(DataStore::getInstance()),
+		m_showMutex(config::MutexMappings::SHOW_MUTEX_NAME),
+		m_screenMutex(config::MutexMappings::SCREEN_MUTEX_NAME),
+		m_theatreMutex(config::MutexMappings::THEATRE_MUTEX_NAME),
+		m_movieMutex(config::MutexMappings::MOVIE_MUTEX_NAME)
+	{}
 	const std::string generateShowId();
 	const std::string generateShowSeatAvailabilityId();
 	Enums::ProcessStatus isMovieInTheatre(const std::string& movieId, const std::string& theatreId);
@@ -37,8 +46,6 @@ public:
 	Enums::ProcessStatus isShowChangable(const std::string& showId);
 	Enums::ProcessStatus setShowStatusById(const std::string& showId, Enums::ShowStatus status);
 	const Show* getShowById(const std::string& showId);
-	void saveShowData();
-	void loadShowData();
 	void updateShowStatuses();
 	void updateTicketStatusesForCompletedShows();
 };

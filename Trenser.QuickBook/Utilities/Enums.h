@@ -113,20 +113,23 @@ namespace Enums {
         FAILED,
         SUCCESS,
         ALREADY_EXISTS,
-        NOT_FOUND
+        NOT_FOUND,
+        EMAIL_ALREADY_EXISTS,
+        PHONE_NUMBER_ALREADY_EXISTS
     };
 
     enum class LoginStatus
     {
         USER_NOT_FOUND,
         INVALID_PASSWORD,
-        USER_FOUND
+        USER_FOUND,
+        USER_ALREADY_LOGGED_IN
     };
 
     enum class LogType
     {
         SYSTEM_ACTIVITY,
-        ERROR,
+        ERROR_LOG,
         UNKNOWN
     };
 
@@ -148,6 +151,8 @@ namespace Enums {
             return "INACTIVE";
         case TheatreStatus::UNDER_MAINTENANCE:
             return "UNDER_MAINTENANCE";
+        case TheatreStatus::PENDING:
+            return "PENDING";
         default:
             return "UNKNOWN";
         }
@@ -166,6 +171,10 @@ namespace Enums {
         if (input == "UNDER_MAINTENANCE")
         {
             return TheatreStatus::UNDER_MAINTENANCE;
+        }
+        if (input == "PENDING")
+        {
+            return TheatreStatus::PENDING;
         }
         return TheatreStatus::INACTIVE;
     }
@@ -538,8 +547,8 @@ namespace Enums {
         {
         case LogType::SYSTEM_ACTIVITY:
             return "SYSTEM_ACTIVITY";
-        case LogType::ERROR:
-            return "ERROR";
+        case LogType::ERROR_LOG:
+            return "ERROR_LOG";
         case LogType::UNKNOWN:
             return "UNKNOWN";
         default:
@@ -553,9 +562,9 @@ namespace Enums {
         {
             return LogType::SYSTEM_ACTIVITY;
         }
-        if (input == "ERROR")
+        if (input == "ERROR_LOG")
         {
-            return LogType::ERROR;
+            return LogType::ERROR_LOG;
         }
         if (input == "UNKNOWN")
         {

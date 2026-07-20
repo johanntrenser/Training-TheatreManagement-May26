@@ -162,51 +162,58 @@ void Notification::setTime(const time_t time)
 }
 
 /*
- * Function: serialize
- * Description: Converts Notification object into CSV format string
+ * Function: Notification::serialize
+ * Description: Converts a Notification object into a SharedNotification structure
+ *              suitable for shared memory storage. Copies attributes such as
+ *              notificationId, receiver userId (if available), message, status,
+ *              and time into fixed-size character arrays or primitive fields.
+ *              Uses strncpy_s for safe string copying and util::serializeTime
+ *              to convert the time_t value into a string representation.
+ *              This serialized form allows persistence and inter-process communication.
+ * Parameters:
+ *    None
  * Returns:
- *    CSV string representing the user
+ *    A SharedNotification structure containing the serialized data of the Notification object.
  */
-std::string Notification::serialize()
+SharedNotification Notification::serialize()
 {
-    std::string result = m_notificationId + config::delimeter::comma;
-    if (m_receiver)
-    {
-        result += m_receiver->getUserId() + config::delimeter::comma;
-    }
-    else
-    {
-        result += config::delimeter::comma;
-    }
-    result += m_message + config::delimeter::comma +
-        Enums::getNotificationStatusString(m_status) + config::delimeter::comma +
-        util::serializeTime(m_time);
-    return result;
+    SharedNotification sharedNotification;
+    strncpy_s(sharedNotification.notificationId, m_notificationId.c_str(), sizeof(sharedNotification.notificationId));
+    strncpy_s(sharedNotification.userId, (m_receiver ? m_receiver->getUserId().c_str() : ""), sizeof(sharedNotification.userId));
+    strncpy_s(sharedNotification.message, m_message.c_str(), sizeof(sharedNotification.message));
+    sharedNotification.status = static_cast<int>(m_status);
+    strncpy_s(sharedNotification.time, util::serializeTime(m_time).c_str(), sizeof(sharedNotification.time));
+    return sharedNotification;
 }
 
 /*
  * Function: Notification::deserialize
- * Description: Converts a single CSV-formatted line into a Notification object.
- *              Extracts fields such as notificationId, receiverId, message, status,
- *              and time. The time string is parsed into its components (year, month,
- *              day, hour, minute) and converted into a time_t using util::createTime.
- *              The receiver User pointer is initialized to nullptr and can be set later
- *              when restoring relationships.
+ * Description: Converts a SharedNotification record from shared memory into a fully constructed
+ *              Notification object. Validates that the input pointer is not null, extracts
+ *              attributes such as notificationId, message, and time, and uses the Factory
+ *              to instantiate a Notification object. The receiver User pointer is initialized
+ *              as nullptr and can be set later by higher-level services. The Notification
+ *              status is restored from the serialized value. This ensures symmetry with
+ *              Notification::serialize for round-trip persistence.
  * Parameters:
- *    lines - reference to a CSV-formatted string containing notification data
+ *    sharedNotification - A pointer to a SharedNotification structure containing serialized notification data.
  * Returns:
- *    Pointer to a newly constructed Notification object
+ *    A pointer to a newly constructed Notification object, or nullptr if the input is null.
  */
-Notification* Notification::deserialize(const std::string& lines)
+Notification* Notification::deserialize(const SharedNotification* sharedNotification)
 {
-    std::string notificationId, receiverId, messgae, status, time, year, dash, space, month, day, hour, colon, minute;
-    std::stringstream lineStream(lines);
-    getline(lineStream, notificationId, ',');
-    getline(lineStream, receiverId, ',');
-    getline(lineStream, messgae, ',');
-    getline(lineStream, status, ',');
-    getline(lineStream, time, ',');
-    time_t convertedTime = util::deserializeTime(time);
-    Notification* notification = Factory::getObject<Notification>(notificationId, nullptr, messgae, convertedTime);
+    if (sharedNotification == nullptr)
+    {
+        return nullptr;
+    }
+    Enums::NotificationStatus status = static_cast<Enums::NotificationStatus>(sharedNotification->status);
+    time_t time = util::deserializeTime(sharedNotification->time);
+    Notification* notification = Factory::getObject<Notification>(
+        sharedNotification->notificationId,
+        nullptr,
+        sharedNotification->message,
+        time
+    );
+    notification->setStatus(status);
     return notification;
 }

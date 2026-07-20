@@ -38,6 +38,6 @@ public:
     void setMessage(const std::string& message);
     void setStatus(Enums::NotificationStatus status);
     void setTime(const time_t time);
-    std::string serialize();
-    static Notification* deserialize(const std::string& lines);
+    SharedNotification serialize();
+    static Notification* deserialize(const SharedNotification* sharedNotification);
 };

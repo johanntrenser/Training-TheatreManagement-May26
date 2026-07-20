@@ -240,42 +240,66 @@ std::vector<std::vector<Seat*>>& Screen::getSeatGridForUpdation()
 
 /*
  * Function: serialize
- * Description: Converts Screen object into CSV format string
+ * Description: Converts a Screen object into a SharedScreen struct suitable
+ *              for storage in a memory-mapped file. Includes screen metadata
+ *              and seat identifiers up to SEAT_MAX_COUNT.
+ * Parameters:
+ *    None
  * Returns:
- *    CSV string representing the screen
+ *    SharedScreen struct representation of this Screen
  */
-std::string Screen::serialize() const
+void Screen::serialize(SharedScreen& sharedScreen) const
 {
-    return m_screenId + config::delimeter::comma +
-        (m_theatre ? m_theatre->getTheatreId() : "") + config::delimeter::comma +
-        m_name + config::delimeter::comma +
-        std::to_string(m_totalRows) + config::delimeter::comma +
-        std::to_string(m_totalColumns) + config::delimeter::comma +
-        Enums::getScreenStatusString(m_screenStatus);
+    strncpy_s(sharedScreen.screenId, sizeof(sharedScreen.screenId), m_screenId.c_str(), _TRUNCATE);
+    strncpy_s(sharedScreen.theatreId, sizeof(sharedScreen.theatreId),
+        (m_theatre ? m_theatre->getTheatreId().c_str() : ""), _TRUNCATE);
+    strncpy_s(sharedScreen.name, sizeof(sharedScreen.name), m_name.c_str(), _TRUNCATE);
+    sharedScreen.totalRows = m_totalRows;
+    sharedScreen.totalColumns = m_totalColumns;
+    sharedScreen.status = static_cast<int>(m_screenStatus);
+    sharedScreen.seatCount = 0;
+    for (const std::vector<Seat*>& row : m_seatGrid)
+    {
+        for (const Seat* seat : row)
+        {
+            if (sharedScreen.seatCount < config::Limit::SEAT_MAX_COUNT)
+            {
+                strncpy_s(sharedScreen.seatIds[sharedScreen.seatCount],
+                    sizeof(sharedScreen.seatIds[0]),
+                    seat->getSeatId().c_str(),
+                    _TRUNCATE);
+                sharedScreen.seatCount++;
+            }
+        }
+    }
 }
 
 /*
- * name        : deserialize
- * description : Converts a CSV line into a Screen object by parsing screen ID, theatre ID,
- *               name, total rows, total columns, and status. Initializes a Screen instance
- *               with parsed values and an empty seat grid.
- * parameter   : std::string& line - the CSV line containing serialized screen data
- * return type : Screen* - pointer to a newly created Screen object
+ * Function: deserialize
+ * Description: Reconstructs a Screen object from a SharedScreen struct.
+ *              Initializes basic screen attributes and sets status.
+ * Parameters:
+ *    sharedScreen - Pointer to a SharedScreen struct containing serialized screen data
+ * Returns:
+ *    Pointer to a newly created Screen object, or nullptr if input is invalid
  */
-Screen* Screen::deserialize(const std::string& line)
+Screen* Screen::deserialize(const SharedScreen* sharedScreen)
 {
-    std::string screenId, theatreId, name, totalRows, totalColumns, status;
-    std::stringstream lineStream(line);
-    getline(lineStream, screenId, ',');
-    getline(lineStream, theatreId, ',');
-    getline(lineStream, name, ',');
-    getline(lineStream, totalRows, ',');
-    getline(lineStream, totalColumns, ',');
-    getline(lineStream, status, ',');
-    int rows = totalRows.empty() ? 0 : stoi(totalRows);
-    int cols = totalColumns.empty() ? 0 : stoi(totalColumns);
+    if (sharedScreen == nullptr)
+    {
+        return nullptr;
+    }
     std::vector<std::vector<Seat*>> emptyGrid;
-    Screen* screen = Factory::getObject<Screen>(screenId, nullptr, name, rows, cols, emptyGrid);
-    screen->setScreenStatus(Enums::getScreenStatus(status));
+    Screen* screen = Factory::getObject<Screen>(
+        sharedScreen->screenId,
+        nullptr,
+        sharedScreen->name,
+        sharedScreen->totalRows,
+        sharedScreen->totalColumns,
+        emptyGrid);
+    if (screen != nullptr)
+    {
+        screen->setScreenStatus(static_cast<Enums::ScreenStatus>(sharedScreen->status));
+    }
     return screen;
 }

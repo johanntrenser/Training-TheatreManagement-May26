@@ -144,11 +144,11 @@ public:
 	const Booking* bookSelectedSeats(const std::string& showId, const std::vector<std::string>& selectedSeatIds);
 	void logout();
 	void ensureFolder(const char* path);
-	void saveData();
-	void loadDataFromFile();
 	Enums::ProcessStatus removeMovieFromTheatre(const std::string& theatreId, const std::string& movieId);
 	const std::vector<Payment*> getAllPayments();
 	const std::vector<Refund*> getRefunds();
 	const std::vector<std::string> getSeatIdsFromBooking(const Booking* booking);
+	void createDefaultAdmin();
+	bool checkAndHandleForcedLogout();
 	~Controller();
 };

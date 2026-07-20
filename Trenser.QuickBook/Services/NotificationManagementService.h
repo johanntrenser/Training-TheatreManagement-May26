@@ -9,20 +9,18 @@
  */
 #pragma once
 #include "DataStore.h"
-#include "FileManagement.h"
 
 class NotificationManagementService
 {
 private:
 	DataStore& m_dataStore;
 	const std::string& PATH = config::File::NOTIFICATION_FILEPATH;
+	mutable NamedMutex m_notificationMutex;
 public:
-	NotificationManagementService();
-	std::string generateNotificationId();
-	Enums::ProcessStatus sendNotification(User* receiver, const std::string& message);
-	Enums::ProcessStatus sendNotificationToAllUsers(const std::string& message);
-	std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
-	std::string convertNotificationObjectToStringFormat(const Notification* notification);
-	void saveNotificationData();
-	void loadNotificationData();
+    NotificationManagementService();
+    std::string generateNotificationId();
+    Enums::ProcessStatus sendNotification(User* receiver, const std::string& message);
+    Enums::ProcessStatus sendNotificationToAllUsers(const std::string& message);
+    std::vector<std::string> getUnreadNotifications(int batchSize, int& remainingUnreadCount);
+    std::string convertNotificationObjectToStringFormat(const Notification* notification);
 };

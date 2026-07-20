@@ -14,6 +14,7 @@
 #include "User.h"
 #include "Movie.h"
 #include "Factory.h"
+#include "SharedStructs.h"
 
 class Screen;
 
@@ -27,7 +28,7 @@ private:
     std::string m_phoneNumber;
     std::string m_email;
     User* m_theatreOwner;
-    Enums::TheatreStatus m_status; // enum can be defined separately
+    Enums::TheatreStatus m_status;
     std::vector<Screen*> m_screens;
     std::vector<Movie*> m_movies;
 public:
@@ -62,7 +63,7 @@ public:
     void setScreen(Screen* screen);
     std::vector<Screen*>& getScreensForUpdation();
     void addMovieToTheatre(Movie* movie);
-    std::string serialize();
-    static Theatre* deserialize(const std::string& line);
-    std::vector<Movie*>& getMovies();
+    SharedTheatre serialize();
+    static Theatre* deserialize(const SharedTheatre* sharedTheatre);
+    std::vector<Movie*>& getMoviesForUpdation();
 };

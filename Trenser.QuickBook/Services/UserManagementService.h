@@ -13,8 +13,10 @@
 #include <vector>
 #include "User.h"
 #include "DataStore.h"
-#include "FileManagement.h"
 #include "LogManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
+#include "NotificationEvent.h"
 
 class UserManagementService
 {
@@ -22,12 +24,14 @@ private:
     DataStore& m_dataStore;
     LogManagementService logManagementService;
     const std::string& PATH = config::File::USER_FILEPATH;
+    NamedMutex m_mutex;
+    NotificationEvent m_event;
 public:
     UserManagementService();
     const std::string generateUserId();
     Enums::ProcessStatus createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType);
-    const std::vector<const User*> getActiveUsers() const;
-    const std::vector<const User*> getInactiveUsers() const;
+    const std::vector<const User*> getActiveUsers();
+    const std::vector<const User*> getInactiveUsers();
     Enums::ProcessStatus setAuthenticatedUserEmail(const std::string& email);
     Enums::ProcessStatus setAuthenticatedUserPhoneNumber(const std::string& phoneNumber);
     Enums::ProcessStatus setAuthenticatedUserUserName(const std::string& userName);
@@ -35,8 +39,6 @@ public:
     Enums::ProcessStatus reactivateUser(const std::string& userId);
     Enums::ProcessStatus changePassword(const std::string& currentPassword, const std::string& newPassword);
     const User* const getAuthenticatedUser();
-    void loadUserData();
-    void saveUserData();
     bool isAdminPresent();
     void createDefaultAdmin();
 };

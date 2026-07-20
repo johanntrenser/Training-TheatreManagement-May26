@@ -57,7 +57,6 @@ UserInterface::UserInterface()
  */
 void UserInterface::run()
 {
-	m_controller->loadDataFromFile();
 	bool isMenuActive = true;
 	while (isMenuActive)
 	{
@@ -74,12 +73,10 @@ void UserInterface::run()
 		catch (const runtime_error& e)
 		{
 			cout << "Runtime Exception: " << e.what();
-			m_controller->saveData();
 		}
 		catch (const exception& e)
 		{
 			cout << "Exception : " << e.what() << endl;
-			m_controller->saveData();
 		}
 	}
 }
@@ -104,7 +101,6 @@ bool UserInterface::handleOperation(unsigned short choice)
 			registerUser();
 			break;
 		case 3:
-			m_controller->saveData();
 			cout << "Exiting..." << endl;
 			return false;
 		default:
@@ -146,6 +142,12 @@ void UserInterface::login()
 		util::pressEnterToContinue();
 		return;
 	}
+	if (loginStatus == Enums::LoginStatus::USER_ALREADY_LOGGED_IN)
+	{
+		cout << "Error: User is already logged in! Try again\n";
+		util::pressEnterToContinue();
+		return;
+	}
 	util::clear();
 	switch (userType)
 	{
@@ -165,7 +167,10 @@ void UserInterface::login()
 			break;
 		}
 	}
-	m_controller->logout();
+	if (m_controller->getAuthenticatedUser() != nullptr)
+	{
+		m_controller->logout();
+	}
 };
 
 /*
@@ -199,9 +204,22 @@ void UserInterface::registerUser()
 			return;
 	}
 	handleUserDetailsInput(userName, email, password, phoneNumber);
-	if (m_controller->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+	Enums::ProcessStatus status = m_controller->registerUser(userName, email, password, phoneNumber, userType);
+	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "User registered successfully!" << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::EMAIL_ALREADY_EXISTS)
+	{
+		cout << "Email Already exists! Registration failed." << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS)
+	{
+		cout << "Phone Number Already exists! Registration failed." << endl;
 		util::pressEnterToContinue();
 		util::clear();
 	}
@@ -265,6 +283,11 @@ void UserInterface::handleAdminMenuOperation()
 	unsigned short choice;
 	while (isMenuActive)
 	{
+		if (m_controller->checkAndHandleForcedLogout())
+		{
+			showForceLogoutMessage(isMenuActive);
+			return;
+		}
 		util::clear();
 		adminMenu();
 		util::readValueWithRetry(choice, "Enter an option: ");
@@ -662,6 +685,11 @@ void UserInterface::handleTheatreOwnerMenuOperation()
 	unsigned short choice;
 	while (isMenuActive)
 	{
+		if (m_controller->checkAndHandleForcedLogout())
+		{
+			showForceLogoutMessage(isMenuActive);
+			return;
+		}
 		util::clear();
 		theatreOwnerMenu();
 		util::readValueWithRetry(choice, "Enter an option: ");
@@ -1205,6 +1233,11 @@ void UserInterface::handleCustomerMenuOperation()
 	unsigned short choice;
 	while (isMenuActive)
 	{
+		if (m_controller->checkAndHandleForcedLogout())
+		{
+			showForceLogoutMessage(isMenuActive);
+			return;
+		}
 		util::clear();
 		customerMenu();
 		util::readValueWithRetry(choice, "Enter an option: ");
@@ -1749,9 +1782,22 @@ void UserInterface::createUser()
 			return;
 	}
 	handleUserDetailsInput(userName, email, password, phoneNumber);
-	if (m_controller->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
+	Enums::ProcessStatus status = m_controller->createUser(userName, email, password, phoneNumber, userType);
+	if (status == Enums::ProcessStatus::SUCCESS)
 	{
 		cout << "User registered successfully!" << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::EMAIL_ALREADY_EXISTS)
+	{
+		cout << "Email Already exists! Registration failed." << endl;
+		util::pressEnterToContinue();
+		util::clear();
+	}
+	else if (status == Enums::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS)
+	{
+		cout << "Phone Number Already exists! Registration failed." << endl;
 		util::pressEnterToContinue();
 		util::clear();
 	}
@@ -2538,7 +2584,7 @@ void UserInterface::viewLogsByType()
 			logs = m_controller->getLogsByType(Enums::LogType::SYSTEM_ACTIVITY);
 			break;
 		case 2:
-			logs = m_controller->getLogsByType(Enums::LogType::ERROR);
+			logs = m_controller->getLogsByType(Enums::LogType::ERROR_LOG);
 			break;
 		case 3:
 			logs = m_controller->getLogsByType(Enums::LogType::UNKNOWN);
@@ -2572,7 +2618,7 @@ void UserInterface::logsTypeMenu()
 	util::clear();
 	cout << "----------------Log Types Menu---------------" << endl;
 	cout << "1. " << Enums::getLogTypeString(Enums::LogType::SYSTEM_ACTIVITY) << endl;
-	cout << "2. " << Enums::getLogTypeString(Enums::LogType::ERROR) << endl;
+	cout << "2. " << Enums::getLogTypeString(Enums::LogType::ERROR_LOG) << endl;
 	cout << "3. " << Enums::getLogTypeString(Enums::LogType::UNKNOWN) << endl;
 	cout << "--------------------------" << endl;
 }
@@ -4375,12 +4421,20 @@ void UserInterface::displayShowDetails(const vector<const Show*> shows)
 	cout << string(98, '-') << endl;
 	for (vector<const Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
 	{
+		const Show* show = *iterator;
+		if (!show)
+		{
+			continue;
+		}
+		const Screen* screen = show->getScreen();
+		const Theatre* theatre = (screen ? screen->getTheatre() : nullptr);
+		const Movie* movie = show->getMovie();
 		cout << left
-			<< setw(14) << (*iterator)->getShowId()
-			<< setw(22) << (*iterator)->getScreen()->getTheatre()->getName()
-			<< setw(14) << (*iterator)->getScreen()->getScreenId()
-			<< setw(26) << (*iterator)->getMovie()->getTitle()
-			<< setw(22) << displayTimeAndDate((*iterator)->getStartTime())
+			<< setw(14) << show->getShowId()
+			<< setw(22) << (theatre ? theatre->getName() : "N/A")
+			<< setw(14) << (screen ? screen->getScreenId() : "N/A")
+			<< setw(26) << (movie ? movie->getTitle() : "N/A")
+			<< setw(22) << displayTimeAndDate(show->getStartTime())
 			<< endl;
 	}
 	util::pressEnterToContinue();
@@ -4531,9 +4585,9 @@ void UserInterface::updateShow()
 	Enums::ProcessStatus isShowUpdatable = m_controller->isShowChangable(showId);
 	if (isShowUpdatable == Enums::ProcessStatus::FAILED)
 	{
-		cout << "Show cannot be updated because it has completed bookings!" << endl;
+		cout << "Show cannot be updated because it has confirmed bookings!" << endl;
 		util::pressEnterToContinue();
-		util::clear();
+		return;
 	}
 	time_t newTimeAndDate;
 	Enums::ProcessStatus status = getNewDateAndTime(newTimeAndDate);
@@ -4755,10 +4809,6 @@ void UserInterface::viewTicketDetails(const vector<const Ticket*>& tickets)
 		{
 			cout << setw(15) << ticket->getCustomer()->getUserName();
 		}
-		else
-		{
-			cout << setw(15) << "-";
-		}
 		cout << setw(12) << ticket->getPayment()->getPaymentId()
 			<< setw(10) << ticket->getPayment()->getAmount()
 			<< setw(12) << ticket->getPayment()->getBooking()->getBookingId()
@@ -4944,6 +4994,7 @@ void UserInterface::viewAllBookings()
 		break;
 	case Enums::UserType::THEATRE_OWNER:
 		displayTheatreBookings(bookings);
+		break;
 	default:
 		cout << "No Bookings available" << endl;
 		util::pressEnterToContinue();
@@ -5282,9 +5333,17 @@ void UserInterface::createBooking()
 	vector<string> bookedSeatIds;
 	selectSeats(numberOfSeats, bookedSeatIds, show);
 	const Booking* booking = m_controller->bookSelectedSeats(showId, bookedSeatIds);
-	string message = (booking == nullptr) ? "Failed to complete booking!" : "Booking completed Successfully!";
-	cout << message << endl;
-	util::pressEnterToContinue();
+	if (booking == nullptr)
+	{
+		cout << "Failed to complete booking!" << endl;
+		util::pressEnterToContinue();
+		return;
+	}
+	else
+	{
+		cout << "Booking completed Successfully!" << endl;
+		util::pressEnterToContinue();
+	}
 	string bookingId = "";
 	double amount = 0.0;
 	if (booking != nullptr)
@@ -5487,6 +5546,14 @@ void UserInterface::viewRefunds()
 			<< setw(20) << util::serializeTime(refund->getTime())
 			<< endl;
 	}
+	util::pressEnterToContinue();
+}
+
+void UserInterface::showForceLogoutMessage(bool& isMenuActive)
+{
+	util::clear();
+	cout << "Your account has been deactivated by the Admin. You have been logged out." << endl;
+	isMenuActive = false;
 	util::pressEnterToContinue();
 }
 

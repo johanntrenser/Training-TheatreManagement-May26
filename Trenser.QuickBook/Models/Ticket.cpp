@@ -137,51 +137,42 @@ void Ticket::setTicketStatus(Enums::TicketStatus status)
 
 /*
  * Function: serialize
- * Description: Converts Ticket object into CSV format string
+ * Description: Converts a Ticket object into a SharedTicket struct suitable
+ *              for storage in a memory-mapped file. Copies ticket ID, payment ID,
+ *              customer ID, and status into fixed-size character arrays.
+ * Parameters:
+ *    sharedTicket - Reference to a SharedTicket struct to populate with serialized data
  * Returns:
- *    CSV string representing the user
+ *    None
  */
-std::string Ticket::serialize()
+void Ticket::serialize(SharedTicket& sharedTicket) const
 {
-	std::string result = m_ticketId + config::delimeter::comma;
-	if (m_payment)
-	{
-		result += m_payment->getPaymentId() + config::delimeter::comma;
-	}
-	else
-	{
-		result += config::delimeter::comma;
-	}
-	if (m_customer)
-	{
-		result += m_customer->getUserId() + config::delimeter::comma;
-	}
-	else
-	{
-		result += config::delimeter::comma;
-	}
-	result += Enums::getTicketStatusString(m_status);
-	return result;
+	sharedTicket = {};
+	strncpy_s(sharedTicket.ticketId, sizeof(sharedTicket.ticketId), m_ticketId.c_str(), _TRUNCATE);
+	strncpy_s(sharedTicket.paymentId, sizeof(sharedTicket.paymentId), (m_payment ? m_payment->getPaymentId().c_str() : ""), _TRUNCATE);
+	strncpy_s(sharedTicket.customerId, sizeof(sharedTicket.customerId), (m_customer ? m_customer->getUserId().c_str() : ""), _TRUNCATE);
+	sharedTicket.status = static_cast<int>(m_status);
 }
 
 /*
- * Function: Ticket::deserialize
- * Description: Deserializes a single line of CSV-formatted ticket data into a Ticket object.
- *              Extracts fields such as Ticket ID, Payment ID, and Customer ID.
- *              Initializes the Payment and Customer pointers as nullptr initially,
- *              to be linked later when those objects are available in the DataStore.
+ * Function: deserialize
+ * Description: Reconstructs a Ticket object from a SharedTicket struct.
+ *              Initializes ticket attributes and sets its status.
  * Parameters:
- *    line - A reference to a string containing one line of CSV ticket data.
+ *    sharedTicket - Pointer to a SharedTicket struct containing serialized ticket data
  * Returns:
- *    A pointer to a newly created Ticket object populated with the deserialized data.
+ *    Pointer to a newly created Ticket object, or nullptr if input is invalid
  */
-Ticket* Ticket::deserialize(const std::string& line)
+Ticket* Ticket::deserialize(const SharedTicket* sharedTicket)
 {
-	std::stringstream lineStream(line);
-	std::string ticketId, paymentId, customerId;
-	std::getline(lineStream, ticketId, ',');
-	std::getline(lineStream, paymentId, ',');
-	std::getline(lineStream, customerId, ',');
-	Ticket* ticket = Factory::getObject<Ticket>(ticketId, nullptr, nullptr);
+	if (sharedTicket == nullptr)
+	{
+		return nullptr;
+	}
+	Ticket* ticket = Factory::getObject<Ticket>(sharedTicket->ticketId, nullptr, nullptr);
+	if (ticket != nullptr)
+	{
+		ticket->setTicketStatus(static_cast<Enums::TicketStatus>(sharedTicket->status));
+	}
 	return ticket;
 }

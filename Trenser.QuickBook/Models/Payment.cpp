@@ -194,55 +194,59 @@ void Payment::setTimeStamp(const time_t timeStamp)
 }
 
 /*
- * Function: serialize
- * Description: Converts Payment object into CSV format string
- * Returns:
- *    CSV string representing the user
+ * Function: Payment::serialize
+ * Description: Serializes the Payment object into a SharedPayment structure
+ *              for use in shared memory or inter-process communication.
+ *              Copies payment details such as payment ID, booking ID, customer ID,
+ *              amount, payment method, status, and timestamp into the provided
+ *              SharedPayment reference using safe string operations.
+ * Parameters:
+ *    sharedPayment - Reference to a SharedPayment structure that will be populated
+ *                    with the serialized payment data.
+ * Returns: None
  */
-std::string Payment::serialize()
+void Payment::serialize(SharedPayment& sharedPayment) const
 {
-    std::string result = m_paymentId + config::delimeter::comma;
-    if (m_booking)
-    {
-        result += m_booking->getBookingId() + config::delimeter::comma;
-    }
-    else
-    {
-        result += config::delimeter::comma;
-    }
-    result += std::to_string(m_amount) + config::delimeter::comma +
-        Enums::getPaymentMethodString(m_paymentMethod) + config::delimeter::comma +
-        Enums::getPaymentStatusString(m_status) + config::delimeter::comma +
-        util::serializeTime(m_timeStamp);
-    return result;
+    sharedPayment = {};
+    strncpy_s(sharedPayment.paymentId, sizeof(sharedPayment.paymentId), m_paymentId.c_str(), _TRUNCATE);
+    strncpy_s(sharedPayment.bookingId, sizeof(sharedPayment.bookingId),
+        (m_booking ? m_booking->getBookingId().c_str() : ""), _TRUNCATE);
+    strncpy_s(sharedPayment.customerId, sizeof(sharedPayment.customerId),
+        (m_booking && m_booking->getCustomer() ? m_booking->getCustomer()->getUserId().c_str() : ""), _TRUNCATE);
+    sharedPayment.amount = m_amount;
+    sharedPayment.paymentMethod = static_cast<int>(m_paymentMethod);
+    sharedPayment.status = static_cast<int>(m_status);
+    strncpy_s(sharedPayment.time, sizeof(sharedPayment.time), util::serializeTime(m_timeStamp).c_str(), _TRUNCATE);
 }
 
 /*
  * Function: Payment::deserialize
- * Description: Converts a single CSV-formatted line into a Payment object.
- *              Extracts fields such as paymentId, bookingId, amount,
- *              paymentMethod, paymentStatus, and timeStamp.
- *              Maps the paymentMethod string to its corresponding enum
- *              using Enums::getPaymentMethod. The associated Booking
- *              pointer is initialized to nullptr and can be set later
- *              when restoring relationships.
+ * Description: Deserializes a SharedPayment structure into a Payment object.
+ *              Converts serialized fields such as payment ID, amount, payment method,
+ *              status, and timestamp back into a Payment instance. Uses the Factory
+ *              to create the Payment object and applies the stored status.
  * Parameters:
- *    lines - reference to a CSV-formatted string containing payment data
+ *    sharedPayment - Pointer to a SharedPayment structure containing serialized payment data.
  * Returns:
- *    Pointer to a newly constructed Payment object
+ *    Pointer to a newly created Payment object if deserialization succeeds.
+ *    nullptr if the provided SharedPayment pointer is null.
  */
-Payment* Payment::deserialize(const std::string& lines)
+Payment* Payment::deserialize(const SharedPayment* sharedPayment)
 {
-    std::string paymentId, bookingId, amount, paymentMethod, paymentStatus, time, year, dash, space, month, day, hour, colon, minute;
-    std::stringstream lineStream(lines);
-    getline(lineStream, paymentId, ',');
-    getline(lineStream, bookingId, ',');
-    getline(lineStream, amount, ',');
-    getline(lineStream, paymentMethod, ',');
-    getline(lineStream, paymentStatus, ',');
-    getline(lineStream, time, ',');
-    time_t timeStamp = util::deserializeTime(time);
-    util::trimWhitespace(amount);
-    Payment* payment = Factory::getObject<Payment>(paymentId, nullptr, stod(amount), Enums::getPaymentMethod(paymentMethod), timeStamp);
+    if (sharedPayment == nullptr)
+    {
+        return nullptr;
+    }
+    time_t timeStamp = util::deserializeTime(sharedPayment->time);
+    Payment* payment = Factory::getObject<Payment>(
+        sharedPayment->paymentId,
+        nullptr,
+        sharedPayment->amount,
+        static_cast<Enums::PaymentMethod>(sharedPayment->paymentMethod),
+        timeStamp);
+    if (payment != nullptr)
+    {
+        payment->setStatus(static_cast<Enums::PaymentStatus>(sharedPayment->status));
+    }
     return payment;
 }

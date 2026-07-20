@@ -221,18 +221,19 @@ void User::setStatus(Enums::UserStatus status)
  * Parameters:
  *    password - Reference to the string to encrypt
  * Returns:
- *    None (modifies the string directly)
+ *    std::string - encrypted password
  */
-std::string& User::encryption(std::string& password)
+std::string User::encryption(const std::string& password)
 {
+    std::string result = password;
     int index = 0;
-    while (password[index] != '\0')
+    while (result[index] != '\0')
     {
-        password[index] = char(int(password[index]) + 10);
+        result[index] = char(int(password[index]) + 10);
         index++;
     }
-    reverseString(password);
-    return password;
+    reverseString(result);
+    return result;
 }
 
 /*
@@ -262,63 +263,74 @@ void User::reverseString(std::string& password)
  * Parameters:
  *    password - Reference to the string to decrypt
  * Returns:
- *    None (modifies the string directly)
+ *    std::string - decrypted password
  */
 std::string User::decryption(std::string& password)
 {
+    reverseString(password);
     int index = 0;
     while (password[index] != '\0')
     {
         password[index] = char(int(password[index]) - 10);
         index++;
     }
-    reverseString(password);
     return password;
 }
 
 /*
- * Function: serialize
- * Description: Converts User object into CSV format string
- * Returns:
- *    CSV string representing the user
- */
-std::string User::serialize()
+* Function: serialize
+* Description: Converts a User object into a SharedUser struct
+*              suitable for storage in the memory-mapped file.
+*              Encrypts the password before storing.
+* Parameters: None
+* Returns:
+*    SharedUser - flat struct representation of this User
+*/
+SharedUser User::serialize()
 {
-    return m_userId + config::delimeter::comma +
-        m_userName + config::delimeter::comma +
-        m_email + config::delimeter::comma +
-        encryption(m_password) + config::delimeter::comma +
-        m_phoneNumber + config::delimeter::comma +
-        Enums::getUserTypeString(m_userType) + config::delimeter::comma +
-        Enums::getUserStatusString(m_status);
+    SharedUser sharedUser{};
+    strncpy_s(sharedUser.userId, sizeof(sharedUser.userId), m_userId.c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.username, sizeof(sharedUser.username), m_userName.c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.email, sizeof(sharedUser.email), m_email.c_str(), _TRUNCATE);
+    std::string passwordCopy = m_password;
+    strncpy_s(sharedUser.password, sizeof(sharedUser.password), encryption(passwordCopy).c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.phoneNumber, sizeof(sharedUser.phoneNumber), m_phoneNumber.c_str(), _TRUNCATE);
+    sharedUser.userType = static_cast<int>(m_userType);
+    sharedUser.status = static_cast<int>(m_status);
+    return sharedUser;
 }
 
 /*
  * Function: User::deserialize
- * Description: Deserializes a single line of CSV-formatted user data into a User object.
+ * Description: Deserializes a single SharedUser object into a User object.
  *              Extracts fields such as User ID, name, email, encrypted password, phone number,
  *              type, and status. The password is decrypted before constructing the User object.
- *              User type and status are converted from string values into their respective enums.
+ *              User type and status are converted from integer values into their respective enums.
  * Parameters:
- *    line - A reference to a string containing one line of CSV user data.
+ *    sharedUser - A pointer to a SharedUser object containing serialized user data.
  * Returns:
  *    A pointer to a newly created User object populated with the deserialized data.
  */
-User* User::deserialize(const std::string& line)
+User* User::deserialize(const SharedUser* sharedUser)
 {
-    std::stringstream lineStream(line);
-    std::string userId, userName, email, password, phoneNumber, type, status;
-    getline(lineStream, userId, ',');
-    getline(lineStream, userName, ',');
-    getline(lineStream, email, ',');
-    getline(lineStream, password, ',');
-    getline(lineStream, phoneNumber, ',');
-    getline(lineStream, type, ',');
-    getline(lineStream, status, ',');
+    if (sharedUser == nullptr)
+    {
+        return nullptr;
+    }
+    std::string password(sharedUser->password);
     password = decryption(password);
-    Enums::UserType Usertype = Enums::getUserType(type);
-    Enums::UserStatus userStatus = Enums::getUserStatus(status);
-    User* user = Factory::getObject<User>(userId, userName, email, password, phoneNumber, Usertype);
-    user->setStatus(userStatus);
+    Enums::UserType userType = static_cast<Enums::UserType>(sharedUser->userType);
+    Enums::UserStatus userStatus = static_cast<Enums::UserStatus>(sharedUser->status);
+    User* user = Factory::getObject<User>(
+        sharedUser->userId,
+        sharedUser->username,
+        sharedUser->email,
+        password,
+        sharedUser->phoneNumber,
+        userType);
+    if (user != nullptr)
+    {
+        user->setStatus(userStatus);
+    }
     return user;
 }

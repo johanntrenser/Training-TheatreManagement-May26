@@ -11,12 +11,17 @@
 #include <string>
 #include "DataStore.h"
 #include "LogManagementService.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
+#include "NotificationEvent.h"
 
 class AuthenticationManagementService
 {
 private:
     DataStore& m_dataStore;
     LogManagementService logManagementService;
+    NamedMutex m_mutex;
+    NotificationEvent m_event;
 public:
     AuthenticationManagementService();
     std::pair<Enums::LoginStatus, Enums::UserType> login(const std::string& email, const std::string& password);
@@ -25,6 +30,7 @@ public:
     const std::string generateUserId();
     bool isPhoneNumberUnique(const std::string&);
     bool isEmailIdUnique(const std::string&);
+    bool checkAndHandleForcedLogout();
     ~AuthenticationManagementService() = default;
 };
 

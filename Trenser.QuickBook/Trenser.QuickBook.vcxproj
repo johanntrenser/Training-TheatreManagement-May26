@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)Views;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)Views;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;$(ProjectDir)SharedMemory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,11 +156,15 @@
     <ClCompile Include="Services\TheatreManagementService.cpp" />
     <ClCompile Include="Services\TicketManagementService.cpp" />
     <ClCompile Include="Services\UserManagementService.cpp" />
+    <ClCompile Include="SharedMemory\MappedFileRegistry.cpp" />
+    <ClCompile Include="SharedMemory\NamedMutex.cpp" />
+    <ClCompile Include="SharedMemory\NotificationEvent.cpp" />
+    <ClCompile Include="SharedMemory\ScopedLock.cpp" />
+    <ClCompile Include="SharedMemory\SessionManager.cpp" />
+    <ClCompile Include="SharedMemory\SharedStructs.cpp" />
     <ClCompile Include="Trenser.QuickBook.cpp" />
     <ClCompile Include="Utilities\ApplicationConfig.cpp" />
-    <ClCompile Include="Utilities\Datalinker.cpp" />
     <ClCompile Include="Utilities\Enums.cpp" />
-    <ClCompile Include="Utilities\FileManagement.cpp" />
     <ClCompile Include="Utilities\InputHelper.cpp" />
     <ClCompile Include="Utilities\OutputHelper.cpp" />
     <ClCompile Include="Utilities\TimeStamp.cpp" />
@@ -200,10 +204,15 @@
     <ClInclude Include="Services\TheatreManagementService.h" />
     <ClInclude Include="Services\TicketManagementService.h" />
     <ClInclude Include="Services\UserManagementService.h" />
+    <ClInclude Include="SharedMemory\MappedFile.h" />
+    <ClInclude Include="SharedMemory\MappedFileRegistry.h" />
+    <ClInclude Include="SharedMemory\NamedMutex.h" />
+    <ClInclude Include="SharedMemory\NotificationEvent.h" />
+    <ClInclude Include="SharedMemory\ScopedLock.h" />
+    <ClInclude Include="SharedMemory\SessionManager.h" />
+    <ClInclude Include="SharedMemory\SharedStructs.h" />
     <ClInclude Include="Utilities\ApplicationConfig.h" />
-    <ClInclude Include="Utilities\Datalinker.h" />
     <ClInclude Include="Utilities\Enums.h" />
-    <ClInclude Include="Utilities\FileManagement.h" />
     <ClInclude Include="Utilities\InputHelper.h" />
     <ClInclude Include="Utilities\OutputHelper.h" />
     <ClInclude Include="Utilities\TimeStamp.h" />

@@ -12,6 +12,7 @@
 #include "ApplicationConfig.h"
 #include "Enums.h"
 #include "Factory.h"
+#include "SharedStructs.h"
 
 class User
 {
@@ -46,8 +47,8 @@ public:
     void setUserType(Enums::UserType type);
     void setStatus(Enums::UserStatus status);
     static void reverseString(std::string& password);
-    std::string& encryption(std::string& password);
+    std::string encryption(const std::string& password);
     static std::string decryption(std::string& password);
-    std::string serialize();
-    static User* deserialize(const std::string& line);
+    SharedUser serialize();
+    static User* deserialize(const SharedUser* sharedUser);
 };

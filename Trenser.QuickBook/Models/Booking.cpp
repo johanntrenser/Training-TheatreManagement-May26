@@ -190,71 +190,64 @@ void Booking::setAmount(double amount)
 
 /*
  * Function: serialize
- * Description: Converts Bookig object into CSV format string
+ * Description: Converts a Booking object into a SharedBooking struct suitable
+ *              for storage in a memory-mapped file. Copies booking metadata
+ *              including booking ID, customer ID, show ID, status, amount,
+ *              and seat identifiers up to SEAT_MAX_COUNT into fixed-size arrays.
+ * Parameters:
+ *    sharedBooking - Reference to a SharedBooking struct to populate with serialized data
  * Returns:
- *    CSV string representing the user
+ *    None
  */
-std::string Booking::serialize()
+void Booking::serialize(SharedBooking& sharedBooking) const
 {
-    std::string result = m_bookingId + config::delimeter::comma;
-    if (m_customer)
+    strncpy_s(sharedBooking.bookingId, m_bookingId.c_str(), sizeof(sharedBooking.bookingId));
+    strncpy_s(sharedBooking.customerId, 
+        (m_customer ? m_customer->getUserId().c_str() : ""), 
+        sizeof(sharedBooking.customerId));
+    strncpy_s(sharedBooking.showId, 
+        (m_show ? m_show->getShowId().c_str() : ""), 
+        sizeof(sharedBooking.showId));
+    sharedBooking.status = static_cast<int>(m_status);
+    sharedBooking.amount = m_amount;
+    sharedBooking.seatCount = 0;
+    for (const Seat* seat : m_bookedSeats)
     {
-        result += m_customer->getUserId() + config::delimeter::comma;
-    }
-    else
-    {
-        result += config::delimeter::comma;
-    }
-    if (m_show)
-    {
-        result += m_show->getShowId() + config::delimeter::comma;
-    }
-    else
-    {
-        result += config::delimeter::comma;
-    }
-    if (!m_bookedSeats.empty())
-    {
-        for (std::vector<Seat*>::const_iterator iterator = m_bookedSeats.begin(); iterator != m_bookedSeats.end(); ++iterator)
+        if (seat && sharedBooking.seatCount < config::Limit::SEAT_MAX_COUNT)
         {
-            result += (*iterator)->getSeatId();
-            if (std::next(iterator) != m_bookedSeats.end())
-            {
-                result += config::delimeter::verticalBar;
-            }
+            strncpy_s(sharedBooking.seatIds[sharedBooking.seatCount],
+                seat->getSeatId().c_str(), 
+                sizeof(sharedBooking.seatIds[0]));
+            sharedBooking.seatCount++;
         }
     }
-    result += config::delimeter::comma;
-    result += Enums::getBookingStatusString(m_status) +
-        config::delimeter::comma +
-        std::to_string(m_amount);
-    return result;
 }
 
 /*
- * Function: Booking::deserialize
- * Description: Deserializes a single line of CSV-formatted booking data into a Booking object.
- *              Extracts fields such as Booking ID, Customer ID, Show ID, Booked Seat, Status, and Amount.
- *              Converts string values into appropriate types (double for amount, enum for status).
- *              The Customer and Show pointers are set to nullptr initially and can be linked later
- *              when those objects are available in the DataStore. The booked seats are initialized
- *              as an empty container and can be populated afterward.
+ * Function: deserialize
+ * Description: Reconstructs a Booking object from a SharedBooking struct.
+ *              Initializes booking attributes including ID, status, and amount.
+ *              Associated Customer, Show, and Seat pointers are set to nullptr
+ *              initially and can be linked later when those objects are available
+ *              in the DataStore.
  * Parameters:
- *    lines - A reference to a string containing one line of CSV booking data.
+ *    sharedBooking - Pointer to a SharedBooking struct containing serialized booking data
  * Returns:
- *    A pointer to a newly created Booking object populated with the deserialized data.
+ *    Pointer to a newly created Booking object, or nullptr if input is invalid
  */
-Booking* Booking::deserialize(const std::string& lines)
+Booking* Booking::deserialize(const SharedBooking* sharedBooking)
 {
-    std::string bookingId, customerId, showId, bookedSeat, status, amount;
-    std::stringstream lineStream(lines);
-    getline(lineStream, bookingId, ',');
-    getline(lineStream, customerId, ',');
-    getline(lineStream, showId, ',');
-    getline(lineStream, bookedSeat, ',');
-    getline(lineStream, status, ',');
-    getline(lineStream, amount, ',');
-    util::trimWhitespace(amount);
-    Booking* booking = Factory::getObject<Booking>(bookingId, nullptr, nullptr, std::vector<Seat*>{}, Enums::getBookingStatus(status), stod(amount));
+    if (sharedBooking == nullptr)
+    {
+        return nullptr;
+    }
+    std::vector<Seat*> emptySeats;
+    Booking* booking = Factory::getObject<Booking>(
+        sharedBooking->bookingId,
+        nullptr,
+        nullptr,
+        emptySeats,
+        static_cast<Enums::BookingStatus>(sharedBooking->status),
+        sharedBooking->amount);
     return booking;
 }

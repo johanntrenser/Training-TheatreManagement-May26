@@ -13,22 +13,23 @@
 #include "MovieManagementService.h"
 #include "Factory.h"
 #include "InputHelper.h"
-/*
- * Function: MovieManagementService::MovieManagementService
- * Description: Constructs a MovieManagementService object and initializes the DataStore instance.
- * Parameters:
- *    None
- * Returns:
- *    None
- */
+ /*
+  * Function: MovieManagementService::MovieManagementService
+  * Description: Constructs a MovieManagementService object and initializes the DataStore instance.
+  * Parameters:
+  *    None
+  * Returns:
+  *    None
+  */
 MovieManagementService::MovieManagementService() :
-	m_dataStore(DataStore::getInstance())
+	m_dataStore(DataStore::getInstance()), m_mutex(config::MutexMappings::MOVIE_MUTEX_NAME)
 {
 }
 
 /*
  * Function: MovieManagementService::generateMovieId
  * Description: Generates a unique movie ID based on the current number of movies in the DataStore.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    None
  * Returns:
@@ -36,6 +37,7 @@ MovieManagementService::MovieManagementService() :
  */
 const std::string MovieManagementService::generateMovieId()
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	int idNumber = static_cast<int>(movies.size()) + 1;
 	std::ostringstream buffer;
@@ -45,22 +47,29 @@ const std::string MovieManagementService::generateMovieId()
 
 /*
  * Function: MovieManagementService::addMovieToSystem
- * Description: Creates a new Movie object and adds it to the DataStore.
+ * Description: Creates and adds a new Movie to the system.
+ *              Generates a unique Movie ID, constructs a Movie object using the Factory,
+ *              and persists it into the DataStore. Ensures thread safety by acquiring
+ *              a scoped lock during the operation. Returns SUCCESS if the movie is
+ *              created and stored successfully, otherwise FAILED.
  * Parameters:
- *    title    - Title of the movie
- *    language - Language of the movie
- *    genre    - Genre of the movie
- *    duration - Duration of the movie in minutes
+ *    title    - The title of the movie.
+ *    language - The language of the movie.
+ *    genre    - The genre of the movie.
+ *    duration - The duration of the movie in minutes.
  * Returns:
- *    Enums::ProcessStatus::SUCCESS if the movie was added successfully,
- *    Enums::ProcessStatus::FAILED otherwise
+ *    Enums::ProcessStatus::SUCCESS if the movie was added successfully.
+ *    Enums::ProcessStatus::FAILED if the movie creation or persistence failed.
  */
 Enums::ProcessStatus MovieManagementService::addMovieToSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration)
 {
+	ScopedLock lock(m_mutex);
 	Movie* movie = Factory::getObject<Movie>(generateMovieId(), title, language, genre, duration);
 	if (movie != nullptr)
 	{
 		m_dataStore.addMovieToSystem(movie);
+		std::string message = "New Movie Added: "+ title;
+		m_event.notify("", getAllTheatreOwnersId(), message);
 		return Enums::ProcessStatus::SUCCESS;
 	}
 	return Enums::ProcessStatus::FAILED;
@@ -68,18 +77,24 @@ Enums::ProcessStatus MovieManagementService::addMovieToSystem(const std::string&
 
 /*
  * Function: MovieManagementService::isMovieUniqueInSystem
- * Description: Checks if a movie with the given attributes already exists in the DataStore.
+ * Description: Checks whether a movie with the given attributes already exists in the system.
+ *              Acquires a scoped lock to ensure thread safety, retrieves all movies from the DataStore,
+ *              and iterates through them to compare title, language, genre, and duration.
+ *              If a matching movie is found, the function returns FAILED, indicating the movie
+ *              is not unique. Otherwise, returns SUCCESS.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
- *    title    - Title of the movie
- *    language - Language of the movie
- *    genre    - Genre of the movie
- *    duration - Duration of the movie in minutes
+ *    title    - The title of the movie to check.
+ *    language - The language of the movie.
+ *    genre    - The genre of the movie.
+ *    duration - The duration of the movie in minutes.
  * Returns:
- *    Enums::ProcessStatus::SUCCESS if the movie is unique,
- *    Enums::ProcessStatus::FAILED if a duplicate exists
+ *    Enums::ProcessStatus::FAILED if a duplicate movie exists.
+ *    Enums::ProcessStatus::SUCCESS if the movie is unique in the system.
  */
 Enums::ProcessStatus MovieManagementService::isMovieUniqueInSystem(const std::string& title, const std::string& language, const std::string& genre, const int duration)
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
@@ -94,6 +109,7 @@ Enums::ProcessStatus MovieManagementService::isMovieUniqueInSystem(const std::st
 /*
  * Function: MovieManagementService::searchMovieByTitle
  * Description: Searches for movies in the DataStore that match the given title and are marked as ACTIVE.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    title - Title of the movie to search for
  * Returns:
@@ -101,6 +117,7 @@ Enums::ProcessStatus MovieManagementService::isMovieUniqueInSystem(const std::st
  */
 const std::vector<const Movie*> MovieManagementService::searchMovieByTitle(const std::string& title)
 {
+	ScopedLock lock(m_mutex);
 	std::vector<const Movie*> resultantMovies;
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
@@ -116,6 +133,7 @@ const std::vector<const Movie*> MovieManagementService::searchMovieByTitle(const
 /*
  * Function: MovieManagementService::setMovieTitleById
  * Description: Updates the title of a movie identified by its unique movie ID.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    movieId - Unique identifier of the movie
  *    title   - New title to set for the movie
@@ -125,6 +143,7 @@ const std::vector<const Movie*> MovieManagementService::searchMovieByTitle(const
  */
 Enums::ProcessStatus MovieManagementService::setMovieTitleByID(const std::string& movieId, const std::string& title)
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
@@ -140,6 +159,7 @@ Enums::ProcessStatus MovieManagementService::setMovieTitleByID(const std::string
 /*
  * Function: MovieManagementService::setMovieLanguageById
  * Description: Updates the language of a movie identified by its unique movie ID.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    movieId  - Unique identifier of the movie
  *    language - New language to set for the movie
@@ -149,6 +169,7 @@ Enums::ProcessStatus MovieManagementService::setMovieTitleByID(const std::string
  */
 Enums::ProcessStatus MovieManagementService::setMovieLanguageByID(const std::string& movieId, const std::string& language)
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
@@ -164,6 +185,7 @@ Enums::ProcessStatus MovieManagementService::setMovieLanguageByID(const std::str
 /*
  * Function: MovieManagementService::setMovieGenreById
  * Description: Updates the genre of a movie identified by its unique movie ID.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    movieId - Unique identifier of the movie
  *    genre   - New genre to set for the movie
@@ -173,6 +195,7 @@ Enums::ProcessStatus MovieManagementService::setMovieLanguageByID(const std::str
  */
 Enums::ProcessStatus MovieManagementService::setMovieGenreByID(const std::string& movieId, const std::string& genre)
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
@@ -188,6 +211,7 @@ Enums::ProcessStatus MovieManagementService::setMovieGenreByID(const std::string
 /*
  * Function: MovieManagementService::setMovieDurationById
  * Description: Updates the duration of a movie identified by its unique movie ID.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    movieId  - Unique identifier of the movie
  *    duration - New duration (in minutes) to set for the movie
@@ -197,6 +221,7 @@ Enums::ProcessStatus MovieManagementService::setMovieGenreByID(const std::string
  */
 Enums::ProcessStatus MovieManagementService::setMovieDurationByID(const std::string& movieId, const int& duration)
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
@@ -212,6 +237,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDurationByID(const std::str
 /*
  * Function: MovieManagementService::getAllActiveMovies
  * Description: Retrieves all movies from the DataStore that are currently marked as ACTIVE.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    None
  * Returns:
@@ -219,6 +245,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDurationByID(const std::str
  */
 std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
 {
+	ScopedLock lock(m_mutex);
 	std::vector<const Movie*> allActiveMovies;
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
@@ -234,6 +261,7 @@ std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
 /*
  * Function: MovieManagementService::deactivateMovie
  * Description: Deactivates a movie in the system by updating its status to INACTIVE.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    movieId - Unique identifier of the movie to deactivate
  * Returns:
@@ -242,6 +270,7 @@ std::vector<const Movie*> MovieManagementService::getAllActiveMovies()
  */
 Enums::ProcessStatus MovieManagementService::deactivateMovie(const std::string& movieId)
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
@@ -258,6 +287,7 @@ Enums::ProcessStatus MovieManagementService::deactivateMovie(const std::string& 
  * Function: MovieManagementService::reactivateMovie
  * Description: Activates a movie by searching the datastore for the given movieId
  *              and updating its status to Enums::MovieStatus::ACTIVE if found.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    movieId - Unique identifier of the movie to activate
  * Returns:
@@ -266,6 +296,7 @@ Enums::ProcessStatus MovieManagementService::deactivateMovie(const std::string& 
  */
 Enums::ProcessStatus MovieManagementService::reactivateMovie(const std::string& movieId)
 {
+	ScopedLock lock(m_mutex);
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
 	{
@@ -281,6 +312,7 @@ Enums::ProcessStatus MovieManagementService::reactivateMovie(const std::string& 
 /*
  * Function: MovieManagementService::searchDeactivatedMovieByTitle
  * Description: Searches for movies in the DataStore that match the given title and are marked as INACTIVE.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    title - Title of the movie to search for
  * Returns:
@@ -288,6 +320,7 @@ Enums::ProcessStatus MovieManagementService::reactivateMovie(const std::string& 
  */
 const std::vector<const Movie*> MovieManagementService::searchDeactivatedMovieByTitle(const std::string& title)
 {
+	ScopedLock lock(m_mutex);
 	std::vector<const Movie*> resultantMovies;
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
@@ -303,6 +336,7 @@ const std::vector<const Movie*> MovieManagementService::searchDeactivatedMovieBy
 /*
  * Function: MovieManagementService::getAllInactiveMovies
  * Description: Retrieves all movies from the DataStore that are currently marked as INACTIVE.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    None
  * Returns:
@@ -310,6 +344,7 @@ const std::vector<const Movie*> MovieManagementService::searchDeactivatedMovieBy
  */
 std::vector<const Movie*> MovieManagementService::getAllInactiveMovies()
 {
+	ScopedLock lock(m_mutex);
 	std::vector<const Movie*> allInactiveMovies;
 	const std::map<std::string, Movie*>& movies = m_dataStore.getMovies();
 	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
@@ -327,6 +362,7 @@ std::vector<const Movie*> MovieManagementService::getAllInactiveMovies()
  * Description: Checks whether a movie can be deactivated by verifying if it has
  *              any scheduled or running shows. If such shows exist, the movie
  *              cannot be deactivated.
+ *              Ensures thread safety by acquiring a scoped lock during the operation.
  * Parameters:
  *    movieId - Unique identifier of the movie to check
  * Returns:
@@ -335,6 +371,7 @@ std::vector<const Movie*> MovieManagementService::getAllInactiveMovies()
  */
 Enums::ProcessStatus MovieManagementService::isMovieDeactivatable(const std::string& movieId)
 {
+	ScopedLock lock(m_mutex);
 	int showCount = 0;
 	const std::map<std::string, Show*>& shows = m_dataStore.getShows();
 	for (std::map<std::string, Show*>::const_iterator iterator = shows.begin(); iterator != shows.end(); ++iterator)
@@ -355,55 +392,27 @@ Enums::ProcessStatus MovieManagementService::isMovieDeactivatable(const std::str
 }
 
 /*
- * Function: MovieManagementService::saveMovieData
- * Description: Saves all movie data from the DataStore into a CSV file.
- *              Includes movie details such as ID, title, language, genre, duration, and status.
- *              Overwrites existing file content.
+ * Function: MovieManagementService::getAllTheatreOwnersId
+ * Description: Retrieves the IDs of all active theatre owners from the system.
+ *              Iterates through the user map in the DataStore, checks each user’s
+ *              status and type, and collects the IDs of those who are active and
+ *              classified as THEATRE_OWNER. Returns the list of theatre owner IDs
+ *              for use in operations such as assigning movies or sending notifications.
  * Parameters:
  *    None
  * Returns:
- *    None (throws runtime_error if the file cannot be opened)
+ *    A std::vector<std::string> containing the user IDs of all active theatre owners.
  */
-void MovieManagementService::saveMovieData()
+std::vector<std::string> MovieManagementService::getAllTheatreOwnersId()
 {
-	std::vector<std::string> lines;
-	lines.push_back(config::Header::MOVIE_HEADER);
-	const std::map<std::string, Movie*> movies = m_dataStore.getMovies();
-	for (std::map<std::string, Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
+	std::vector<std::string> theatreOwnerIds;
+	const std::map<std::string, User*> users = m_dataStore.getUsers();
+	for (auto theatreOwner : users)
 	{
-		lines.push_back((iterator->second)->serialize());
+		if(theatreOwner.second->getStatus()==Enums::UserStatus::ACTIVE && theatreOwner.second->getUserType()==Enums::UserType::THEATRE_OWNER)
+		{
+			theatreOwnerIds.push_back(theatreOwner.second->getUserId());
+		}
 	}
-	FileManagement::writeLines(std::string(config::File::MOVIE_FILEPATH), lines);
-}
-
-/*
- * Function: MovieManagementService::loadMovieData
- * Description: Loads all movie data from a CSV file into memory.
- *              Reads each line from the file using FileManagement::readlines(PATH),
- *              deserializes it into a Movie object via Movie::deserialize,
- *              and sets the Movie status using Enums::getMovieStatus.
- *              Finally, adds the reconstructed Movie to the DataStore
- *              through addMovieToSystem.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened or read)
- */
-void MovieManagementService::loadMovieData()
-{
-	std::string movieId, title, language, genre, duration, status;
-	std::vector<std::string> lines = FileManagement::readlines(PATH);
-	for (int index = 1; index < lines.size(); ++index)
-	{
-		Movie* movie = Movie::deserialize(lines[index]);
-		std::stringstream lineStream(lines[index]);
-		getline(lineStream, movieId, ',');
-		getline(lineStream, title, ',');
-		getline(lineStream, language, ',');
-		getline(lineStream, genre, ',');
-		getline(lineStream, duration, ',');
-		getline(lineStream, status, ',');
-		movie->setStatus(Enums::getMovieStatus(status));
-		m_dataStore.addMovieToSystem(movie);
-	}
+	return theatreOwnerIds;
 }

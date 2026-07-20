@@ -5,9 +5,12 @@
 #include "BookingManagementService.h"
 #include "Factory.h"
 #include "TimeStamp.h"
+#include "ApplicationConfig.h"
 
 PaymentManagementService::PaymentManagementService()
-    : m_dataStore(DataStore::getInstance())
+    : m_dataStore(DataStore::getInstance()),
+    m_paymentMutex(config::MutexMappings::PAYMENT_MUTEX_NAME),
+    m_refundMutex(config::MutexMappings::REFUND_MUTEX_NAME)
 { }
 
 /*
@@ -19,8 +22,8 @@ PaymentManagementService::PaymentManagementService()
 */
 const std::string PaymentManagementService::generatePaymentId()
 {
-    const std::map<std::string, Payment*>& payments = m_dataStore.getPayments();
-    int idNumber = static_cast<int>(payments.size()) + 1;
+    const int paymentCount = m_dataStore.getPaymentCount();
+    int idNumber = paymentCount + 1;
     std::ostringstream buffer;
     buffer << "PA" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -35,8 +38,8 @@ const std::string PaymentManagementService::generatePaymentId()
 */
 const std::string PaymentManagementService::generateRefundId()
 {
-    const std::map<std::string, Refund*>& refunds = m_dataStore.getRefunds();
-    int idNumber = static_cast<int>(refunds.size()) + 1;
+    const int refundCount = m_dataStore.getRefundCount();
+    int idNumber = refundCount + 1;
     std::ostringstream buffer;
     buffer << "RF" << std::setw(3) << std::setfill('0') << idNumber;
     return buffer.str();
@@ -55,6 +58,7 @@ const std::string PaymentManagementService::generateRefundId()
  */
 Payment* PaymentManagementService::getPaymentById(const std::string& paymentId)
 {
+    ScopedLock lock(m_paymentMutex);
     const std::map<std::string, Payment*>& payments = m_dataStore.getPayments();
     std::map<std::string, Payment*>::const_iterator iterator = payments.find(paymentId);
     if (iterator != payments.end())
@@ -78,6 +82,7 @@ Payment* PaymentManagementService::getPaymentById(const std::string& paymentId)
 */
 Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string& bookingId, Enums::PaymentMethod paymentMethod, double amount)
 {
+    ScopedLock lock(m_paymentMutex);
     std::string message;
     TicketManagementService ticketManagementService;
     BookingManagementService bookingManagementService;
@@ -93,7 +98,7 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     {
         bookingManagementService.cancelBookingForFailedPayment(bookingId);
         message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
-        logManagementService.addLog(message, Enums::LogType::ERROR);
+        logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
         return Enums::ProcessStatus::FAILED;
     }
     Enums::ProcessStatus status = ticketManagementService.generateTicket(payment, currentUser);
@@ -101,14 +106,20 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
     {
         bookingManagementService.cancelBookingForFailedPayment(booking->getBookingId());
         message = "Payment of customer with ID : " + currentUser->getUserId() + " has failed";
-        logManagementService.addLog(message, Enums::LogType::ERROR);
+        logManagementService.addLog(message, Enums::LogType::ERROR_LOG);
         return Enums::ProcessStatus::FAILED;
     }
+    m_dataStore.updatePaymentStatus(payment->getPaymentId(), Enums::PaymentStatus::SUCCESS);
     payment->setStatus(Enums::PaymentStatus::SUCCESS);
     m_dataStore.addPayment(payment);
-    booking->setStatus(Enums::BookingStatus::CONFIRMED);
+    if (m_dataStore.updateBookingStatus(booking->getBookingId(), Enums::BookingStatus::CONFIRMED) == Enums::ProcessStatus::SUCCESS)
+    {
+        booking->setStatus(Enums::BookingStatus::CONFIRMED);
+    }
     message = "Payment with ID : " + payment->getPaymentId() + " has been completetd";
     logManagementService.addLog(message, Enums::LogType::SYSTEM_ACTIVITY);
+    std::string notificationMessage = "Ticket is successfully booked ";
+    m_notificationManagementService.sendNotification(m_dataStore.getAuthenticatedUser(), message);
     return Enums::ProcessStatus::SUCCESS;
 }
 
@@ -127,6 +138,8 @@ Enums::ProcessStatus PaymentManagementService::initiatePayment(const std::string
  */
 Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Payment* payment)
 {
+    ScopedLock paymentLock(m_paymentMutex);
+    ScopedLock refundLock(m_refundMutex);
     if (ticket == nullptr)
     {
         return Enums::ProcessStatus::FAILED;
@@ -154,6 +167,7 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Pay
         return Enums::ProcessStatus::FAILED;
     }
     m_dataStore.addRefund(refund);
+    m_dataStore.updatePaymentStatus(payment->getPaymentId(), Enums::PaymentStatus::REFUNDED);
     payment->setStatus(Enums::PaymentStatus::REFUNDED);
     ticket->setTicketStatus(Enums::TicketStatus::CANCELLED);
     std::string message = "Payment with ID : " + payment->getPaymentId() + " has been refunded.";
@@ -161,67 +175,6 @@ Enums::ProcessStatus PaymentManagementService::refundPayment(Ticket* ticket, Pay
     message = "Your refund request for booking with id " + booking->getBookingId() + " has been processed successfully";
     m_notificationManagementService.sendNotification(ticket->getCustomer(), message);
     return Enums::ProcessStatus::SUCCESS;
-}
-
-/*
- * Function: PaymentManagementService::savePaymentData
- * Description: Saves all payment data from the DataStore into a CSV file.
- *              Includes payment details such as Payment ID, Booking ID, amount,
- *              payment method, status, and timestamp.
- *              Overwrites existing file content.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened)
- */
-void PaymentManagementService::savePaymentData()
-{
-    std::vector<std::string> lines;
-    lines.push_back(config::Header::PAYMENT_HEADER);
-    const std::map<std::string, Payment*>& payment = m_dataStore.getPayments();
-    for (std::map<std::string, Payment*>::const_iterator iterator = payment.begin(); iterator != payment.end(); ++iterator)
-    {
-        lines.push_back((iterator->second)->serialize());
-    }
-    FileManagement::writeLines(std::string(config::File::PAYMENT_FILEPATH), lines);
-}
-
-/*
- * Function: PaymentManagementService::loadPaymentData
- * Description: Loads all payment data from a CSV file into memory.
- *              Reads each line from the file using FileManagement::readlines(PATH),
- *              deserializes it into a Payment object via Payment::deserialize,
- *              and restores associations with its related Booking if the Booking ID
- *              is present and found in the DataStore. Also sets the Payment status
- *              using Enums::getPaymentStatus before adding the reconstructed Payment
- *              to the DataStore.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if the file cannot be opened or read)
- */
-void PaymentManagementService::loadPaymentData()
-{
-    std::string paymentId, bookingId, amount, paymentMethod, paymentStatus, timeStamp;
-    std::vector<std::string> lines = FileManagement::readlines(PATH);
-    for (int index = 1; index < lines.size(); ++index)
-    {
-        Payment* payment = Payment::deserialize(lines[index]);
-        std::stringstream lineStream(lines[index]);
-        getline(lineStream, paymentId, ',');
-        getline(lineStream, bookingId, ',');
-        getline(lineStream, amount, ',');
-        getline(lineStream, paymentMethod, ',');
-        getline(lineStream, paymentStatus, ',');
-        getline(lineStream, timeStamp, ',');
-        if (!bookingId.empty())
-        {
-            Booking* booking = m_dataStore.getBookingDetailsById(bookingId);
-            payment->setBooking(booking);
-        }
-        payment->setStatus(Enums::getPaymentStatus(paymentStatus));
-        m_dataStore.addPayment(payment);
-    }
 }
 
 /*
@@ -237,6 +190,7 @@ void PaymentManagementService::loadPaymentData()
 */
 const std::vector<Payment*> PaymentManagementService::getAllPayments()
 {
+    ScopedLock lock(m_paymentMutex);
     const std::map<std::string, Payment*> allPayments = m_dataStore.getPayments();
     const User* authenticatedUser = m_dataStore.getAuthenticatedUser();
     std::vector<Payment*> currentCustomerPayments;

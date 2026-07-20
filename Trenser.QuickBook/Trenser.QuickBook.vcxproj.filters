@@ -37,6 +37,9 @@
     <Filter Include="File">
       <UniqueIdentifier>{bb197fd2-8b1a-484e-8f83-c5080a748e32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SharedMemory">
+      <UniqueIdentifier>{7e479bdd-0a08-4ebe-8779-b03b941a5b93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Trenser.QuickBook.cpp">
@@ -165,6 +168,24 @@
     <ClCompile Include="Utilities\Datalinker.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="SharedMemory\SharedStructs.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\MappedFileRegistry.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\NamedMutex.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\ScopedLock.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\SessionManager.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory\NotificationEvent.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h">
@@ -289,6 +310,27 @@
     </ClInclude>
     <ClInclude Include="Utilities\Datalinker.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\SharedStructs.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\MappedFile.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\MappedFileRegistry.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\NamedMutex.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\ScopedLock.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\SessionManager.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory\NotificationEvent.h">
+      <Filter>SharedMemory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

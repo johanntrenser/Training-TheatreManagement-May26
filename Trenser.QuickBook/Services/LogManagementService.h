@@ -9,18 +9,18 @@
  */
 #pragma once
 #include "DataStore.h"
-#include "FileManagement.h"
+#include "NamedMutex.h"
+#include "ScopedLock.h"
 
 class LogManagementService
 {
 private:
 	DataStore& m_dataStore;
 	const std::string& PATH = config::File::LOG_FILEPATH;
+	NamedMutex m_mutex;
 public:
 	LogManagementService();
 	const std::string generateLogId();
 	void addLog(const std::string& description, const Enums::LogType logType);
 	const std::vector<const Log*> getLogsByType(const Enums::LogType logType);
-	void saveLogData();
-	void loadLogData();
 };

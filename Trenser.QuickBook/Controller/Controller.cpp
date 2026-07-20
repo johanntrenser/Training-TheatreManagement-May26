@@ -13,7 +13,6 @@
 #include <errno.h>
 using namespace::std;
 #include "Controller.h"
-#include "Datalinker.h"
 
  /*
   * Function: Controller::Controller
@@ -85,6 +84,7 @@ Controller::Controller(AuthenticationManagementService* authService,
     m_seatManagementService(seatService),
     m_refundManagementService(refundService)
 {
+    createDefaultAdmin();
 }
 
 /*
@@ -103,11 +103,7 @@ Controller::Controller(AuthenticationManagementService* authService,
  */
 Enums::ProcessStatus Controller::registerUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
-    if (m_authenticationManagementService->registerUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
-    {
-        return Enums::ProcessStatus::SUCCESS;
-    }
-    return Enums::ProcessStatus::FAILED;
+    return m_authenticationManagementService->registerUser(userName, email, password, phoneNumber, userType);
 }
 
 /*
@@ -725,11 +721,7 @@ Enums::ProcessStatus Controller::isShowTimeConflicting(const std::string& movieI
  */
 Enums::ProcessStatus Controller::createUser(const std::string& userName, const std::string& email, const std::string& password, const std::string& phoneNumber, Enums::UserType userType)
 {
-    if (m_userManagementService->createUser(userName, email, password, phoneNumber, userType) == Enums::ProcessStatus::SUCCESS)
-    {
-        return Enums::ProcessStatus::SUCCESS;
-    }
-    return Enums::ProcessStatus::FAILED;
+    return m_userManagementService->createUser(userName, email, password, phoneNumber, userType);
 }
 
 /*
@@ -1422,40 +1414,6 @@ const Booking* Controller::bookSelectedSeats(const std::string& showId, const st
 }
 
 /*
- * Function: Controller::loadDataFromFile
- * Description: Loads all application data from persistent storage into memory.
- *              Delegates the responsibility of loading each entity type to its
- *              corresponding management service. This ensures that users, tickets,
- *              theatres, shows, seats, screens, refunds, payments, notifications,
- *              movies, logs, and bookings are all reconstructed from CSV files
- *              and restored into the DataStore with their associations.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if any underlying file cannot be opened or read)
- */
-void Controller::loadDataFromFile()
-{
-    ensureFolder(config::File::FILEPATH);
-    m_userManagementService->loadUserData();
-    m_movieManagementService->loadMovieData();
-    m_theatreManagementService->loadTheatreData();
-    m_ScreenManagementService->loadScreenData();
-    m_seatManagementService->loadSeatData();
-    m_showManagementService->loadShowData();
-    m_seatManagementService->loadShowSeatAvailabilityData();
-    m_bookingManagementService->loadBookingData();
-    m_paymentManagementService->loadPaymentData();
-    m_ticketManagementService->loadTicketData();
-    m_refundManagementService->loadRefundData();
-    m_notificationManagementService->loadNotificationData();
-    m_logManagementService->loadLogData();
-    DataLinker linker;
-    linker.linkTheatresAndScreens();
-    linker.linkShowsAndSeatAvailability();
-}
-
-/*
  * Function    : ensureFolder
  * Description : Ensures that the specified folder exists on the file system.
  *               If the folder does not exist, it attempts to create it.
@@ -1470,35 +1428,6 @@ void Controller::ensureFolder(const char* path) {
             std::cerr << "Failed to create folder!\n";
         }
     }
-}
-
-/*
- * Function: Controller::saveData
- * Description: Centralized method to persist all application data into CSV files.
- *              Delegates saving responsibilities to each management service, ensuring
- *              that users, theatres, movies, tickets, screens, payments, notifications,
- *              logs, refunds, seats, shows, and bookings are all written to storage.
- *              This provides a single entry point for saving the entire system state.
- * Parameters:
- *    None
- * Returns:
- *    None (throws runtime_error if any underlying service fails to open its file)
- */
-void Controller::saveData()
-{
-    m_userManagementService->saveUserData();
-    m_theatreManagementService->saveTheatreData();
-    m_ScreenManagementService->saveScreenData();
-    m_seatManagementService->saveSeatData();
-    m_movieManagementService->saveMovieData();
-    m_showManagementService->saveShowData();
-    m_ticketManagementService->saveTicketData();
-    m_paymentManagementService->savePaymentData();
-    m_notificationManagementService->saveNotificationData();
-    m_logManagementService->saveLogData();
-    m_refundManagementService->saveRefundData();
-    m_bookingManagementService->saveBookingData();
-    m_seatManagementService->saveShowSeatAvailabilityData();
 }
 
 /*
@@ -1542,6 +1471,34 @@ const std::vector<Refund*> Controller::getRefunds()
 const std::vector<std::string> Controller::getSeatIdsFromBooking(const Booking* booking)
 {
     return m_bookingManagementService->getSeatIdsFromBooking(booking);
+}
+
+/*
+ * Function: createDefaultAdmin
+ * Description: Creates a default admin user with preset credentials and adds it to DataStore.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
+void Controller::createDefaultAdmin()
+{
+    m_userManagementService->createDefaultAdmin();
+}
+
+/*
+ * Function: checkAndHandleForcedLogout
+ * Description: Delegates the forced logout check to the AuthenticationManagementService.
+ *              Returns true if the current user has been deactivated and logout
+ *              handling was performed, otherwise false.
+ * Parameters:
+ *    None
+ * Returns:
+ *    Boolean value indicating whether a forced logout occurred
+ */
+bool Controller::checkAndHandleForcedLogout()
+{
+    return m_authenticationManagementService->checkAndHandleForcedLogout();
 }
 
 /*
