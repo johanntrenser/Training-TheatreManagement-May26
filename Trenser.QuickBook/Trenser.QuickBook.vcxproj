@@ -40,13 +40,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)Views;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;$(ProjectDir)SharedMemory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;$(ProjectDir)SharedMemory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,6 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Models;$(ProjectDir)Controller;$(ProjectDir)DataStore;$(ProjectDir)Utilities;$(ProjectDir)Factories;$(ProjectDir)Services;$(ProjectDir)SharedMemory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,14 +163,12 @@
     <ClCompile Include="SharedMemory\ScopedLock.cpp" />
     <ClCompile Include="SharedMemory\SessionManager.cpp" />
     <ClCompile Include="SharedMemory\SharedStructs.cpp" />
-    <ClCompile Include="Trenser.QuickBook.cpp" />
     <ClCompile Include="Utilities\ApplicationConfig.cpp" />
     <ClCompile Include="Utilities\Enums.cpp" />
     <ClCompile Include="Utilities\InputHelper.cpp" />
     <ClCompile Include="Utilities\OutputHelper.cpp" />
     <ClCompile Include="Utilities\TimeStamp.cpp" />
     <ClCompile Include="Utilities\Validator.cpp" />
-    <ClCompile Include="Views\UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller\Controller.h" />
@@ -217,7 +216,6 @@
     <ClInclude Include="Utilities\OutputHelper.h" />
     <ClInclude Include="Utilities\TimeStamp.h" />
     <ClInclude Include="Utilities\Validator.h" />
-    <ClInclude Include="Views\UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Files\Booking.csv" />

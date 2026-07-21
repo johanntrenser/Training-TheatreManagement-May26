@@ -82,7 +82,7 @@ Enums::ProcessStatus TheatreManagementService::deactivateTheatre(const std::stri
 bool TheatreManagementService::isMovieAlreadyExistsInTheatre(Theatre* theatre, const std::string& movieId)
 {
     const std::vector<Movie*>& movies = theatre->getMovies();
-    for (std::vector<Movie*>::const_iterator iterator =movies.begin(); iterator != movies.end(); ++iterator)
+    for (std::vector<Movie*>::const_iterator iterator = movies.begin(); iterator != movies.end(); ++iterator)
     {
         if ((*iterator)->getMovieId() == movieId)
         {
@@ -341,7 +341,7 @@ Enums::ProcessStatus TheatreManagementService::isTheatrePhoneNumberUnique(const 
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        if ((iterator->second)->getTheatrePhoneNumber() == phoneNumber) 
+        if ((iterator->second)->getTheatrePhoneNumber() == phoneNumber)
         {
             return Enums::ProcessStatus::FAILED;
         }
@@ -412,7 +412,7 @@ Enums::ProcessStatus TheatreManagementService::addTheatre(const std::string& nam
     {
         m_dataStore.addTheatre(theatre);
         std::string message = "New Theatre has been added : " + name;
-        m_event.notify("",getAllAdminsId(), message);
+        m_event.notify("", getAllAdminsId(), message);
         return Enums::ProcessStatus::SUCCESS;
     }
     return Enums::ProcessStatus::FAILED;
@@ -619,7 +619,7 @@ const std::vector<const Theatre*> TheatreManagementService::getPendingTheatres()
     const std::map<std::string, Theatre*>& theatres = m_dataStore.getTheatres();
     for (std::map<std::string, Theatre*>::const_iterator iterator = theatres.begin(); iterator != theatres.end(); ++iterator)
     {
-        if((iterator->second)->getStatus()==Enums::TheatreStatus::PENDING)
+        if ((iterator->second)->getStatus() == Enums::TheatreStatus::PENDING)
         {
             theatresList.push_back(iterator->second);
         }
