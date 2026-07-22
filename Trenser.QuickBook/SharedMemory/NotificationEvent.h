@@ -23,6 +23,7 @@
 #include <ctime>
 #include <codecvt>
 #include <locale>
+#include <functional>
 #include "Factory.h"
 #include "DataStore.h"
 #include "NamedMutex.h"
@@ -42,7 +43,6 @@ public:
 	void init(const std::string& userId);
 	void notify(const std::string& targetType, const std::string& targetId, const std::string& incomingMessage);
 	void notify(const std::string& targetType,const std::vector<std::string>& targetIds, const std::string& message);
-	void startListener(const std::string& currentUserType, const std::string& currentUserId,const std::string& userName);
-	static std::wstring toWide(const std::string& str);
+	void startListener(const std::string& currentUserType, const std::string& currentUserId, const std::string& userName, std::function<void(const std::string&)> onMessage);
 	~NotificationEvent();
 };

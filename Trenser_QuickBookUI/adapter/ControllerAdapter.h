@@ -20,6 +20,7 @@
 #include <QVariantMap>
 #include <qqmlintegration.h>
 #include "Controller.h"
+#include "NotificationEvent.h"
 #include "EnumsAdapter.h"
 #include "Enums.h"
 
@@ -66,14 +67,18 @@ public:
     Q_INVOKABLE QVariantList getAllTheatres();
     Q_INVOKABLE int approveTheatre(const QString& theatreId);
     Q_INVOKABLE int rejectTheatre(const QString& theatreId);
+    Q_INVOKABLE QVariantList getUnreadNotifications(const int batchSize);
 signals:
     void authenticationChanged();
+    void notificationReceived(const QString& message);
 
 private:
     Controller* m_controller = nullptr;
     bool m_authenticated = false;
+    NotificationEvent* m_event;
     EnumsAdapter::UserType m_currentUserType = EnumsAdapter::UserType::USER_NOT_FOUND;
     bool m_initialized = false;
+    int m_cachedRemainingUnread = 0;
 
     static QString userTypeToString(Enums::UserType type);
     static QString userStatusToString(Enums::UserStatus status);
