@@ -515,3 +515,182 @@ bool ControllerAdapter::isPhoneNumberUnique(const QString& phoneNumber)
     }
     return false;
 }
+
+QVariantList ControllerAdapter::getMyTheatres()
+{
+    QVariantList theatres;
+    try {
+        for (const Theatre* theatre : m_controller->getCurrentOwnerTheatres())
+        {
+            QVariantMap map;
+            map["id"] = QString::fromStdString(theatre->getTheatreId());
+            map["name"] = QString::fromStdString(theatre->getName());
+            map["city"] = QString::fromStdString(theatre->getCity());
+            map["address"] = QString::fromStdString(theatre->getAddress());
+            map["phone"] = QString::fromStdString(theatre->getTheatrePhoneNumber());
+            map["status"] = QString::fromStdString(Enums::getTheatreStatusString(theatre->getStatus()));
+            theatres.append(map);
+        }
+        for (const Theatre* theatre : m_controller->getCurrentOwnerInactiveTheatres())
+        {
+            QVariantMap map;
+            map["id"] = QString::fromStdString(theatre->getTheatreId());
+            map["name"] = QString::fromStdString(theatre->getName());
+            map["city"] = QString::fromStdString(theatre->getCity());
+            map["address"] = QString::fromStdString(theatre->getAddress());
+            map["phone"] = QString::fromStdString(theatre->getTheatrePhoneNumber());
+            map["status"] = QString::fromStdString(Enums::getTheatreStatusString(theatre->getStatus()));
+            theatres.append(map);
+        }
+    }
+    catch(const std::exception &ex)
+    {
+        qDebug() << "Get theatres error:" << ex.what();
+    }
+    return theatres;
+}
+
+int ControllerAdapter::addTheatre(const QString& name, const QString& city, const QString& address, const QString& phone, const QString& email)
+{
+    std::string stdName = name.toStdString();
+    std::string stdCity = city.toStdString();
+    std::string stdAddress = address.toStdString();
+    std::string stdPhone = phone.toStdString();
+    std::string stdEmail = email.toStdString();
+    try
+    {
+        //Uniqueness Check
+        if (m_controller->isTheatreEmailUnique(stdEmail) == Enums::ProcessStatus::FAILED) {
+            return static_cast<int>(EnumsAdapter::ProcessStatus::EMAIL_ALREADY_EXISTS);
+        }
+        if (m_controller->isTheatrePhoneNumberUnique(stdPhone) ==  Enums::ProcessStatus::FAILED) {
+            return static_cast<int>(EnumsAdapter::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS);
+        }
+        if(m_controller->isTheatreUnique(stdName, stdCity, stdAddress, stdPhone, stdEmail) == Enums::ProcessStatus::FAILED)
+        {
+            return static_cast<int>(EnumsAdapter::ProcessStatus::ALREADY_EXISTS);
+        }
+        Enums::ProcessStatus status = m_controller->addTheatre(stdName, stdCity, stdAddress, stdPhone, stdEmail);
+        return static_cast<int>(status);
+    }
+    catch(const std::exception &ex)
+    {
+        qDebug() << "Add theatre error:" << ex.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+int ControllerAdapter::updateTheatre(const QString& theatreId, const QString& name, const QString& city,
+                                     const QString& address, const QString& phone, const QString& email)
+{
+    std::string stdId = theatreId.toStdString();
+    std::string stdName = name.toStdString();
+    std::string stdCity = city.toStdString();
+    std::string stdAddress = address.toStdString();
+    std::string stdPhone = phone.toStdString();
+    std::string stdEmail = email.toStdString();
+    bool allSuccess = true;
+    try {
+        // ONLY check uniqueness if QML sent a NEW email
+        if (!stdEmail.empty()) {
+            if (m_controller->isTheatreEmailUnique(stdEmail) == Enums::ProcessStatus::FAILED) {
+                return static_cast<int>(EnumsAdapter::ProcessStatus::EMAIL_ALREADY_EXISTS);
+            }
+        }
+        // ONLY check uniqueness if QML sent a NEW phone number
+        if (!stdPhone.empty()) {
+            if (m_controller->isTheatrePhoneNumberUnique(stdPhone) == Enums::ProcessStatus::FAILED) {
+                return static_cast<int>(EnumsAdapter::ProcessStatus::PHONE_NUMBER_ALREADY_EXISTS);
+            }
+        }
+        // Skip global uniqueness check and go straight to updating the fields!
+        if (!stdName.empty())
+            allSuccess &= (m_controller->setTheatreNameById(stdId, stdName) == Enums::ProcessStatus::SUCCESS);
+        if (!stdCity.empty())
+            allSuccess &= (m_controller->setTheatreCityById(stdId, stdCity) == Enums::ProcessStatus::SUCCESS);
+        if (!stdAddress.empty())
+            allSuccess &= (m_controller->setTheatreAddressById(stdId, stdAddress) == Enums::ProcessStatus::SUCCESS);
+        if (!stdPhone.empty())
+            allSuccess &= (m_controller->setTheatrePhoneNumberById(stdId, stdPhone) == Enums::ProcessStatus::SUCCESS);
+        if (!stdEmail.empty())
+            allSuccess &= (m_controller->setTheatreEmailById(stdId, stdEmail) == Enums::ProcessStatus::SUCCESS);
+        if (allSuccess) {
+            return static_cast<int>(EnumsAdapter::ProcessStatus::SUCCESS);
+        }
+    } catch(const std::exception &ex) {
+        qDebug() << "Update theatre error:" << ex.what();
+    }
+
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+int ControllerAdapter::deactivateTheatre(const QString& theatreId)
+{
+    try {
+        Enums::TheatreStatus status = Enums::TheatreStatus::INACTIVE;
+        Enums::ProcessStatus resultStatus = m_controller->setTheatreStatusById(theatreId.toStdString(), status);
+        return static_cast<int>(resultStatus);
+    } catch(const std::exception &ex) {
+        qDebug() << "Deactivate error:" << ex.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+int ControllerAdapter::reactivateTheatre(const QString& theatreId)
+{
+    try {
+         Enums::TheatreStatus status = Enums::TheatreStatus::PENDING;
+        Enums::ProcessStatus resultStatus = m_controller->setTheatreStatusById(theatreId.toStdString(), status);
+        return static_cast<int>(resultStatus);
+    } catch(const std::exception &ex) {
+        qDebug() << "Reactivate error:" << ex.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+QVariantList ControllerAdapter::getAllTheatres()
+{
+    QVariantList theatres;
+    try {
+        for (const Theatre* theatre : m_controller->getAllTheatres())
+        {
+            QVariantMap map;
+            map["id"] = QString::fromStdString(theatre->getTheatreId());
+            map["name"] = QString::fromStdString(theatre->getName());
+            map["city"] = QString::fromStdString(theatre->getCity());
+            map["address"] = QString::fromStdString(theatre->getAddress());
+            map["phone"] = QString::fromStdString(theatre->getTheatrePhoneNumber());
+            map["status"] = QString::fromStdString(Enums::getTheatreStatusString(theatre->getStatus()));
+            theatres.append(map);
+        }
+    }
+    catch(const std::exception &ex)
+    {
+        qDebug() << "Get theatres error:" << ex.what();
+    }
+    return theatres;
+}
+
+int ControllerAdapter::approveTheatre(const QString& theatreId)
+{
+    std::string stdTheatreId = theatreId.toStdString();
+    Enums::TheatreStatus status = Enums::TheatreStatus::ACTIVE;
+    if(m_controller->setTheatreStatusById(stdTheatreId, status) == Enums::ProcessStatus::SUCCESS)
+    {
+        qInfo() << "Admin approved theatre:" << theatreId;
+        return static_cast<int>(EnumsAdapter::ProcessStatus::SUCCESS);
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+int ControllerAdapter::rejectTheatre(const QString& theatreId)
+{
+    std::string stdTheatreId = theatreId.toStdString();
+    Enums::TheatreStatus status = Enums::TheatreStatus::PENDING;
+    if(m_controller->setTheatreStatusById(stdTheatreId, status) == Enums::ProcessStatus::SUCCESS)
+    {
+        qInfo() << "Admin rejected theatre:" << theatreId;
+        return static_cast<int>(EnumsAdapter::ProcessStatus::SUCCESS);
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
