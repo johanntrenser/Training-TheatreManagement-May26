@@ -213,24 +213,20 @@ void NotificationEvent::notify(const std::string& targetType, const std::vector<
 
 /*
  * Function: NotificationEvent::startListener
- * Description: Starts a background listener thread that continuously waits for
- *              notification events from shared memory for a specific user. When
- *              an event is signaled, the listener acquires a scoped lock on the
- *              shared buffer, retrieves the message, and checks if it is intended
- *              for the current user (based on target type and target ID). If the
- *              message is relevant, it is displayed in the console using the
- *              displayNotification method, which prefixes the message with the
- *              user’s name and auto-clears it after a configured duration.
+ * Description: Starts a background listener thread that waits for notification events
+ *              from shared memory. When a message is targeted to the current user,
+ *              it invokes the provided callback with the formatted message.
  * Parameters:
- *    currentUserType - The type of the current user (e.g., "ADMIN", "THEATRE_OWNER","CUSTOMER").
- *    currentUserId   - The unique identifier of the current user.
- *    userName        - The display name of the user, used to prefix notifications.
+ *    currentUserType (const std::string&) - Type of the current user (e.g., Admin, Customer, TheatreOwner)
+ *    currentUserId (const std::string&) - Unique identifier of the current user
+ *    userName (const std::string&) - Display name of the current user
+ *    onMessage (std::function<void(const std::string&)>) - Callback function invoked when a message is received
  * Returns:
- *    None
+ *    void
  */
-void NotificationEvent::startListener(const std::string& currentUserType, const std::string& currentUserId, const std::string& userName)
+void NotificationEvent::startListener(const std::string& currentUserType, const std::string& currentUserId, const std::string& userName, std::function<void(const std::string&)> onMessage)
 {
-    std::thread([currentUserType, currentUserId, userName]()
+    std::thread([currentUserType, currentUserId, userName, onMessage]()
         {
             while (true)
             {
@@ -260,38 +256,9 @@ void NotificationEvent::startListener(const std::string& currentUserType, const 
                 {
                     continue;
                 }
-                HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-                CONSOLE_SCREEN_BUFFER_INFO consoleScreenBufferInfo;
-                GetConsoleScreenBufferInfo(hConsole, &consoleScreenBufferInfo);
-                COORD position;
-                position.X = 0;
-                position.Y = consoleScreenBufferInfo.srWindow.Bottom;
-                DWORD written;
-                std::wstring wideMessage = toWide(userName + config::delimeter::colon + message);
-                WriteConsoleOutputCharacterW(hConsole, wideMessage.c_str(), (DWORD)wideMessage.size(), position, &written);
-                std::this_thread::sleep_for(std::chrono::seconds(config::Limit::MAX_NOTIFICATION_TIMER));
-                std::wstring blank(wideMessage.size(), L' ');
-                WriteConsoleOutputCharacterW(hConsole, blank.c_str(), (DWORD)blank.size(), position, &written);
+                onMessage(userName + config::delimeter::colon + message);
             }
         }).detach();
-}
-
-
-/*
- * Function: NotificationEvent::toWide
- * Description: Converts a UTF-8 encoded std::string into a wide-character std::wstring
- *              using std::wstring_convert with the UTF-8 to UTF-16 codecvt facet.
- *              This is primarily used for displaying notification messages in the
- *              Windows console, which requires wide-character output functions.
- * Parameters:
- *    inputString - The UTF-8 encoded string to be converted.
- * Returns:
- *    A std::wstring containing the UTF-16 representation of the input string.
- */
-std::wstring NotificationEvent::toWide(const std::string& inputString)
-{
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(inputString);
 }
 
 /*

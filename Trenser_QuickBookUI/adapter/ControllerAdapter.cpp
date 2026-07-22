@@ -109,6 +109,22 @@ int ControllerAdapter::login(const QString &email, const QString &password) {
         status = loginResult.first;
         Enums::UserType type = loginResult.second;
         if (status == Enums::LoginStatus::USER_FOUND) {
+            const User* user = m_controller->getAuthenticatedUser();
+            if (user)
+            {
+                m_event->init(user->getUserId());
+                m_event->startListener(
+                    userTypeToString(user->getUserType()).toStdString(),
+                    user->getUserId(),
+                    user->getUserName(),
+                    [this](const std::string& message)
+                    {
+                        QString qMessage = QString::fromStdString(message);
+                        QMetaObject::invokeMethod(this, [this, qMessage]() {
+                            emit notificationReceived(qMessage);
+                        }, Qt::QueuedConnection);
+                    });
+            }
             m_authenticated = true;
             m_currentUserType = static_cast<EnumsAdapter::UserType>(type);
             emit authenticationChanged();

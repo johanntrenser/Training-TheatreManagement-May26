@@ -281,4 +281,47 @@ Item {
             }
         }
     }
+    Rectangle {
+        id: toast
+        width: Math.min(parent.width - 40, toastText.implicitWidth + 40)
+        height: 44
+        radius: 8
+        color: "#333333"
+        opacity: 0
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 20
+        z: 999
+
+        property alias message: toastText.text
+
+        function show(msg) {
+            toast.message = msg
+            toast.opacity = 1
+            hideTimer.restart()
+        }
+
+        Text {
+            id: toastText
+            text:"demo"
+            anchors.centerIn: parent
+            color: "white"
+            font.pixelSize: 13
+        }
+
+        Behavior on opacity { NumberAnimation { duration: 250 } }
+
+        Timer {
+            id: hideTimer
+            interval: 4000
+            onTriggered: toast.opacity = 0
+        }
+    }
+
+    Connections {
+        target: controller
+        function onNotificationReceived(message) {
+            toast.show(message)
+        }
+    }
 }
