@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QString>
+#include <QVariantList>
+#include <QVariantMap>
 #include <qqmlintegration.h>
 #include "Controller.h"
 #include "EnumsAdapter.h"
@@ -28,7 +30,7 @@ public:
 
     bool isAuthenticated() const { return m_authenticated; }
     EnumsAdapter::UserType userType() const { return m_currentUserType; }
-
+    Q_INVOKABLE QVariantMap getProfile();
 signals:
     void authenticationChanged();
 
@@ -37,6 +39,8 @@ private:
     bool m_authenticated = false;
     EnumsAdapter::UserType m_currentUserType = EnumsAdapter::UserType::USER_NOT_FOUND;
     bool m_initialized = false;
+
+    static QString userTypeToString(Enums::UserType type);
 };
 
 #endif // CONTROLLERADAPTER_H

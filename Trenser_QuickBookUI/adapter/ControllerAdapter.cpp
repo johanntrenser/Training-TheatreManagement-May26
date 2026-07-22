@@ -46,30 +46,43 @@ bool ControllerAdapter::initialize() {
 }
 
 int ControllerAdapter::login(const QString &email, const QString &password) {
-    if (!m_initialized) {
-        initialize();
+    try
+    {
+        if (!m_initialized) {
+            initialize();
+        }
+
+        std::pair<Enums::LoginStatus, Enums::UserType> loginResult =
+            m_controller->login(email.toStdString(), password.toStdString());
+
+        Enums::LoginStatus status = loginResult.first;
+        Enums::UserType type = loginResult.second;
+
+        if (status == Enums::LoginStatus::USER_FOUND) {
+            m_authenticated = true;
+            m_currentUserType = static_cast<EnumsAdapter::UserType>(type);
+            emit authenticationChanged();
+        }
     }
-
-    std::pair<Enums::LoginStatus, Enums::UserType> loginResult =
-        m_controller->login(email.toStdString(), password.toStdString());
-
-    Enums::LoginStatus status = loginResult.first;
-    Enums::UserType type = loginResult.second;
-
-    if (status == Enums::LoginStatus::USER_FOUND) {
-        m_authenticated = true;
-        m_currentUserType = static_cast<EnumsAdapter::UserType>(type);
-        emit authenticationChanged();
+    catch (const std::exception &ex)
+    {
+        qDebug() << "Login error:" << ex.what();
     }
-
     return static_cast<int>(status);
 }
 
 void ControllerAdapter::logout() {
-    m_authenticated = false;
-    m_currentUserType = EnumsAdapter::UserType::USER_NOT_FOUND;
-    m_controller->logout();
-    emit authenticationChanged();
+    try
+    {
+        m_authenticated = false;
+        m_currentUserType = EnumsAdapter::UserType::USER_NOT_FOUND;
+        m_controller->logout();
+        emit authenticationChanged();
+    }
+    catch (const std::exception &ex)
+    {
+        qDebug() << "Logout error:" << ex.what();
+    }
 }
 
 int ControllerAdapter::registerUser(const QString& name,
@@ -78,36 +91,79 @@ int ControllerAdapter::registerUser(const QString& name,
                                             const QString& phone,
                                             const EnumsAdapter::UserType userType)
 {
-    if (!m_initialized || !m_controller)
-    {
-        qWarning() << "Registration failed: Backend not initialized!";
-        return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+    try{
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "Registration failed: Backend not initialized!";
+            return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+        }
+        std::string stdName = name.toStdString();
+        std::string stdEmail = email.toStdString();
+        std::string stdPassword = password.toStdString();
+        std::string stdPhone = phone.toStdString();
+        Enums::UserType type = Enums::UserType::USER_NOT_FOUND;
+        if(userType == EnumsAdapter::UserType::CUSTOMER)
+        {
+            type = Enums::UserType::CUSTOMER;
+        }
+        else if(userType == EnumsAdapter::UserType::THEATRE_OWNER)
+        {
+            type = Enums::UserType::THEATRE_OWNER;
+        }
+        else
+        {
+            type = Enums::UserType::ADMIN;
+        }
+        Enums::ProcessStatus status = m_controller->registerUser(
+            stdName,
+            stdEmail,
+            stdPassword,
+            stdPhone,
+            type
+            );
+        qInfo() << "Registered theatre owner:" << email
+                << "Status Code:" << static_cast<int>(status);
     }
-    std::string stdName = name.toStdString();
-    std::string stdEmail = email.toStdString();
-    std::string stdPassword = password.toStdString();
-    std::string stdPhone = phone.toStdString();
-    Enums::UserType type = Enums::UserType::USER_NOT_FOUND;
-    if(userType == EnumsAdapter::UserType::CUSTOMER)
+    catch (const std::exception &ex)
     {
-        type = Enums::UserType::CUSTOMER;
+        qDebug() << "Registration error:" << ex.what();
     }
-    else if(userType == EnumsAdapter::UserType::THEATRE_OWNER)
-    {
-        type = Enums::UserType::THEATRE_OWNER;
-    }
-    else
-    {
-        type = Enums::UserType::ADMIN;
-    }
-    Enums::ProcessStatus status = m_controller->registerUser(
-        stdName,
-        stdEmail,
-        stdPassword,
-        stdPhone,
-        type
-        );
-    qInfo() << "Registered theatre owner:" << email
-            << "Status Code:" << static_cast<int>(status);
     return static_cast<int>(status);
+}
+
+QVariantMap ControllerAdapter::getProfile()
+{
+    try{
+        QVariantMap m;
+        const User* user = m_controller->getAuthenticatedUser();
+        if (!user) return m;
+        m["id"] = QString::fromStdString(user->getUserId());
+        m["name"] = QString::fromStdString(user->getUserName());
+        m["email"] = QString::fromStdString(user->getEmail());
+        m["phone"] = QString::fromStdString(user->getPhoneNumber());
+        m["role"] = userTypeToString(user->getUserType());
+        m["password"] = QString::fromStdString(user->getPassword());
+    }
+    catch (const std::exception &ex)
+    {
+        qDebug() << "Get Profile error:" << ex.what();
+    }
+    return m;
+}
+
+QString ControllerAdapter::userTypeToString(Enums::UserType type)
+{
+    try{
+        switch (type)
+        {
+        case Enums::UserType::ADMIN: return "Admin";
+        case Enums::UserType::THEATRE_OWNER: return "TheatreOwner";
+        case Enums::UserType::CUSTOMER: return "Customer";
+        default: return "";
+        }
+    }
+    catch (const std::exception &ex)
+    {
+        qDebug() << "Get user type to string error:" << ex.what();
+    }
 }

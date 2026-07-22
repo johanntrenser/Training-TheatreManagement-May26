@@ -48,6 +48,7 @@ qt_add_qml_module(appTrenser_QuickBookUI
         adapter/EnumsAdapter.h
         QML_FILES views/MainMenu.qml
         QML_FILES views/Register.qml
+        QML_FILES views/Dashboard.qml
         # Add future C++ models here, e.g.:
         # models/MovieListModel.h
         # models/MovieListModel.cpp
