@@ -2057,7 +2057,7 @@ void DataStore::refreshUsers()
             user->setUserName(sharedUser.username);
             user->setEmail(sharedUser.email);
             std::string password = sharedUser.password;
-            user->setPassword(User::decryption(password));
+            user->setPassword(password);
             user->setPhoneNumber(sharedUser.phoneNumber);
             user->setStatus(static_cast<Enums::UserStatus>(sharedUser.status));
         }
@@ -2069,7 +2069,7 @@ void DataStore::refreshUsers()
                     sharedUser.userId,
                     sharedUser.username,
                     sharedUser.email,
-                    User::decryption(password),
+                    password,
                     sharedUser.phoneNumber,
                     static_cast<Enums::UserType>(
                         sharedUser.userType));
@@ -3244,7 +3244,7 @@ void DataStore::refreshUserById(const std::string& userId)
         user->setUserName(sharedUser->username);
         user->setEmail(sharedUser->email);
         std::string password = sharedUser->password;
-        user->setPassword(User::decryption(password));
+        user->setPassword(password);
         user->setPhoneNumber(sharedUser->phoneNumber);
         user->setStatus(static_cast<Enums::UserStatus>(sharedUser->status));
     }
@@ -3255,7 +3255,7 @@ void DataStore::refreshUserById(const std::string& userId)
             sharedUser->userId,
             sharedUser->username,
             sharedUser->email,
-            User::decryption(password),
+            password,
             sharedUser->phoneNumber,
             static_cast<Enums::UserType>(sharedUser->userType));
         if (user)

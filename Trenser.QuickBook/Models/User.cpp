@@ -215,69 +215,6 @@ void User::setStatus(Enums::UserStatus status)
 }
 
 /*
- * Function: User::encryption
- * Description: Encrypts the given password by shifting each character by +10 in ASCII
- *              and then reversing the string.
- * Parameters:
- *    password - Reference to the string to encrypt
- * Returns:
- *    std::string - encrypted password
- */
-std::string User::encryption(const std::string& password)
-{
-    std::string result = password;
-    int index = 0;
-    while (result[index] != '\0')
-    {
-        result[index] = char(int(password[index]) + 10);
-        index++;
-    }
-    reverseString(result);
-    return result;
-}
-
-/*
- * Function: User::reverseString
- * Description: Reverses the given string in place.
- * Parameters:
- *    password - Reference to the string to reverse
- * Returns:
- *    None (modifies the string directly)
- */
-void User::reverseString(std::string& password)
-{
-    int left = 0, right = int(password.length()) - 1;
-    while (left < right)
-    {
-        char temp = password[left];
-        password[left] = password[right];
-        password[right] = temp;
-        left++;
-        right--;
-    }
-}
-
-/*
- * Function: User::decryption
- * Description: Decrypts the given password by reversing the string and shifting each character by -10 in ASCII.
- * Parameters:
- *    password - Reference to the string to decrypt
- * Returns:
- *    std::string - decrypted password
- */
-std::string User::decryption(std::string& password)
-{
-    reverseString(password);
-    int index = 0;
-    while (password[index] != '\0')
-    {
-        password[index] = char(int(password[index]) - 10);
-        index++;
-    }
-    return password;
-}
-
-/*
 * Function: serialize
 * Description: Converts a User object into a SharedUser struct
 *              suitable for storage in the memory-mapped file.
@@ -293,7 +230,7 @@ SharedUser User::serialize()
     strncpy_s(sharedUser.username, sizeof(sharedUser.username), m_userName.c_str(), _TRUNCATE);
     strncpy_s(sharedUser.email, sizeof(sharedUser.email), m_email.c_str(), _TRUNCATE);
     std::string passwordCopy = m_password;
-    strncpy_s(sharedUser.password, sizeof(sharedUser.password), encryption(passwordCopy).c_str(), _TRUNCATE);
+    strncpy_s(sharedUser.password, sizeof(sharedUser.password), passwordCopy.c_str(), _TRUNCATE);
     strncpy_s(sharedUser.phoneNumber, sizeof(sharedUser.phoneNumber), m_phoneNumber.c_str(), _TRUNCATE);
     sharedUser.userType = static_cast<int>(m_userType);
     sharedUser.status = static_cast<int>(m_status);
@@ -318,7 +255,6 @@ User* User::deserialize(const SharedUser* sharedUser)
         return nullptr;
     }
     std::string password(sharedUser->password);
-    password = decryption(password);
     Enums::UserType userType = static_cast<Enums::UserType>(sharedUser->userType);
     Enums::UserStatus userStatus = static_cast<Enums::UserStatus>(sharedUser->status);
     User* user = Factory::getObject<User>(

@@ -694,3 +694,36 @@ int ControllerAdapter::rejectTheatre(const QString& theatreId)
     }
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
+
+
+/*
+ * Function: ControllerAdapter::getUnreadNotifications
+ * Description: Retrieves a batch of unread notifications from the controller,
+ *              wrapping each message into a QVariantMap for structured output.
+ * Parameters:
+ *    batchSize (const int) - Maximum number of notifications to fetch in one call
+ * Returns:
+ *    QVariantList - List of unread notifications, each represented as a QVariantMap
+ *                   with a "message" field
+ */
+QVariantList ControllerAdapter::getUnreadNotifications(const int batchSize)
+{
+    QVariantList unreadedNotificationList;
+    int remainingUnreadCount = 0;
+
+    try {
+        // Call core C++ controller which accepts (int, int&)
+        std::vector<std::string> notifications = m_controller->getUnreadNotifications(batchSize, remainingUnreadCount);
+
+        for (const std::string& msg : notifications) {
+            QVariantMap notifMap;
+            notifMap["message"] = QString::fromStdString(msg);
+            unreadedNotificationList.append(notifMap);
+        }
+    }
+    catch (const std::exception &ex) {
+        qDebug() << "Notification fetch error:" << ex.what();
+    }
+
+    return unreadedNotificationList;
+}
