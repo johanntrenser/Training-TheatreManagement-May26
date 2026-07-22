@@ -1,4 +1,18 @@
-    import QtQuick
+/*
+ * File: UserManagement.qml
+ * Description: Implements the user management interface in QML. Provides functionality
+ *              to view, filter, create, deactivate, and reactivate user accounts.
+ *              Displays active and inactive users in a structured table with role,
+ *              status, and action controls. Integrates with the ControllerAdapter
+ *              backend to fetch user lists and perform lifecycle operations. Includes
+ *              validation for email format and uniqueness, phone number uniqueness,
+ *              and mandatory field checks during user creation. The UI supports
+ *              responsive layouts, filter tabs, and a modal dialog for creating new
+ *              users with role selection and input validation.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 

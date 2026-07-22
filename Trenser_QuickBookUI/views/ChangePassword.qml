@@ -1,3 +1,17 @@
+/*
+ * File: ChangePassword.qml
+ * Description: Implements the change password interface in QML. Provides a secure
+ *              form for updating account credentials with validation checks for
+ *              minimum length, uppercase, lowercase, digit, and special character
+ *              requirements. Includes real-time indicators for password strength
+ *              and confirmation matching. Integrates with the ControllerAdapter
+ *              backend to persist password changes. Displays feedback banners for
+ *              success or error states, and offers clear/reset functionality to
+ *              improve user experience. Designed with responsive layouts and
+ *              consistent styling to align with the application’s UI theme.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

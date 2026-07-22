@@ -1,3 +1,14 @@
+/*
+ * File: CustomButton.qml
+ * Description: Defines a reusable styled button component for the application.
+ *              Extends the standard QtQuick Button with custom properties for
+ *              background color, text color, and corner radius. Provides hover
+ *              and press states with dynamic color adjustments, and ensures
+ *              consistent sizing and typography across the UI. Designed to
+ *              match the application's branding (default BookMyShow Red theme).
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 

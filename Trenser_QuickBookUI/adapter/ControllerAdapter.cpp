@@ -1,3 +1,18 @@
+/*
+ * File: ControllerAdapter.cpp
+ * Description: Implements the ControllerAdapter class, which acts as a bridge between
+ *              the Qt-based UI layer and the backend Controller. This adapter manages
+ *              initialization of all service modules (authentication, user, theatre,
+ *              movie, show, booking, payment, ticket, notification, log, screen, seat,
+ *              and refund), and exposes high-level methods for login, logout, user
+ *              registration, profile management, and user lifecycle operations. It also
+ *              provides utility functions for converting enums to strings and retrieving
+ *              active/inactive users. Exception handling and Qt signals are used to
+ *              ensure robust communication with the UI.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
+
 #include "ControllerAdapter.h"
 #include <utility>
 #include <QDebug>
@@ -15,13 +30,40 @@
 #include "SeatManagementService.h"
 #include "RefundManagementService.h"
 
+/*
+ * Function: ControllerAdapter::ControllerAdapter
+ * Description: Constructs a ControllerAdapter object, initializing the base QObject
+ *              with the provided parent.
+ * Parameters:
+ *    parent (QObject*) - Optional parent object for QObject hierarchy
+ * Returns:
+ *    None
+ */
 ControllerAdapter::ControllerAdapter(QObject *parent)
     : QObject(parent) {}
 
+/*
+ * Function: ControllerAdapter::~ControllerAdapter
+ * Description: Destructor for ControllerAdapter. Cleans up allocated resources
+ *              by deleting the Controller instance.
+ * Parameters:
+ *    None
+ * Returns:
+ *    None
+ */
 ControllerAdapter::~ControllerAdapter() {
     delete m_controller;
 }
 
+/*
+ * Function: ControllerAdapter::initialize
+ * Description: Initializes the ControllerAdapter by creating a Controller instance
+ *              with all required management services.
+ * Parameters:
+ *    None
+ * Returns:
+ *    bool - true if initialization succeeds, false otherwise
+ */
 bool ControllerAdapter::initialize() {
     if (m_initialized) return true;
 
@@ -44,6 +86,16 @@ bool ControllerAdapter::initialize() {
     m_initialized = true;
     return true;
 }
+
+/*
+ * Function: ControllerAdapter::login
+ * Description: Authenticates a user with the given email and password.
+ * Parameters:
+ *    email (const QString&) - User's email address
+ *    password (const QString&) - User's password
+ * Returns:
+ *    int - Login status code (Enums::LoginStatus)
+ */
 
 int ControllerAdapter::login(const QString &email, const QString &password) {
     Enums::LoginStatus  status;
@@ -69,6 +121,15 @@ int ControllerAdapter::login(const QString &email, const QString &password) {
     return static_cast<int>(status);
 }
 
+/*
+ * Function: ControllerAdapter::logout
+ * Description: Logs out the currently authenticated user and resets authentication state.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+
 void ControllerAdapter::logout() {
     try
     {
@@ -83,6 +144,18 @@ void ControllerAdapter::logout() {
     }
 }
 
+/*
+ * Function: ControllerAdapter::registerUser
+ * Description: Registers a new user with the provided details and role.
+ * Parameters:
+ *    name (const QString&) - Full name of the user
+ *    email (const QString&) - Email address of the user
+ *    password (const QString&) - Password for the account
+ *    phone (const QString&) - Phone number of the user
+ *    userType (EnumsAdapter::UserType) - Role of the user (Customer, TheatreOwner, Admin)
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::registerUser(const QString& name,
                                             const QString& email,
                                             const QString& password,
@@ -130,6 +203,14 @@ int ControllerAdapter::registerUser(const QString& name,
     return static_cast<int>(status);
 }
 
+/*
+ * Function: ControllerAdapter::getProfile
+ * Description: Retrieves the profile details of the currently authenticated user.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantMap - Map containing user details (id, name, email, phone, role, password)
+ */
 QVariantMap ControllerAdapter::getProfile()
 {
     QVariantMap userMap;
@@ -168,6 +249,14 @@ QString ControllerAdapter::userTypeToString(Enums::UserType type)
     return "";
 }
 
+/*
+ * Function: ControllerAdapter::getActiveUsers
+ * Description: Fetches a list of all active users in the system.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantList - List of active users with their details
+ */
 QVariantList ControllerAdapter::getActiveUsers()
 {
     QVariantList userlist;
@@ -191,6 +280,14 @@ QVariantList ControllerAdapter::getActiveUsers()
     return userlist;
 }
 
+/*
+ * Function: ControllerAdapter::getInactiveUsers
+ * Description: Fetches a list of all inactive users in the system.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantList - List of inactive users with their details
+ */
 QVariantList ControllerAdapter::getInactiveUsers()
 {
     QVariantList userlist;
@@ -232,6 +329,18 @@ QString ControllerAdapter::userStatusToString(Enums::UserStatus status)
     return "";
 }
 
+/*
+ * Function: ControllerAdapter::createUser
+ * Description: Creates a new user with the given details and role.
+ * Parameters:
+ *    name (const QString&) - Full name of the user
+ *    email (const QString&) - Email address of the user
+ *    password (const QString&) - Password for the account
+ *    phone (const QString&) - Phone number of the user
+ *    role (const QString&) - Role of the user (admin, theatreOwner, customer)
+ * Returns:
+ *    bool - true if user creation succeeds, false otherwise
+ */
 bool ControllerAdapter::createUser(const QString& name, const QString& email, const QString& password,const QString& phone, const QString& role)
 {
     try{
@@ -244,6 +353,14 @@ bool ControllerAdapter::createUser(const QString& name, const QString& email, co
     return false;
 }
 
+/*
+ * Function: ControllerAdapter::stringToUserType
+ * Description: Converts a role string into its corresponding Enums::UserType value.
+ * Parameters:
+ *    role (const QString&) - Role string ("admin", "theatreOwner", or defaults to "customer")
+ * Returns:
+ *    Enums::UserType - The mapped user type (ADMIN, THEATRE_OWNER, CUSTOMER)
+ */
 Enums::UserType ControllerAdapter::stringToUserType(const QString& role)
 {
     try{
@@ -262,6 +379,14 @@ Enums::UserType ControllerAdapter::stringToUserType(const QString& role)
     }
 }
 
+/*
+ * Function: ControllerAdapter::deactivateUser
+ * Description: Deactivates a user account by its unique identifier.
+ * Parameters:
+ *    userId (const QString&) - Unique identifier of the user
+ * Returns:
+ *    bool - true if the user was successfully deactivated, false otherwise
+ */
 bool ControllerAdapter::deactivateUser(const QString& userId)
 {
     try{
@@ -274,6 +399,14 @@ bool ControllerAdapter::deactivateUser(const QString& userId)
     return false;
 }
 
+/*
+ * Function: ControllerAdapter::reactivateUser
+ * Description: Reactivates a previously deactivated user account by its unique identifier.
+ * Parameters:
+ *    userId (const QString&) - Unique identifier of the user
+ * Returns:
+ *    bool - true if the user was successfully reactivated, false otherwise
+ */
 bool ControllerAdapter::reactivateUser(const QString& userId)
 {
     try{
@@ -286,6 +419,16 @@ bool ControllerAdapter::reactivateUser(const QString& userId)
     return false;
 }
 
+/*
+ * Function: ControllerAdapter::updateProfile
+ * Description: Updates the profile information of the authenticated user.
+ * Parameters:
+ *    name (const QString&) - New name (optional)
+ *    email (const QString&) - New email (optional)
+ *    phone (const QString&) - New phone number (optional)
+ * Returns:
+ *    bool - true if any field was updated, false otherwise
+ */
 bool ControllerAdapter::updateProfile(const QString& name, const QString& email, const QString& phone)
 {
     bool flag = false;
@@ -312,6 +455,15 @@ bool ControllerAdapter::updateProfile(const QString& name, const QString& email,
     return flag;
 }
 
+/*
+ * Function: ControllerAdapter::changePassword
+ * Description: Changes the password of the authenticated user.
+ * Parameters:
+ *    currentPassword (const QString&) - Current password
+ *    newPassword (const QString&) - New password
+ * Returns:
+ *    bool - true if password change succeeds, false otherwise
+ */
 bool ControllerAdapter::changePassword(const QString& currentPassword, const QString& newPassword)
 {
     try{
@@ -323,6 +475,15 @@ bool ControllerAdapter::changePassword(const QString& currentPassword, const QSt
     }
     return false;
 }
+
+/*
+ * Function: ControllerAdapter::isEmailUnique
+ * Description: Checks whether the given email is unique in the system.
+ * Parameters:
+ *    email (const QString&) - Email address to check
+ * Returns:
+ *    bool - true if email is unique, false otherwise
+ */
 bool ControllerAdapter::isEmailUnique(const QString& email)
 {
     try{
@@ -335,6 +496,14 @@ bool ControllerAdapter::isEmailUnique(const QString& email)
     return false;
 }
 
+/*
+ * Function: ControllerAdapter::isPhoneNumberUnique
+ * Description: Checks whether the given phone number is unique in the system.
+ * Parameters:
+ *    phoneNumber (const QString&) - Phone number to check
+ * Returns:
+ *    bool - true if phone number is unique, false otherwise
+ */
 bool ControllerAdapter::isPhoneNumberUnique(const QString& phoneNumber)
 {
     try{

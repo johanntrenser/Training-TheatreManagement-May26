@@ -1,3 +1,17 @@
+/*
+ * File: UserProfile.qml
+ * Description: Implements the user profile management interface in QML. Provides
+ *              functionality to view, edit, and update user account details such
+ *              as name, email, and phone number. Includes validation for email
+ *              format and uniqueness, phone number uniqueness, and mandatory field
+ *              checks. Integrates with the ControllerAdapter backend to persist
+ *              changes. Displays feedback banners for success or error states,
+ *              and supports toggling between view and edit modes. The UI includes
+ *              an avatar with user initials, role badge, and a structured form
+ *              layout with responsive design.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
