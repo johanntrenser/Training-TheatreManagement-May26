@@ -429,7 +429,7 @@ bool ControllerAdapter::reactivateUser(const QString& userId)
  * Returns:
  *    bool - true if any field was updated, false otherwise
  */
-bool ControllerAdapter::updateProfile(const QString& name, const QString& email, const QString& phone)
+bool ControllerAdapter::updateProfile(const QString& name, const QString& email, const QString& phoneNumber)
 {
     bool flag = false;
     try{
@@ -442,9 +442,9 @@ bool ControllerAdapter::updateProfile(const QString& name, const QString& email,
             m_controller->setAuthenticatedUserEmail(email.toStdString());
             flag=true;
         }
-        if (!phone.isEmpty())
+        if (!phoneNumber.isEmpty())
         {
-            m_controller->setAuthenticatedUserPhoneNumber(phone.toStdString());
+            m_controller->setAuthenticatedUserPhoneNumber(phoneNumber.toStdString());
             flag=true;
         }
     }

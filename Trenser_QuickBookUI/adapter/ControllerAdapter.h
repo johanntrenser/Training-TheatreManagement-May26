@@ -49,7 +49,7 @@ public:
     Q_INVOKABLE bool createUser(const QString& name, const QString& email, const QString& password,const QString& phone, const QString& role);
     Q_INVOKABLE bool deactivateUser(const QString& userId);
     Q_INVOKABLE bool reactivateUser(const QString& userId);
-    Q_INVOKABLE bool updateProfile(const QString& name, const QString& email, const QString& phone);
+    Q_INVOKABLE bool updateProfile(const QString& name, const QString& email, const QString& phoneNumber);
     Q_INVOKABLE bool changePassword(const QString& currentPassword, const QString& newPassword);
     Q_INVOKABLE bool isEmailUnique(const QString& email);
     Q_INVOKABLE bool isPhoneNumberUnique(const QString& phoneNumber);
