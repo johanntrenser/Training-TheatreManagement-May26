@@ -1,3 +1,18 @@
+/*
+ * File: MainMenu.qml
+ * Description: Implements the main menu interface for the Theatre Management System.
+ *              Provides entry points for user authentication and registration, as well
+ *              as an option to exit the application. The layout centers the content
+ *              with a prominent title and subtitle, styled according to the global
+ *              theme palette. Includes three primary actions:
+ *              - Login: Navigates to the Login.qml page.
+ *              - Register: Navigates to the Register.qml page for new user creation.
+ *              - Exit: Closes the application.
+ *              Designed with responsive layouts, consistent styling, and hover/press
+ *              states for interactive buttons.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

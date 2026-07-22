@@ -1,3 +1,17 @@
+/*
+ * File: Register.qml
+ * Description: Implements the user registration interface for the Theatre Management System.
+ *              Provides a structured form that enables new users to register as either a Customer
+ *              or a Theatre Owner. Features client-side validation for mandatory fields, email format
+ *              verification using standard regular expressions, strict 10-digit phone number formatting,
+ *              and password complexity verification requiring uppercase, lowercase, numeric, and special
+ *              characters. Interacts with the ControllerAdapter backend via registerUser() and maps
+ *              response codes from EnumsAdapter.ProcessStatus to provide clear error messages for duplicate
+ *              emails or phone numbers. Includes an interactive success state upon successful account
+ *              creation with seamless navigation to the login view.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

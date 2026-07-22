@@ -1,3 +1,17 @@
+/*
+ * File: Login.qml
+ * Description: Implements the login interface for the Theatre Management System.
+ *              Provides input fields for email and password with validation checks
+ *              for empty fields and proper email format. Integrates with the
+ *              ControllerAdapter backend to authenticate users and handle login
+ *              status codes (e.g., USER_FOUND, INVALID_PASSWORD, USER_NOT_FOUND,
+ *              USER_ALREADY_LOGGED_IN). Displays error/status messages for user
+ *              feedback and navigates to the Dashboard upon successful login.
+ *              Includes a back button to return to the Main Menu. Designed with
+ *              responsive layouts, consistent styling, and interactive button states.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

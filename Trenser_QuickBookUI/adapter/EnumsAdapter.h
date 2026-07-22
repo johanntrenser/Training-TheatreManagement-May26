@@ -1,3 +1,16 @@
+/*
+ * File: EnumsAdapter.h
+ * Description: Declares the EnumsAdapter class, which exposes strongly typed
+ *              enumerations from the backend Enums namespace to QML. This adapter
+ *              provides QML-accessible constants for theatre, movie, show, screen,
+ *              booking, payment, notification, user, seat, refund, process, login,
+ *              log, and ticket statuses. It ensures type safety and readability
+ *              when working with enums in QML by registering them with Qt’s meta-object
+ *              system. The class is uncreatable in QML and serves purely as a namespace
+ *              for constants.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 #ifndef ENUMSADAPTER_H
 #define ENUMSADAPTER_H
 

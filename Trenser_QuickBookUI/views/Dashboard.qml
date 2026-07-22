@@ -1,3 +1,18 @@
+/*
+ * File: Dashboard.qml
+ * Description: Implements the main dashboard interface for the Theatre Management System.
+ *              Provides a role-based navigation experience where menu options are dynamically
+ *              loaded depending on whether the user is an Admin, Theatre Owner, or Customer.
+ *              Includes a top navigation bar with search functionality and a role badge, a
+ *              sidebar menu for module selection, and a central workspace area that dynamically
+ *              loads QML views based on the active menu option. Supports modules such as
+ *              User Management, Movie Management, Theatre Management, Show Management,
+ *              Ticket Management, Booking Management, Notifications, Profile, Change Password,
+ *              and System Logs. Integrates with the ControllerAdapter backend to fetch user
+ *              profile details and ensures responsive layouts with consistent styling.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
