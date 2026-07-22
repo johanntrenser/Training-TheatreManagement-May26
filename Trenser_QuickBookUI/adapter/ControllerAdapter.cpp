@@ -46,18 +46,16 @@ bool ControllerAdapter::initialize() {
 }
 
 int ControllerAdapter::login(const QString &email, const QString &password) {
+    Enums::LoginStatus  status;
     try
     {
         if (!m_initialized) {
             initialize();
         }
-
         std::pair<Enums::LoginStatus, Enums::UserType> loginResult =
             m_controller->login(email.toStdString(), password.toStdString());
-
-        Enums::LoginStatus status = loginResult.first;
+        status = loginResult.first;
         Enums::UserType type = loginResult.second;
-
         if (status == Enums::LoginStatus::USER_FOUND) {
             m_authenticated = true;
             m_currentUserType = static_cast<EnumsAdapter::UserType>(type);
@@ -91,6 +89,7 @@ int ControllerAdapter::registerUser(const QString& name,
                                             const QString& phone,
                                             const EnumsAdapter::UserType userType)
 {
+    Enums::ProcessStatus status;
     try{
         if (!m_initialized || !m_controller)
         {
@@ -114,7 +113,7 @@ int ControllerAdapter::registerUser(const QString& name,
         {
             type = Enums::UserType::ADMIN;
         }
-        Enums::ProcessStatus status = m_controller->registerUser(
+        status = m_controller->registerUser(
             stdName,
             stdEmail,
             stdPassword,
@@ -133,22 +132,22 @@ int ControllerAdapter::registerUser(const QString& name,
 
 QVariantMap ControllerAdapter::getProfile()
 {
+    QVariantMap userMap;
     try{
-        QVariantMap m;
         const User* user = m_controller->getAuthenticatedUser();
-        if (!user) return m;
-        m["id"] = QString::fromStdString(user->getUserId());
-        m["name"] = QString::fromStdString(user->getUserName());
-        m["email"] = QString::fromStdString(user->getEmail());
-        m["phone"] = QString::fromStdString(user->getPhoneNumber());
-        m["role"] = userTypeToString(user->getUserType());
-        m["password"] = QString::fromStdString(user->getPassword());
+        if (!user) return userMap;
+        userMap["id"] = QString::fromStdString(user->getUserId());
+        userMap["name"] = QString::fromStdString(user->getUserName());
+        userMap["email"] = QString::fromStdString(user->getEmail());
+        userMap["phone"] = QString::fromStdString(user->getPhoneNumber());
+        userMap["role"] = userTypeToString(user->getUserType());
+        userMap["password"] = QString::fromStdString(user->getPassword());
     }
     catch (const std::exception &ex)
     {
         qDebug() << "Get Profile error:" << ex.what();
     }
-    return m;
+    return userMap;
 }
 
 QString ControllerAdapter::userTypeToString(Enums::UserType type)
@@ -166,4 +165,5 @@ QString ControllerAdapter::userTypeToString(Enums::UserType type)
     {
         qDebug() << "Get user type to string error:" << ex.what();
     }
+    return "";
 }

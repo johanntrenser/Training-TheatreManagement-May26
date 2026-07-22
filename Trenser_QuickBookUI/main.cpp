@@ -8,7 +8,7 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-    QQuickStyle::setStyle("Material");
+    QQuickStyle::setStyle("Basic");
     ControllerAdapter controllerAdapter;
     if (controllerAdapter.initialize()) {
         qInfo() << "==================================================";
