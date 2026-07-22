@@ -15,12 +15,15 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QDebug>
+#include <QStyleHints>
 #include <QQuickStyle>
 #include "controlleradapter.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    //FORCE GLOBAL LIGHT MODE
+    app.styleHints()->setColorScheme(Qt::ColorScheme::Light);
     QQuickStyle::setStyle("Basic");
     ControllerAdapter controllerAdapter;
     if (controllerAdapter.initialize()) {

@@ -51,6 +51,7 @@ qt_add_qml_module(appTrenser_QuickBookUI
         QML_FILES views/Dashboard.qml
         QML_FILES views/CustomButton.qml views/UserManagement.qml views/UserProfile.qml
         QML_FILES views/ChangePassword.qml
+        QML_FILES views/TheatreManagement.qml
         # Add future C++ models here, e.g.:
         # models/MovieListModel.h
         # models/MovieListModel.cpp

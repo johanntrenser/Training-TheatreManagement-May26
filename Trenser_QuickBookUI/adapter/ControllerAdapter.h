@@ -53,6 +53,19 @@ public:
     Q_INVOKABLE bool changePassword(const QString& currentPassword, const QString& newPassword);
     Q_INVOKABLE bool isEmailUnique(const QString& email);
     Q_INVOKABLE bool isPhoneNumberUnique(const QString& phoneNumber);
+    // ------TheatreOwner: Theatres-------
+    Q_INVOKABLE QVariantList getMyTheatres();
+    Q_INVOKABLE int addTheatre(const QString& name, const QString& city,
+                               const QString& address, const QString& phone,
+                               const QString& email);
+    Q_INVOKABLE int updateTheatre(const QString& theatreId, const QString& name, const QString& city,
+                                  const QString& address, const QString& phone, const QString& email);
+    Q_INVOKABLE int deactivateTheatre(const QString& theatreId);
+    Q_INVOKABLE int reactivateTheatre(const QString& theatreId);
+    // ------Admin: Theatres-------
+    Q_INVOKABLE QVariantList getAllTheatres();
+    Q_INVOKABLE int approveTheatre(const QString& theatreId);
+    Q_INVOKABLE int rejectTheatre(const QString& theatreId);
 signals:
     void authenticationChanged();
 

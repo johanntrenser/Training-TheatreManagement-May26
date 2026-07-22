@@ -199,7 +199,10 @@ Item {
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
-                        onClicked: mainStack.replace("MainMenu.qml")
+                        onClicked: {
+                            controller.logout()
+                            mainStack.replace("MainMenu.qml")
+                        }
                     }
                 }
             }
