@@ -743,3 +743,315 @@ QVariantList ControllerAdapter::getUnreadNotifications(const int batchSize)
 
     return unreadedNotificationList;
 }
+
+QVariantMap ControllerAdapter::convertMovieToVariantMap(const Movie* movie) const
+{
+    QVariantMap map;
+    if (!movie)
+    {
+        return map;
+    }
+
+    map["movieId"] = QString::fromStdString(movie->getMovieId());
+    map["title"] = QString::fromStdString(movie->getTitle());
+    map["language"] = QString::fromStdString(movie->getLanguage());
+    map["genre"] = QString::fromStdString(movie->getGenre());
+    map["duration"] = movie->getDuration();
+    map["active"] =
+        (movie->getStatus() == Enums::MovieStatus::ACTIVE);
+
+    return map;
+}
+
+QVariantList ControllerAdapter::getAllMovies()
+{
+    QVariantList movieList;
+
+    auto activeMovies = m_controller->getAllActiveMovies();
+    auto inactiveMovies = m_controller->getAllInactiveMovies();
+
+    qDebug() << "Active movies:" << activeMovies.size();
+    qDebug() << "Inactive movies:" << inactiveMovies.size();
+
+    for (const Movie* movie : activeMovies)
+    {
+        qDebug()
+        << QString::fromStdString(movie->getMovieId())
+        << QString::fromStdString(movie->getTitle())
+        << (movie->getStatus() == Enums::MovieStatus::ACTIVE ? "ACTIVE" : "INACTIVE");
+
+        movieList.append(convertMovieToVariantMap(movie));
+    }
+
+    for (const Movie* movie : inactiveMovies)
+    {
+        qDebug()
+        << QString::fromStdString(movie->getMovieId())
+        << QString::fromStdString(movie->getTitle())
+        << (movie->getStatus() == Enums::MovieStatus::ACTIVE ? "ACTIVE" : "INACTIVE");
+
+        movieList.append(convertMovieToVariantMap(movie));
+    }
+
+    return movieList;
+}
+
+int ControllerAdapter::isMovieUnique(const QString& title,
+                                     const QString& language,
+                                     const QString& genre,
+                                     int duration)
+{
+    Enums::ProcessStatus status;
+
+    try
+    {
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "Movie uniqueness check failed: Backend not initialized!";
+            return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+        }
+
+        status = m_controller->isMovieUnique(
+            title.toStdString(),
+            language.toStdString(),
+            genre.toStdString(),
+            duration);
+
+    }
+    catch (const std::exception& ex)
+    {
+        qDebug() << "Movie uniqueness check error:" << ex.what();
+        return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+    }
+
+    return static_cast<int>(status);
+}
+
+int ControllerAdapter::addMovie(const QString& title,
+                                const QString& language,
+                                const QString& genre,
+                                int duration)
+{
+    Enums::ProcessStatus status;
+
+    try
+    {
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "Add movie failed: Backend not initialized!";
+            return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+        }
+
+        status = m_controller->addMovie(
+            title.toStdString(),
+            language.toStdString(),
+            genre.toStdString(),
+            duration);
+
+        if (status == Enums::ProcessStatus::SUCCESS)
+        {
+            qInfo() << "Movie added:" << title << "Status Code:" << static_cast<int>(status);
+        }
+        else
+        {
+            qWarning() << "Movie could not be added:" << title;
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        qDebug() << "Add movie error:" << ex.what();
+        return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+    }
+
+    return static_cast<int>(status);
+}
+
+int ControllerAdapter::updateMovie(
+    const QString& movieId,
+    const QString& currentTitle,
+    const QString& currentLanguage,
+    const QString& currentGenre,
+    int currentDuration,
+    const QString& updatedTitle,
+    const QString& updatedLanguage,
+    const QString& updatedGenre,
+    int updatedDuration)
+{
+    try
+    {
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "Movie update failed: Backend not initialized!";
+            return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+        }
+
+        const std::string movieIdString = movieId.toStdString();
+
+        const std::string currentTitleString = currentTitle.toStdString();
+        const std::string currentLanguageString = currentLanguage.toStdString();
+        const std::string currentGenreString = currentGenre.toStdString();
+
+        const std::string updatedTitleString = updatedTitle.toStdString();
+        const std::string updatedLanguageString = updatedLanguage.toStdString();
+        const std::string updatedGenreString = updatedGenre.toStdString();
+
+        const bool movieDetailsChanged =
+            currentTitleString != updatedTitleString ||
+            currentLanguageString != updatedLanguageString ||
+            currentGenreString != updatedGenreString ||
+            currentDuration != updatedDuration;
+
+        if (!movieDetailsChanged)
+        {
+            return static_cast<int>(EnumsAdapter::ProcessStatus::SUCCESS);
+        }
+
+        Enums::ProcessStatus processStatus =
+            m_controller->isMovieUnique(
+                updatedTitleString,
+                updatedLanguageString,
+                updatedGenreString,
+                updatedDuration);
+
+        if (processStatus == Enums::ProcessStatus::FAILED)
+        {
+            return static_cast<int>(EnumsAdapter::ProcessStatus::ALREADY_EXISTS);
+        }
+
+        if (currentTitleString != updatedTitleString)
+        {
+            processStatus = m_controller->setMovieTitleByID(
+                movieIdString,
+                updatedTitleString);
+
+            if (processStatus != Enums::ProcessStatus::SUCCESS)
+            {
+                return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+            }
+        }
+
+        if (currentLanguageString != updatedLanguageString)
+        {
+            processStatus = m_controller->setMovieLanguageByID(
+                movieIdString,
+                updatedLanguageString);
+
+            if (processStatus != Enums::ProcessStatus::SUCCESS)
+            {
+                return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+            }
+        }
+
+        if (currentGenreString != updatedGenreString)
+        {
+            processStatus = m_controller->setMovieGenreByID(
+                movieIdString,
+                updatedGenreString);
+
+            if (processStatus != Enums::ProcessStatus::SUCCESS)
+            {
+                return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+            }
+        }
+
+        if (currentDuration != updatedDuration)
+        {
+            processStatus = m_controller->setMovieDurationByID(
+                movieIdString,
+                updatedDuration);
+
+            if (processStatus != Enums::ProcessStatus::SUCCESS)
+            {
+                return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+            }
+        }
+
+        return static_cast<int>(EnumsAdapter::ProcessStatus::SUCCESS);
+    }
+    catch (const std::exception& exception)
+    {
+        qCritical() << "Movie update failed:" << exception.what();
+    }
+    catch (...)
+    {
+        qCritical() << "Unknown exception occurred while updating movie.";
+    }
+
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+int ControllerAdapter::deactivateMovie(const QString& movieId)
+{
+    Enums::ProcessStatus processStatus;
+
+    try
+    {
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "Movie deactivation failed: Backend not initialized!";
+            return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+        }
+
+        processStatus = m_controller->deactivateMovie(
+            movieId.toStdString());
+
+        if (processStatus == Enums::ProcessStatus::SUCCESS)
+        {
+            qInfo() << "Movie deactivated successfully:" << movieId;
+        }
+        else
+        {
+            qWarning() << "Failed to deactivate movie:" << movieId;
+        }
+
+        return static_cast<int>(processStatus);
+    }
+    catch (const std::exception& exception)
+    {
+        qCritical() << "Movie deactivation failed:" << exception.what();
+    }
+    catch (...)
+    {
+        qCritical() << "Unknown exception occurred while deactivating movie.";
+    }
+
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+int ControllerAdapter::reactivateMovie(const QString& movieId)
+{
+    Enums::ProcessStatus processStatus;
+
+    try
+    {
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "Movie reactivation failed: Backend not initialized!";
+            return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+        }
+
+        processStatus = m_controller->reactivateMovie(
+            movieId.toStdString());
+
+        if (processStatus == Enums::ProcessStatus::SUCCESS)
+        {
+            qInfo() << "Movie reactivated successfully:" << movieId;
+        }
+        else
+        {
+            qWarning() << "Failed to reactivate movie:" << movieId;
+        }
+
+        return static_cast<int>(processStatus);
+    }
+    catch (const std::exception& exception)
+    {
+        qCritical() << "Movie reactivation failed:" << exception.what();
+    }
+    catch (...)
+    {
+        qCritical() << "Unknown exception occurred while reactivating movie.";
+    }
+
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}

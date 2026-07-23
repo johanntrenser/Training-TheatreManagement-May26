@@ -68,6 +68,29 @@ public:
     Q_INVOKABLE int approveTheatre(const QString& theatreId);
     Q_INVOKABLE int rejectTheatre(const QString& theatreId);
     Q_INVOKABLE QVariantList getUnreadNotifications(const int batchSize);
+    Q_INVOKABLE int isMovieUnique(
+        const QString& title,
+        const QString& language,
+        const QString& genre,
+        int duration);
+    Q_INVOKABLE int addMovie(
+        const QString& title,
+        const QString& language,
+        const QString& genre,
+        int duration);
+    Q_INVOKABLE QVariantList getAllMovies();
+    Q_INVOKABLE int updateMovie(
+        const QString& movieId,
+        const QString& currentTitle,
+        const QString& currentLanguage,
+        const QString& currentGenre,
+        int currentDuration,
+        const QString& updatedTitle,
+        const QString& updatedLanguage,
+        const QString& updatedGenre,
+        int updatedDuration);
+    Q_INVOKABLE int deactivateMovie(const QString& movieId);
+    Q_INVOKABLE int reactivateMovie(const QString& movieId);
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);
@@ -84,6 +107,7 @@ private:
     static QString userStatusToString(Enums::UserStatus status);
     static QString movieStatusToString(Enums::MovieStatus status);
     static Enums::UserType stringToUserType(const QString& role);
+    QVariantMap convertMovieToVariantMap(const Movie* movie) const;
 };
 
 #endif // CONTROLLERADAPTER_H
