@@ -2164,3 +2164,79 @@ void ControllerAdapter::loadTicketHistory()
     }
     emit ticketHistoryChanged();
 }
+
+/*
+ * Function: ControllerAdapter::getSeatLayout
+ * Description: Retrieves the seat layout grid for a given screen from the controller
+ *              and converts it into a QVariantList of rows containing seat details.
+ * Parameters:
+ *    selectedScreenId - QString representing the unique ID of the screen
+ * Returns:
+ *    QVariantList - Nested list of seat rows, each containing seat maps (id, row, column, amount, status)
+ */
+QVariantList ControllerAdapter::getSeatLayout(const QString& selectedScreenId)
+{
+    QVariantList gridList;
+    try {
+        const std::vector<std::vector<Seat*>>& seatGrid = m_controller->getSeatLayout(selectedScreenId.toStdString());
+        for (const auto& rowVector : seatGrid) {
+            QVariantList rowList;
+            for (const Seat* seatPointer : rowVector) {
+                if (seatPointer != nullptr) {
+                    QVariantMap seatMap;
+                    seatMap["id"] = QString::fromStdString(seatPointer->getSeatId());
+                    seatMap["row"] = QString(seatPointer->getSeatRow());
+                    seatMap["column"] = seatPointer->getSeatColumn();
+                    seatMap["amount"] = const_cast<Seat*>(seatPointer)->getSeatAmount();
+                    seatMap["status"] = static_cast<int>(seatPointer->getSeatStatus());
+                    qDebug() << seatPointer->getSeatId();
+                    rowList.append(seatMap);
+                }
+            }
+            gridList.append(rowList);
+        }
+    } catch (const std::exception& exception) {
+        qDebug() << "Error retrieving seat layout:" << exception.what();
+    }
+    return gridList;
+}
+
+/*
+ * Function: ControllerAdapter::deactivateSeat
+ * Description: Deactivates a specific seat in a given screen, making it unavailable for booking.
+ * Parameters:
+ *    selectedScreenId - QString representing the unique ID of the screen
+ *    seatId           - QString representing the unique ID of the seat
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, etc.)
+ */
+int ControllerAdapter::deactivateSeat(const QString& selectedScreenId, const QString& seatId)
+{
+    try {
+        Enums::ProcessStatus processStatus = m_controller->deactivateSeat(selectedScreenId.toStdString(), seatId.toStdString());
+        return static_cast<int>(processStatus);
+    } catch (const std::exception& exception) {
+        qDebug() << "Error deactivating seat:" << exception.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+/*
+ * Function: ControllerAdapter::reactivateSeat
+ * Description: Reactivates a previously deactivated seat in a given screen, making it available again.
+ * Parameters:
+ *    selectedScreenId - QString representing the unique ID of the screen
+ *    seatId           - QString representing the unique ID of the seat
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, etc.)
+ */
+int ControllerAdapter::reactivateSeat(const QString& selectedScreenId, const QString& seatId)
+{
+    try {
+        Enums::ProcessStatus processStatus = m_controller->reactivateSeat(selectedScreenId.toStdString(), seatId.toStdString());
+        return static_cast<int>(processStatus);
+    } catch (const std::exception& exception) {
+        qDebug() << "Error reactivating seat:" << exception.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}

@@ -141,6 +141,11 @@ public:
     Q_INVOKABLE void loadActiveTickets();
     QVariantList ticketHistory() const { return m_ticketHistory; }
     Q_INVOKABLE void loadTicketHistory();
+
+    // Seat Layout Grid
+    Q_INVOKABLE QVariantList getSeatLayout(const QString& selectedScreenId);
+    Q_INVOKABLE int deactivateSeat(const QString& selectedScreenId, const QString& seatId);
+    Q_INVOKABLE int reactivateSeat(const QString& selectedScreenId, const QString& seatId);
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);

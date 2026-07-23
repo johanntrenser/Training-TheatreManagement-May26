@@ -558,8 +558,6 @@ Item {
 
             Text { id: screensErrorText; color: "red"; font.pixelSize: 11; visible: text !== "" }
             Text { text: "Existing Screens"; font.bold: true; font.pixelSize: 14; color: window.textDark }
-
-            // LIST OF EXISTING SCREENS
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -585,8 +583,6 @@ Item {
                             anchors.fill: parent
                             anchors.margins: 8
                             spacing: 10
-
-                            // Screen Name Display
                             Loader {
                                 Layout.fillWidth: true
                                 sourceComponent: screensDialog.editingScreenId === model.id ? editNameComponent : displayNameComponent
@@ -669,6 +665,13 @@ Item {
                                 visible: screensDialog.editingScreenId !== model.id
                             }
                             Button {
+                                text: "💺 Seats"
+                                visible: screensDialog.editingScreenId !== model.id
+                                onClicked: {
+                                    seatLayoutDialog.openForScreen(model.id, model.name)
+                                }
+                            }
+                            Button {
                                 text: model.status === 0 ? "Deactivate" : "Reactivate"
                                 onClicked: {
                                     var resultStatus = 0;
@@ -721,6 +724,8 @@ Item {
                         placeholderText: "Rows (e.g. 10)"
                         inputMethodHints: Qt.ImhDigitsOnly
                         selectByMouse: true
+                        maximumLength: 2
+                        validator: IntValidator { bottom: 1; top: 20 }
                     }
                     TextField {
                         id: newScreenColumns
@@ -728,6 +733,8 @@ Item {
                         placeholderText: "Columns (e.g. 12)"
                         inputMethodHints: Qt.ImhDigitsOnly
                         selectByMouse: true
+                        maximumLength: 2
+                        validator: IntValidator { bottom: 1; top: 20 }
                     }
                     Button {
                         text: "Add Screen"
@@ -767,11 +774,196 @@ Item {
                     }
                 }
             }
-            // CLOSE BUTTON
             RowLayout {
                 Layout.fillWidth: true
                 Item { Layout.fillWidth: true }
                 Button { text: "Close"; onClicked: screensDialog.close() }
+            }
+        }
+    }
+    Dialog {
+        id: seatLayoutDialog
+        modal: true
+        anchors.centerIn: parent
+        width: 720
+        height: 580
+
+        property string currentScreenId: ""
+        property string currentScreenName: ""
+        property var seatGridData: []
+
+        function openForScreen(selectedScreenId, screenName) {
+            currentScreenId = selectedScreenId
+            currentScreenName = screenName
+            title = "Seat Layout Management: " + screenName
+            seatLayoutErrorText.text = ""
+            refreshSeatLayout()
+            open()
+        }
+
+        function refreshSeatLayout() {
+            var flatSeatList = controller.getSeatLayout(currentScreenId)
+            var groupedSeatMap = {}
+            var rowOrderList = []
+
+            for (var seatIndex = 0; seatIndex < flatSeatList.length; seatIndex++) {
+                var seatObject = flatSeatList[seatIndex]
+                if (!groupedSeatMap[seatObject.row]) {
+                    groupedSeatMap[seatObject.row] = []
+                    rowOrderList.push(seatObject.row)
+                }
+                groupedSeatMap[seatObject.row].push(seatObject)
+            }
+
+            var seatRowList = []
+            for (var rowIndex = 0; rowIndex < rowOrderList.length; rowIndex++) {
+                var rowKey = rowOrderList[rowIndex]
+                seatRowList.push(groupedSeatMap[rowKey])
+            }
+
+            seatGridData = seatRowList
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 12
+
+            Text {
+                id: seatLayoutErrorText
+                color: "red"
+                font.pixelSize: 11
+                visible: text !== ""
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                spacing: 20
+
+                RowLayout {
+                    spacing: 6
+                    Rectangle { width: 18; height: 18; radius: 3; color: "#E6F4EA"; border.color: "#A3E0B5" }
+                    Text { text: "Active (Available)"; font.pixelSize: 12; color: window.textDark }
+                }
+
+                RowLayout {
+                    spacing: 6
+                    Rectangle { width: 18; height: 18; radius: 3; color: "#FCE8E6"; border.color: "#F5C2C7" }
+                    Text { text: "Inactive (Blocked)"; font.pixelSize: 12; color: window.textDark }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 24
+                color: "#E8EAED"
+                radius: 4
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "SCREEN THIS WAY"
+                    font.pixelSize: 10
+                    font.bold: true
+                    color: window.textMuted
+                }
+            }
+
+            Flickable {
+                id: seatGridScrollView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+
+                contentWidth: seatGridColumn.implicitWidth
+                contentHeight: seatGridColumn.implicitHeight
+                boundsBehavior: Flickable.StopAtBounds
+
+                ScrollBar.horizontal: ScrollBar { policy: ScrollBar.AsNeeded }
+                ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+
+                Column {
+                    id: seatGridColumn
+                    spacing: 8
+
+                    Repeater {
+                        model: seatLayoutDialog.seatGridData
+
+                        Row {
+                            spacing: 8
+                            property var seatRowData: modelData
+
+                            Text {
+                                text: (seatRowData && seatRowData.length > 0) ? seatRowData[0].row : ""
+                                font.bold: true
+                                font.pixelSize: 13
+                                color: window.textDark
+                                width: 24
+                                height: 36
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Repeater {
+                                model: seatRowData
+
+                                Rectangle {
+                                    property var seatObject: modelData
+                                    property bool isBlocked: seatObject ? (seatObject.status === 3) : false
+
+                                    width: 36
+                                    height: 36
+                                    radius: 6
+                                    color: isBlocked ? "#FCE8E6" : "#E6F4EA"
+                                    border.color: isBlocked ? "#F5C2C7" : "#A3E0B5"
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: seatObject ? (seatObject.column + 1) : ""
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                        color: isBlocked ? "#C5221F" : "#137333"
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            var selectedSeatId = seatObject.id
+                                            var processStatus = 0
+
+                                            if (isBlocked) {
+                                                processStatus = controller.reactivateSeat(seatLayoutDialog.currentScreenId, selectedSeatId)
+                                            } else {
+                                                processStatus = controller.deactivateSeat(seatLayoutDialog.currentScreenId, selectedSeatId)
+                                            }
+
+                                            if (processStatus === EnumsAdapter.ProcessStatus.SUCCESS) {
+                                                seatLayoutErrorText.text = ""
+                                                seatLayoutDialog.refreshSeatLayout()
+                                            } else {
+                                                if (isBlocked) {
+                                                    seatLayoutErrorText.text = "Failed to reactivate seat " + selectedSeatId + "."
+                                                } else {
+                                                    seatLayoutErrorText.text = "Cannot deactivate seat " + selectedSeatId + ". It has active bookings in scheduled shows!"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button {
+                    text: "Close"
+                    onClicked: {
+                        seatLayoutDialog.close()
+                    }
+                }
             }
         }
     }
