@@ -115,6 +115,17 @@ public:
     QVariantList refunds() const { return m_refunds; }
     Q_INVOKABLE void loadRefunds();
     QVariantMap refundToMap(const Refund* refund) const;
+    // --------Theatre - Movie management ---
+    Q_INVOKABLE QVariantList getMoviesInTheatre(const QString& theatreId);
+    Q_INVOKABLE QVariantList getActiveMovies();
+    Q_INVOKABLE int addMovieToTheatre(const QString& theatreId, const QString& movieId);
+    Q_INVOKABLE int removeMovieFromTheatre(const QString& theatreId, const QString& movieId);
+    // --------Screen Management ---
+    Q_INVOKABLE QVariantList getScreensInTheatre(const QString& theatreId);
+    Q_INVOKABLE int addScreenToTheatre(const QString& theatreId, const QString& screenName, int seatRows, int seatColumns, double seatAmount);
+    Q_INVOKABLE int updateScreenName(const QString& theatreId, const QString& screenId, const QString& newName);
+    Q_INVOKABLE int deactivateScreen(const QString& theatreId, const QString& screenId);
+    Q_INVOKABLE int reactivateScreen(const QString& theatreId, const QString& screenId);
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);
