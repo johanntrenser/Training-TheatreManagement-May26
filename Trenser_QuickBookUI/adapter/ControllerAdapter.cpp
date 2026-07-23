@@ -1836,3 +1836,165 @@ int ControllerAdapter::reactivateScreen(const QString& theatreId, const QString&
     }
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
+
+/*
+ * Function: ControllerAdapter::isShowTimeConflicting
+ * Description: Checks whether a proposed show time conflicts with existing shows
+ *              for the given movie and screen.
+ * Parameters:
+ *    movieId (const QString&) - Unique identifier of the movie
+ *    screenId (const QString&) - Unique identifier of the screen
+ *    year (const int) - Year of the show
+ *    month (const int) - Month of the show
+ *    day (const int) - Day of the show
+ *    hour (const int) - Hour of the show
+ *    minute (const int) - Minute of the show
+ * Returns:
+ *    bool - true if a conflict exists, false otherwise
+ */
+bool ControllerAdapter::isShowTimeConflicting(const QString& movieId,const QString& screenId,const int year,const int month,const int day,const int hour,const int minute)
+{
+    try{
+        return m_controller->isShowTimeConflicting(movieId.toStdString(),screenId.toStdString(),year,month,day,hour,minute)==Enums::ProcessStatus::FAILED;
+    }
+    catch(const std::exception &ex) {
+        qDebug() << "Show Time Conflicting error:" << ex.what();
+    }
+    return false;
+}
+
+/*
+ * Function: ControllerAdapter::addShow
+ * Description: Adds a new show for the specified movie and screen at the given time.
+ * Parameters:
+ *    movieId (const QString&) - Unique identifier of the movie
+ *    screenId (const QString&) - Unique identifier of the screen
+ *    year (const int) - Year of the show
+ *    month (const int) - Month of the show
+ *    day (const int) - Day of the show
+ *    hour (const int) - Hour of the show
+ *    minute (const int) - Minute of the show
+ * Returns:
+ *    bool - true if the show was successfully added, false otherwise
+ */
+bool ControllerAdapter::addShow(const QString& movieId,const QString& screenId,const int year,const int month,const int day,const int hour,const int minute)
+{
+    try{
+        return m_controller->addShow(movieId.toStdString(),screenId.toStdString(),year,month,day,hour,minute)==Enums::ProcessStatus::SUCCESS;
+    }
+    catch(const std::exception &ex) {
+        qDebug() << "Add show error:" << ex.what();
+    }
+    return false;
+}
+
+/*
+ * Function: ControllerAdapter::getActiveShows
+ * Description: Retrieves all active shows from the controller and converts them
+ *              into QVariantMap objects for UI consumption.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantList - List of active shows with details including id, movie, theatre,
+ *                   screen, starting time, ending time, and status
+ */
+QVariantList ControllerAdapter::getActiveShows()
+{
+    QVariantList list;
+    try{
+        const std::vector<const Show*> shows = m_controller->getActiveShows();
+        for(const Show* show:shows)
+        {
+            if(!show)
+            {
+                continue;
+            }
+            QVariantMap showMap;
+            showMap["id"]=QString::fromStdString(show->getShowId());
+            showMap["movie"]=QString::fromStdString(show->getMovie()->getTitle());
+            showMap["theatre"]=QString::fromStdString(show->getScreen()->getTheatre()->getName());
+            showMap["screen"]=QString::fromStdString(show->getScreen()->getName());
+            showMap["startingTime"]=displayTimeAndDate(show->getStartTime());
+            showMap["endingTime"]=displayTimeAndDate(show->getEndTime());
+            showMap["status"]=QString::fromStdString(Enums::getShowStatusString(show->getShowStatus()));
+            list.append(showMap);
+        }
+    }
+    catch(const std::exception &ex) {
+        qDebug() << "Error fetching Show:" << ex.what();
+    }
+    return list;
+}
+
+/*
+ * Function: ControllerAdapter::updateShow
+ * Description: Updates the scheduled time of an existing show.
+ * Parameters:
+ *    year (int) - Updated year
+ *    month (int) - Updated month
+ *    day (int) - Updated day
+ *    hour (int) - Updated hour
+ *    minute (int) - Updated minute
+ *    showId (const QString&) - Unique identifier of the show
+ * Returns:
+ *    bool - true if the show was successfully updated, false otherwise
+ */
+bool ControllerAdapter::updateShow(int year, int month, int day, int hour, int minute,const QString& showId)
+{
+    try{
+        return m_controller->updateShow(createTime(year,month,day,hour,minute),showId.toStdString())==Enums::ProcessStatus::SUCCESS;
+    }
+    catch(const std::exception &ex) {
+        qDebug() << "Update Show error:" << ex.what();
+    }
+    return false;
+}
+
+/*
+ * Function: ControllerAdapter::createTime
+ * Description: Creates a time_t object from the provided date and time components.
+ * Parameters:
+ *    year (int) - Year
+ *    month (int) - Month
+ *    day (int) - Day
+ *    hour (int) - Hour
+ *    minute (int) - Minute
+ * Returns:
+ *    time_t - Constructed time object
+ */
+time_t ControllerAdapter::createTime(int year, int month, int day, int hour, int minute)
+{
+    tm time = {};
+    try{
+        tm time = {};
+        time.tm_year = year - 1900;
+        time.tm_mon = month - 1;
+        time.tm_mday = day;
+        time.tm_hour = hour;
+        time.tm_min = minute;
+        time.tm_sec = 0;
+    }
+    catch(const std::exception &ex) {
+        qDebug() << "Create time error:" << ex.what();
+    }
+    return mktime(&time);
+}
+
+/*
+ * Function: ControllerAdapter::cancelShow
+ * Description: Cancels an existing show by setting its status to CANCELLED.
+ * Parameters:
+ *    showId (const QString&) - Unique identifier of the show
+ * Returns:
+ *    bool - true if the show was successfully cancelled, false otherwise
+ */
+bool ControllerAdapter::cancelShow(const QString& showId)
+{
+    try{
+        return Enums::ProcessStatus::SUCCESS==m_controller->setShowStatusById(showId.toStdString(),Enums::ShowStatus::CANCELLED);
+    }
+    catch(const std::exception &ex) {
+        qDebug() << "Cancel show error:" << ex.what();
+    }
+    return false;
+}
