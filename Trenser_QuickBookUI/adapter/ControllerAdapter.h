@@ -91,6 +91,7 @@ public:
         int updatedDuration);
     Q_INVOKABLE int deactivateMovie(const QString& movieId);
     Q_INVOKABLE int reactivateMovie(const QString& movieId);
+    Q_INVOKABLE QVariantList getLog(const QString& type);
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);

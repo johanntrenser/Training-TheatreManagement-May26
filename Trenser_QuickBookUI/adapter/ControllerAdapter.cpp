@@ -1128,3 +1128,37 @@ int ControllerAdapter::reactivateMovie(const QString& movieId)
 
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
+
+/*
+ * Function: ControllerAdapter::getLog
+ * Description: Retrieves logs of a specified type from the controller and converts
+ *              them into QVariantMap objects for UI consumption. Each log entry
+ *              includes timestamp, logId, type, and details.
+ * Parameters:
+ *    type (const QString&) - Type of log to fetch (mapped via Enums::getLogType)
+ * Returns:
+ *    QVariantList - List of logs, each represented as a QVariantMap with fields:
+ *                   "timeStamp", "logId", "type", and "details"
+ */
+QVariantList ControllerAdapter::getLog(const QString& type)
+{
+    QVariantList completeLogs;
+    try{
+        std::vector<const Log*> inComingLog = m_controller->getLogsByType(Enums::getLogType((type.toStdString())));
+        for(const Log* log : inComingLog)
+        {
+            QVariantMap logMap;
+            logMap["timeStamp"]=QString::fromStdString(log->getTimestamp().toString());
+            logMap["logId"]=QString::fromStdString(log->getLogId());
+            logMap["type"]=QString::fromStdString(Enums::getLogTypeString(log->getLogType()));
+            logMap["details"]=QString::fromStdString(log->getDescription());
+            completeLogs.append(logMap);
+        }
+    }
+    catch (const std::exception& exception)
+    {
+        qCritical() << "Log error:" << exception.what();
+    }
+
+    return completeLogs;
+}
