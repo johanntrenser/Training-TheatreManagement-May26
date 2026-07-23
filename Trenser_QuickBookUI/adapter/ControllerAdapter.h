@@ -126,6 +126,11 @@ public:
     Q_INVOKABLE int updateScreenName(const QString& theatreId, const QString& screenId, const QString& newName);
     Q_INVOKABLE int deactivateScreen(const QString& theatreId, const QString& screenId);
     Q_INVOKABLE int reactivateScreen(const QString& theatreId, const QString& screenId);
+    Q_INVOKABLE bool isShowTimeConflicting(const QString& movieId,const QString& screenId,const int year,const int month,const int day,const int hour,const int minute);
+    Q_INVOKABLE bool addShow(const QString& movieId,const QString& screenId,const int year,const int month,const int day,const int hour,const int minute);
+    Q_INVOKABLE QVariantList getActiveShows();
+    Q_INVOKABLE bool updateShow(int year, int month, int day, int hour, int minute,const QString& showId);
+    Q_INVOKABLE bool cancelShow(const QString& showId);
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);
@@ -144,6 +149,7 @@ private:
     static QString userStatusToString(Enums::UserStatus status);
     static QString movieStatusToString(Enums::MovieStatus status);
     static Enums::UserType stringToUserType(const QString& role);
+    static time_t createTime(int year, int month, int day, int hour, int minute);
     QVariantMap convertMovieToVariantMap(const Movie* movie) const;
     QVariantMap bookingToMap(const Booking* booking) const;
     QVariantList m_bookings;

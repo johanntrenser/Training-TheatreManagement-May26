@@ -225,7 +225,7 @@ Item {
                                 return "MovieManagement.qml"
                             }
                             else if (dashboardPage.activeView === "Browse & Book") {
-                                return "MovieCatalog.qml"
+                                return "CustomerBrowseAndBook.qml"
                             }
                             else if (dashboardPage.activeView === "Theatre Management") {
                                 return "TheatreManagement.qml"
