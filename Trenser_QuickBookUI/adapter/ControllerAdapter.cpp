@@ -1601,3 +1601,238 @@ QVariantMap ControllerAdapter::cancelBooking(const QString& bookingId)
     }
     return cancellationResponseMap;
 }
+
+/*
+ * Function: ControllerAdapter::getMoviesInTheatre
+ * Description: Retrieves all movies assigned to a specific theatre from the controller
+ *              and converts them into QVariantMap objects for UI consumption.
+ * Parameters:
+ *    theatreId - QString representing the unique ID of the theatre
+ * Returns:
+ *    QVariantList - List of movies with their details (id, title, genre)
+ */
+QVariantList ControllerAdapter::getMoviesInTheatre(const QString& theatreId)
+{
+    QVariantList list;
+    try {
+        auto movies = m_controller->getMoviesFromTheatre(theatreId.toStdString());
+
+        for (const Movie* movie : movies) {
+            QVariantMap map;
+            map["id"] = QString::fromStdString(movie->getMovieId());
+            map["title"] = QString::fromStdString(movie->getTitle());
+            map["genre"] = QString::fromStdString(movie->getGenre());
+            list.append(map);
+        }
+    } catch(const std::exception &ex) {
+        qDebug() << "Error fetching movies for theatre:" << ex.what();
+    }
+    return list;
+}
+
+/*
+ * Function: ControllerAdapter::getActiveMovies
+ * Description: Retrieves all currently active movies from the controller
+ *              and converts them into QVariantMap objects for UI consumption.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantList - List of active movies with their details (id, title)
+ */
+QVariantList ControllerAdapter::getActiveMovies()
+{
+    QVariantList list;
+    try {
+        auto activeMovies = m_controller->getAllActiveMovies();
+        for (const Movie* movie : activeMovies) {
+            QVariantMap map;
+            map["id"] = QString::fromStdString(movie->getMovieId());
+            map["title"] = QString::fromStdString(movie->getTitle());
+            list.append(map);
+        }
+    } catch(const std::exception &ex) {
+        qDebug() << "Error fetching active movies:" << ex.what();
+    }
+    return list;
+}
+
+/*
+ * Function: ControllerAdapter::addMovieToTheatre
+ * Description: Assigns an existing movie to a specific theatre.
+ * Parameters:
+ *    theatreId - QString representing the unique ID of the theatre
+ *    movieId   - QString representing the unique ID of the movie
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, etc.)
+ */
+int ControllerAdapter::addMovieToTheatre(const QString& theatreId, const QString& movieId)
+{
+    try {
+        Enums::ProcessStatus status = m_controller->addMovieToTheatre(theatreId.toStdString(), movieId.toStdString());
+        return static_cast<int>(status);
+    } catch(...) {
+        return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+    }
+}
+
+/*
+ * Function: ControllerAdapter::removeMovieFromTheatre
+ * Description: Removes an assigned movie from a specific theatre.
+ * Parameters:
+ *    theatreId - QString representing the unique ID of the theatre
+ *    movieId   - QString representing the unique ID of the movie
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, etc.)
+ */
+int ControllerAdapter::removeMovieFromTheatre(const QString& theatreId, const QString& movieId)
+{
+    try {
+        Enums::ProcessStatus status = m_controller->removeMovieFromTheatre(theatreId.toStdString(), movieId.toStdString());
+        return static_cast<int>(status);
+    } catch(...) {
+        return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+    }
+}
+
+/*
+ * Function: ControllerAdapter::getScreensInTheatre
+ * Description: Retrieves all screens belonging to a specific theatre from the controller
+ *              and converts them into QVariantMap objects for UI consumption.
+ * Parameters:
+ *    theatreId - QString representing the unique ID of the theatre
+ * Returns:
+ *    QVariantList - List of screens with details (id, name, rows, cols, capacity, status, price)
+ */
+QVariantList ControllerAdapter::getScreensInTheatre(const QString& theatreId)
+{
+    QVariantList list;
+    try {
+        // Calls Controller::viewTheatreScreens(theatreId)
+        const std::vector<const Screen*> screens = m_controller->viewTheatreScreens(theatreId.toStdString());
+
+        for (const Screen* screen : screens) {
+            if (!screen)
+            {
+                continue;
+            }
+            QVariantMap map;
+            map["id"] = QString::fromStdString(screen->getScreenId());
+            map["name"] = QString::fromStdString(screen->getName());
+            map["rows"] = screen->getTotalRows();
+            map["cols"] = screen->getTotalColumns();
+            map["capacity"] = screen->getTotalRows() * screen->getTotalColumns();
+            map["status"] = static_cast<int>(screen->getScreenStatus());
+            double seatPrice = 0.0;
+            const auto& grid = screen->getSeatGrid();
+            if (!grid.empty() && !grid[0].empty() && grid[0][0] != nullptr)
+            {
+                seatPrice = grid[0][0]->getSeatAmount();
+            }
+            map["price"] = seatPrice;
+            list.append(map);
+        }
+    } catch(const std::exception &ex) {
+        qDebug() << "Error fetching screens:" << ex.what();
+    }
+    return list;
+}
+
+/*
+ * Function: ControllerAdapter::addScreenToTheatre
+ * Description: Adds a new screen to a specific theatre with given seat layout and price.
+ * Parameters:
+ *    theatreId  - QString representing the unique ID of the theatre
+ *    screenName - QString name of the new screen
+ *    seatRows   - int number of seat rows
+ *    seatColumns- int number of seat columns
+ *    seatAmount - double price per seat
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, etc.)
+ */
+int ControllerAdapter::addScreenToTheatre(const QString& theatreId, const QString& screenName, int seatRows, int seatColumns, double seatAmount)
+{
+    try {
+        Enums::ProcessStatus status = m_controller->addScreen(
+            theatreId.toStdString(),
+            screenName.toStdString(),
+            seatRows,
+            seatColumns,
+            seatAmount
+            );
+        return static_cast<int>(status);
+    } catch(const std::exception &ex) {
+        qDebug() << "Add screen error:" << ex.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+/*
+ * Function: ControllerAdapter::updateScreenName
+ * Description: Updates the name of an existing screen in a theatre.
+ * Parameters:
+ *    theatreId - QString representing the unique ID of the theatre
+ *    screenId  - QString representing the unique ID of the screen
+ *    newName   - QString new name for the screen
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, ALREADY_EXISTS, etc.)
+ */
+int ControllerAdapter::updateScreenName(const QString& theatreId, const QString& screenId, const QString& newName)
+{
+    try {
+        Enums::ProcessStatus status = m_controller->updateScreenName(
+            theatreId.toStdString(),
+            screenId.toStdString(),
+            newName.toStdString()
+            );
+        return static_cast<int>(status);
+    } catch(const std::exception &ex) {
+        qDebug() << "Update screen name error:" << ex.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+/*
+ * Function: ControllerAdapter::deactivateScreen
+ * Description: Deactivates a screen in a specific theatre, making it unavailable for use.
+ * Parameters:
+ *    theatreId - QString representing the unique ID of the theatre
+ *    screenId  - QString representing the unique ID of the screen
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, etc.)
+ */
+int ControllerAdapter::deactivateScreen(const QString& theatreId, const QString& screenId)
+{
+    try {
+        Enums::ProcessStatus status = m_controller->deactivateScreen(
+            theatreId.toStdString(),
+            screenId.toStdString()
+            );
+        return static_cast<int>(status);
+    } catch(const std::exception &ex) {
+        qDebug() << "Deactivate screen error:" << ex.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}
+
+/*
+ * Function: ControllerAdapter::reactivateScreen
+ * Description: Reactivates a previously deactivated screen in a specific theatre.
+ * Parameters:
+ *    theatreId - QString representing the unique ID of the theatre
+ *    screenId  - QString representing the unique ID of the screen
+ * Returns:
+ *    int - ProcessStatus code (SUCCESS, FAILED, etc.)
+ */
+int ControllerAdapter::reactivateScreen(const QString& theatreId, const QString& screenId)
+{
+    try {
+        Enums::ProcessStatus status = m_controller->reactivateScreen(
+            theatreId.toStdString(),
+            screenId.toStdString()
+            );
+        return static_cast<int>(status);
+    } catch(const std::exception &ex) {
+        qDebug() << "Reactivate screen error:" << ex.what();
+    }
+    return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
+}

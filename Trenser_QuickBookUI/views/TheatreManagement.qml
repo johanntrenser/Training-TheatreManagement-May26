@@ -26,9 +26,20 @@ Item {
         }
     }
 
-    // 2. Empty UI Model (Filled by the function above)
     ListModel {
         id: theatreModel
+    }
+
+    ListModel {
+        id: assignedMoviesModel
+    }
+
+    ListModel {
+        id: availableMoviesModel
+    }
+
+    ListModel {
+        id: screensModel
     }
 
     ColumnLayout {
@@ -192,12 +203,12 @@ Item {
                                 Button {
                                     text: "🎬 Movies"
                                     visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER && model.status === "ACTIVE"
-                                    onClicked: console.log("Movies Dialog coming!")
+                                    onClicked: moviesDialog.openForTheatre(model.id, model.name)
                                 }
                                 Button {
                                     text: "🖥️ Screens"
                                     visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER && model.status === "ACTIVE"
-                                    onClicked: console.log("Screens Dialog coming!")
+                                    onClicked: screensDialog.openForTheatre(model.id, model.name)
                                 }
                                 Button {
                                     text: "Deactivate"
@@ -376,6 +387,391 @@ Item {
                         }
                     }
                 }
+            }
+        }
+    }
+    Dialog {
+        id: moviesDialog
+        modal: true
+        anchors.centerIn: parent
+        width: 500
+        height: 450
+        property string currentTheatreId: ""
+        function openForTheatre(theatreId, theatreName) {
+            title = "Manage Movies: " + theatreName
+            currentTheatreId = theatreId
+            moviesErrorText.text = ""
+            refreshData()
+            open()
+        }
+
+        // Refresh Movie List
+        function refreshData() {
+            assignedMoviesModel.clear()
+            availableMoviesModel.clear()
+            var assigned = controller.getMoviesInTheatre(currentTheatreId)
+            for (var indexOne = 0; indexOne < assigned.length; indexOne++) {
+                assignedMoviesModel.append(assigned[indexOne])
+            }
+            var available = controller.getActiveMovies()
+            for (var indexTwo = 0; indexTwo < available.length; indexTwo++) {
+                availableMoviesModel.append(available[indexTwo])
+            }
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 12
+
+            Text { id: moviesErrorText; color: "red"; font.pixelSize: 11; visible: text !== "" }
+
+            Text { text: "Currently Assigned Movies"; font.bold: true; font.pixelSize: 14; color: window.textDark }
+
+            //LIST OF ASSIGNED MOVIES
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: "#F8F9FA"
+                border.color: "#E0E0E0"
+                radius: 4
+
+                ListView {
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    clip: true
+                    model: assignedMoviesModel
+                    spacing: 5
+
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        implicitHeight: 60
+                        color: "#FFFFFF"
+                        border.color: "#F0F0F0"
+                        radius: 4
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+
+                            Text { text: model.title; font.bold: true; Layout.fillWidth: true; color: window.textDark }
+                            Text { text: model.genre || ""; color: window.textMuted; Layout.preferredWidth: 80 }
+
+                            Button {
+                                text: "Remove"
+                                onClicked: {
+                                    if (controller.removeMovieFromTheatre(moviesDialog.currentTheatreId, model.id) === EnumsAdapter.ProcessStatus.SUCCESS) {
+                                        moviesErrorText.text = ""
+                                        moviesDialog.refreshData()
+                                    } else {
+                                        moviesErrorText.text = "Failed to remove movie."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Rectangle { Layout.fillWidth: true; height: 1; color: "#E0E0E0"; Layout.topMargin: 5; Layout.bottomMargin: 5 }
+            Text { text: "Assign New Movie"; font.bold: true; font.pixelSize: 14; color: window.textDark }
+            //DROPDOWN TO ADD MOVIES
+            RowLayout {
+                Layout.fillWidth: true
+
+                ComboBox {
+                    id: movieCombo
+                    Layout.fillWidth: true
+                    model: availableMoviesModel
+                    textRole: "title"
+                    valueRole: "id"
+                }
+
+                Button {
+                    text: "Assign Movie"
+                    highlighted: true
+                    enabled: movieCombo.count > 0
+                    onClicked: {
+                        var selectedMovieId = movieCombo.currentValue
+                        if (!selectedMovieId)
+                        {
+                            return;
+                        }
+                        for (var index = 0; index < assignedMoviesModel.count; index++) {
+                            if (assignedMoviesModel.get(index).id === selectedMovieId) {
+                                moviesErrorText.text = "Movie is already assigned to this theatre!"
+                                return;
+                            }
+                        }
+
+                        if (controller.addMovieToTheatre(moviesDialog.currentTheatreId, selectedMovieId) === EnumsAdapter.ProcessStatus.SUCCESS) {
+                            moviesErrorText.text = ""
+                            moviesDialog.refreshData()
+                        } else {
+                            moviesErrorText.text = "Failed to assign movie."
+                        }
+                    }
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button { text: "Close"; onClicked: moviesDialog.close() }
+            }
+        }
+    }
+    Dialog {
+        id: screensDialog
+        modal: true
+        anchors.centerIn: parent
+        width: 620
+        height: 520
+        property string currentTheatreId: ""
+        property string editingScreenId: ""
+
+        function openForTheatre(theatreId, theatreName) {
+            title = "Manage Screens: " + theatreName
+            currentTheatreId = theatreId
+            screensErrorText.text = ""
+            editingScreenId = ""
+            clearInputFields()
+            refreshData()
+            open()
+        }
+
+        function clearInputFields() {
+            newScreenName.text = ""
+            newScreenRows.text = ""
+            newScreenColumns.text = ""
+            newScreenPrice.text = ""
+        }
+
+        function refreshData() {
+            screensModel.clear()
+            var screens = controller.getScreensInTheatre(currentTheatreId)
+            for (var index = 0; index < screens.length; index++) {
+                screensModel.append(screens[index])
+            }
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 12
+
+            Text { id: screensErrorText; color: "red"; font.pixelSize: 11; visible: text !== "" }
+            Text { text: "Existing Screens"; font.bold: true; font.pixelSize: 14; color: window.textDark }
+
+            // LIST OF EXISTING SCREENS
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: "#F8F9FA"
+                border.color: "#E0E0E0"
+                radius: 4
+
+                ListView {
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    clip: true
+                    model: screensModel
+                    spacing: 6
+
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        implicitHeight: 55
+                        color: "#FFFFFF"
+                        border.color: "#F0F0F0"
+                        radius: 4
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            spacing: 10
+
+                            // Screen Name Display
+                            Loader {
+                                Layout.fillWidth: true
+                                sourceComponent: screensDialog.editingScreenId === model.id ? editNameComponent : displayNameComponent
+                            }
+
+                            Component {
+                                id: displayNameComponent
+                                RowLayout {
+                                    Text { text: model.name; font.bold: true; color: window.textDark }
+                                    Button {
+                                        text: "✏️"
+                                        flat: true
+                                        onClicked: screensDialog.editingScreenId = model.id
+                                    }
+                                }
+                            }
+
+                            Component {
+                                id: editNameComponent
+                                RowLayout {
+                                    TextField {
+                                        id: renameInput
+                                        text: model.name
+                                        selectByMouse: true
+                                        Layout.preferredWidth: 120
+                                    }
+                                    Button {
+                                        text: "Save"
+                                        highlighted: true
+                                        onClicked: {
+                                            var newName = renameInput.text.trim();
+                                            if (newName === "") {
+                                                screensErrorText.text = "Screen name cannot be empty."
+                                                return
+                                            }
+                                            if (newName === model.name) {
+                                                screensErrorText.text = ""
+                                                screensDialog.editingScreenId = ""
+                                                return
+                                            }
+                                            for (var index = 0; index < screensModel.count; index++) {
+                                                var item = screensModel.get(index)
+                                                if (item.id !== model.id && item.name.toLowerCase() === newName.toLowerCase()) {
+                                                    screensErrorText.text = "Error: Screen with name '" + newName + "' already exists."
+                                                    return
+                                                }
+                                            }
+                                            var result = controller.updateScreenName(screensDialog.currentTheatreId, model.id, newName);
+                                            if (result === EnumsAdapter.ProcessStatus.SUCCESS) {
+                                                screensErrorText.text = ""
+                                                screensDialog.editingScreenId = ""
+                                                screensDialog.refreshData()
+                                            } else if (result === EnumsAdapter.ProcessStatus.ALREADY_EXISTS) {
+                                                screensErrorText.text = "Error: Screen with name '" + newName + "' already exists."
+                                            } else {
+                                                screensErrorText.text = "Failed to update screen name."
+                                            }
+                                        }
+                                    }
+                                    Button {
+                                        text: "Cancel"
+                                        onClicked: {
+                                            screensErrorText.text = ""
+                                            screensDialog.editingScreenId = ""
+                                        }
+                                    }
+                                }
+                            }
+                            Text {
+                                text: model.rows + "x" + model.cols + " (" + model.capacity + " seats)";
+                                color: window.textMuted
+                                Layout.preferredWidth: 120
+                                visible: screensDialog.editingScreenId !== model.id
+                            }
+                            Text {
+                                text: "₹" + (model.price || 0).toFixed(2);
+                                font.bold: true
+                                color: "#137333"
+                                Layout.preferredWidth: 80
+                                visible: screensDialog.editingScreenId !== model.id
+                            }
+                            Button {
+                                text: model.status === 0 ? "Deactivate" : "Reactivate"
+                                onClicked: {
+                                    var resultStatus = 0;
+                                    if (model.status === 0) {
+                                        resultStatus = controller.deactivateScreen(screensDialog.currentTheatreId, model.id);
+                                    } else {
+                                        resultStatus = controller.reactivateScreen(screensDialog.currentTheatreId, model.id);
+                                    }
+
+                                    if (resultStatus === EnumsAdapter.ProcessStatus.SUCCESS) {
+                                        screensErrorText.text = ""
+                                        screensDialog.refreshData()
+                                    } else {
+                                        screensErrorText.text = "Failed to update screen status."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Rectangle { Layout.fillWidth: true; height: 1; color: "#E0E0E0"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+            Text { text: "Add New Screen"; font.bold: true; font.pixelSize: 14; color: window.textDark }
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 8
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    TextField {
+                        id: newScreenName
+                        Layout.fillWidth: true
+                        placeholderText: "Screen Name (e.g. Screen 1)"
+                        selectByMouse: true
+                    }
+                    TextField {
+                        id: newScreenPrice
+                        Layout.preferredWidth: 130
+                        placeholderText: "Price/Seat (₹)"
+                        inputMethodHints: Qt.ImhFormattedNumbersOnly
+                        selectByMouse: true
+                    }
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    TextField {
+                        id: newScreenRows
+                        Layout.fillWidth: true
+                        placeholderText: "Rows (e.g. 10)"
+                        inputMethodHints: Qt.ImhDigitsOnly
+                        selectByMouse: true
+                    }
+                    TextField {
+                        id: newScreenColumns
+                        Layout.fillWidth: true
+                        placeholderText: "Columns (e.g. 12)"
+                        inputMethodHints: Qt.ImhDigitsOnly
+                        selectByMouse: true
+                    }
+                    Button {
+                        text: "Add Screen"
+                        highlighted: true
+                        onClicked: {
+                            var screenName = newScreenName.text.trim();
+                            var screenRows = parseInt(newScreenRows.text.trim());
+                            var screenColumns = parseInt(newScreenColumns.text.trim());
+                            var screenPrice = parseFloat(newScreenPrice.text.trim());
+                            if (screenName === "" || isNaN(screenRows) || isNaN(screenColumns) || isNaN(screenPrice)) {
+                                screensErrorText.text = "Please enter valid values for all fields."
+                                return
+                            }
+                            if (screenRows <= 0 || screenColumns <= 0 || screenPrice <= 0) {
+                                screensErrorText.text = "Rows, Columns, and Price must be greater than 0."
+                                return
+                            }
+                            var result = controller.addScreenToTheatre(
+                                screensDialog.currentTheatreId,
+                                screenName,
+                                screenRows,
+                                screenColumns,
+                                screenPrice
+                            );
+                            if (result === EnumsAdapter.ProcessStatus.SUCCESS) {
+                                screensErrorText.text = ""
+                                screensDialog.clearInputFields()
+                                screensDialog.refreshData()
+                            } else if (result === EnumsAdapter.ProcessStatus.ALREADY_EXISTS) {
+                                screensErrorText.text = "Error: Screen with name '" + screenName + "' already exists."
+                            } else if (result === EnumsAdapter.ProcessStatus.NOT_FOUND) {
+                                screensErrorText.text = "Error: Theatre not found in database."
+                            } else {
+                                screensErrorText.text = "Error: Failed to add screen."
+                            }
+                        }
+                    }
+                }
+            }
+            // CLOSE BUTTON
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button { text: "Close"; onClicked: screensDialog.close() }
             }
         }
     }
