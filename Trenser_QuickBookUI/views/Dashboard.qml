@@ -233,6 +233,12 @@ Item {
                             else if (dashboardPage.activeView === "Show Management") {
                                 return "ShowManagement.qml"
                             }
+                            else if (dashboardPage.activeView === "Booking Management") {
+                                return "BookingManagement.qml"
+                            }
+                            else if (dashboardPage.activeView === "My Bookings") {
+                                return "CustomerBookingsView.qml"
+                            }
                             else if (dashboardPage.activeView === "Ticket Management") {
                                 return "TicketManagement.qml"
                             }
@@ -281,40 +287,175 @@ Item {
             }
         }
     }
+
     Rectangle {
         id: toast
-        width: Math.min(parent.width - 40, toastText.implicitWidth + 40)
-        height: 44
-        radius: 8
-        color: "#333333"
-        opacity: 0
-        anchors.horizontalCenter: parent.horizontalCenter
+
+        anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
+        anchors.rightMargin: 24
+        anchors.bottomMargin: 24
+
+        width: 360
+        height: 72
+        radius: 14
+        color: "#FFFFFF"
+        border.color: "#E5E7EB"
+        border.width: 1
         z: 999
 
         property alias message: toastText.text
+        property bool isVisible: false
+
+        opacity: isVisible ? 1.0 : 0.0
+
+        transform: Translate {
+            id: toastTranslation
+            x: toast.isVisible ? 0 : 120
+            y: toast.isVisible ? 0 : 40
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "#0F172A"
+            opacity: 0.12
+            z: -1
+            transform: Translate { y: 6 }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: window.primaryRed
+            opacity: 0.08
+            z: -2
+            transform: Translate { y: 12 }
+        }
+
+        MouseArea {
+            id: toastHoverArea
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: hideTimer.stop()
+            onExited: {
+                if (toast.isVisible) {
+                    hideTimer.restart()
+                }
+            }
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 14
+            anchors.rightMargin: 14
+            spacing: 12
+
+            Rectangle {
+                Layout.preferredWidth: 42
+                Layout.preferredHeight: 42
+                radius: 12
+                color: "#FFF0F2"
+                border.color: "#FFD6DC"
+                border.width: 1
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "🔔"
+                    font.pixelSize: 18
+                    scale: toast.isVisible ? 1.0 : 0.5
+
+                    Behavior on scale {
+                        NumberAnimation { duration: 300; easing.type: Easing.OutBack }
+                    }
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
+
+                RowLayout {
+                    spacing: 6
+                    Rectangle {
+                        width: 6; height: 6; radius: 3
+                        color: window.primaryRed
+                    }
+                    Text {
+                        text: "NEW NOTIFICATION"
+                        font.pixelSize: 10
+                        font.bold: true
+                        font.letterSpacing: 0.5
+                        color: window.primaryRed
+                    }
+                }
+
+                Text {
+                    id: toastText
+                    Layout.fillWidth: true
+                    font.pixelSize: 13
+                    font.weight: Font.Medium
+                    color: window.textDark
+                    wrapMode: Text.WordWrap
+                    maximumLineCount: 2
+                    elide: Text.ElideRight
+                    lineHeight: 1.15
+                }
+            }
+
+            Rectangle {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                radius: 13
+                color: closeMouseArea.containsMouse ? "#F3F4F6" : "transparent"
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "✕"
+                    font.pixelSize: 11
+                    font.bold: true
+                    color: closeMouseArea.containsMouse ? window.textDark : window.textMuted
+                }
+
+                MouseArea {
+                    id: closeMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: toast.hide()
+                }
+            }
+        }
 
         function show(msg) {
             toast.message = msg
-            toast.opacity = 1
+            toast.isVisible = true
             hideTimer.restart()
         }
 
-        Text {
-            id: toastText
-            text:"demo"
-            anchors.centerIn: parent
-            color: "white"
-            font.pixelSize: 13
+        function hide() {
+            toast.isVisible = false
+            hideTimer.stop()
         }
 
-        Behavior on opacity { NumberAnimation { duration: 250 } }
+        Behavior on opacity {
+            NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+        }
+
+        Behavior on transform {
+            NumberAnimation {
+                target: toastTranslation
+                properties: "x,y"
+                duration: 350
+                easing.type: toast.isVisible ? Easing.OutBack : Easing.InCubic
+                easing.overshoot: 1.1
+            }
+        }
 
         Timer {
             id: hideTimer
-            interval: 4000
-            onTriggered: toast.opacity = 0
+            interval: 4500
+            onTriggered: toast.hide()
         }
     }
 

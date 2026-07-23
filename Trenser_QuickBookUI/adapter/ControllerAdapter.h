@@ -19,6 +19,13 @@
 #include <QVariantList>
 #include <QVariantMap>
 #include <qqmlintegration.h>
+#include <ctime>
+#include <QDateTime>
+#include <unordered_set>
+#include <QDebug>
+#include <vector>
+#include <string>
+#include <exception>
 #include "Controller.h"
 #include "NotificationEvent.h"
 #include "EnumsAdapter.h"
@@ -30,6 +37,9 @@ class ControllerAdapter : public QObject {
 
     Q_PROPERTY(bool isAuthenticated READ isAuthenticated NOTIFY authenticationChanged)
     Q_PROPERTY(EnumsAdapter::UserType userType READ userType NOTIFY authenticationChanged)
+    Q_PROPERTY(QVariantList bookings READ bookings NOTIFY bookingsChanged)
+    Q_PROPERTY(QVariantList payments READ payments NOTIFY paymentsChanged)
+    Q_PROPERTY(QVariantList refunds READ refunds NOTIFY refundsChanged)
 public:
     explicit ControllerAdapter(QObject *parent = nullptr);
     ~ControllerAdapter();
@@ -92,10 +102,25 @@ public:
     Q_INVOKABLE int deactivateMovie(const QString& movieId);
     Q_INVOKABLE int reactivateMovie(const QString& movieId);
     Q_INVOKABLE QVariantList getLog(const QString& type);
+
+    QVariantList bookings() const { return m_bookings; }
+    Q_INVOKABLE void loadBookings();
+    QString displayTimeAndDate(time_t time) const;
+    Q_INVOKABLE QVariantMap cancelBooking(const QString& bookingId);
+
+    QVariantList payments() const { return m_payments; }
+    Q_INVOKABLE void loadPayments();
+    QVariantMap paymentToMap(const Payment* payment) const;
+
+    QVariantList refunds() const { return m_refunds; }
+    Q_INVOKABLE void loadRefunds();
+    QVariantMap refundToMap(const Refund* refund) const;
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);
-
+    void bookingsChanged();
+    void paymentsChanged();
+    void refundsChanged();
 private:
     Controller* m_controller = nullptr;
     bool m_authenticated = false;
@@ -109,6 +134,10 @@ private:
     static QString movieStatusToString(Enums::MovieStatus status);
     static Enums::UserType stringToUserType(const QString& role);
     QVariantMap convertMovieToVariantMap(const Movie* movie) const;
+    QVariantMap bookingToMap(const Booking* booking) const;
+    QVariantList m_bookings;
+    QVariantList m_payments;
+    QVariantList m_refunds;
 };
 
-#endif // CONTROLLERADAPTER_H
+#endif

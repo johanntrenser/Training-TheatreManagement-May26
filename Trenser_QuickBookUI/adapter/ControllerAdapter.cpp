@@ -16,6 +16,8 @@
 #include "ControllerAdapter.h"
 #include <utility>
 #include <QDebug>
+#include <QDateTime>
+#include <string>
 #include "AuthenticationManagementService.h"
 #include "UserManagementService.h"
 #include "TheatreManagementService.h"
@@ -1161,4 +1163,441 @@ QVariantList ControllerAdapter::getLog(const QString& type)
     }
 
     return completeLogs;
+}
+
+/*
+ * Function: ControllerAdapter::bookingToMap
+ * Description: Converts a Booking domain model object into a QVariantMap containing
+ *              booking, show, movie, and theatre details for QML UI integration.
+ * Parameters:
+ *    booking (const Booking*) - Pointer to the Booking object to be converted
+ * Returns:
+ *    QVariantMap - Map containing key-value pairs of booking details for QML,
+ *                  or an empty map if the booking pointer is null
+ */
+QVariantMap ControllerAdapter::bookingToMap(const Booking* booking) const {
+    QVariantMap map;
+    if (!booking) {
+        return map;
+    }
+    map["bookingId"] = QString::fromStdString(booking->getBookingId());
+    map["seatsCount"] = static_cast<int>(booking->getBookedSeats().size());
+    map["status"] = QString::fromStdString(Enums::getBookingStatusString(booking->getStatus()));
+    const Show* show = booking->getShow();
+    if (show) {
+        map["dateTime"] = displayTimeAndDate(show->getStartTime());
+        const Movie* movie = show->getMovie();
+        if (movie) {
+            map["movieName"] = QString::fromStdString(movie->getTitle());
+        }
+        const Screen* screen = show->getScreen();
+        if (screen) {
+            const Theatre* theatre = screen->getTheatre();
+            if (theatre) {
+                map["theaterId"] = QString::fromStdString(theatre->getTheatreId());
+                map["theaterName"] = QString::fromStdString(theatre->getName());
+            }
+        }
+    }
+    return map;
+}
+
+/*
+ * Function: ControllerAdapter::displayTimeAndDate
+ * Description: Converts a Unix timestamp into a formatted date and time string for display in the UI.
+ * Parameters:
+ *    time (time_t) - The timestamp in seconds since epoch to be formatted
+ * Returns:
+ *    QString - The formatted date and time string in "yyyy-MM-dd HH:mm:ss" format
+ */
+QString ControllerAdapter::displayTimeAndDate(time_t time) const
+{
+    return QDateTime::fromSecsSinceEpoch(static_cast<qint64>(time))
+        .toString("yyyy-MM-dd HH:mm:ss");
+}
+
+/*
+ * Function: ControllerAdapter::loadBookings
+ * Description: Fetches all bookings from the backend controller, filters them based on
+ *              the authenticated user's role (Customer or Theatre Owner), converts them
+ *              to QVariantMap objects, and notifies the QML layer of the updated list.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void ControllerAdapter::loadBookings() {
+    try {
+        m_bookings.clear();
+        if (!m_controller) {
+            qWarning() << "loadBookings failed: Controller is null!";
+            emit bookingsChanged();
+            return;
+        }
+        const User* authUser = m_controller->getAuthenticatedUser();
+        if (!authUser) {
+            qWarning() << "loadBookings failed: No authenticated user!";
+            emit bookingsChanged();
+            return;
+        }
+        Enums::UserType userType = authUser->getUserType();
+        std::vector<const Booking*> allBookings = m_controller->getAllBookings();
+        if (userType == Enums::UserType::CUSTOMER) {
+            for (const Booking* booking : allBookings) {
+                if (!booking) {
+                    continue;
+                }
+                const User* customer = booking->getCustomer();
+                if (customer && customer->getUserId() == authUser->getUserId()) {
+                    m_bookings.append(bookingToMap(booking));
+                }
+            }
+        }
+        else if (userType == Enums::UserType::THEATRE_OWNER) {
+            std::vector<const Theatre*> ownerTheatres = m_controller->getCurrentOwnerTheatres();
+            std::unordered_set<std::string> ownerTheatreIds;
+            for (const Theatre* theatre : ownerTheatres) {
+                if (theatre) {
+                    ownerTheatreIds.insert(theatre->getTheatreId());
+                }
+            }
+            for (const Booking* booking : allBookings) {
+                if (!booking) {
+                    continue;
+                }
+                const Show* show = booking->getShow();
+                if (!show) {
+                    continue;
+                }
+                const Screen* screen = show->getScreen();
+                if (!screen) {
+                    continue;
+                }
+                const Theatre* theatre = screen->getTheatre();
+                if (theatre && ownerTheatreIds.count(theatre->getTheatreId()) > 0) {
+                    m_bookings.append(bookingToMap(booking));
+                }
+            }
+        }
+    }
+    catch (const std::exception &ex) {
+        qCritical() << "Exception in loadBookings:" << ex.what();
+    }
+    catch (...) {
+        qCritical() << "Unknown exception in loadBookings!";
+    }
+    emit bookingsChanged();
+}
+
+/*
+ * Function: ControllerAdapter::paymentToMap
+ * Description: Converts a Payment domain model object into a QVariantMap containing
+ *              payment, amount, status, timestamp, and associated booking details for QML UI integration.
+ * Parameters:
+ *    payment (const Payment*) - Pointer to the Payment object to be converted
+ * Returns:
+ *    QVariantMap - Map containing key-value pairs of payment details for QML,
+ *                  or an empty map if the payment pointer is null
+ */
+QVariantMap ControllerAdapter::paymentToMap(const Payment* payment) const {
+    QVariantMap map;
+    if (!payment) {
+        return map;
+    }
+    map["paymentId"] = QString::fromStdString(payment->getPaymentId());
+    map["amount"] = QString::number(payment->getAmount(), 'f', 2);
+    map["paymentMethod"] = QString::fromStdString(Enums::getPaymentMethodString(payment->getPaymentMethod()));
+    QString statusStr = QString::fromStdString(Enums::getPaymentStatusString(payment->getStatus()));
+    map["paymentStatus"] = statusStr;
+    map["status"] = statusStr;
+    map["timeStamp"] = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(payment->getTimeStamp()))
+                           .toString("yyyy-MM-dd HH:mm:ss");
+    const Booking* booking = payment->getBooking();
+    if (booking) {
+        map["bookingId"] = QString::fromStdString(booking->getBookingId());
+    } else {
+        map["bookingId"] = "N/A";
+    }
+    return map;
+}
+
+/*
+ * Function: ControllerAdapter::loadPayments
+ * Description: Fetches all payment records from the backend controller, filters them based on
+ *              the authenticated user's role (Customer or Theatre Owner), converts them
+ *              to QVariantMap objects, and notifies the QML layer of the updated list.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void ControllerAdapter::loadPayments() {
+    try {
+        m_payments.clear();
+        if (!m_controller) {
+            qWarning() << "loadPayments failed: Controller is null!";
+            emit paymentsChanged();
+            return;
+        }
+        const User* authUser = m_controller->getAuthenticatedUser();
+        if (!authUser) {
+            qWarning() << "loadPayments failed: No authenticated user!";
+            emit paymentsChanged();
+            return;
+        }
+        Enums::UserType userType = authUser->getUserType();
+        const std::vector<Payment*> allPayments = m_controller->getAllPayments();
+        if (userType == Enums::UserType::CUSTOMER) {
+            for (const Payment* payment : allPayments) {
+                if (!payment) {
+                    continue;
+                }
+                const Booking* booking = payment->getBooking();
+                if (!booking) {
+                    continue;
+                }
+                const User* customer = booking->getCustomer();
+                if (customer && customer->getUserId() == authUser->getUserId()) {
+                    m_payments.append(paymentToMap(payment));
+                }
+            }
+        }
+        else if (userType == Enums::UserType::THEATRE_OWNER) {
+            std::vector<const Theatre*> ownerTheatres = m_controller->getCurrentOwnerTheatres();
+            std::unordered_set<std::string> ownerTheatreIds;
+            for (const Theatre* theatre : ownerTheatres) {
+                if (theatre) {
+                    ownerTheatreIds.insert(theatre->getTheatreId());
+                }
+            }
+            for (const Payment* payment : allPayments) {
+                if (!payment) {
+                    continue;
+                }
+                const Booking* booking = payment->getBooking();
+                if (!booking) {
+                    continue;
+                }
+                const Show* show = booking->getShow();
+                if (!show) {
+                    continue;
+
+                }
+                const Screen* screen = show->getScreen();
+                if (!screen) {
+                    continue;
+                }
+                const Theatre* theatre = screen->getTheatre();
+                if (theatre && ownerTheatreIds.count(theatre->getTheatreId()) > 0) {
+                    m_payments.append(paymentToMap(payment));
+                }
+            }
+        }
+    }
+    catch (const std::exception &ex) {
+        qCritical() << "Exception in loadPayments:" << ex.what();
+    }
+    catch (...) {
+        qCritical() << "Unknown exception in loadPayments!";
+    }
+    emit paymentsChanged();
+}
+
+/*
+ * Function: ControllerAdapter::refundToMap
+ * Description: Converts a Refund domain model object into a QVariantMap containing
+ *              refund ID, amount, status, timestamp, and associated ticket details for QML UI integration.
+ * Parameters:
+ *    refund (const Refund*) - Pointer to the Refund object to be converted
+ * Returns:
+ *    QVariantMap - Map containing key-value pairs of refund details formatted for QML,
+ *                  or an empty map if the refund pointer is null
+ */
+QVariantMap ControllerAdapter::refundToMap(const Refund* refund) const {
+    QVariantMap map;
+    if (!refund) {
+        return map;
+    }
+    map["refundId"] = QString::fromStdString(refund->getRefundId());
+    map["refundAmount"] = QString::number(refund->getRefundAmount(), 'f', 2);
+    map["amount"] = map["refundAmount"];
+    QString statusStr = QString::fromStdString(Enums::getRefundStatusString(refund->getStatus()));
+    map["refundStatus"] = statusStr;
+    map["status"] = statusStr;
+    QString formattedTime = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(refund->getTime()))
+                                .toString("yyyy-MM-dd HH:mm:ss");
+    map["refundTime"] = formattedTime;
+    map["timeStamp"] = formattedTime;
+    const Ticket* ticket = refund->getBookedTicket();
+    if (ticket) {
+        map["ticketId"] = QString::fromStdString(ticket->getTicketId());
+    } else {
+        map["ticketId"] = "N/A";
+    }
+    return map;
+}
+
+/*
+ * Function: ControllerAdapter::loadRefunds
+ * Description: Fetches all refund records from the backend controller, filters them based on
+ *              the authenticated user's role (Customer or Theatre Owner), converts them
+ *              to QVariantMap objects, and notifies the QML layer of the updated list.
+ * Parameters:
+ *    None
+ * Returns:
+ *    void
+ */
+void ControllerAdapter::loadRefunds() {
+    try {
+        m_refunds.clear();
+        if (!m_controller) {
+            qWarning() << "loadRefunds failed: Controller is null!";
+            emit refundsChanged();
+            return;
+        }
+        const User* authUser = m_controller->getAuthenticatedUser();
+        if (!authUser) {
+            qWarning() << "loadRefunds failed: No authenticated user!";
+            emit refundsChanged();
+            return;
+        }
+        Enums::UserType userType = authUser->getUserType();
+        const std::vector<Refund*> allRefunds = m_controller->getRefunds();
+        if (userType == Enums::UserType::CUSTOMER) {
+            for (const Refund* refund : allRefunds) {
+                if (!refund) {
+                    continue;
+                }
+                const Ticket* ticket = refund->getBookedTicket();
+                if (!ticket) {
+                    continue;
+                }
+                const Booking* booking = ticket->getPayment()->getBooking();
+                if (!booking) {
+                    continue;
+                }
+                const User* customer = booking->getCustomer();
+                if (customer && customer->getUserId() == authUser->getUserId()) {
+                    m_refunds.append(refundToMap(refund));
+                }
+            }
+        }
+        else if (userType == Enums::UserType::THEATRE_OWNER) {
+            std::vector<const Theatre*> ownerTheatres = m_controller->getCurrentOwnerTheatres();
+            std::unordered_set<std::string> ownerTheatreIds;
+            for (const Theatre* theatre : ownerTheatres) {
+                if (theatre) {
+                    ownerTheatreIds.insert(theatre->getTheatreId());
+                }
+            }
+            for (const Refund* refund : allRefunds) {
+                if (!refund) {
+                    continue;
+                }
+                const Ticket* ticket = refund->getBookedTicket();
+                if (!ticket) {
+                    continue;
+                }
+                const Booking* booking = ticket->getPayment()->getBooking();
+                if (!booking) {
+                    continue;
+                }
+                const Show* show = booking->getShow();
+                if (!show) {
+                    continue;
+                }
+                const Screen* screen = show->getScreen();
+                if (!screen) {
+                    continue;
+                }
+                const Theatre* theatre = screen->getTheatre();
+                if (theatre && ownerTheatreIds.count(theatre->getTheatreId()) > 0) {
+                    m_refunds.append(refundToMap(refund));
+                }
+            }
+        }
+    }
+    catch (const std::exception &ex) {
+        qCritical() << "Exception in loadRefunds:" << ex.what();
+    }
+    catch (...) {
+        qCritical() << "Unknown exception in loadRefunds!";
+    }
+    emit refundsChanged();
+}
+
+/*
+ * Function: ControllerAdapter::cancelBooking
+ * Description: Validates and cancels a customer booking by ID, triggers the backend controller's
+ *              cancellation process, reloads related data models (bookings, payments, refunds),
+ *              and returns the status result to the QML UI.
+ * Parameters:
+ *    bookingId (const QString&) - Unique identifier of the booking to be cancelled
+ * Returns:
+ *    QVariantMap - Map containing boolean "success" status and descriptive "message" string for QML feedback
+ */
+QVariantMap ControllerAdapter::cancelBooking(const QString& bookingId)
+{
+    QVariantMap cancellationResponseMap;
+    cancellationResponseMap["success"] = false;
+    cancellationResponseMap["message"] = "Failed to cancel booking.";
+    try
+    {
+        if (m_controller == nullptr)
+        {
+            qWarning() << "cancelBooking failed: Controller instance is null!";
+            cancellationResponseMap["message"] = "Internal system error: Controller unavailable.";
+            return cancellationResponseMap;
+        }
+        const std::string targetBookingId = bookingId.toStdString();
+        if (targetBookingId.empty())
+        {
+            qWarning() << "cancelBooking failed: Provided bookingId is empty.";
+            cancellationResponseMap["message"] = "Invalid Booking ID provided.";
+            return cancellationResponseMap;
+        }
+        const std::vector<const Booking*> cancellableBookingsList = m_controller->getCancellableCustomerBookings();
+        bool isBookingEligibleForCancellation = false;
+        for (const Booking* currentBooking : cancellableBookingsList)
+        {
+            if (currentBooking != nullptr)
+            {
+                if (currentBooking->getBookingId() == targetBookingId)
+                {
+                    isBookingEligibleForCancellation = true;
+                    break;
+                }
+            }
+        }
+        if (!isBookingEligibleForCancellation)
+        {
+            qWarning() << "cancelBooking failed: Booking ID" << bookingId << "is not eligible for cancellation.";
+            cancellationResponseMap["message"] = "Booking cannot be cancelled or Booking ID is invalid.";
+            return cancellationResponseMap;
+        }
+        Enums::ProcessStatus cancellationProcessStatus = m_controller->cancelBooking(targetBookingId);
+        if (cancellationProcessStatus == Enums::ProcessStatus::SUCCESS)
+        {
+            cancellationResponseMap["success"] = true;
+            cancellationResponseMap["message"] = "Booking cancelled successfully and payment refunded!";
+            loadBookings();
+            loadPayments();
+            loadRefunds();
+        }
+        else
+        {
+            cancellationResponseMap["message"] = "Failed to cancel booking! Please try again later.";
+        }
+    }
+    catch (const std::exception& exceptionContext)
+    {
+        qCritical() << "Standard exception caught in cancelBooking:" << exceptionContext.what();
+        cancellationResponseMap["message"] = QString("An error occurred: ") + exceptionContext.what();
+    }
+    catch (...)
+    {
+        qCritical() << "Unknown exception caught in cancelBooking!";
+        cancellationResponseMap["message"] = "An unknown error occurred while processing cancellation.";
+    }
+    return cancellationResponseMap;
 }
