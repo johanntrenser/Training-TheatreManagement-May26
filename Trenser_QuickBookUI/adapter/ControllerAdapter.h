@@ -146,6 +146,8 @@ public:
     Q_INVOKABLE QVariantList getSeatLayout(const QString& selectedScreenId);
     Q_INVOKABLE int deactivateSeat(const QString& selectedScreenId, const QString& seatId);
     Q_INVOKABLE int reactivateSeat(const QString& selectedScreenId, const QString& seatId);
+    Q_INVOKABLE QVariantMap bookSeats(const QString& showId, const QStringList& seatIds);
+    Q_INVOKABLE QVariantMap processPayment(const QString& bookingId, const QString& paymentMethodStr, double amount);
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);

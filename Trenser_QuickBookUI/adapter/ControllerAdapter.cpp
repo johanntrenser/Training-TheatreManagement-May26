@@ -2318,3 +2318,68 @@ int ControllerAdapter::reactivateSeat(const QString& selectedScreenId, const QSt
     }
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
+
+QVariantMap ControllerAdapter::bookSeats(const QString& showId, const QStringList& seatIds)
+{
+    QVariantMap response;
+
+    if (!m_controller) {
+        response["success"] = false;
+        response["message"] = "Controller unavailable";
+        return response;
+    }
+
+    // Convert Qt QStringList to std::vector<std::string>
+    std::vector<std::string> stdSeatIds;
+    for (const QString& seatId : seatIds) {
+        stdSeatIds.push_back(seatId.toStdString());
+    }
+
+    // Lookup show object via showId
+    const Show* show = m_controller->getShowById(showId.toStdString());
+    if (!show) {
+        response["success"] = false;
+        response["message"] = "Show not found";
+        return response;
+    }
+
+    // Invoke C++ backend seat booking function
+    const Booking* booking = m_controller->bookSelectedSeats(show->getShowId(), stdSeatIds);
+    if (booking != nullptr) {
+        response["success"] = true;
+        response["bookingId"] = QString::fromStdString(booking->getBookingId());
+        response["amount"] = booking->getAmount();
+        response["status"] = "PENDING";
+    } else {
+        response["success"] = false;
+        response["message"] = "Seats are no longer available or booking failed.";
+    }
+
+    return response;
+}
+
+QVariantMap ControllerAdapter::processPayment(const QString& bookingId, const QString& paymentMethodStr, double amount)
+{
+    QVariantMap response;
+    if (!m_controller) {
+        response["success"] = false;
+        response["message"] = "Controller unavailable";
+        return response;
+    }
+    Enums::PaymentMethod type = (paymentMethodStr == "UPI")
+                                    ? Enums::PaymentMethod::UPI
+                                    : Enums::PaymentMethod::DEBIT_CARD;
+    Enums::ProcessStatus isSuccess = m_controller->initiatePayment(bookingId.toStdString(), type, amount);
+    if (isSuccess == Enums::ProcessStatus::SUCCESS) {
+        response["success"] = true;
+        response["message"] = "Payment processed successfully.";
+        loadBookings();
+        loadPayments();
+        loadTickets();
+        loadActiveTickets();
+    } else {
+        response["success"] = false;
+        response["message"] = "Payment was declined by backend.";
+    }
+    return response;
+}
