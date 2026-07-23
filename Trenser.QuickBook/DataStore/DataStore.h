@@ -209,5 +209,6 @@ public:
 	void rebuildNotificationRelationship(const std::string& notificationId);
 	void updateNotificationStatus(const std::string& notificationId, Enums::NotificationStatus status);
 	void ensureFolder(const char* path);
+	void updateMovie(Movie* movie);
 	~DataStore();
 };

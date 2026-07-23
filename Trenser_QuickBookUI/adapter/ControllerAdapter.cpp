@@ -744,6 +744,14 @@ QVariantList ControllerAdapter::getUnreadNotifications(const int batchSize)
     return unreadedNotificationList;
 }
 
+/*
+ * Function: ControllerAdapter::convertMovieToVariantMap
+ * Description: Converts a Movie object into a QVariantMap containing its details.
+ * Parameters:
+ *    movie (const Movie*) - Pointer to the Movie object
+ * Returns:
+ *    QVariantMap - Map with movieId, title, language, genre, duration, and active status
+ */
 QVariantMap ControllerAdapter::convertMovieToVariantMap(const Movie* movie) const
 {
     QVariantMap map;
@@ -763,6 +771,15 @@ QVariantMap ControllerAdapter::convertMovieToVariantMap(const Movie* movie) cons
     return map;
 }
 
+/*
+ * Function: ControllerAdapter::getAllMovies
+ * Description: Retrieves all movies (both active and inactive) from the controller
+ *              and converts them into QVariantMap objects for UI consumption.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantList - List of all movies with their details
+ */
 QVariantList ControllerAdapter::getAllMovies()
 {
     QVariantList movieList;
@@ -796,6 +813,17 @@ QVariantList ControllerAdapter::getAllMovies()
     return movieList;
 }
 
+/*
+ * Function: ControllerAdapter::isMovieUnique
+ * Description: Checks whether a movie with the given attributes already exists in the system.
+ * Parameters:
+ *    title (const QString&) - Title of the movie
+ *    language (const QString&) - Language of the movie
+ *    genre (const QString&) - Genre of the movie
+ *    duration (int) - Duration of the movie in minutes
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::isMovieUnique(const QString& title,
                                      const QString& language,
                                      const QString& genre,
@@ -827,6 +855,17 @@ int ControllerAdapter::isMovieUnique(const QString& title,
     return static_cast<int>(status);
 }
 
+/*
+ * Function: ControllerAdapter::addMovie
+ * Description: Adds a new movie to the system with the provided details.
+ * Parameters:
+ *    title (const QString&) - Title of the movie
+ *    language (const QString&) - Language of the movie
+ *    genre (const QString&) - Genre of the movie
+ *    duration (int) - Duration of the movie in minutes
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::addMovie(const QString& title,
                                 const QString& language,
                                 const QString& genre,
@@ -866,6 +905,24 @@ int ControllerAdapter::addMovie(const QString& title,
     return static_cast<int>(status);
 }
 
+/*
+ * Function: ControllerAdapter::updateMovie
+ * Description: Updates the details of an existing movie if changes are detected.
+ *              Ensures uniqueness before applying updates to title, language,
+ *              genre, or duration.
+ * Parameters:
+ *    movieId (const QString&) - Unique identifier of the movie
+ *    currentTitle (const QString&) - Current title of the movie
+ *    currentLanguage (const QString&) - Current language of the movie
+ *    currentGenre (const QString&) - Current genre of the movie
+ *    currentDuration (int) - Current duration of the movie
+ *    updatedTitle (const QString&) - Updated title of the movie
+ *    updatedLanguage (const QString&) - Updated language of the movie
+ *    updatedGenre (const QString&) - Updated genre of the movie
+ *    updatedDuration (int) - Updated duration of the movie
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::updateMovie(
     const QString& movieId,
     const QString& currentTitle,
@@ -980,6 +1037,14 @@ int ControllerAdapter::updateMovie(
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * Function: ControllerAdapter::deactivateMovie
+ * Description: Deactivates a movie in the system by its unique identifier.
+ * Parameters:
+ *    movieId (const QString&) - Unique identifier of the movie
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::deactivateMovie(const QString& movieId)
 {
     Enums::ProcessStatus processStatus;
@@ -1018,6 +1083,14 @@ int ControllerAdapter::deactivateMovie(const QString& movieId)
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * Function: ControllerAdapter::reactivateMovie
+ * Description: Reactivates a previously deactivated movie in the system.
+ * Parameters:
+ *    movieId (const QString&) - Unique identifier of the movie
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::reactivateMovie(const QString& movieId)
 {
     Enums::ProcessStatus processStatus;

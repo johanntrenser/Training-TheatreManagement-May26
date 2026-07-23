@@ -150,6 +150,7 @@ Enums::ProcessStatus MovieManagementService::setMovieTitleByID(const std::string
 		if ((iterator->second)->getMovieId() == movieId)
 		{
 			(iterator->second)->setTitle(title);
+			m_dataStore.updateMovie(iterator->second);
 			return Enums::ProcessStatus::SUCCESS;
 		}
 	}
@@ -176,6 +177,7 @@ Enums::ProcessStatus MovieManagementService::setMovieLanguageByID(const std::str
 		if ((iterator->second)->getMovieId() == movieId)
 		{
 			(iterator->second)->setLanguage(language);
+			m_dataStore.updateMovie(iterator->second);
 			return Enums::ProcessStatus::SUCCESS;
 		}
 	}
@@ -202,6 +204,7 @@ Enums::ProcessStatus MovieManagementService::setMovieGenreByID(const std::string
 		if ((iterator->second)->getMovieId() == movieId)
 		{
 			(iterator->second)->setGenre(genre);
+			m_dataStore.updateMovie(iterator->second);
 			return Enums::ProcessStatus::SUCCESS;
 		}
 	}
@@ -228,6 +231,7 @@ Enums::ProcessStatus MovieManagementService::setMovieDurationByID(const std::str
 		if ((iterator->second)->getMovieId() == movieId)
 		{
 			(iterator->second)->setDuration(duration);
+			m_dataStore.updateMovie(iterator->second);
 			return Enums::ProcessStatus::SUCCESS;
 		}
 	}
@@ -277,6 +281,7 @@ Enums::ProcessStatus MovieManagementService::deactivateMovie(const std::string& 
 		if ((iterator->second)->getMovieId() == movieId && isMovieDeactivatable(movieId) == Enums::ProcessStatus::SUCCESS)
 		{
 			(iterator->second)->setStatus(Enums::MovieStatus::INACTIVE);
+			m_dataStore.updateMovie(iterator->second);
 			return Enums::ProcessStatus::SUCCESS;
 		}
 	}
@@ -303,6 +308,7 @@ Enums::ProcessStatus MovieManagementService::reactivateMovie(const std::string& 
 		if ((iterator->second)->getMovieId() == movieId)
 		{
 			(iterator->second)->setStatus(Enums::MovieStatus::ACTIVE);
+			m_dataStore.updateMovie(iterator->second);
 			return Enums::ProcessStatus::SUCCESS;
 		}
 	}

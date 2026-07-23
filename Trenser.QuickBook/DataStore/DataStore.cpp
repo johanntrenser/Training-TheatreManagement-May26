@@ -4143,6 +4143,22 @@ void DataStore::ensureFolder(const char* path) {
 }
 
 /*
+ * Function: DataStore::updateMovie
+ * Description: Updates an existing Movie record in the system by serializing the
+ *              provided Movie object into a SharedMovie record and persisting
+ *              the update in shared memory via the registry.
+ * Parameters:
+ *    movie (Movie*) - Pointer to the Movie object to be updated
+ * Returns:
+ *    void
+ */
+void DataStore::updateMovie(Movie* movie)
+{
+    SharedMovie sharedMovie = movie->serialize();
+    m_registry.getMovies()->updateRecord(movie->getMovieId().c_str(), sharedMovie);
+}
+
+/*
  * Function: DataStore::~DataStore
  * Description: Destructor for the DataStore singleton. Iterates through all
  *              in-memory maps and deletes every heap-allocated object in

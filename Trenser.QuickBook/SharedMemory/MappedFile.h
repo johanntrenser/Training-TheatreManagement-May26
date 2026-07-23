@@ -201,6 +201,33 @@ public:
 	}
 
 	/*
+	 * Function: updateRecord
+	 * Description: Updates an existing record in the internal storage if the record's
+	 *              identifier matches the provided id. After updating, the changes
+	 *              are flushed to persistent storage.
+	 * Parameters:
+	 *    id (const char*) - Unique identifier of the record to update
+	 *    record (const T&) - New record data to replace the existing entry
+	 * Returns:
+	 *    bool - true if the record was found and updated successfully,
+	 *           false if no matching record was found
+	 */
+	bool updateRecord(const char* id, const T& record)
+	{
+		checkAndRemap();
+		for (int index = 0; index < m_header->recordCount; index++)
+		{
+			if (strcmp(reinterpret_cast<const char*>(&m_records[index]), id) == 0)
+			{
+				m_records[index] = record;
+				flush();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/*
 	 * Function: MappedFile::flush
 	 * Description: Flushes all modifications in the mapped memory region
 	 *              to the underlying file.
