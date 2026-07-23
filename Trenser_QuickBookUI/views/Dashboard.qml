@@ -254,6 +254,12 @@ Item {
                             else if (dashboardPage.activeView === "View Notifications") {
                                 return "NotificationsView.qml"
                             }
+                            else if (dashboardPage.activeView === "Ticket Management") {
+                                return "TicketManagement.qml"
+                            }
+                            else if (dashboardPage.activeView === "My Tickets") {
+                                return "CustomerTicketsView.qml"
+                            }
                             else {
                                 return ""
                             }

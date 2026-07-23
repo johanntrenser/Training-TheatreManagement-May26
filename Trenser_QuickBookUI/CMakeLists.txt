@@ -61,6 +61,8 @@ qt_add_qml_module(appTrenser_QuickBookUI
         QML_FILES views/CustomerBookingsView.qml
         QML_FILES views/ShowManagement.qml
         QML_FILES views/CustomerBrowseAndBook.qml
+        QML_FILES views/CustomerTicketsView.qml
+        QML_FILES views/TicketManagement.qml
 
         # Add future C++ models here, e.g.:
         # models/MovieListModel.h

@@ -1998,3 +1998,169 @@ bool ControllerAdapter::cancelShow(const QString& showId)
     }
     return false;
 }
+
+/*
+ * name        : loadTickets
+ * description : Fetches all tickets from the backend controller, converts them into QVariantMap
+ *               objects containing ticket, customer, payment, booking, and status details, and
+ *               updates the QML layer with the refreshed list.
+ * parameter   : None
+ * return type : void
+ */
+void ControllerAdapter::loadTickets() {
+    m_tickets.clear();
+    try {
+        if (!m_controller) {
+            emit ticketsChanged();
+            return;
+        }
+        for (const Ticket* ticket : m_controller->viewAllTickets()) {
+            if (!ticket) continue;
+            QVariantMap map;
+            map["ticketId"] = QString::fromStdString(ticket->getTicketId());
+            map["customerName"] = ticket->getCustomer()
+                                      ? QString::fromStdString(ticket->getCustomer()->getUserName()) : "N/A";
+            if (ticket->getPayment()) {
+                map["paymentId"] = QString::fromStdString(ticket->getPayment()->getPaymentId());
+                map["amount"] = ticket->getPayment()->getAmount();
+                map["bookingId"] = ticket->getPayment()->getBooking()
+                                       ? QString::fromStdString(ticket->getPayment()->getBooking()->getBookingId()) : "N/A";
+            } else {
+                map["paymentId"] = "N/A";
+                map["amount"] = 0.0;
+                map["bookingId"] = "N/A";
+            }
+            map["status"] = QString::fromStdString(Enums::getTicketStatusString(ticket->getTicketStatus()));
+            m_tickets.append(map);
+        }
+    } catch (const std::exception &ex) {
+        qDebug() << "loadTickets error:" << ex.what();
+    }
+    emit ticketsChanged();
+}
+
+/*
+ * Function: ControllerAdapter::ticketToMap
+ * Description: Converts a Ticket* into a QVariantMap for QML consumption.
+ *              Shared by loadTickets() (admin/all), loadActiveTickets(), and
+ *              loadTicketHistory() so the field layout stays identical across
+ *              all three ticket views. Always includes customerName, even
+ *              for the customer's own tickets — unlike the console UI, which
+ *              only prints the customer name column for Admin. Harmless for
+ *              a customer viewing their own name, but worth knowing this
+ *              differs from the original console behavior.
+ * Parameters:
+ *    ticket (const Ticket*) - Ticket to convert
+ * Returns:
+ *    QVariantMap - ticketId, customerName, paymentId, amount, bookingId, status
+ */
+QVariantMap ControllerAdapter::ticketToMap(const Ticket* ticket) const
+{
+    QVariantMap map;
+    if (!ticket) {
+        return map;
+    }
+    map["ticketId"] = QString::fromStdString(ticket->getTicketId());
+    if (ticket->getCustomer()) {
+        map["customerName"] = QString::fromStdString(ticket->getCustomer()->getUserName());
+    } else {
+        map["customerName"] = "N/A";
+    }
+    map["movieTitle"] = "N/A";
+    map["showDateAndTime"] = "N/A";
+    if (ticket->getPayment()) {
+        map["paymentId"] = QString::fromStdString(ticket->getPayment()->getPaymentId());
+        map["amount"] = ticket->getPayment()->getAmount();
+        const Booking* booking = ticket->getPayment()->getBooking();
+        if (booking) {
+            map["bookingId"] = QString::fromStdString(booking->getBookingId());
+            const Show* show = booking->getShow();
+            if (show) {
+                map["showDateAndTime"] = displayTimeAndDate(show->getStartTime());
+                const Movie* movie = show->getMovie();
+                if (movie) {
+                    map["movieTitle"] = QString::fromStdString(movie->getTitle());
+                }
+            }
+        } else {
+            map["bookingId"] = "N/A";
+        }
+    } else {
+        map["paymentId"] = "N/A";
+        map["amount"] = 0.0;
+        map["bookingId"] = "N/A";
+    }
+    map["status"] = QString::fromStdString(Enums::getTicketStatusString(ticket->getTicketStatus()));
+    return map;
+}
+
+/*
+ * name        : loadActiveTickets
+ * description : Fetches active tickets from the backend controller, converts them into QVariantMap
+ *               objects using ticketToMap(), and updates the QML layer with the refreshed list.
+ *               Handles initialization checks and logs errors if backend is unavailable.
+ * parameter   : None
+ * return type : void
+ */
+void ControllerAdapter::loadActiveTickets()
+{
+    m_activeTickets.clear();
+    try
+    {
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "loadActiveTickets failed: Backend not initialized!";
+            emit activeTicketsChanged();
+            return;
+        }
+        const std::vector<const Ticket*> tickets = m_controller->viewTicketDetails();
+        for (const Ticket* ticket : tickets)
+        {
+            if (!ticket) {
+                continue;
+            }
+            m_activeTickets.append(ticketToMap(ticket));
+        }
+    }
+    catch (const std::exception &ex)
+    {
+        qDebug() << "loadActiveTickets error:" << ex.what();
+    }
+    emit activeTicketsChanged();
+}
+
+/*
+ * name        : loadTicketHistory
+ * description : Fetches historical ticket records from the backend controller, converts them into
+ *               QVariantMap objects using ticketToMap(), and updates the QML layer with the refreshed list.
+ *               Performs initialization checks and logs errors if backend is unavailable.
+ * parameter   : None
+ * return type : void
+ */
+void ControllerAdapter::loadTicketHistory()
+{
+    m_ticketHistory.clear();
+    try
+    {
+        if (!m_initialized || !m_controller)
+        {
+            qWarning() << "loadTicketHistory failed: Backend not initialized!";
+            emit ticketHistoryChanged();
+            return;
+        }
+
+        const std::vector<const Ticket*> tickets = m_controller->viewTicketHistory();
+        for (const Ticket* ticket : tickets)
+        {
+            if (!ticket) {
+                continue;
+            }
+            m_ticketHistory.append(ticketToMap(ticket));
+        }
+    }
+    catch (const std::exception &ex)
+    {
+        qDebug() << "loadTicketHistory error:" << ex.what();
+    }
+    emit ticketHistoryChanged();
+}

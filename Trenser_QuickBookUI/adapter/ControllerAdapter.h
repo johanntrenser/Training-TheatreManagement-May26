@@ -40,6 +40,9 @@ class ControllerAdapter : public QObject {
     Q_PROPERTY(QVariantList bookings READ bookings NOTIFY bookingsChanged)
     Q_PROPERTY(QVariantList payments READ payments NOTIFY paymentsChanged)
     Q_PROPERTY(QVariantList refunds READ refunds NOTIFY refundsChanged)
+    Q_PROPERTY(QVariantList tickets READ tickets NOTIFY ticketsChanged)
+    Q_PROPERTY(QVariantList activeTickets READ activeTickets NOTIFY activeTicketsChanged)
+    Q_PROPERTY(QVariantList ticketHistory READ ticketHistory NOTIFY ticketHistoryChanged)
 public:
     explicit ControllerAdapter(QObject *parent = nullptr);
     ~ControllerAdapter();
@@ -131,12 +134,22 @@ public:
     Q_INVOKABLE QVariantList getActiveShows();
     Q_INVOKABLE bool updateShow(int year, int month, int day, int hour, int minute,const QString& showId);
     Q_INVOKABLE bool cancelShow(const QString& showId);
+
+    QVariantList tickets() const { return m_tickets; }
+    Q_INVOKABLE void loadTickets();
+    QVariantList activeTickets() const { return m_activeTickets; }
+    Q_INVOKABLE void loadActiveTickets();
+    QVariantList ticketHistory() const { return m_ticketHistory; }
+    Q_INVOKABLE void loadTicketHistory();
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);
     void bookingsChanged();
     void paymentsChanged();
     void refundsChanged();
+    void ticketsChanged();
+    void activeTicketsChanged();
+    void ticketHistoryChanged();
 private:
     Controller* m_controller = nullptr;
     bool m_authenticated = false;
@@ -155,6 +168,11 @@ private:
     QVariantList m_bookings;
     QVariantList m_payments;
     QVariantList m_refunds;
+
+    QVariantList m_tickets;
+    QVariantMap ticketToMap(const Ticket* ticket) const;
+    QVariantList m_activeTickets;
+    QVariantList m_ticketHistory;
 };
 
 #endif
