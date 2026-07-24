@@ -78,9 +78,11 @@ Item {
 
             Item { Layout.fillWidth: true }
 
-            Button {
+            CustomButton {
                 text: "➕ Add Theatre"
                 highlighted: true
+                btnColor: window.primaryRed
+                textColor: "#FFFFFF"
                 visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER
                 onClicked:
                 {
@@ -109,9 +111,35 @@ Item {
             Layout.fillWidth: true; spacing: 15
             RowLayout {
                 spacing: 5
-                Button { text: "All"; flat: theatrePage.statusFilter !== "ALL"; onClicked: theatrePage.statusFilter = "ALL" }
-                Button { text: "Active"; flat: theatrePage.statusFilter !== "ACTIVE"; onClicked: theatrePage.statusFilter = "ACTIVE" }
-                Button { text: "Inactive"; flat: theatrePage.statusFilter !== "INACTIVE"; onClicked: theatrePage.statusFilter = "INACTIVE" }
+                CustomButton {
+                    text: "All"
+                    implicitWidth: 110; implicitHeight: 36
+                    btnColor: theatrePage.statusFilter === "ALL" ? window.primaryRed : "#E5E5E5"
+                    textColor: theatrePage.statusFilter === "ALL" ? "#FFFFFF" : window.textDark
+                    onClicked: {
+                        theatrePage.statusFilter = "ALL"
+                    }
+                }
+
+                CustomButton {
+                    text: "Active"
+                    implicitWidth: 110; implicitHeight: 36
+                    btnColor: theatrePage.statusFilter === "ACTIVE" ? window.primaryRed : "#E5E5E5"
+                    textColor: theatrePage.statusFilter === "ACTIVE" ? "#FFFFFF" : window.textDark
+                    onClicked: {
+                        theatrePage.statusFilter = "ACTIVE"
+                    }
+                }
+
+                CustomButton {
+                    text: "Inactive"
+                    implicitWidth: 110; implicitHeight: 36
+                    btnColor: theatrePage.statusFilter === "INACTIVE" ? window.primaryRed : "#E5E5E5"
+                    textColor: theatrePage.statusFilter === "INACTIVE" ? "#FFFFFF" : window.textDark
+                    onClicked: {
+                        theatrePage.statusFilter = "INACTIVE"
+                    }
+                }
             }
             Item { Layout.fillWidth: true }
         }
@@ -139,7 +167,7 @@ Item {
                         Text { text: "Address"; font.bold: true; color: window.textMuted; Layout.preferredWidth: 100; Layout.minimumWidth: 100; Layout.maximumWidth: 100}
                         Text { text: "Contact"; font.bold: true; color: window.textMuted; Layout.preferredWidth: 80; Layout.minimumWidth: 80; Layout.maximumWidth: 80 }
                         Text { text: "Status"; font.bold: true; color: window.textMuted; Layout.preferredWidth: 80; Layout.minimumWidth: 80; Layout.maximumWidth: 80; horizontalAlignment: Text.AlignHCenter }
-                        Text { text: "Actions"; font.bold: true; color: window.textMuted; Layout.preferredWidth: 260; Layout.minimumWidth: 260; Layout.maximumWidth: 260; horizontalAlignment: Text.AlignRight }
+                        Text { text: "Actions"; font.bold: true; color: window.textMuted; Layout.preferredWidth: 260; Layout.minimumWidth: 260; Layout.maximumWidth: 260; horizontalAlignment: Text.AlignHCenter }
                     }
                 }
 
@@ -182,11 +210,13 @@ Item {
                                 }
                             }
                             RowLayout {
-                                Layout.preferredWidth: 260; Layout.minimumWidth: 260; Layout.maximumWidth: 260; Layout.alignment: Qt.AlignLeft; spacing: 4
+                                Layout.preferredWidth: 260; Layout.minimumWidth: 260; Layout.maximumWidth: 260; Layout.alignment: Qt.AlignLeft; spacing: 8
 
                                 Item { Layout.fillWidth: true }
-                                Button {
+                                CustomButton {
                                     text: "✅ Approve"
+                                    implicitWidth: 80; implicitHeight: 30
+                                    btnColor: "#E3F2FD"; textColor: "#1565C0"
                                     visible: controller.userType === EnumsAdapter.UserType.ADMIN && model.status === "PENDING"
                                     onClicked: {
                                         if (controller.approveTheatre(model.id) === EnumsAdapter.ProcessStatus.SUCCESS) {
@@ -199,8 +229,10 @@ Item {
                                         }
                                     }
                                 }
-                                Button {
+                                CustomButton {
                                     text: "❌ Reject"
+                                    implicitWidth: 80; implicitHeight: 30
+                                    btnColor: "#FFEBEE"; textColor: "#C62828"
                                     visible: controller.userType === EnumsAdapter.UserType.ADMIN && model.status === "PENDING"
                                     onClicked: {
                                         if (controller.rejectTheatre(model.id) === EnumsAdapter.ProcessStatus.SUCCESS) {
@@ -213,24 +245,34 @@ Item {
                                         }
                                     }
                                 }
-                                Button {
-                                    text: "✏️"
+                                CustomButton {
+                                    text: "✏️ Edit"
+                                    implicitWidth: 65; implicitHeight: 30
+                                    btnColor: "#E3F2FD"; textColor: "#1565C0"
                                     visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER
                                     onClicked: editTheatreDialog.openForTheatre(index)
                                     icon.width: 10
                                 }
-                                Button {
+                                CustomButton {
                                     text: "🎬 Movies"
+                                    implicitWidth: 75; implicitHeight: 30
+                                    btnColor: window.primaryRed
+                                    textColor: "#FFFFFF"
                                     visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER && model.status === "ACTIVE"
                                     onClicked: moviesDialog.openForTheatre(model.id, model.name)
                                 }
-                                Button {
+                                CustomButton {
                                     text: "🖥️ Screens"
+                                    implicitWidth: 80; implicitHeight: 30
+                                    btnColor: window.primaryRed
+                                    textColor: "#FFFFFF"
                                     visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER && model.status === "ACTIVE"
                                     onClicked: screensDialog.openForTheatre(model.id, model.name)
                                 }
-                                Button {
+                                CustomButton {
                                     text: "Deactivate"
+                                    implicitWidth: 80; implicitHeight: 30
+                                    btnColor: "#FFEBEE"; textColor: "#C62828"
                                     visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER && model.status === "ACTIVE"
                                     onClicked: {
                                         if (controller.deactivateTheatre(model.id) === EnumsAdapter.ProcessStatus.SUCCESS) {
@@ -242,8 +284,11 @@ Item {
                                     }
                                 }
 
-                                Button {
+                                CustomButton {
                                     text: "Reactivate"
+                                    implicitWidth: 80; implicitHeight: 30
+                                    btnColor: "#E3F2FD"
+                                    textColor: "#1565C0"
                                     visible: controller.userType === EnumsAdapter.UserType.THEATRE_OWNER && model.status === "INACTIVE"
                                     onClicked: {
                                         if (controller.reactivateTheatre(model.id) === EnumsAdapter.ProcessStatus.SUCCESS) {
@@ -475,8 +520,11 @@ Item {
                             Text { text: model.title; font.bold: true; Layout.fillWidth: true; color: window.textDark }
                             Text { text: model.genre || ""; color: window.textMuted; Layout.preferredWidth: 80 }
 
-                            Button {
+                            CustomButton {
                                 text: "Remove"
+                                implicitWidth: 80; implicitHeight: 30
+                                btnColor: "#FFEBEE"
+                                textColor: "#C62828"
                                 onClicked: {
                                     if (controller.removeMovieFromTheatre(moviesDialog.currentTheatreId, model.id) === EnumsAdapter.ProcessStatus.SUCCESS) {
                                         moviesErrorText.text = ""
@@ -593,7 +641,7 @@ Item {
 
                     delegate: Rectangle {
                         width: ListView.view.width
-                        implicitHeight: 55
+                        implicitHeight: 50
                         color: "#FFFFFF"
                         border.color: "#F0F0F0"
                         radius: 4
@@ -601,7 +649,7 @@ Item {
                         RowLayout {
                             anchors.fill: parent
                             anchors.margins: 8
-                            spacing: 10
+                            spacing: 8
                             Loader {
                                 Layout.fillWidth: true
                                 sourceComponent: screensDialog.editingScreenId === model.id ? editNameComponent : displayNameComponent
@@ -611,8 +659,10 @@ Item {
                                 id: displayNameComponent
                                 RowLayout {
                                     Text { text: model.name; font.bold: true; color: window.textDark }
-                                    Button {
-                                        text: "✏️"
+                                    CustomButton {
+                                        text: "Edit"
+                                        implicitWidth: 45; implicitHeight: 30
+                                        btnColor: "#E3F2FD"; textColor: "#1565C0"
                                         flat: true
                                         onClicked: screensDialog.editingScreenId = model.id
                                     }
@@ -628,8 +678,10 @@ Item {
                                         selectByMouse: true
                                         Layout.preferredWidth: 120
                                     }
-                                    Button {
+                                    CustomButton {
                                         text: "Save"
+                                        implicitWidth: 80; implicitHeight: 30
+                                        btnColor: "#E3F2FD"; textColor: "#1565C0"
                                         highlighted: true
                                         onClicked: {
                                             var newName = renameInput.text.trim();
@@ -661,8 +713,10 @@ Item {
                                             }
                                         }
                                     }
-                                    Button {
+                                    CustomButton {
                                         text: "Cancel"
+                                        implicitWidth: 80; implicitHeight: 30
+                                        btnColor: "#FFEBEE"; textColor: "#C62828"
                                         onClicked: {
                                             screensErrorText.text = ""
                                             screensDialog.editingScreenId = ""
@@ -683,15 +737,21 @@ Item {
                                 Layout.preferredWidth: 80
                                 visible: screensDialog.editingScreenId !== model.id
                             }
-                            Button {
+                            CustomButton {
                                 text: "💺 Seats"
+                                implicitWidth: 80; implicitHeight: 30
+                                btnColor: window.primaryRed
+                                textColor: "#FFFFFF"
                                 visible: screensDialog.editingScreenId !== model.id
                                 onClicked: {
                                     seatLayoutDialog.openForScreen(model.id, model.name)
                                 }
                             }
-                            Button {
+                            CustomButton {
                                 text: model.status === 0 ? "Deactivate" : "Reactivate"
+                                implicitWidth: 80; implicitHeight: 30
+                                btnColor: model.status === 0 ? "#FFEBEE" : "#E3F2FD"
+                                textColor: model.status === 0 ? "#C62828" : "#1565C0"
                                 onClicked: {
                                     var resultStatus = 0;
                                     if (model.status === 0) {
