@@ -281,6 +281,9 @@ QVariantList ControllerAdapter::getActiveUsers()
     try{
         for (const User* user : m_controller->getActiveUsers())
         {
+            if(user==m_controller->getAuthenticatedUser() || user->getUserId()=="US001"){
+                continue;
+            }
             QVariantMap userMap;
             userMap["id"] = QString::fromStdString(user->getUserId());
             userMap["name"] = QString::fromStdString(user->getUserName());
@@ -534,6 +537,15 @@ bool ControllerAdapter::isPhoneNumberUnique(const QString& phoneNumber)
     return false;
 }
 
+/*
+ * Function: ControllerAdapter::getMyTheatres
+ * Description: Retrieves all theatres owned by the currently authenticated theatre owner,
+ *              including both active and inactive theatres, and converts them into QVariantMap objects.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantList - List of theatres with details including id, name, city, address, phone, and status
+ */
 QVariantList ControllerAdapter::getMyTheatres()
 {
     QVariantList theatres;
@@ -568,6 +580,19 @@ QVariantList ControllerAdapter::getMyTheatres()
     return theatres;
 }
 
+/*
+ * Function: ControllerAdapter::addTheatre
+ * Description: Adds a new theatre to the system after performing uniqueness checks
+ *              on email, phone number, and theatre details.
+ * Parameters:
+ *    name (const QString&) - Name of the theatre
+ *    city (const QString&) - City where the theatre is located
+ *    address (const QString&) - Address of the theatre
+ *    phone (const QString&) - Theatre's phone number
+ *    email (const QString&) - Theatre's email address
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::addTheatre(const QString& name, const QString& city, const QString& address, const QString& phone, const QString& email)
 {
     std::string stdName = name.toStdString();
@@ -598,6 +623,20 @@ int ControllerAdapter::addTheatre(const QString& name, const QString& city, cons
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * Function: ControllerAdapter::updateTheatre
+ * Description: Updates the details of an existing theatre by its unique identifier.
+ *              Performs uniqueness checks only if new email or phone number is provided.
+ * Parameters:
+ *    theatreId (const QString&) - Unique identifier of the theatre
+ *    name (const QString&) - Updated name (optional)
+ *    city (const QString&) - Updated city (optional)
+ *    address (const QString&) - Updated address (optional)
+ *    phone (const QString&) - Updated phone number (optional)
+ *    email (const QString&) - Updated email address (optional)
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::updateTheatre(const QString& theatreId, const QString& name, const QString& city,
                                      const QString& address, const QString& phone, const QString& email)
 {
@@ -642,6 +681,14 @@ int ControllerAdapter::updateTheatre(const QString& theatreId, const QString& na
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * Function: ControllerAdapter::deactivateTheatre
+ * Description: Deactivates a theatre by setting its status to INACTIVE.
+ * Parameters:
+ *    theatreId (const QString&) - Unique identifier of the theatre
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::deactivateTheatre(const QString& theatreId)
 {
     try {
@@ -654,6 +701,14 @@ int ControllerAdapter::deactivateTheatre(const QString& theatreId)
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * Function: ControllerAdapter::reactivateTheatre
+ * Description: Reactivates a previously deactivated theatre by setting its status to PENDING.
+ * Parameters:
+ *    theatreId (const QString&) - Unique identifier of the theatre
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::reactivateTheatre(const QString& theatreId)
 {
     try {
@@ -666,6 +721,14 @@ int ControllerAdapter::reactivateTheatre(const QString& theatreId)
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * Function: ControllerAdapter::getAllTheatres
+ * Description: Retrieves all theatres in the system and converts them into QVariantMap objects.
+ * Parameters:
+ *    None
+ * Returns:
+ *    QVariantList - List of theatres with details including id, name, city, address, phone, and status
+ */
 QVariantList ControllerAdapter::getAllTheatres()
 {
     QVariantList theatres;
@@ -689,6 +752,14 @@ QVariantList ControllerAdapter::getAllTheatres()
     return theatres;
 }
 
+/*
+ * Function: ControllerAdapter::approveTheatre
+ * Description: Approves a theatre by setting its status to ACTIVE.
+ * Parameters:
+ *    theatreId (const QString&) - Unique identifier of the theatre
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::approveTheatre(const QString& theatreId)
 {
     std::string stdTheatreId = theatreId.toStdString();
@@ -701,6 +772,14 @@ int ControllerAdapter::approveTheatre(const QString& theatreId)
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * Function: ControllerAdapter::rejectTheatre
+ * Description: Rejects a theatre by setting its status to PENDING.
+ * Parameters:
+ *    theatreId (const QString&) - Unique identifier of the theatre
+ * Returns:
+ *    int - Process status code (Enums::ProcessStatus)
+ */
 int ControllerAdapter::rejectTheatre(const QString& theatreId)
 {
     std::string stdTheatreId = theatreId.toStdString();
@@ -712,7 +791,6 @@ int ControllerAdapter::rejectTheatre(const QString& theatreId)
     }
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
-
 
 /*
  * Function: ControllerAdapter::getUnreadNotifications

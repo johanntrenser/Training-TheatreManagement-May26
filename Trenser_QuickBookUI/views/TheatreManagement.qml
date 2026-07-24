@@ -1,3 +1,22 @@
+/*
+ * File: TheatreManagement.qml
+ * Description: Implements the theatre management interface in QML.
+ *              Provides functionality for admins and theatre owners to
+ *              view, add, edit, approve/reject, deactivate, and reactivate
+ *              theatres. Integrates with the ControllerAdapter backend to
+ *              fetch theatre data, manage assigned movies, and configure
+ *              screens. Includes validation for mandatory fields, phone
+ *              number format, and email format/uniqueness. Displays feedback
+ *              banners for success or error states. Supports role-based
+ *              actions:
+ *              - Admin: Approve/Reject pending theatres.
+ *              - Theatre Owner: Add new theatres, edit details, manage
+ *                movies and screens, deactivate/reactivate theatres.
+ *              Designed with responsive layouts, structured table views,
+ *              and interactive dialogs for CRUD operations.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

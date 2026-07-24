@@ -26,9 +26,19 @@ Item {
     Component.onCompleted: {
         var profile = controller.getProfile()
         profilePopUp.text=profile.name[0]
-        dashboardPage.userRole = profile.role
+        if(profile.role==="TheatreOwner")
+        {
+            dashboardPage.userRole="Theatre Owner"
+        }
+        else if(profile.role==="Admin")
+        {
+            dashboardPage.userRole="Adminstrator"
+        }
+        else{
+            dashboardPage.userRole = profile.role;
+        }
 
-        if (userRole === "Admin") {
+        if (userRole === "Adminstrator") {
             sidebarModel.append({"name": "User Management"});
             sidebarModel.append({"name": "Movie Management"});
             sidebarModel.append({"name": "Theatre Management"});
@@ -39,7 +49,7 @@ Item {
             sidebarModel.append({"name": "Change Password"});
             sidebarModel.append({"name": "View Notifications"});
             activeView = "User Management";
-        } else if (userRole === "TheatreOwner") {
+        } else if (userRole === "Theatre Owner") {
             sidebarModel.append({"name": "Theatre Management"});
             sidebarModel.append({"name": "Show Management"});
             sidebarModel.append({"name": "Booking Management"});
@@ -85,28 +95,6 @@ Item {
                     font.pixelSize: 22
                     font.bold: true
                     color: window.primaryRed
-                }
-
-                // Search Bar Container
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.maximumWidth: 400
-                    Layout.preferredHeight: 38
-                    color: window.bgLight
-                    border.color: window.borderColor
-                    radius: 6
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 10
-                        anchors.rightMargin: 10
-                        Text { text: "🔍"; color: window.textMuted }
-                        TextField {
-                            Layout.fillWidth: true
-                            placeholderText: "Search Movies, Theatres, Users..."
-                            background: Item {}
-                        }
-                    }
                 }
 
                 Item { Layout.fillWidth: true } // Spacer

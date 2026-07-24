@@ -91,14 +91,15 @@ Item {
                 anchors.fill: parent
                 anchors.leftMargin: 15
                 anchors.rightMargin: 15
-                spacing: 10
+                spacing: 8
 
                 Text { text: "User ID"; font.bold: true; Layout.preferredWidth: 90; color: window.textDark }
                 Text { text: "Name"; font.bold: true; Layout.preferredWidth: 150; color: window.textDark }
-                Text { text: "Email"; font.bold: true; Layout.fillWidth: true; color: window.textDark }
-                Text { text: "Role"; font.bold: true; Layout.preferredWidth: 120; color: window.textDark }
-                Text { text: "Status"; font.bold: true; Layout.preferredWidth: 90; color: window.textDark }
-                Text { text: "Action"; font.bold: true; Layout.preferredWidth: 100; color: window.textDark; horizontalAlignment: Text.AlignRight }
+                Text { text: "Email"; font.bold: true; Layout.fillWidth: true; Layout.maximumWidth: 220; color: window.textDark }
+                Text { text: "Role"; font.bold: true; Layout.preferredWidth: 100; color: window.textDark }
+                Text { text: "Status"; font.bold: true; Layout.preferredWidth: 80; color: window.textDark }
+                Text { text: "Action"; font.bold: true; Layout.preferredWidth: 100; color: window.textDark }
+
             }
         }
 
@@ -128,27 +129,39 @@ Item {
                     anchors.fill: parent
                     anchors.leftMargin: 15
                     anchors.rightMargin: 15
-                    spacing: 10
+                    spacing: 8
 
                     Text { text: modelData.id; Layout.preferredWidth: 90; color: window.textMuted }
                     Text { text: modelData.name; Layout.preferredWidth: 150; font.bold: true; color: window.textDark }
-                    Text { text: modelData.email; Layout.fillWidth: true; color: window.textDark; elide: Text.ElideRight }
-                    Text { text: modelData.type; Layout.preferredWidth: 120; color: window.textDark }
-                    Text { text: modelData.status; Layout.preferredWidth: 90; color: window.textDark }
-
-
-                    // Text { text: modelData.password;Layout.preferredWidth: 90; color: window.textDark }
-
+                    Text { text: modelData.email; Layout.fillWidth: true; Layout.maximumWidth: 220; color: window.textDark; elide: Text.ElideRight }
+                    Text { text: modelData.type; Layout.preferredWidth: 100; color: window.textDark }
+                    Text {
+                        Layout.preferredWidth: 80;
+                        color: window.textDark;
+                        text: modelData.status === "ACTIVE" ? "Active" : (modelData.status === "INACTIVE" ? "Inactive" : modelData.status)
+                    }
                     Button {
                         text: modelData.status === "ACTIVE" ? "Deactivate" : "Reactivate"
-                        Layout.preferredWidth: 95
+                        Layout.preferredWidth: 100
+
+                        background: Rectangle {
+                            color: modelData.status === "ACTIVE" ? "red" : "green"
+                            radius: 4
+                        }
+
+                        contentItem: Text {
+                            text: parent.text
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
                         onClicked: {
                             if (modelData.status === "ACTIVE") {
                                 controller.deactivateUser(modelData.id)
                             } else {
                                 controller.reactivateUser(modelData.id)
                             }
-                            // Refresh list
                             if (userManagementPage.currentFilter === "Active") {
                                 usersList.model = controller.getActiveUsers()
                             } else if (userManagementPage.currentFilter === "Inactive") {

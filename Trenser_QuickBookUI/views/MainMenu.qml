@@ -53,7 +53,7 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 45
             contentItem: Text {
-                text: "Login"
+                text: "Sign in"
                 color: "white"
                 font.pixelSize: 16
                 font.bold: true
@@ -72,7 +72,7 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 45
             contentItem: Text {
-                text: "Register as New User"
+                text: "Sign Up"
                 color: window.primaryRed
                 font.pixelSize: 16
                 font.bold: true
