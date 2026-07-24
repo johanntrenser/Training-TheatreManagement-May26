@@ -13,7 +13,6 @@ import QtQuick.Controls 2.15
 Item {
     id: customerBookingsPage
 
-    // Reusable Table Header Component
     component TableHeaderCell : Text {
         property string headerTitle: ""
         property int cellWidth: 100
@@ -25,7 +24,6 @@ Item {
         font.pixelSize: 13
     }
 
-    // Reusable Table Cell Component
     component TableDataCell : Text {
         property string cellText: ""
         property int cellWidth: 100
@@ -39,7 +37,6 @@ Item {
         font.pixelSize: 12
     }
 
-    // Reusable Dialog Detail Row
     component DetailRow : Row {
         property string labelName: ""
         property string valueText: ""
@@ -89,26 +86,36 @@ Item {
             color: "#2C3E50"
         }
 
-        // Tab Navigation Buttons
         Row {
             spacing: 10
 
             Button {
                 text: "1. View All Bookings"
+                font.bold: true
+                palette.button: customerBookingsPage.activeTabName === "BOOKINGS" ? "#F84464" : window.bgLight
+                palette.buttonText: customerBookingsPage.activeTabName === "BOOKINGS" ? "#FFFFFF" : window.textDark
                 onClicked: {
                     customerBookingsPage.activeTabName = "BOOKINGS"
                     controller.loadBookings()
                 }
             }
+
             Button {
                 text: "2. View All Payments"
+                font.bold: true
+                palette.button: customerBookingsPage.activeTabName === "PAYMENTS" ? "#F84464" : window.bgLight
+                palette.buttonText: customerBookingsPage.activeTabName === "PAYMENTS" ? "#FFFFFF" : window.textDark
                 onClicked: {
                     customerBookingsPage.activeTabName = "PAYMENTS"
                     controller.loadPayments()
                 }
             }
+
             Button {
                 text: "3. View All Refunds"
+                font.bold: true
+                palette.button: customerBookingsPage.activeTabName === "REFUNDS" ? "#F84464" : window.bgLight
+                palette.buttonText: customerBookingsPage.activeTabName === "REFUNDS" ? "#FFFFFF" : window.textDark
                 onClicked: {
                     customerBookingsPage.activeTabName = "REFUNDS"
                     controller.loadRefunds()
@@ -122,7 +129,6 @@ Item {
             color: "#CCCCCC"
         }
 
-        // TAB 1: Bookings Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -181,7 +187,7 @@ Item {
                             spacing: 5
                             anchors.verticalCenter: parent.verticalCenter
 
-                            Button {
+                            CustomButton {
                                 text: "Details"
                                 onClicked: {
                                     bookingDetailsDialog.showBookingInformation(
@@ -197,6 +203,7 @@ Item {
 
                             Button {
                                 text: "Cancel"
+                                font.bold: true
                                 enabled: modelData && modelData.status === "CONFIRMED"
                                 onClicked: {
                                     cancelConfirmationDialog.targetBookingId = modelData.bookingId;
@@ -209,7 +216,6 @@ Item {
             }
         }
 
-        // TAB 2: Payments Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -265,7 +271,6 @@ Item {
             }
         }
 
-        // TAB 3: Refunds Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -320,7 +325,6 @@ Item {
         }
     }
 
-    // Dialog: Booking Details View
     Dialog {
         id: bookingDetailsDialog
         title: "Booking Details"
@@ -363,7 +367,6 @@ Item {
         }
     }
 
-    // Dialog: Cancel Confirmation
     Dialog {
         id: cancelConfirmationDialog
         title: "Confirm Cancellation"
@@ -392,7 +395,6 @@ Item {
         }
     }
 
-    // Dialog: Cancellation Status/Result
     Dialog {
         id: cancelResultDialog
         title: cancelResultDialog.isSuccess ? "Cancellation Successful" : "Cancellation Failed"
