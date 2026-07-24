@@ -20,8 +20,6 @@ import QtQuick.Controls 2.15
 Item {
     id: customerTicketsPage
 
-    // 1. REUSABLE UI COMPONENTS
-    // Component A: Table Header Cell
     component TableHeaderCell : Text {
         property string headerTitle: ""
         property int cellWidth: 100
@@ -33,7 +31,6 @@ Item {
         font.pixelSize: 13
     }
 
-    // Component B: Table Data Text Cell
     component TableDataCell : Text {
         property string cellText: ""
         property int cellWidth: 100
@@ -47,7 +44,6 @@ Item {
         font.pixelSize: 12
     }
 
-    // Component C: Key-Value Label Line for Dialog Details
     component DetailRow : Row {
         property string labelName: ""
         property string valueText: ""
@@ -72,15 +68,13 @@ Item {
         }
     }
 
-    // PAGE STATE PROPERTIES
-    property string activeTabName: "ACTIVE_TICKETS" // "ACTIVE_TICKETS" or "TICKET_HISTORY"
+    property string activeTabName: "ACTIVE_TICKETS"
 
     Component.onCompleted: {
         controller.loadActiveTickets()
         controller.loadTicketHistory()
     }
 
-    // MAIN LAYOUT
     Column {
         anchors.fill: parent
         anchors.margins: 20
@@ -93,20 +87,23 @@ Item {
             color: "#2C3E50"
         }
 
-        // --- NAVIGATION TABS (Option 1 & Option 2) ---
         Row {
             spacing: 10
-
             Button {
                 text: "1. View Active Tickets"
+                font.bold: true
+                palette.button: customerTicketsPage.activeTabName === "ACTIVE_TICKETS" ? "#F84464" : window.bgLight
+                palette.buttonText: customerTicketsPage.activeTabName === "ACTIVE_TICKETS" ? "#FFFFFF" : window.textDark
                 onClicked: {
                     customerTicketsPage.activeTabName = "ACTIVE_TICKETS"
                     controller.loadActiveTickets()
                 }
             }
-
             Button {
                 text: "2. View Ticket History"
+                font.bold: true
+                palette.button: customerTicketsPage.activeTabName === "TICKET_HISTORY" ? "#F84464" : window.bgLight
+                palette.buttonText: customerTicketsPage.activeTabName === "TICKET_HISTORY" ? "#FFFFFF" : window.textDark
                 onClicked: {
                     customerTicketsPage.activeTabName = "TICKET_HISTORY"
                     controller.loadTicketHistory()
@@ -120,7 +117,6 @@ Item {
             color: "#CCCCCC"
         }
 
-        // VIEW 1: ACTIVE TICKETS (Option 1)
         Column {
             width: parent.width
             height: parent.height - 120
@@ -133,7 +129,6 @@ Item {
                 font.pixelSize: 15
             }
 
-            // Table Header
             Rectangle {
                 width: parent.width
                 height: 35
@@ -154,7 +149,6 @@ Item {
                 }
             }
 
-            // Bound to controller.activeTickets
             ListView {
                 id: activeTicketsListView
                 width: parent.width
@@ -183,7 +177,7 @@ Item {
                             textCustomColor: "green"
                         }
 
-                        Button {
+                        CustomButton {
                             text: "View Pass"
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
@@ -203,7 +197,6 @@ Item {
             }
         }
 
-        // VIEW 2: TICKET HISTORY (Option 2)
         Column {
             width: parent.width
             height: parent.height - 120
@@ -216,7 +209,6 @@ Item {
                 font.pixelSize: 15
             }
 
-            // Table Header
             Rectangle {
                 width: parent.width
                 height: 35
@@ -237,7 +229,6 @@ Item {
                 }
             }
 
-            // Bound to controller.ticketHistory
             ListView {
                 id: historyTicketsListView
                 width: parent.width
@@ -263,10 +254,10 @@ Item {
                         TableDataCell {
                             cellText: modelData.status || ""
                             cellWidth: 100
-                            textCustomColor: modelData.status === "COMPLETED" ? "gray" : "red"
+                            textCustomColor: modelData.status==="ACTIVE" || modelData.status==="COMPLETED" ? "GREEN" : "RED"
                         }
 
-                        Button {
+                        CustomButton {
                             text: "Details"
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
@@ -287,7 +278,6 @@ Item {
         }
     }
 
-    // POPUP DIALOG: TICKET DETAILS PASS
     Dialog {
         id: ticketDetailsDialog
         title: "Ticket Pass Details"
@@ -332,7 +322,7 @@ Item {
 
             Item { width: 1; height: 10 }
 
-            Button {
+            CustomButton {
                 text: "Close"
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: ticketDetailsDialog.close()
