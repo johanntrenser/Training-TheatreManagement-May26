@@ -1,3 +1,20 @@
+/*
+ * File: MovieManagement.qml
+ * Description: Implements the movie management interface in QML.
+ *              Provides functionality to add, update, search, activate,
+ *              and deactivate movies. Integrates with the ControllerAdapter
+ *              backend to fetch all movies, validate uniqueness, and persist
+ *              changes. Supports filtering by status (All, Active, Inactive)
+ *              and searching by movie title. Displays movies in a grid view
+ *              with structured cards showing ID, title, language, genre,
+ *              duration, and status badges. Includes a form dialog for
+ *              adding or editing movies with validation for mandatory fields
+ *              and duration constraints (60–300 minutes). Designed with
+ *              responsive layouts, consistent styling, and interactive
+ *              controls aligned with the application’s UI palette.
+ * Author: Trenser
+ * Created: 23 July 2026
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
