@@ -1,17 +1,3 @@
-/*
- * File: MovieManagement.qml
- * Description: Implements the movie management interface for the Theatre
- *              Management System. Displays movies in a filterable, searchable
- *              grid (All/Active/Inactive) and provides a dialog for adding new
- *              movies or editing existing ones (title, language, genre,
- *              duration). Integrates with MovieManagementAdapter to load movies,
- *              validate duration and uniqueness before saving, apply per-field
- *              updates on edit, and activate/deactivate movies against the
- *              backend Controller. Displays inline error feedback for failed
- *              validation or backend operations.
- * Author: Trenser
- * Created: 23 July 2026
- */
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
@@ -80,6 +66,7 @@ Item {
             color: "#CCCCCC"
         }
 
+        // Bookings Management Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -136,9 +123,11 @@ Item {
                 model: controller.bookings
 
                 delegate: Rectangle {
+                    property bool isRowVisible: modelData ? bookingManagementPage.isBookingVisible(modelData.status) : false
+
                     width: bookingListView.width
-                    visible: bookingManagementPage.isBookingVisible(model.status)
-                    height: visible ? 40 : 0
+                    visible: isRowVisible
+                    height: isRowVisible ? 40 : 0
                     color: index % 2 === 0 ? "#FFFFFF" : "#F5F5F5"
                     border.color: "#E0E0E0"
 
@@ -147,18 +136,18 @@ Item {
                         anchors.margins: 5
                         spacing: 10
 
-                        Text { text: model.bookingId; width: 90; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.movieName; width: 130; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.theaterName; width: 110; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.dateTime; width: 140; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.seatsCount; width: 60; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.bookingId ? modelData.bookingId : ""; width: 90; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.movieName ? modelData.movieName : ""; width: 130; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.theaterName ? modelData.theaterName : ""; width: 110; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.dateTime ? modelData.dateTime : ""; width: 140; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.seatsCount !== undefined ? String(modelData.seatsCount) : "0"; width: 60; anchors.verticalCenter: parent.verticalCenter }
 
                         Text {
-                            text: model.status
+                            text: modelData.status ? modelData.status : ""
                             width: 90
                             anchors.verticalCenter: parent.verticalCenter
                             font.bold: true
-                            color: model.status === "CONFIRMED" ? "green" : "red"
+                            color: modelData.status === "CONFIRMED" ? "green" : "red"
                         }
 
                         Button {
@@ -166,12 +155,12 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
                                 bookingDetailsDialog.showBookingInformation(
-                                    model.bookingId,
-                                    model.movieName,
-                                    model.theaterName,
-                                    model.dateTime,
-                                    model.seatsCount,
-                                    model.status
+                                    modelData.bookingId ? modelData.bookingId : "",
+                                    modelData.movieName ? modelData.movieName : "",
+                                    modelData.theaterName ? modelData.theaterName : "",
+                                    modelData.dateTime ? modelData.dateTime : "",
+                                    modelData.seatsCount !== undefined ? String(modelData.seatsCount) : "0",
+                                    modelData.status ? modelData.status : ""
                                 )
                             }
                         }
@@ -180,6 +169,7 @@ Item {
             }
         }
 
+        // Payments Management Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -224,17 +214,18 @@ Item {
                         anchors.margins: 5
                         spacing: 15
 
-                        Text { text: model.paymentId; width: 100; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.bookingId; width: 100; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: "Rs. " + model.amount; width: 80; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.paymentMethod; width: 120; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.paymentStatus; width: 100; anchors.verticalCenter: parent.verticalCenter; font.bold: true }
-                        Text { text: model.timeStamp; width: 150; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.paymentId ? modelData.paymentId : ""; width: 100; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.bookingId ? modelData.bookingId : ""; width: 100; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: "Rs. " + (modelData.amount !== undefined ? modelData.amount : "0"); width: 80; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.paymentMethod ? modelData.paymentMethod : ""; width: 120; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.paymentStatus ? modelData.paymentStatus : ""; width: 100; anchors.verticalCenter: parent.verticalCenter; font.bold: true }
+                        Text { text: modelData.timeStamp ? modelData.timeStamp : ""; width: 150; anchors.verticalCenter: parent.verticalCenter }
                     }
                 }
             }
         }
 
+        // Refunds Management Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -278,11 +269,11 @@ Item {
                         anchors.margins: 5
                         spacing: 20
 
-                        Text { text: model.refundId; width: 100; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.ticketId; width: 100; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: "Rs. " + model.refundAmount; width: 100; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: model.refundStatus; width: 100; anchors.verticalCenter: parent.verticalCenter; font.bold: true }
-                        Text { text: model.refundTime; width: 150; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.refundId ? modelData.refundId : ""; width: 100; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.ticketId ? modelData.ticketId : ""; width: 100; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: "Rs. " + (modelData.refundAmount !== undefined ? modelData.refundAmount : "0"); width: 100; anchors.verticalCenter: parent.verticalCenter }
+                        Text { text: modelData.refundStatus ? modelData.refundStatus : ""; width: 100; anchors.verticalCenter: parent.verticalCenter; font.bold: true }
+                        Text { text: modelData.refundTime ? modelData.refundTime : ""; width: 150; anchors.verticalCenter: parent.verticalCenter }
                     }
                 }
             }
@@ -311,6 +302,7 @@ Item {
             detailShowTimeText.text = showDateTimeString
             detailSeatsText.text = seatsCountValue
             detailStatusText.text = bookingStatusString
+            detailStatusText.color = bookingStatusString === "CONFIRMED" ? "green" : "red"
 
             bookingDetailsDialog.open()
         }

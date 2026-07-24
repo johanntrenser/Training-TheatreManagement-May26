@@ -148,6 +148,8 @@ public:
     Q_INVOKABLE int reactivateSeat(const QString& selectedScreenId, const QString& seatId);
     Q_INVOKABLE QVariantMap bookSeats(const QString& showId, const QStringList& seatIds);
     Q_INVOKABLE QVariantMap processPayment(const QString& bookingId, const QString& paymentMethodStr, double amount);
+    Q_INVOKABLE QVariantList getShowSeatLayout(const QString& showId);
+    Q_INVOKABLE QVariantList getShowsForMovie(const QString& movieId);
 signals:
     void authenticationChanged();
     void notificationReceived(const QString& message);

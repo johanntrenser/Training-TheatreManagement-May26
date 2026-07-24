@@ -1258,25 +1258,48 @@ QVariantMap ControllerAdapter::bookingToMap(const Booking* booking) const {
     if (!booking) {
         return map;
     }
+
     map["bookingId"] = QString::fromStdString(booking->getBookingId());
+    map["amount"] = booking->getAmount();
     map["seatsCount"] = static_cast<int>(booking->getBookedSeats().size());
     map["status"] = QString::fromStdString(Enums::getBookingStatusString(booking->getStatus()));
+
+    // Customer Details (Only customerName as per requirements)
+    const User* customer = booking->getCustomer();
+    map["customerName"] = customer ? QString::fromStdString(customer->getUserName()) : "N/A";
+
+    // Show, Screen, Theatre, and Movie Details
     const Show* show = booking->getShow();
     if (show) {
         map["dateTime"] = displayTimeAndDate(show->getStartTime());
+
         const Movie* movie = show->getMovie();
-        if (movie) {
-            map["movieName"] = QString::fromStdString(movie->getTitle());
-        }
+        map["movieName"] = movie ? QString::fromStdString(movie->getTitle()) : "N/A";
+
         const Screen* screen = show->getScreen();
         if (screen) {
+            map["screenName"] = QString::fromStdString(screen->getName());
             const Theatre* theatre = screen->getTheatre();
             if (theatre) {
                 map["theaterId"] = QString::fromStdString(theatre->getTheatreId());
                 map["theaterName"] = QString::fromStdString(theatre->getName());
+            } else {
+                map["theaterId"] = "N/A";
+                map["theaterName"] = "N/A";
             }
+        } else {
+            map["screenName"] = "N/A";
+            map["theaterId"] = "N/A";
+            map["theaterName"] = "N/A";
         }
+    } else {
+        map["dateTime"] = "N/A";
+        map["movieName"] = "N/A";
+        map["screenName"] = "N/A";
+        map["theaterId"] = "N/A";
+        map["theaterName"] = "N/A";
     }
+
     return map;
 }
 
@@ -1312,19 +1335,29 @@ void ControllerAdapter::loadBookings() {
             emit bookingsChanged();
             return;
         }
+
         const User* authUser = m_controller->getAuthenticatedUser();
         if (!authUser) {
             qWarning() << "loadBookings failed: No authenticated user!";
             emit bookingsChanged();
             return;
         }
+
         Enums::UserType userType = authUser->getUserType();
         std::vector<const Booking*> allBookings = m_controller->getAllBookings();
-        if (userType == Enums::UserType::CUSTOMER) {
+
+        if (userType == Enums::UserType::ADMIN) {
+            // Admins view all system bookings
             for (const Booking* booking : allBookings) {
-                if (!booking) {
-                    continue;
+                if (booking) {
+                    m_bookings.append(bookingToMap(booking));
                 }
+            }
+        }
+        else if (userType == Enums::UserType::CUSTOMER) {
+            // Customers view only their own bookings
+            for (const Booking* booking : allBookings) {
+                if (!booking) continue;
                 const User* customer = booking->getCustomer();
                 if (customer && customer->getUserId() == authUser->getUserId()) {
                     m_bookings.append(bookingToMap(booking));
@@ -1332,6 +1365,7 @@ void ControllerAdapter::loadBookings() {
             }
         }
         else if (userType == Enums::UserType::THEATRE_OWNER) {
+            // Theatre Owners view bookings for shows in their theatres
             std::vector<const Theatre*> ownerTheatres = m_controller->getCurrentOwnerTheatres();
             std::unordered_set<std::string> ownerTheatreIds;
             for (const Theatre* theatre : ownerTheatres) {
@@ -1340,17 +1374,11 @@ void ControllerAdapter::loadBookings() {
                 }
             }
             for (const Booking* booking : allBookings) {
-                if (!booking) {
-                    continue;
-                }
+                if (!booking) continue;
                 const Show* show = booking->getShow();
-                if (!show) {
-                    continue;
-                }
+                if (!show) continue;
                 const Screen* screen = show->getScreen();
-                if (!screen) {
-                    continue;
-                }
+                if (!screen) continue;
                 const Theatre* theatre = screen->getTheatre();
                 if (theatre && ownerTheatreIds.count(theatre->getTheatreId()) > 0) {
                     m_bookings.append(bookingToMap(booking));
@@ -2319,6 +2347,17 @@ int ControllerAdapter::reactivateSeat(const QString& selectedScreenId, const QSt
     return static_cast<int>(EnumsAdapter::ProcessStatus::FAILED);
 }
 
+/*
+ * name        : bookSeats
+ * description : Handles seat booking for a given show by converting the selected seat IDs from QML
+ *               into a C++ vector, validating the show existence, and invoking the backend controller's
+ *               booking function. Returns a QVariantMap with booking details or error messages for QML UI.
+ * parameter   :
+ *    showId (const QString&) - Unique identifier of the show for which seats are being booked
+ *    seatIds (const QStringList&) - List of seat identifiers selected by the user
+ * return type : QVariantMap - Contains "success" flag, "bookingId", "amount", "status" on success,
+ *               or "message" describing the error on failure
+ */
 QVariantMap ControllerAdapter::bookSeats(const QString& showId, const QStringList& seatIds)
 {
     QVariantMap response;
@@ -2358,6 +2397,19 @@ QVariantMap ControllerAdapter::bookSeats(const QString& showId, const QStringLis
     return response;
 }
 
+/*
+ * name        : processPayment
+ * description : Initiates a payment for a given booking by converting the payment method string
+ *               into the corresponding enum, validating controller availability, and invoking
+ *               the backend controller's initiatePayment function. On success, reloads related
+ *               data models (bookings, payments, tickets, active tickets) to refresh the QML UI.
+ * parameter   :
+ *    bookingId (const QString&)       - Unique identifier of the booking for which payment is processed
+ *    paymentMethodStr (const QString&) - Payment method string ("UPI" or "DEBIT_CARD")
+ *    amount (double)                  - Payment amount to be processed
+ * return type : QVariantMap - Contains "success" flag and "message" string for QML feedback.
+ *               On success, includes confirmation message; on failure, includes error message.
+ */
 QVariantMap ControllerAdapter::processPayment(const QString& bookingId, const QString& paymentMethodStr, double amount)
 {
     QVariantMap response;
@@ -2382,4 +2434,163 @@ QVariantMap ControllerAdapter::processPayment(const QString& bookingId, const QS
         response["message"] = "Payment was declined by backend.";
     }
     return response;
+}
+
+/*
+ * Function: ControllerAdapter::getShowSeatLayout
+ * Description: Builds a FLAT seat list scoped to a specific show (row-major
+ *              order, matching Screen::getSeatGrid()'s iteration order),
+ *              replicating the priority logic of
+ *              SeatManagementService::formatSeatDisplay(). Deliberately NOT
+ *              nested by row (QVariantList<QVariantList<QVariantMap>>) —
+ *              doubly-nested QVariantLists don't marshal correctly across the
+ *              C++/QML boundary in this Qt version; every other list in this
+ *              adapter (bookings, payments, tickets, movies) is a single
+ *              flat list of maps, and this now matches that pattern. Each
+ *              seat carries its own row/column, so QML doesn't need row
+ *              grouping — GridView wraps cells by cellWidth on its own.
+ * Parameters:
+ *    showId (const QString&) - The show to build the seat list for
+ * Returns:
+ *    QVariantList - Flat list of seat maps: { id, row, column, amount, status }
+ *                   where status is "AVAILABLE", "BOOKED", or "BLOCKED"
+ */
+QVariantList ControllerAdapter::getShowSeatLayout(const QString& showId)
+{
+    QVariantList seatList;
+    try
+    {
+        if (!m_controller)
+        {
+            qWarning() << "getShowSeatLayout failed: Controller unavailable!";
+            return seatList;
+        }
+
+        const Show* show = m_controller->getShowById(showId.toStdString());
+        if (!show)
+        {
+            qWarning() << "getShowSeatLayout failed: show not found for" << showId;
+            return seatList;
+        }
+
+        const Screen* screen = show->getScreen();
+        if (!screen)
+        {
+            qWarning() << "getShowSeatLayout failed: show has no screen!";
+            return seatList;
+        }
+
+        ShowSeatAvailability* seatAvailability = show->getSeatAvailability();
+        if (!seatAvailability)
+        {
+            qWarning() << "getShowSeatLayout failed: show has no seat availability!";
+            return seatList;
+        }
+
+        const std::map<std::string, Enums::BookingStatus>& availabilityMap =
+            seatAvailability->getSeatAvailabilityMap();
+        const std::vector<std::vector<Seat*>>& seatGrid = screen->getSeatGrid();
+
+        for (const auto& rowVector : seatGrid)
+        {
+            for (const Seat* seat : rowVector)
+            {
+                if (!seat) continue;
+
+                QVariantMap seatMap;
+                const std::string seatId = seat->getSeatId();
+                seatMap["id"] = QString::fromStdString(seatId);
+                seatMap["row"] = QString(QChar(seat->getSeatRow()));
+                seatMap["column"] = seat->getSeatColumn();
+                seatMap["amount"] = const_cast<Seat*>(seat)->getSeatAmount();
+
+                if (seat->getSeatStatus() == Enums::SeatStatus::BLOCKED)
+                {
+                    seatMap["status"] = "BLOCKED";
+                }
+                else
+                {
+                    auto availabilityIterator = availabilityMap.find(seatId);
+                    if (availabilityIterator != availabilityMap.end() &&
+                        availabilityIterator->second == Enums::BookingStatus::CONFIRMED)
+                    {
+                        seatMap["status"] = "BOOKED";
+                    }
+                    else
+                    {
+                        seatMap["status"] = "AVAILABLE";
+                    }
+                }
+
+                seatList.append(seatMap);
+            }
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        qDebug() << "getShowSeatLayout error:" << ex.what();
+    }
+    return seatList;
+}
+
+/*
+ * Function: ControllerAdapter::getShowsForMovie
+ * Description: Retrieves all bookable shows for a specific movie, mirroring
+ *              UserInterface::listShowsForAMovie()'s call into
+ *              Controller::getShowsForMovie(movieId). Only shows with status
+ *              SCHEDULED or RUNNING are included; CANCELLED and COMPLETED
+ *              shows are filtered out here since neither can be booked.
+ * Parameters:
+ *    movieId (const QString&) - The movie to fetch shows for
+ * Returns:
+ *    QVariantList - List of shows: { id, movie, theatre, screen, startingTime,
+ *                   endingTime, status }
+ */
+QVariantList ControllerAdapter::getShowsForMovie(const QString& movieId)
+{
+    QVariantList list;
+    try
+    {
+        if (!m_controller)
+        {
+            qWarning() << "getShowsForMovie failed: Controller unavailable!";
+            return list;
+        }
+        const std::vector<const Show*> shows = m_controller->getShowsForMovie(movieId.toStdString());
+        for (const Show* show : shows)
+        {
+            if (!show) continue;
+
+            Enums::ShowStatus status = show->getShowStatus();
+            if (status == Enums::ShowStatus::CANCELLED || status == Enums::ShowStatus::COMPLETED)
+            {
+                continue;
+            }
+            QVariantMap showMap;
+            showMap["id"] = QString::fromStdString(show->getShowId());
+            showMap["movie"] = show->getMovie() ? QString::fromStdString(show->getMovie()->getTitle()) : "N/A";
+            const Screen* screen = show->getScreen();
+            if (screen)
+            {
+                showMap["screen"] = QString::fromStdString(screen->getName());
+                const Theatre* theatre = screen->getTheatre();
+                showMap["theatre"] = theatre ? QString::fromStdString(theatre->getName()) : "N/A";
+            }
+            else
+            {
+                showMap["screen"] = "N/A";
+                showMap["theatre"] = "N/A";
+            }
+            showMap["startingTime"] = displayTimeAndDate(show->getStartTime());
+            showMap["endingTime"] = displayTimeAndDate(show->getEndTime());
+            showMap["price"] = show->getScreen()->getSeatGrid()[0][0]->getSeatAmount();
+            showMap["status"] = QString::fromStdString(Enums::getShowStatusString(status));
+            list.append(showMap);
+        }
+    }
+    catch (const std::exception &ex)
+    {
+        qDebug() << "getShowsForMovie error:" << ex.what();
+    }
+    return list;
 }

@@ -3,12 +3,7 @@
  * Description: Implements the customer bookings, payments, and refunds
  *              interface for the Theatre Management System. Displays the
  *              customer's bookings, payments, and refund history in separate
- *              tabbed table views, loaded from ControllerAdapter's bookings,
- *              payments, and refunds properties. Provides a booking details
- *              popup and a cancel-booking flow that confirms with the user,
- *              calls ControllerAdapter::cancelBooking, and surfaces the
- *              resulting success/failure message. Bookings, payments, and
- *              refunds refresh automatically after a successful cancellation.
+ *              tabbed table views.
  * Author: Trenser
  * Created: 23 July 2026
  */
@@ -18,6 +13,7 @@ import QtQuick.Controls 2.15
 Item {
     id: customerBookingsPage
 
+    // Reusable Table Header Component
     component TableHeaderCell : Text {
         property string headerTitle: ""
         property int cellWidth: 100
@@ -29,6 +25,7 @@ Item {
         font.pixelSize: 13
     }
 
+    // Reusable Table Cell Component
     component TableDataCell : Text {
         property string cellText: ""
         property int cellWidth: 100
@@ -42,6 +39,7 @@ Item {
         font.pixelSize: 12
     }
 
+    // Reusable Dialog Detail Row
     component DetailRow : Row {
         property string labelName: ""
         property string valueText: ""
@@ -66,7 +64,7 @@ Item {
         }
     }
 
-    property string activeTabName: "BOOKINGS" // Options: "BOOKINGS", "PAYMENTS", "REFUNDS"
+    property string activeTabName: "BOOKINGS"
 
     Component.onCompleted: {
         controller.loadBookings()
@@ -91,6 +89,7 @@ Item {
             color: "#2C3E50"
         }
 
+        // Tab Navigation Buttons
         Row {
             spacing: 10
 
@@ -123,6 +122,7 @@ Item {
             color: "#CCCCCC"
         }
 
+        // TAB 1: Bookings Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -158,7 +158,7 @@ Item {
 
                 delegate: Rectangle {
                     width: bookingListView.width
-                    height: 40
+                    height: 50
                     color: index % 2 === 0 ? "#FFFFFF" : "#F8F9FA"
                     border.color: "#E0E0E0"
 
@@ -167,14 +167,14 @@ Item {
                         anchors.margins: 5
                         spacing: 10
 
-                        TableDataCell { cellText: model.bookingId; cellWidth: 100 }
-                        TableDataCell { cellText: model.movieName; cellWidth: 150 }
-                        TableDataCell { cellText: model.dateTime; cellWidth: 140 }
-                        TableDataCell { cellText: model.seatsCount; cellWidth: 80 }
+                        TableDataCell { cellText: modelData && modelData.bookingId ? modelData.bookingId : ""; cellWidth: 100 }
+                        TableDataCell { cellText: modelData && modelData.movieName ? modelData.movieName : ""; cellWidth: 150 }
+                        TableDataCell { cellText: modelData && modelData.dateTime ? modelData.dateTime : ""; cellWidth: 140 }
+                        TableDataCell { cellText: modelData && modelData.seatsCount !== undefined ? String(modelData.seatsCount) : "0"; cellWidth: 80 }
                         TableDataCell {
-                            cellText: model.status
+                            cellText: modelData && modelData.status ? modelData.status : ""
                             cellWidth: 100
-                            textCustomColor: model.status === "CONFIRMED" ? "green" : "red"
+                            textCustomColor: (modelData && modelData.status === "CONFIRMED") ? "green" : "red"
                         }
 
                         Row {
@@ -185,21 +185,21 @@ Item {
                                 text: "Details"
                                 onClicked: {
                                     bookingDetailsDialog.showBookingInformation(
-                                        model.bookingId,
-                                        model.movieName,
-                                        model.theaterName,
-                                        model.dateTime,
-                                        model.seatsCount,
-                                        model.status
+                                        modelData.bookingId ? modelData.bookingId : "",
+                                        modelData.movieName ? modelData.movieName : "",
+                                        modelData.theaterName ? modelData.theaterName : "",
+                                        modelData.dateTime ? modelData.dateTime : "",
+                                        modelData.seatsCount !== undefined ? String(modelData.seatsCount) : "0",
+                                        modelData.status ? modelData.status : ""
                                     )
                                 }
                             }
 
                             Button {
                                 text: "Cancel"
-                                enabled: model.status === "CONFIRMED"
+                                enabled: modelData && modelData.status === "CONFIRMED"
                                 onClicked: {
-                                    cancelConfirmationDialog.targetBookingId = model.bookingId;
+                                    cancelConfirmationDialog.targetBookingId = modelData.bookingId;
                                     cancelConfirmationDialog.open();
                                 }
                             }
@@ -209,6 +209,7 @@ Item {
             }
         }
 
+        // TAB 2: Payments Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -253,17 +254,18 @@ Item {
                         anchors.margins: 5
                         spacing: 15
 
-                        TableDataCell { cellText: model.paymentId; cellWidth: 100 }
-                        TableDataCell { cellText: model.bookingId; cellWidth: 100 }
-                        TableDataCell { cellText: "Rs. " + model.amount; cellWidth: 80 }
-                        TableDataCell { cellText: model.paymentMethod; cellWidth: 120 }
-                        TableDataCell { cellText: model.paymentStatus; cellWidth: 100 }
-                        TableDataCell { cellText: model.timeStamp; cellWidth: 150 }
+                        TableDataCell { cellText: modelData && modelData.paymentId ? modelData.paymentId : ""; cellWidth: 100 }
+                        TableDataCell { cellText: modelData && modelData.bookingId ? modelData.bookingId : ""; cellWidth: 100 }
+                        TableDataCell { cellText: "Rs. " + (modelData && modelData.amount !== undefined ? modelData.amount : "0"); cellWidth: 80 }
+                        TableDataCell { cellText: modelData && modelData.paymentMethod ? modelData.paymentMethod : ""; cellWidth: 120 }
+                        TableDataCell { cellText: modelData && modelData.paymentStatus ? modelData.paymentStatus : ""; cellWidth: 100 }
+                        TableDataCell { cellText: modelData && modelData.timeStamp ? modelData.timeStamp : ""; cellWidth: 150 }
                     }
                 }
             }
         }
 
+        // TAB 3: Refunds Section
         Column {
             width: parent.width
             height: parent.height - 120
@@ -307,24 +309,26 @@ Item {
                         anchors.margins: 5
                         spacing: 20
 
-                        TableDataCell { cellText: model.refundId; cellWidth: 100 }
-                        TableDataCell { cellText: model.ticketId; cellWidth: 100 }
-                        TableDataCell { cellText: "Rs. " + model.refundAmount; cellWidth: 100 }
-                        TableDataCell { cellText: model.refundStatus; cellWidth: 100 }
-                        TableDataCell { cellText: model.refundTime; cellWidth: 150 }
+                        TableDataCell { cellText: modelData && modelData.refundId ? modelData.refundId : ""; cellWidth: 100 }
+                        TableDataCell { cellText: modelData && modelData.ticketId ? modelData.ticketId : ""; cellWidth: 100 }
+                        TableDataCell { cellText: "Rs. " + (modelData && modelData.refundAmount !== undefined ? modelData.refundAmount : "0"); cellWidth: 100 }
+                        TableDataCell { cellText: modelData && modelData.refundStatus ? modelData.refundStatus : ""; cellWidth: 100 }
+                        TableDataCell { cellText: modelData && modelData.refundTime ? modelData.refundTime : ""; cellWidth: 150 }
                     }
                 }
             }
         }
     }
 
+    // Dialog: Booking Details View
     Dialog {
         id: bookingDetailsDialog
         title: "Booking Details"
         modal: true
         anchors.centerIn: parent
         width: 380
-        height: 260
+        height: 300
+        standardButtons: Dialog.Ok
 
         function showBookingInformation(
             bookingIdentifier,
@@ -356,17 +360,10 @@ Item {
             DetailRow { id: rowShowTime; labelName: "Show Date & Time:" }
             DetailRow { id: rowSeats; labelName: "Seats Booked:"; valueColor: "blue" }
             DetailRow { id: rowStatus; labelName: "Status:"; isValueBold: true }
-
-            Item { width: 1; height: 10 }
-
-            Button {
-                text: "Close"
-                anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: bookingDetailsDialog.close()
-            }
         }
     }
 
+    // Dialog: Cancel Confirmation
     Dialog {
         id: cancelConfirmationDialog
         title: "Confirm Cancellation"
@@ -374,8 +371,13 @@ Item {
         anchors.centerIn: parent
         width: 320
         height: 180
+        standardButtons: Dialog.Yes | Dialog.No
 
         property string targetBookingId: ""
+
+        onAccepted: {
+            customerBookingsPage.processCancelBooking(targetBookingId);
+        }
 
         Column {
             anchors.fill: parent
@@ -387,27 +389,10 @@ Item {
                 wrapMode: Text.Wrap
                 width: parent.width
             }
-
-            Row {
-                spacing: 10
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Button {
-                    text: "Yes, Cancel"
-                    onClicked: {
-                        customerBookingsPage.processCancelBooking(cancelConfirmationDialog.targetBookingId);
-                        cancelConfirmationDialog.close();
-                    }
-                }
-
-                Button {
-                    text: "No, Keep"
-                    onClicked: cancelConfirmationDialog.close()
-                }
-            }
         }
     }
 
+    // Dialog: Cancellation Status/Result
     Dialog {
         id: cancelResultDialog
         title: cancelResultDialog.isSuccess ? "Cancellation Successful" : "Cancellation Failed"
@@ -415,6 +400,7 @@ Item {
         anchors.centerIn: parent
         width: 320
         height: 160
+        standardButtons: Dialog.Ok
 
         property bool isSuccess: false
         property string resultMessage: ""
@@ -435,12 +421,6 @@ Item {
                 wrapMode: Text.Wrap
                 width: parent.width
                 color: cancelResultDialog.isSuccess ? "green" : "red"
-            }
-
-            Button {
-                text: "OK"
-                anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: cancelResultDialog.close()
             }
         }
     }

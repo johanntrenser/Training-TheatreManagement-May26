@@ -1,18 +1,3 @@
-/*
- * File: CustomerTicketsView.qml
- * Description: Implements the customer ticket management interface for the
- *              Theatre Management System. Displays the customer's active
- *              tickets and ticket history in two tabbed table views, loaded
- *              from ControllerAdapter's activeTickets and ticketHistory
- *              properties (populated via loadActiveTickets()/loadTicketHistory(),
- *              mirroring UserInterface::viewActiveTicketDetails() and
- *              UserInterface::viewTicketHistory()). Provides a ticket pass
- *              details popup showing movie title, show time, payment, and
- *              booking references for a selected ticket.
- * Author: Trenser
- * Created: 23 July 2026
- */
-
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
@@ -153,10 +138,7 @@ Item {
                 }
             }
 
-            // Bound to controller.activeTickets, populated by
-            // ControllerAdapter::loadActiveTickets(). Field names come from
-            // ticketToMap(): ticketId, paymentId, amount, bookingId, status,
-            // movieTitle, showDateAndTime.
+            // Bound to controller.activeTickets
             ListView {
                 id: activeTicketsListView
                 width: parent.width
@@ -175,12 +157,12 @@ Item {
                         anchors.margins: 5
                         spacing: 15
 
-                        TableDataCell { cellText: model.ticketId; cellWidth: 100 }
-                        TableDataCell { cellText: model.paymentId; cellWidth: 100 }
-                        TableDataCell { cellText: "Rs. " + model.amount; cellWidth: 90 }
-                        TableDataCell { cellText: model.bookingId; cellWidth: 100 }
+                        TableDataCell { cellText: modelData.ticketId || ""; cellWidth: 100 }
+                        TableDataCell { cellText: modelData.paymentId || ""; cellWidth: 100 }
+                        TableDataCell { cellText: "Rs. " + (modelData.amount || 0); cellWidth: 90 }
+                        TableDataCell { cellText: modelData.bookingId || ""; cellWidth: 100 }
                         TableDataCell {
-                            cellText: model.status
+                            cellText: modelData.status || ""
                             cellWidth: 100
                             textCustomColor: "green"
                         }
@@ -190,13 +172,13 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
                                 ticketDetailsDialog.openTicketPass(
-                                    model.ticketId,
-                                    model.paymentId,
-                                    model.bookingId,
-                                    model.amount,
-                                    model.status,
-                                    model.movieTitle,
-                                    model.showDateAndTime
+                                    modelData.ticketId,
+                                    modelData.paymentId,
+                                    modelData.bookingId,
+                                    modelData.amount,
+                                    modelData.status,
+                                    modelData.movieTitle,
+                                    modelData.showDateAndTime
                                 )
                             }
                         }
@@ -239,8 +221,7 @@ Item {
                 }
             }
 
-            // Bound to controller.ticketHistory, populated by
-            // ControllerAdapter::loadTicketHistory().
+            // Bound to controller.ticketHistory
             ListView {
                 id: historyTicketsListView
                 width: parent.width
@@ -259,14 +240,14 @@ Item {
                         anchors.margins: 5
                         spacing: 15
 
-                        TableDataCell { cellText: model.ticketId; cellWidth: 100 }
-                        TableDataCell { cellText: model.paymentId; cellWidth: 100 }
-                        TableDataCell { cellText: "Rs. " + model.amount; cellWidth: 90 }
-                        TableDataCell { cellText: model.bookingId; cellWidth: 100 }
+                        TableDataCell { cellText: modelData.ticketId || ""; cellWidth: 100 }
+                        TableDataCell { cellText: modelData.paymentId || ""; cellWidth: 100 }
+                        TableDataCell { cellText: "Rs. " + (modelData.amount || 0); cellWidth: 90 }
+                        TableDataCell { cellText: modelData.bookingId || ""; cellWidth: 100 }
                         TableDataCell {
-                            cellText: model.status
+                            cellText: modelData.status || ""
                             cellWidth: 100
-                            textCustomColor: model.status === "COMPLETED" ? "gray" : "red"
+                            textCustomColor: modelData.status === "COMPLETED" ? "gray" : "red"
                         }
 
                         Button {
@@ -274,13 +255,13 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
                                 ticketDetailsDialog.openTicketPass(
-                                    model.ticketId,
-                                    model.paymentId,
-                                    model.bookingId,
-                                    model.amount,
-                                    model.status,
-                                    model.movieTitle,
-                                    model.showDateAndTime
+                                    modelData.ticketId,
+                                    modelData.paymentId,
+                                    modelData.bookingId,
+                                    modelData.amount,
+                                    modelData.status,
+                                    modelData.movieTitle,
+                                    modelData.showDateAndTime
                                 )
                             }
                         }
@@ -308,13 +289,13 @@ Item {
             selectedMovieTitle,
             showDateTime
         ) {
-            rowTicketId.valueText = selectedTicketId;
-            rowMovieTitle.valueText = selectedMovieTitle;
-            rowShowTime.valueText = showDateTime;
-            rowPaymentId.valueText = selectedPaymentId;
-            rowBookingId.valueText = selectedBookingId;
-            rowAmount.valueText = "Rs. " + totalTicketAmount;
-            rowStatus.valueText = currentTicketStatus;
+            rowTicketId.valueText = selectedTicketId || "";
+            rowMovieTitle.valueText = selectedMovieTitle || "";
+            rowShowTime.valueText = showDateTime || "";
+            rowPaymentId.valueText = selectedPaymentId || "";
+            rowBookingId.valueText = selectedBookingId || "";
+            rowAmount.valueText = "Rs. " + (totalTicketAmount || 0);
+            rowStatus.valueText = currentTicketStatus || "";
             rowStatus.valueColor = currentTicketStatus === "ACTIVE" ? "green" : "gray";
 
             ticketDetailsDialog.open();
