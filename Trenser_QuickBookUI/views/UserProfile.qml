@@ -30,7 +30,18 @@ Item {
         userProfilePage.userName = profile.name
         userProfilePage.userEmail = profile.email
         userProfilePage.userPhone = profile.phone
-        userProfilePage.userRole = profile.role
+        if(profile.role==="Admin")
+        {
+            userProfilePage.userRole="Adminstrator"
+        }
+        else if(profile.role==="TheatreOwner")
+        {
+            userProfilePage.userRole="Theatre Owner"
+        }
+        else if(profile.role==="Customer")
+        {
+            userProfilePage.userRole = "Customer"
+        }
     }
 
     Component.onCompleted: {
@@ -169,7 +180,7 @@ Item {
                             }
 
                             Rectangle {
-                                width: 70; height: 22; radius: 11
+                                width: 80; height: 22; radius: 11
                                 color: "#E8F0FE"
                                 Text {
                                     anchors.centerIn: parent

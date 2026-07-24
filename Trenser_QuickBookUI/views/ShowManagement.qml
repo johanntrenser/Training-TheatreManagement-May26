@@ -21,7 +21,7 @@ import QtQuick.Layouts
 Item {
     id: showManagementPage
 
-    property string currentTab: "ACTIVE" // "ACTIVE", "ALL"
+    property string currentTab: "ACTIVE"
     property string selectedTheatreId: ""
     property string selectedMovieId: ""
     property string searchQuery: ""
@@ -38,7 +38,11 @@ Item {
     }
 
     function refreshShows() {
-        if (selectedTheatreId === "") { showsList = []; return }
+        if (selectedTheatreId === "")
+        {
+            showsList = [];
+            return ;
+        }
 
         ownTheatreMovies = controller.getMoviesInTheatre(selectedTheatreId)
         ownTheatreScreens = controller.getScreensInTheatre(selectedTheatreId)
@@ -51,9 +55,6 @@ Item {
                 if (allTheatreShows[indexOne].status !== "CANCELLED") active.push(allTheatreShows[indexOne])
             }
             showsList = active
-        }
-        else if (currentTab === "ALL") {
-            showsList = allTheatreShows
         }
     }
 
@@ -141,14 +142,6 @@ Item {
                     btnColor: showManagementPage.currentTab === "ACTIVE" ? window.primaryRed : "#E5E5E5"
                     textColor: showManagementPage.currentTab === "ACTIVE" ? "#FFFFFF" : window.textDark
                     onClicked: { showManagementPage.currentTab = "ACTIVE"; showManagementPage.refreshShows() }
-                }
-
-                CustomButton {
-                    text: "All Shows"
-                    implicitWidth: 100; implicitHeight: 36
-                    btnColor: showManagementPage.currentTab === "ALL" ? window.primaryRed : "#E5E5E5"
-                    textColor: showManagementPage.currentTab === "ALL" ? "#FFFFFF" : window.textDark
-                    onClicked: { showManagementPage.currentTab = "ALL"; showManagementPage.refreshShows() }
                 }
             }
 
