@@ -1,3 +1,19 @@
+/*
+ * File: CustomerTicketsView.qml
+ * Description: Implements the customer ticket management interface in QML.
+ *              Provides functionality to view active tickets and ticket history
+ *              (past or cancelled). Integrates with the ControllerAdapter backend
+ *              to load ticket data dynamically. Displays tickets in structured
+ *              tables with reusable UI components for headers, data cells, and
+ *              detail rows. Supports navigation tabs for switching between active
+ *              tickets and history. Includes a ticket details dialog to show
+ *              comprehensive pass information such as ticket ID, movie title,
+ *              show time, booking ID, payment ID, amount, and status. Designed
+ *              with reusable components, responsive layouts, and consistent
+ *              styling aligned with the application’s UI palette.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 

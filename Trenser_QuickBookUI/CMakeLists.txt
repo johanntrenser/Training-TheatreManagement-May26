@@ -63,7 +63,7 @@ qt_add_qml_module(appTrenser_QuickBookUI
         QML_FILES views/ShowManagement.qml
         QML_FILES views/CustomerBrowseAndBook.qml
         QML_FILES views/CustomerTicketsView.qml
-        QML_FILES views/TicketManagement.qml
+        QML_FILES
         QML_FILES views/CustomerBrowseAndBook.qml
         RESOURCES Resource.qrc
 

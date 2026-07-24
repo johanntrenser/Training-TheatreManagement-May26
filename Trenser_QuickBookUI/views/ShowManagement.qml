@@ -1,5 +1,5 @@
 /*
- * File: ShowManagementPage.qml
+ * File: ShowManagement.qml
  * Description: Implements the show management interface for theatre owners.
  *              Provides functionality to schedule, update, cancel, and monitor
  *              theatre show listings. Integrates with the ControllerAdapter

@@ -42,8 +42,6 @@ Item {
             sidebarModel.append({"name": "User Management"});
             sidebarModel.append({"name": "Movie Management"});
             sidebarModel.append({"name": "Theatre Management"});
-            sidebarModel.append({"name": "Show Management"});
-            sidebarModel.append({"name": "Ticket Management"});
             sidebarModel.append({"name": "View Logs"});
             sidebarModel.append({"name": "View Profile"});
             sidebarModel.append({"name": "Change Password"});
@@ -55,7 +53,6 @@ Item {
             sidebarModel.append({"name": "Booking Management"});
             sidebarModel.append({"name": "View Notifications"});
             sidebarModel.append({"name": "View Profile"});
-            sidebarModel.append({"name": "Update Details"});
             sidebarModel.append({"name": "Change Password"});
             activeView = "Theatre Management";
         } else if (userRole === "Customer"){
@@ -64,7 +61,6 @@ Item {
             sidebarModel.append({"name": "My Tickets"});
             sidebarModel.append({"name": "View Notifications"});
             sidebarModel.append({"name": "View Profile"});
-            sidebarModel.append({"name": "Update Details"});
             sidebarModel.append({"name": "Change Password"});
             activeView = "Browse & Book";
         }
@@ -241,9 +237,6 @@ Item {
                             }
                             else if (dashboardPage.activeView === "View Notifications") {
                                 return "NotificationsView.qml"
-                            }
-                            else if (dashboardPage.activeView === "Ticket Management") {
-                                return "TicketManagement.qml"
                             }
                             else if (dashboardPage.activeView === "My Tickets") {
                                 return "CustomerTicketsView.qml"

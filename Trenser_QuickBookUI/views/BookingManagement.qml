@@ -1,3 +1,18 @@
+/*
+ * File: BookingManagement.qml
+ * Description: Implements the booking and financial management interface for
+ *              theatre owners. Provides functionality to view and filter
+ *              bookings, payments, and refunds. Integrates with the
+ *              ControllerAdapter backend to load booking, payment, and refund
+ *              data dynamically. Supports filtering bookings by status
+ *              (ALL, CONFIRMED, CANCELLED) and displays structured tables for
+ *              each section. Includes a booking details dialog to show
+ *              comprehensive information about individual bookings. Designed
+ *              with responsive layouts, consistent styling, and interactive
+ *              controls aligned with the application’s UI palette.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 

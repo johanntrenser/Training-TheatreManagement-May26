@@ -1,5 +1,5 @@
 /*
- * File: NotificationsPage.qml
+ * File: NotificationssView.qml
  * Description: Displays unread notifications for the authenticated user in batches.
  *              Integrates with QuickBookBridge backend to fetch notification maps
  *              and updates list dynamically upon clicking "View More".

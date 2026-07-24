@@ -1,3 +1,19 @@
+/*
+ * File: CustomerBroeserAndBook.qml
+ * Description: Implements the customer-facing movie booking portal in QML.
+ *              Provides a step-by-step workflow for browsing movies, selecting
+ *              shows, choosing seats, confirming bookings, and completing
+ *              payments. Integrates with the ControllerAdapter backend to
+ *              fetch movies, shows, seat layouts, and process bookings and
+ *              payments. Includes reusable UI components for table headers,
+ *              data cells, and themed styling. Supports seat selection with
+ *              validation (max 10 seats), booking confirmation summary, and
+ *              multiple payment methods (Card, UPI) with input validation.
+ *              Designed with responsive layouts, consistent theming, and
+ *              interactive controls aligned with the application’s UI palette.
+ * Author: Trenser
+ * Created: 22 July 2026
+ */
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
@@ -115,7 +131,7 @@ Item {
                 screenId: showData.screen,
                 movieTitle: showData.movie,
                 showDateAndTime: showData.startingTime,
-                ticketPrice: 0.0
+                ticketPrice: showData.price
             });
         }
     }
@@ -261,7 +277,7 @@ Item {
                         TableDataCell { cellText: model.theatreName; cellWidth: 140 }
                         TableDataCell { cellText: model.screenId; cellWidth: 80 }
                         TableDataCell { cellText: model.showDateAndTime; cellWidth: 150 }
-                        TableDataCell { cellText: "Dynamic"; cellWidth: 100 } // Price loaded dynamically via Seat Layout
+                        TableDataCell { cellText: model.ticketPrice; cellWidth: 100 } // Price loaded dynamically via Seat Layout
                         Button {
                             text: "Select Seats"
                             anchors.verticalCenter: parent.verticalCenter

@@ -1,5 +1,5 @@
 /*
- * File: SystemLogsPage.qml
+ * File: SystemLogs.qml
  * Description: Implements the system logs and audit trail interface in QML.
  *              Provides functionality to monitor system activities, application
  *              errors, and diagnostic events. Supports filtering by log type
