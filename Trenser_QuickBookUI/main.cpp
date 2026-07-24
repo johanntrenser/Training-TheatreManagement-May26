@@ -17,6 +17,7 @@
 #include <QDebug>
 #include <QStyleHints>
 #include <QQuickStyle>
+#include <QIcon>
 #include "controlleradapter.h"
 
 int main(int argc, char *argv[])
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     //FORCE GLOBAL LIGHT MODE
     app.styleHints()->setColorScheme(Qt::ColorScheme::Light);
+    app.setWindowIcon(QIcon(":/Images/Icon.jpg"));
     QQuickStyle::setStyle("Basic");
     ControllerAdapter controllerAdapter;
     if (controllerAdapter.initialize()) {

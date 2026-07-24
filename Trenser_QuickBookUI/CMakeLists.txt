@@ -4,6 +4,7 @@ project(Trenser_QuickBookUI VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTORCC ON)
 
 # Required for CMAKE_INSTALL_BINDIR and CMAKE_INSTALL_LIBDIR variables
 include(GNUInstallDirs)
@@ -64,6 +65,7 @@ qt_add_qml_module(appTrenser_QuickBookUI
         QML_FILES views/CustomerTicketsView.qml
         QML_FILES views/TicketManagement.qml
         QML_FILES views/CustomerBrowseAndBook.qml
+        RESOURCES Resource.qrc
 
         # Add future C++ models here, e.g.:
         # models/MovieListModel.h

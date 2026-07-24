@@ -181,36 +181,55 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: window.cardBg
-            radius: 8
+            radius: 12
             border.color: window.borderColor
+            border.width: 1
 
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
+                // HEADER
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 45
-                    color: "#FAFAFA"
-                    border.color: window.borderColor
+                    Layout.preferredHeight: 48
+                    color: "#F8F9FB"
+                    radius: 12
+
+                    Rectangle { // flatten bottom corners of header
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        height: parent.height / 2
+                        color: parent.color
+                    }
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 1
+                        color: window.borderColor
+                    }
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 20
-                        anchors.rightMargin: 20
-                        spacing: 10
+                        anchors.leftMargin: 24
+                        anchors.rightMargin: 24
+                        spacing: 12
 
-                        Text { text: "SHOW ID"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.preferredWidth: 80; Layout.alignment: Qt.AlignVCenter }
-                        Text { text: "MOVIE TITLE"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.fillWidth: true; Layout.preferredWidth: 150; Layout.alignment: Qt.AlignVCenter }
-                        Text { text: "THEATRE NAME"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.fillWidth: true; Layout.preferredWidth: 150; Layout.alignment: Qt.AlignVCenter }
-                        Text { text: "SCREEN"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.preferredWidth: 90; Layout.alignment: Qt.AlignVCenter }
-                        Text { text: "START"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.preferredWidth: 130; Layout.alignment: Qt.AlignVCenter }
-                        Text { text: "END"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.preferredWidth: 130; Layout.alignment: Qt.AlignVCenter }
-                        Text { text: "STATUS"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.preferredWidth: 100; Layout.alignment: Qt.AlignVCenter }
-                        Text { text: "ACTIONS"; font.bold: true; font.pixelSize: 11; color: window.textMuted; Layout.preferredWidth: 160; Layout.alignment: Qt.AlignVCenter }
+                        Text { text: "SHOW ID"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 80; Layout.alignment: Qt.AlignVCenter }
+                        Text { text: "MOVIE TITLE"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 150; Layout.alignment: Qt.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
+                        Text { text: "THEATRE NAME"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 150; Layout.maximumWidth: 180; Layout.alignment: Qt.AlignVCenter }
+                        Text { text: "SCREEN"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 90; Layout.alignment: Qt.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
+                        Text { text: "START"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 120; Layout.alignment: Qt.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
+                        Text { text: "END"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 120; Layout.alignment: Qt.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
+                        Text { text: "STATUS"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 100; Layout.alignment: Qt.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
+                        Text { text: "ACTIONS"; font.bold: true; font.pixelSize: 11; font.letterSpacing: 0.5; color: window.textMuted; Layout.preferredWidth: 150; Layout.alignment: Qt.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
+
+                        Item { Layout.fillWidth: true }
                     }
                 }
 
+                // LIST
                 ListView {
                     id: showListView
                     Layout.fillWidth: true
@@ -220,8 +239,10 @@ Item {
 
                     delegate: Rectangle {
                         width: showListView.width
-                        height: visible ? 52 : 0
-                        color: index % 2 === 0 ? "#FFFFFF" : "#F9FAFB"
+                        height: visible ? 60 : 0
+                        color: rowMouse.containsMouse ? "#F3F6FB" : (index % 2 === 0 ? "#FFFFFF" : "#FBFCFD")
+
+                        Behavior on color { ColorAnimation { duration: 120 } }
 
                         visible: {
                             var query = showManagementPage.searchQuery
@@ -230,6 +251,13 @@ Item {
                             var movieMatch = modelData.movie && modelData.movie.toLowerCase().indexOf(query) !== -1
                             var screenMatch = modelData.screen && modelData.screen.toLowerCase().indexOf(query) !== -1
                             return idMatch || movieMatch || screenMatch
+                        }
+
+                        MouseArea {
+                            id: rowMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            acceptedButtons: Qt.NoButton
                         }
 
                         Rectangle {
@@ -241,11 +269,10 @@ Item {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 20
-                            anchors.rightMargin: 20
-                            spacing: 10
+                            anchors.leftMargin: 24
+                            anchors.rightMargin: 24
+                            spacing: 12
 
-                            // 1. Show ID
                             Text {
                                 text: modelData.id || ""
                                 font.bold: true
@@ -255,40 +282,40 @@ Item {
                                 Layout.alignment: Qt.AlignVCenter
                             }
 
-                            // 2. Movie Title
                             Text {
                                 text: modelData.movie || ""
-                                font.pixelSize: 12
+                                font.pixelSize: 13
                                 font.bold: true
                                 color: window.textDark
-                                Layout.fillWidth: true
                                 Layout.preferredWidth: 150
                                 elide: Text.ElideRight
                                 Layout.alignment: Qt.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
                             }
 
-                            // 3. Theatre Name
                             Text {
                                 text: modelData.theatre || ""
                                 font.pixelSize: 12
-                                font.bold: true
                                 color: window.textDark
-                                Layout.fillWidth: true
+                                opacity: 0.85
                                 Layout.preferredWidth: 150
+                                Layout.maximumWidth: 180
                                 elide: Text.ElideRight
                                 Layout.alignment: Qt.AlignVCenter
                             }
 
-                            // 4. Screen Badge
                             Item {
                                 Layout.preferredWidth: 90
-                                Layout.preferredHeight: 22
+                                Layout.preferredHeight: 24
                                 Layout.alignment: Qt.AlignVCenter
                                 Rectangle {
-                                    anchors.fill: parent
-                                    radius: 4
+                                    width: screenTxt.paintedWidth + 20
+                                    height: 24
+                                    anchors.centerIn: parent
+                                    radius: 12
                                     color: "#E8F0FE"
                                     Text {
+                                        id: screenTxt
                                         anchors.centerIn: parent
                                         text: modelData.screen || ""
                                         font.pixelSize: 11
@@ -298,34 +325,38 @@ Item {
                                 }
                             }
 
-                            // 5. Start Time
                             Text {
                                 text: modelData.startingTime || ""
                                 font.pixelSize: 11
                                 color: window.textDark
-                                Layout.preferredWidth: 130
+                                opacity: 0.75
+                                Layout.preferredWidth: 120
                                 Layout.alignment: Qt.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
                             }
 
-                            // 6. End Time
                             Text {
                                 text: modelData.endingTime || ""
                                 font.pixelSize: 11
                                 color: window.textDark
-                                Layout.preferredWidth: 130
+                                opacity: 0.75
+                                Layout.preferredWidth: 120
                                 Layout.alignment: Qt.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
                             }
 
-                            // 7. Status Badge
                             Item {
                                 Layout.preferredWidth: 100
-                                Layout.preferredHeight: 22
+                                Layout.preferredHeight: 24
                                 Layout.alignment: Qt.AlignVCenter
                                 Rectangle {
-                                    anchors.fill: parent
-                                    radius: 4
+                                    width: statusTxt.paintedWidth + 20
+                                    height: 24
+                                    anchors.centerIn: parent
+                                    radius: 12
                                     color: modelData.status === "CANCELLED" ? "#FFEBEE" : "#E8F5E9"
                                     Text {
+                                        id: statusTxt
                                         anchors.centerIn: parent
                                         text: modelData.status || "UNKNOWN"
                                         font.pixelSize: 10
@@ -335,15 +366,14 @@ Item {
                                 }
                             }
 
-                            // 8. Actions
                             RowLayout {
-                                Layout.preferredWidth: 160
+                                Layout.preferredWidth: 150
                                 Layout.alignment: Qt.AlignVCenter
-                                spacing: 6
+                                spacing: 8
 
                                 CustomButton {
                                     text: "✏️ Edit"
-                                    implicitWidth: 65; implicitHeight: 28
+                                    implicitWidth: 65; implicitHeight: 30
                                     btnColor: "#E3F2FD"; textColor: "#1565C0"
                                     enabled: modelData.status !== "CANCELLED"
                                     onClicked: {
@@ -354,7 +384,7 @@ Item {
 
                                 CustomButton {
                                     text: "✕ Cancel"
-                                    implicitWidth: 75; implicitHeight: 28
+                                    implicitWidth: 75; implicitHeight: 30
                                     btnColor: "#FFEBEE"; textColor: "#C62828"
                                     enabled: modelData.status !== "CANCELLED"
                                     onClicked: {
@@ -363,6 +393,8 @@ Item {
                                     }
                                 }
                             }
+
+                            Item { Layout.fillWidth: true }
                         }
                     }
                 }
